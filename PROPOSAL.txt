@@ -1,0 +1,23 @@
+Proposal for Monitoring Package
+18th January 2008
+
+Rationale
+------------------------------------
+todo.
+
+Scope of the package
+------------------------------------
+todo.
+
+Identify the initial source for the package
+------------------------------------
+todo.
+
+Identify the base name for the package
+------------------------------------
+org.apache.commons.monitoring
+
+INITIAL COMMITTERS
+------------------------------------
+Nicolas De Loof
+
