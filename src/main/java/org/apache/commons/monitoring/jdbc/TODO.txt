@@ -1,0 +1,7 @@
+Create JDBC monitoring helpers :
+
+ - a custom jdbc Driver
+ - a DataSource wrapper
+ - Statement wrappers
+
+

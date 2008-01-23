@@ -15,24 +15,25 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" 
+<project xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
 		                http://maven.apache.org/maven-v4_0_0.xsd">
-						
+
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-sandbox-parent</artifactId>
     <version>3</version>
   </parent>
-  
+
   <artifactId>commons-monitoring</artifactId>
   <version>1.0-SNAPSHOT</version>
+  <packaging>bundle</packaging>
   <name>Commons Monitoring (Sandbox)</name>
-  <url>http://commons.apache.org/sandbox/monitoring/</url>  
+  <url>http://commons.apache.org/sandbox/monitoring/</url>
   <inceptionYear>2008</inceptionYear>
-  
+
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
@@ -41,7 +42,7 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  
+
   <developers>
     <developer>
       <id>nicolas</id>
@@ -51,17 +52,31 @@
       <timezone>+10</timezone>
     </developer>
   </developers>
-    
+
   <scm>
     <connection>scm:svn:http://svn.apache.org/repos/asf/commons/sandbox/monitoring/trunk/</connection>
     <developerConnection>scm:svn:https://svn.apache.org/repos/asf/commons/sandboxmonitoring/trunk/</developerConnection>
     <url>http://svn.apache.org/viewvc/commons/sandbox/monitoring/trunk/</url>
   </scm>
-  
-  <build>
 
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <version>1.2.0</version>
+        <extensions>true</extensions>
+        <configuration>
+          <excludeDependencies>true</excludeDependencies>
+          <instructions>
+            <Bundle-SymbolicName>org.apache.commons.monitoring</Bundle-SymbolicName>
+            <Export-Package>org.apache.commons.monitoring;version=${project.version}</Export-Package>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
   </build>
-    
+
   <distributionManagement>
     <site>
       <id>website</id>
@@ -74,6 +89,6 @@
   <properties>
     <maven.compile.source>1.5</maven.compile.source>
     <maven.compile.target>1.5</maven.compile.target>
-  </properties> 
+  </properties>
 
 </project>

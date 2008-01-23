@@ -1,0 +1,94 @@
+<html>
+<head>
+<title>Proposal for monitoring Package</title>
+</head>
+<body bgcolor="white">
+
+<div align="center">
+<h1>Proposal for <em>monitoring</em> Package</h1>
+</div>
+
+<h3>(0) Rationale</h3>
+
+<p>Entreprise Java application are expected to be scalable, performant, flexible, maintainable and highly available. 
+To ensure this, we need to instrument the application with tooling, both during development to detect design 
+bottlenecks and on production to monitor application behaviour and health.
+</p>
+<p>
+The standard Java Management eXtension (JMX) provides the required backbone for nice management and monitoring 
+tools, but with the cost of complexity and requirement for application to compute the state it wants to expose.
+</p>
+<p>
+Profilers give very detailled report on code execution, performance, memory usage and thread-safety, but can only 
+be used during developpement.
+</p>
+<p>
+Some opensource project allready try to fill the gap by providing simple monitoring tools :
+<ul>
+<li><a href="http://www.jamonapi.com">JamonAPI</a> is a well known monitoring toolkit, but lacks for a modular design
+and a clean tooling (separation between code and tests..). It is driven by a single individual, and as a 
+result doesn't take advantage of an apache-like community driven emulation.</li>
+<li><a href="http://http://moskito.anotheria.net">Moskito</a> is nicely designed, but requires some technical
+inheritence and for this reason is too much intrusive. Its user community is still tiny accoring to sourceforge statistics</li>
+</ul>
+</p>
+
+
+<h3>(1) Scope of the Package</h3>
+
+<p>This proposal is to create a new apache commons component to provide a simple monitoring infrastructure, with simplicity and 
+extensibility in mind, and following Apache quality standards. By beeing hosted in apache commons, it expect to gather talentuous
+developers curisoity / interest and to envolve as a must-have component for java developers.
+.</p>
+
+
+<h3>(1.5) Interaction With Other Packages</h3>
+
+<p><em>monitoring</em> relies on standard Java 5 (or later) APIs for
+production deployment.  It utilizes the JUnit unit testing framework for
+developing and executing unit tests, but this is of interest only to
+developers of the component.</p>
+<p>Retrotranslator is used to create a backport version of the component to get used under Java 1.3 or 1.4. On such
+runtimes, backport-util-concurrent will be required.</p>
+<p><em>monitoring</em> provides Helper classes for various frameworks to make monitoring easier. Those dependencies
+are only required by user wanting to use them. Maven meta-datas are declared as <code>optional</code> to avoid unexpected transitive 
+dependencies.</p>
+
+<p>No external configuration files are utilized.</p>
+
+
+<h3>(2) Initial Source of the Package</h3>
+
+<p>The original Java classes are created from scratch based on some initial experiments to
+build a clean monitoring toolkit.</p>
+
+<p>The proposed package name for the new component is
+<code>org.apache.commons.monitoring</code>.</p>
+
+
+<h3>(3)  Required Jakarta-Commons Resources</h3>
+
+<ul>
+<li>SVN Repository - New directory <code>monitoring</code> in the
+    <code>jakarta-commons</code> SVN repository.</li>
+<li>Mailing List - Discussions will take place on the general
+    <em>commons-dev@jakarta.apache.org</em> mailing list.  To help
+    list subscribers identify messages of interest, it is suggested that
+    the message subject of messages about this component be prefixed with
+    [monitoring].</li>
+<li>Bugzilla - New component "monitoring" under the "Commons" product
+    category, with appropriate version identifiers as needed.</li>
+</ul>
+
+
+<h3>(4) Initial Committers</h3>
+
+<p>The initial committers on the monitoring component shall be:
+<ul>
+  <li><a href="mailto:nicolas@apache.org">Nicolas De Loof</a></li>
+</ul>
+</p>
+
+
+</body>
+</html>

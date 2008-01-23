@@ -1,0 +1,7 @@
+Create web monitoring helpers :
+
+ - a servlet filter
+ - a HttpServletResponse wrapper to gather status code
+ - application-server specific helpers (tomcat valve ...)
+
+
