@@ -15,25 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.commons.monitoring;
+package org.apache.commons.monitoring.impl;
 
-/**
- * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
- */
-public interface Counter
-    extends StatValue
+import org.apache.commons.monitoring.Counter;
+
+public class SimpleCounter
+    extends SimpleValue implements Counter
 {
 
-    void add( long delta );
+    // Nothing to do : Counter method already implemented by SimpleValue
 
-    /**
-     * @return the sum of all set operations
-     */
-    long getSum();
-
-    /**
-     * @return how many time the value has been set
-     */
-    int getHits();
 }
-

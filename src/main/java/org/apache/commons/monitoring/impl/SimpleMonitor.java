@@ -27,7 +27,7 @@ import org.apache.commons.monitoring.StatValue;
 
 /**
  * Simple implementation of the {@link Monitor} interface.
- * 
+ *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public class SimpleMonitor
@@ -66,15 +66,7 @@ public class SimpleMonitor
 
     public StatValue getValue( String role )
     {
-        StatValue value = values.get( role );
-        if ( value != null )
-        {
-            return value;
-        }
-        // If no value has been registered for this role, create a default one
-        value = new SimpleValue();
-        StatValue previous = values.putIfAbsent( role, value );
-        return previous != null ? previous : value;
+        return values.get( role );
     }
 
     public boolean setValue( StatValue value, String role )

@@ -20,7 +20,7 @@ package org.apache.commons.monitoring;
 /**
  * A <code>StatValue</code> is a numerical indicator of some monitored
  * application state with support for simple statistics.
- * 
+ *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public interface StatValue
@@ -38,26 +38,26 @@ public interface StatValue
     void set( long l );
 
     /**
-     * @return the min value
+     * @return the minimum value
      */
-    long min();
+    long getMin();
 
     /**
-     * @return the max value
+     * @return the maximum value
      */
-    long max();
+    long getMax();
 
     /**
-     * @return the average value
+     * @return the arithmetic mean value
      */
-    double average();
+    double getMean();
 
     /**
      * Compute the standard deviation : measures the dispersion of values around
      * the average value = sqrt( variance ).
-     * 
+     *
      * @return the value standard deviation
      */
-    double standardDeviation();
+    double getStandardDeviation();
 
 }

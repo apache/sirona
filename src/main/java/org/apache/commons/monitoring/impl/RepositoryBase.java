@@ -91,8 +91,8 @@ public class RepositoryBase
     {
         Monitor monitor;
         monitor = new SimpleMonitor( key );
-        monitor.setValue( new SimpleValue(), Monitor.PERFORMANCES );
-        monitor.setValue( new ConcurrencyGauge(), Monitor.CONCURRENCY );
+        monitor.setValue( new SimpleCounter(), Monitor.PERFORMANCES );
+        monitor.setValue( new SimpleGauge(), Monitor.CONCURRENCY );
         return monitor;
     }
 

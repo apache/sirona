@@ -26,6 +26,8 @@ import java.util.LinkedList;
 import junit.framework.TestCase;
 
 import org.apache.commons.monitoring.Monitor;
+import org.apache.commons.monitoring.impl.SimpleCounter;
+import org.apache.commons.monitoring.impl.SimpleGauge;
 import org.apache.commons.monitoring.impl.SimpleMonitor;
 
 public class RendererTest
@@ -41,12 +43,15 @@ public class RendererTest
     {
         monitors = new LinkedList<Monitor>();
         Monitor m1 = new SimpleMonitor( "JsonRendererTest.setUp", "test", "reporting" );
+        m1.setValue( new SimpleCounter(), Monitor.PERFORMANCES );
+        m1.setValue( new SimpleGauge(), Monitor.CONCURRENCY );
         m1.getCounter( Monitor.PERFORMANCES ).add( 10 );
         monitors.add( m1 );
 
         Monitor m2 = new SimpleMonitor( "TestCase", "test", "junit" );
-        m2.getCounter( Monitor.CONCURRENCY ).set( 1 );
-        m2.getCounter( "UNEXPECTED" ).set( 1 );
+        m2.setValue( new SimpleCounter(), Monitor.PERFORMANCES );
+        m2.setValue( new SimpleGauge(), Monitor.CONCURRENCY );
+        m2.getGauge( Monitor.CONCURRENCY ).increment();
         monitors.add( m2 );
     }
 
@@ -59,11 +64,11 @@ public class RendererTest
         assertEquals(
             "["
                 + "{key:{name:\"JsonRendererTest.setUp\",category:\"test\",subsystem:\"reporting\"},"
-                + "concurrency:{value:\"0\",min:\"0\",max:\"0\",average:\"NaN\",stdDev:\"NaN\",total:\"0\",hits:\"0\"},"
-                + "performances:{value:\"10\",min:\"10\",max:\"10\",average:\"0.0\",stdDev:\"NaN\",total:\"0\",hits:\"1\"}},"
+                + "concurrency:{value:\"0\",min:\"0\",max:\"0\",mean:\"NaN\",stdDev:\"NaN\"},"
+                + "performances:{value:\"10\",min:\"10\",max:\"10\",mean:\"0.0\",stdDev:\"NaN\",total:\"0\",hits:\"1\"}},"
                 + "{key:{name:\"TestCase\",category:\"test\",subsystem:\"junit\"},"
-                + "concurrency:{value:\"1\",min:\"1\",max:\"1\",average:\"0.0\",stdDev:\"NaN\",total:\"0\",hits:\"1\"},"
-                + "performances:{value:\"0\",min:\"0\",max:\"0\",average:\"NaN\",stdDev:\"NaN\",total:\"0\",hits:\"0\"}}"
+                + "concurrency:{value:\"1\",min:\"1\",max:\"1\",mean:\"0.0\",stdDev:\"NaN\"},"
+                + "performances:{value:\"0\",min:\"0\",max:\"0\",mean:\"NaN\",stdDev:\"NaN\",total:\"0\",hits:\"0\"}}"
                 + "]", out.toString() );
     }
 
@@ -76,12 +81,12 @@ public class RendererTest
         assertEquals(
             "<monitors>"
                 + "<monitor name=\"JsonRendererTest.setUp\" category=\"test\" subsystem=\"reporting\">"
-                + "<concurrency value=\"0\" min=\"0\" max=\"0\" average=\"NaN\" stdDev=\"NaN\" total=\"0\" hits=\"0\"/>"
-                + "<performances value=\"10\" min=\"10\" max=\"10\" average=\"0.0\" stdDev=\"NaN\" total=\"0\" hits=\"1\"/>"
+                + "<concurrency value=\"0\" min=\"0\" max=\"0\" mean=\"NaN\" stdDev=\"NaN\"/>"
+                + "<performances value=\"10\" min=\"10\" max=\"10\" mean=\"0.0\" stdDev=\"NaN\" total=\"0\" hits=\"1\"/>"
                 + "</monitor>"
                 + "<monitor name=\"TestCase\" category=\"test\" subsystem=\"junit\">"
-                + "<concurrency value=\"1\" min=\"1\" max=\"1\" average=\"0.0\" stdDev=\"NaN\" total=\"0\" hits=\"1\"/>"
-                + "<performances value=\"0\" min=\"0\" max=\"0\" average=\"NaN\" stdDev=\"NaN\" total=\"0\" hits=\"0\"/>"
+                + "<concurrency value=\"1\" min=\"1\" max=\"1\" mean=\"0.0\" stdDev=\"NaN\"/>"
+                + "<performances value=\"0\" min=\"0\" max=\"0\" mean=\"NaN\" stdDev=\"NaN\" total=\"0\" hits=\"0\"/>"
                 + "</monitor></monitors>", out.toString() );
     }
 }

@@ -39,7 +39,7 @@ public class MonitoringTest
         Monitor monitor = Monitoring.getMonitor( "MonitoringTest.testMonitoring", "test", "utils" );
         Gauge concurrency = monitor.getGauge( Monitor.CONCURRENCY );
         assertEquals( 1, concurrency.get() );
-        assertEquals( 2, concurrency.max() );
+        assertEquals( 2, concurrency.getMax() );
 
         stopWatch1.stop();
         assertEquals( 0, concurrency.get() );

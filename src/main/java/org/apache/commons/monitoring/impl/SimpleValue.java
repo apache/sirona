@@ -17,21 +17,19 @@
 
 package org.apache.commons.monitoring.impl;
 
-import org.apache.commons.monitoring.Counter;
-import org.apache.commons.monitoring.Gauge;
 import org.apache.commons.monitoring.StatValue;
 
 /**
  * A simple implementation of {@link StatValue}
- * 
+ *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public class SimpleValue
-    implements Gauge, Counter
+public abstract class SimpleValue
+       implements StatValue
 {
     private long value;
 
-    private long total;
+    private long sum;
 
     private int hits;
 
@@ -39,21 +37,20 @@ public class SimpleValue
 
     private long min;
 
-    /** total of squares */
-    private long squares;
+    private long sumOfSquares;
 
     private String unit;
 
     /**
      * {@inheritDoc}
      */
-    public double average()
+    public double getMean()
     {
         if ( hits == 0 )
         {
             return Double.NaN;
         }
-        return ( (double) total ) / hits;
+        return ( (double) sum ) / hits;
     }
 
     /**
@@ -67,7 +64,7 @@ public class SimpleValue
     /**
      * {@inheritDoc}
      */
-    public long max()
+    public long getMax()
     {
         return max;
     }
@@ -75,7 +72,7 @@ public class SimpleValue
     /**
      * {@inheritDoc}
      */
-    public long min()
+    public long getMin()
     {
         return min;
     }
@@ -86,12 +83,12 @@ public class SimpleValue
     public synchronized void set( long l )
     {
         value = l;
-        onValueSet();
+        onValueSet( l );
     }
 
-    private void onValueSet()
+    protected void onValueSet(long l)
     {
-        if ( ( hits == 0 ) || ( value < min ) )
+        if ( ( hits == 0 ) || ( l < min ) )
         {
             min = value;
         }
@@ -109,48 +106,30 @@ public class SimpleValue
      * <p>
      * {@inheritDoc}
      */
-    public double standardDeviation()
+    public double getStandardDeviation()
     {
         long n = hits;
         if ( n <= 1 )
         {
             return Double.NaN;
         }
-        double variance = ( squares - total * average() ) / ( n - 1 );
+        double variance = ( sumOfSquares - sum * getMean() ) / ( n - 1 );
         return Math.sqrt( variance );
-    }
-
-    public long total()
-    {
-        return total;
-    }
-
-    public int hits()
-    {
-        return hits;
     }
 
     protected long getSquares()
     {
-        return squares;
+        return sumOfSquares;
     }
 
     public synchronized void increment()
     {
-        value++;
-        onValueSet();
+        onValueSet( ++value );
     }
 
     public synchronized void decrement()
     {
-        value--;
-        onValueSet();
-    }
-
-    public void add( long delta )
-    {
-        value += delta;
-        onValueSet();
+        onValueSet( --value );
     }
 
     public String getUnit()
@@ -158,4 +137,18 @@ public class SimpleValue
         return unit;
     }
 
+    public void add( long delta )
+    {
+        onValueSet( value += delta );
+    }
+
+    public long getSum()
+    {
+        return sum;
+    }
+
+    public int getHits()
+    {
+        return hits;
+    }
 }

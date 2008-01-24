@@ -99,20 +99,20 @@ public class JsonRenderer
         write( ":{value:\"" );
         write( String.valueOf( value.get() ) );
         write( "\",min:\"" );
-        write( String.valueOf( value.min() ) );
+        write( String.valueOf( value.getMin() ) );
         write( "\",max:\"" );
-        write( String.valueOf( value.max() ) );
-        write( "\",average:\"" );
-        write( String.valueOf( value.average() ) );
+        write( String.valueOf( value.getMax() ) );
+        write( "\",mean:\"" );
+        write( String.valueOf( value.getMean() ) );
         write( "\",stdDev:\"" );
-        write( String.valueOf( value.standardDeviation() ) );
+        write( String.valueOf( value.getStandardDeviation() ) );
         if ( value instanceof Counter )
         {
             Counter counter = (Counter) value;
             write( "\",total:\"" );
-            write( String.valueOf( counter.total() ) );
+            write( String.valueOf( counter.getSum() ) );
             write( "\",hits:\"" );
-            write( String.valueOf( counter.hits() ) );
+            write( String.valueOf( counter.getHits() ) );
         }
         write( "\"}" );
     }
