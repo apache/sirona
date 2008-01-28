@@ -20,7 +20,7 @@ package org.apache.commons.monitoring;
 /**
  * Estimates the time required for process execution (monitored method, service
  * invocation, database request...)
- * 
+ *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public class StopWatch
@@ -48,7 +48,7 @@ public class StopWatch
      * <p>
      * The monitor can be set to null to use the StopWatch without the
      * monitoring infrastructure.
-     * 
+     *
      * @param monitor the monitor associated with the process to be monitored
      */
     public StopWatch( Monitor monitor )
@@ -132,7 +132,7 @@ public class StopWatch
     /**
      * Convenience method to stop or cancel a Stopwatch depending on success of
      * monitored operation
-     * 
+     *
      * @param canceled
      * @return time elapsed since the probe has been started
      */
@@ -181,7 +181,7 @@ public class StopWatch
      * when an exception occurs. To avoid StopWatches to keep running if the
      * application didn't follow this recommandation, the finalizer is used to
      * cancel the StopWatch and will log a educational warning.
-     * 
+     *
      * @see java.lang.Object#finalize()
      */
     protected void finalize()
@@ -200,7 +200,7 @@ public class StopWatch
      * nanoseconds. The real precision depends on the JVM and the underlying
      * system. On JRE before java5, <tt>backport-util-concurrent</tt> provides
      * some limited support for equivalent timer.
-     * 
+     *
      * @see System#nanoTime()
      * @return time in nanosecond
      */
@@ -223,5 +223,29 @@ public class StopWatch
     public boolean isPaused()
     {
         return paused;
+    }
+
+    @Override
+    public String toString()
+    {
+        StringBuffer stb = new StringBuffer();
+        if ( monitor != null )
+        {
+            stb.append( "Execution for " ).append( monitor.getKey().toString() ).append( " " );
+        }
+        if ( paused )
+        {
+            stb.append( "paused after " ).append( getElapsedTime() ).append( "ns" );
+        }
+        else if ( stoped )
+        {
+            stb.append( "stoped after " ).append( getElapsedTime() ).append( "ns" );
+        }
+        else
+        {
+            stb.append( "running for " ).append( getElapsedTime() ).append( "ns" );
+        }
+        return stb.toString();
+
     }
 }

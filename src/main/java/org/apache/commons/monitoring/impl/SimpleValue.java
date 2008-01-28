@@ -20,46 +20,27 @@ package org.apache.commons.monitoring.impl;
 import org.apache.commons.monitoring.StatValue;
 
 /**
- * A simple implementation of {@link StatValue}
+ * A simple implementation of {@link StatValue}. Only provide methods to compute stats from
+ * sum provided by derived classes.
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public abstract class SimpleValue
        implements StatValue
 {
-    private long value;
-
-    private long sum;
-
     private int hits;
 
     private long max;
 
     private long min;
 
-    private long sumOfSquares;
-
     private String unit;
 
     /**
      * {@inheritDoc}
      */
-    public double getMean()
-    {
-        if ( hits == 0 )
-        {
-            return Double.NaN;
-        }
-        return ( (double) sum ) / hits;
-    }
+    public abstract double getMean();
 
-    /**
-     * {@inheritDoc}
-     */
-    public long get()
-    {
-        return value;
-    }
 
     /**
      * {@inheritDoc}
@@ -77,24 +58,15 @@ public abstract class SimpleValue
         return min;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public synchronized void set( long l )
-    {
-        value = l;
-        onValueSet( l );
-    }
-
-    protected void onValueSet(long l)
+    protected void computeStats( long l )
     {
         if ( ( hits == 0 ) || ( l < min ) )
         {
-            min = value;
+            min = l;
         }
-        if ( ( hits == 0 ) || ( value > max ) )
+        if ( ( hits == 0 ) || ( l > max ) )
         {
-            max = value;
+            max = l;
         }
         hits++;
     }
@@ -113,39 +85,20 @@ public abstract class SimpleValue
         {
             return Double.NaN;
         }
-        double variance = ( sumOfSquares - sum * getMean() ) / ( n - 1 );
+        double variance = ( getSquares() - getSum() * getMean() ) / ( n - 1 );
         return Math.sqrt( variance );
     }
 
-    protected long getSquares()
-    {
-        return sumOfSquares;
-    }
+    protected abstract long getSquares();
 
-    public synchronized void increment()
-    {
-        onValueSet( ++value );
-    }
 
-    public synchronized void decrement()
-    {
-        onValueSet( --value );
-    }
 
     public String getUnit()
     {
         return unit;
     }
 
-    public void add( long delta )
-    {
-        onValueSet( value += delta );
-    }
-
-    public long getSum()
-    {
-        return sum;
-    }
+    public abstract long getSum();
 
     public int getHits()
     {

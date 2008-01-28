@@ -22,7 +22,62 @@ import org.apache.commons.monitoring.Counter;
 public class SimpleCounter
     extends SimpleValue implements Counter
 {
+    private long value;
 
-    // Nothing to do : Counter method already implemented by SimpleValue
+    private long sum;
+
+    private long sumOfSquares;
+
+    /**
+     * {@inheritDoc}
+     */
+    public long get()
+    {
+        return value;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public synchronized void set( long l )
+    {
+        value = l;
+        computeStats( l );
+    }
+
+    public synchronized void add( long delta )
+    {
+        value += delta;
+        computeStats( delta );
+    }
+
+    @Override
+    protected void computeStats( long l )
+    {
+        sum += l;
+        sumOfSquares += l * l;
+        super.computeStats( l );
+    }
+
+    @Override
+    public double getMean()
+    {
+        return ((double) sum) / getHits();
+    }
+
+    @Override
+    protected long getSquares()
+    {
+        return sumOfSquares;
+    }
+
+    @Override
+    public long getSum()
+    {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+
 
 }

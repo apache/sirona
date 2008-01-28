@@ -26,6 +26,28 @@ public class SimpleGaugeTest
 {
     private long time;
 
+    public void testValue()
+        throws Exception
+    {
+        Gauge gauge = new SimpleGauge();
+
+        gauge.set( 1 );
+        assertEquals( 1, gauge.getMin() );
+        assertEquals( 1, gauge.getMax() );
+        assertEquals( 1, gauge.get() );
+
+        gauge.increment();
+        assertEquals( 1, gauge.getMin() );
+        assertEquals( 2, gauge.getMax() );
+        assertEquals( 2, gauge.get() );
+
+        gauge.decrement();
+        gauge.decrement();
+        assertEquals( 0, gauge.getMin() );
+        assertEquals( 2, gauge.getMax() );
+        assertEquals( 0, gauge.get() );
+    }
+
     /**
      * Use a fake time to emulate to concurrent threads
      * <ul>

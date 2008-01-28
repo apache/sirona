@@ -29,17 +29,27 @@ public class SimpleGauge
     extends SimpleValue
     implements Gauge
 {
-    private long total;
+    private long value;
+
+    private long sum;
+
+    private long sumOfSquares;
 
     private long lastUse;
 
     // Use a double so that unset can be detected as "Not a Number"
     private double firstUse = Double.NaN;
 
-    @Override
     public synchronized void increment()
     {
         long now = nanoTime();
+        computeSums( now );
+        computeStats( ++value );
+        lastUse = now;
+    }
+
+    private void computeSums( long now )
+    {
         if ( Double.isNaN( firstUse ) )
         {
             firstUse = now;
@@ -47,10 +57,10 @@ public class SimpleGauge
         else
         {
             long delta = now - lastUse;
-            total += get() * delta;
+            long s = get() * delta;
+            sum += s;
+            sumOfSquares += s * s;
         }
-        super.increment();
-        lastUse = now;
     }
 
     protected long nanoTime()
@@ -58,19 +68,46 @@ public class SimpleGauge
         return System.nanoTime();
     }
 
-    @Override
     public synchronized void decrement()
     {
         long now = nanoTime();
-        long delta = now - lastUse;
-        total += get() * delta;
-        super.decrement();
+        computeSums( now );
+        computeStats( --value );
         lastUse = now;
     }
 
     @Override
     public synchronized double getMean()
     {
-        return ( (double) total ) / ( nanoTime() - firstUse );
+        return ( (double) sum ) / ( nanoTime() - firstUse );
     }
+
+    @Override
+    protected long getSquares()
+    {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public long getSum()
+    {
+        return sum;
+    }
+
+    public long get()
+    {
+        return value;
+    }
+
+    public void set( long l )
+    {
+        long now = nanoTime();
+        computeSums( now );
+        computeStats( ++value );
+        value = l;
+        lastUse = now;
+    }
+
+
 }

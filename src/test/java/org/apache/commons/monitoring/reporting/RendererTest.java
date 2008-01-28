@@ -17,6 +17,7 @@
 
 package org.apache.commons.monitoring.reporting;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Arrays;
@@ -25,6 +26,8 @@ import java.util.LinkedList;
 
 import junit.framework.TestCase;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.impl.SimpleCounter;
 import org.apache.commons.monitoring.impl.SimpleGauge;
@@ -61,15 +64,7 @@ public class RendererTest
         StringWriter out = new StringWriter();
         Renderer renderer = new JsonRenderer( new PrintWriter( out ), roles );
         renderer.render( monitors );
-        assertEquals(
-            "["
-                + "{key:{name:\"JsonRendererTest.setUp\",category:\"test\",subsystem:\"reporting\"},"
-                + "concurrency:{value:\"0\",min:\"0\",max:\"0\",mean:\"NaN\",stdDev:\"NaN\"},"
-                + "performances:{value:\"10\",min:\"10\",max:\"10\",mean:\"0.0\",stdDev:\"NaN\",total:\"0\",hits:\"1\"}},"
-                + "{key:{name:\"TestCase\",category:\"test\",subsystem:\"junit\"},"
-                + "concurrency:{value:\"1\",min:\"1\",max:\"1\",mean:\"0.0\",stdDev:\"NaN\"},"
-                + "performances:{value:\"0\",min:\"0\",max:\"0\",mean:\"NaN\",stdDev:\"NaN\",total:\"0\",hits:\"0\"}}"
-                + "]", out.toString() );
+        assertEqualsIgnoreLineEnds( expected( "js" ), out.toString() );
     }
 
     public void testRenderToXml()
@@ -78,15 +73,30 @@ public class RendererTest
         StringWriter out = new StringWriter();
         Renderer renderer = new XmlRenderer( new PrintWriter( out ), roles );
         renderer.render( monitors );
-        assertEquals(
-            "<monitors>"
-                + "<monitor name=\"JsonRendererTest.setUp\" category=\"test\" subsystem=\"reporting\">"
-                + "<concurrency value=\"0\" min=\"0\" max=\"0\" mean=\"NaN\" stdDev=\"NaN\"/>"
-                + "<performances value=\"10\" min=\"10\" max=\"10\" mean=\"0.0\" stdDev=\"NaN\" total=\"0\" hits=\"1\"/>"
-                + "</monitor>"
-                + "<monitor name=\"TestCase\" category=\"test\" subsystem=\"junit\">"
-                + "<concurrency value=\"1\" min=\"1\" max=\"1\" mean=\"0.0\" stdDev=\"NaN\"/>"
-                + "<performances value=\"0\" min=\"0\" max=\"0\" mean=\"NaN\" stdDev=\"NaN\" total=\"0\" hits=\"0\"/>"
-                + "</monitor></monitors>", out.toString() );
+        assertEqualsIgnoreLineEnds( expected( "xml" ), out.toString() );
+    }
+
+    public void testRenderToTxt()
+        throws Exception
+    {
+        StringWriter out = new StringWriter();
+        Renderer renderer = new TxtRenderer( new PrintWriter( out ), roles );
+        renderer.render( monitors );
+        assertEqualsIgnoreLineEnds( expected( "txt" ), out.toString() );
+    }
+
+    private void assertEqualsIgnoreLineEnds( String expected, String actual )
+    {
+        expected = StringUtils.remove( StringUtils.remove( expected, "\n" ), "\r" );
+        actual = StringUtils.remove( StringUtils.remove( actual, "\n" ), "\r" );
+        assertEquals( expected, actual );
+    }
+
+    private String expected( String format )
+        throws IOException
+    {
+        String expected = IOUtils.toString( getClass().getResourceAsStream( "RendererTest." + format ) );
+        expected = StringUtils.remove( StringUtils.remove( expected, '\n' ), '\r' );
+        return expected;
     }
 }

@@ -30,7 +30,7 @@ public class StopWatchTest
     /**
      * assert the StopWatch computes the time elapsed during the monitored
      * process execution. User a MockTimeWatch to make timing predictable
-     * 
+     *
      * @throws Exception
      */
     public void testComputeTime()
@@ -41,19 +41,22 @@ public class StopWatchTest
         time++;
         stopWatch.pause();
         assertTrue( stopWatch.isPaused() );
+        System.out.println( stopWatch.toString() );
         time++;
         stopWatch.resume();
         assertTrue( !stopWatch.isPaused() );
+        System.out.println( stopWatch.toString() );
         time++;
         stopWatch.stop();
         assertEquals( 2, stopWatch.getElapsedTime() );
         assertTrue( stopWatch.isStoped() );
+        System.out.println( stopWatch.toString() );
     }
 
     /**
      * Check that the elapsed time computed by the WtopWatch is not affected by
      * unexpected method calls.
-     * 
+     *
      * @throws Exception
      */
     public void testSupportUnexpectedCalls()
