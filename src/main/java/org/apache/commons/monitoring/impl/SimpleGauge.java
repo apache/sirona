@@ -18,6 +18,7 @@
 package org.apache.commons.monitoring.impl;
 
 import org.apache.commons.monitoring.Gauge;
+import org.apache.commons.monitoring.Monitor;
 
 /**
  * Simple implementation of a Gauge. Maintains a total of (value * time) on each
@@ -40,16 +41,55 @@ public class SimpleGauge
     // Use a double so that unset can be detected as "Not a Number"
     private double firstUse = Double.NaN;
 
-    public synchronized void increment()
+    public synchronized void reset()
     {
-        long now = nanoTime();
-        computeSums( now );
-        computeStats( ++value );
-        lastUse = now;
+        // Don't reset value !
+        sum = 0;
+        sumOfSquares = 0;
+        lastUse = 0;
+        firstUse = Double.NaN;
     }
 
-    private void computeSums( long now )
+    public void increment()
     {
+        long l;
+        synchronized ( this )
+        {
+            computeSums();
+            l = ++value;
+            computeStats( l );
+        }
+        notifyValueChanged( l );
+    }
+
+    public void add( long delta )
+    {
+        long l;
+        synchronized ( this )
+        {
+            computeSums();
+            value += delta;
+            l = value;
+            computeStats( value );
+        }
+        notifyValueChanged( l );
+    }
+
+    public void decrement()
+    {
+        long l;
+        synchronized ( this )
+        {
+            computeSums();
+            l = --value;
+            computeStats( l );
+        }
+        notifyValueChanged( l );
+    }
+
+    protected void computeSums()
+    {
+        long now = nanoTime();
         if ( Double.isNaN( firstUse ) )
         {
             firstUse = now;
@@ -57,23 +97,16 @@ public class SimpleGauge
         else
         {
             long delta = now - lastUse;
-            long s = get() * delta;
+            long s = value * delta;
             sum += s;
             sumOfSquares += s * s;
         }
+        lastUse = now;
     }
 
     protected long nanoTime()
     {
         return System.nanoTime();
-    }
-
-    public synchronized void decrement()
-    {
-        long now = nanoTime();
-        computeSums( now );
-        computeStats( --value );
-        lastUse = now;
     }
 
     @Override
@@ -100,14 +133,11 @@ public class SimpleGauge
         return value;
     }
 
-    public void set( long l )
+    public synchronized void set( long l )
     {
-        long now = nanoTime();
-        computeSums( now );
-        computeStats( ++value );
+        computeSums();
         value = l;
-        lastUse = now;
+        computeStats( value );
     }
-
 
 }

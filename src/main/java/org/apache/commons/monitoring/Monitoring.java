@@ -21,7 +21,7 @@ import org.apache.commons.monitoring.impl.RepositoryBase;
 
 /**
  * Utility class for simpified application instrumentation
- * 
+ *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public final class Monitoring
@@ -66,6 +66,11 @@ public final class Monitoring
     public static void setRepository( Repository repository )
     {
         Monitoring.repository = repository;
+    }
+
+    public static Repository getRepository()
+    {
+        return repository;
     }
 
 }

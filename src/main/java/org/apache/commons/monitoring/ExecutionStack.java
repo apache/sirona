@@ -71,6 +71,22 @@ public class ExecutionStack
     }
 
     /**
+     *
+     * @return <code>true</code> if all stopWatches are stopped (execution is finished)
+     */
+    public static boolean isFinished()
+    {
+        for ( StopWatch stopWatch : getExecution() )
+        {
+            if (!stopWatch.isStoped())
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * @return the ordered list of StopWatches used during execution
      */
     public static List<StopWatch> getExecution()

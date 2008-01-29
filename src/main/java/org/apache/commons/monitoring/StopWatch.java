@@ -43,6 +43,8 @@ public class StopWatch
     /** Monitor that is notified of process execution state */
     private final Monitor monitor;
 
+    private static boolean useExecutionStack;
+
     /**
      * Constructor.
      * <p>
@@ -59,6 +61,10 @@ public class StopWatch
         if ( monitor != null )
         {
             monitor.getGauge( Monitor.CONCURRENCY ).increment();
+        }
+        if ( useExecutionStack )
+        {
+            ExecutionStack.push( this );
         }
     }
 
@@ -127,6 +133,10 @@ public class StopWatch
                 monitor.getCounter( Monitor.PERFORMANCES ).add( getElapsedTime() );
             }
         }
+        if ( useExecutionStack && ExecutionStack.isFinished() )
+        {
+            ExecutionStack.clear();
+        }
     }
 
     /**
@@ -170,6 +180,10 @@ public class StopWatch
             {
                 monitor.getGauge( Monitor.CONCURRENCY ).decrement();
             }
+        }
+        if ( useExecutionStack && ExecutionStack.isFinished() )
+        {
+            ExecutionStack.clear();
         }
     }
 
@@ -247,5 +261,16 @@ public class StopWatch
         }
         return stb.toString();
 
+    }
+
+    /**
+     * Enable automatic registration to the ExecutionStack and cleanup after the
+     * last stopWatch has been stopped.
+     *
+     * @param useExecutionStack
+     */
+    public static void setUseExecutionStack( boolean useExecutionStack )
+    {
+        StopWatch.useExecutionStack = useExecutionStack;
     }
 }

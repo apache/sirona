@@ -44,4 +44,47 @@ public class MonitoringTest
         stopWatch1.stop();
         assertEquals( 0, concurrency.get() );
     }
+
+    public void testListeners()
+        throws Exception
+    {
+        Repository repository = new RepositoryBase();
+        final Monitor monitor = repository.getMonitor( "MonitoringTest.testMonitoring", "test", "utils" );
+        Counter counter = monitor.getCounter( Monitor.PERFORMANCES );
+
+        TestListener listener = new TestListener( monitor );
+        counter.addListener( listener );
+
+        counter.add( 1 );
+        assertEquals( "unexpected listener notification", 0, listener.count );
+        counter.add( 10 );
+        assertEquals( "listener didn't get notified", 1, listener.count );
+    }
+
+    private final class TestListener
+        implements StatValue.Listener
+    {
+        private final Monitor monitor;
+
+        long count = 0;
+
+        private TestListener( Monitor monitor )
+        {
+            this.monitor = monitor;
+        }
+
+        public void exceeded( StatValue value, long l )
+        {
+            count++;
+            assertEquals( 10, l );
+            assertEquals( Monitor.PERFORMANCES, value.getRole() );
+            assertEquals( monitor, value.getMonitor() );
+        }
+
+        public long getThreshold()
+        {
+            return 5;
+        }
+    }
+
 }

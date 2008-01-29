@@ -17,6 +17,10 @@
 
 package org.apache.commons.monitoring.impl;
 
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.StatValue;
 
 /**
@@ -28,6 +32,10 @@ import org.apache.commons.monitoring.StatValue;
 public abstract class SimpleValue
        implements StatValue
 {
+    private Monitor monitor;
+
+    private String role;
+
     private int hits;
 
     private long max;
@@ -36,11 +44,22 @@ public abstract class SimpleValue
 
     private String unit;
 
+    private List<Listener> listeners = new CopyOnWriteArrayList<Listener>();
+
+    public void addListener( Listener listener )
+    {
+        listeners.add( listener );
+    }
+
+    public void removeListener( Listener listener )
+    {
+        listeners.remove( listener );
+    }
+
     /**
      * {@inheritDoc}
      */
     public abstract double getMean();
-
 
     /**
      * {@inheritDoc}
@@ -69,6 +88,18 @@ public abstract class SimpleValue
             max = l;
         }
         hits++;
+    }
+
+    protected void notifyValueChanged( long l )
+    {
+        // Notify listeners if Threshold exceeded
+        for ( Listener listener : listeners )
+        {
+            if ( listener.getThreshold() < l )
+            {
+                listener.exceeded( this, l );
+            }
+        }
     }
 
     /**
@@ -103,5 +134,25 @@ public abstract class SimpleValue
     public int getHits()
     {
         return hits;
+    }
+
+    public Monitor getMonitor()
+    {
+        return monitor;
+    }
+
+    public String getRole()
+    {
+        return role;
+    }
+
+    public void setMonitor( Monitor monitor )
+    {
+        this.monitor = monitor;
+    }
+
+    public void setRole( String role )
+    {
+        this.role = role;
     }
 }

@@ -34,30 +34,35 @@ public interface Repository
     /**
      * @return all monitors registered in the repository
      */
-    public Collection<Monitor> getMonitors();
+    Collection<Monitor> getMonitors();
 
     /**
      * @param category a category name
      * @return all monitors in the repository that declare this category in
      * there Key
      */
-    public Collection<Monitor> getMonitorsFromCategory( String category );
+    Collection<Monitor> getMonitorsFromCategory( String category );
 
     /**
      * @param subsystem a subsystem name
      * @return all monitors in the repository that declare this subsystem in
      * there Key
      */
-    public Collection<Monitor> getMonitorsFromSubSystem( String subsystem );
+    Collection<Monitor> getMonitorsFromSubSystem( String subsystem );
 
     /**
      * @return the categories declared by monitors in the repository
      */
-    public Set<String> getCategories();
+    Set<String> getCategories();
 
     /**
      * @return the subsystems declared by monitors in the repository
      */
-    public Set<String> getSubSystems();
+    Set<String> getSubSystems();
+
+    /**
+     * Reset all monitors (don't remove them)
+     */
+    void reset();
 
 }

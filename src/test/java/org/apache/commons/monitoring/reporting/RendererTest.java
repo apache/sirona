@@ -20,7 +20,6 @@ package org.apache.commons.monitoring.reporting;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -36,8 +35,6 @@ import org.apache.commons.monitoring.impl.SimpleMonitor;
 public class RendererTest
     extends TestCase
 {
-    Collection<String> roles = Arrays.asList( new String[] { Monitor.CONCURRENCY, Monitor.PERFORMANCES } );
-
     Collection<Monitor> monitors;
 
     @Override
@@ -62,7 +59,7 @@ public class RendererTest
         throws Exception
     {
         StringWriter out = new StringWriter();
-        Renderer renderer = new JsonRenderer( new PrintWriter( out ), roles );
+        Renderer renderer = new JsonRenderer( new PrintWriter( out ), Renderer.DEFAULT_ROLES );
         renderer.render( monitors );
         assertEqualsIgnoreLineEnds( expected( "js" ), out.toString() );
     }
@@ -71,7 +68,7 @@ public class RendererTest
         throws Exception
     {
         StringWriter out = new StringWriter();
-        Renderer renderer = new XmlRenderer( new PrintWriter( out ), roles );
+        Renderer renderer = new XmlRenderer( new PrintWriter( out ), Renderer.DEFAULT_ROLES );
         renderer.render( monitors );
         assertEqualsIgnoreLineEnds( expected( "xml" ), out.toString() );
     }
@@ -80,7 +77,7 @@ public class RendererTest
         throws Exception
     {
         StringWriter out = new StringWriter();
-        Renderer renderer = new TxtRenderer( new PrintWriter( out ), roles );
+        Renderer renderer = new TxtRenderer( new PrintWriter( out ), Renderer.DEFAULT_ROLES );
         renderer.render( monitors );
         assertEqualsIgnoreLineEnds( expected( "txt" ), out.toString() );
     }

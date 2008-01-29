@@ -18,9 +18,13 @@
 package org.apache.commons.monitoring.impl;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.apache.commons.monitoring.Counter;
 import org.apache.commons.monitoring.Gauge;
+import org.apache.commons.monitoring.Monitor;
+import org.apache.commons.monitoring.StatValue.Listener;
 
 /**
  * A composite implementation of {@link Gauge} that delegates to a primary
@@ -38,7 +42,15 @@ public class CompositeGauge implements Gauge
 
     private Collection<Gauge> secondary;
 
+    public Gauge getPrimary()
+    {
+        return primary;
+    }
 
+    public Collection<Gauge> getSecondary()
+    {
+        return Collections.unmodifiableCollection( secondary );
+    }
 
     public CompositeGauge( Gauge primary )
     {
@@ -64,6 +76,15 @@ public class CompositeGauge implements Gauge
         for ( Gauge gauge : secondary )
         {
             gauge.increment();
+        }
+    }
+
+    public void add( long delta )
+    {
+        primary.add( delta );
+        for ( Gauge gauge : secondary )
+        {
+            gauge.add( delta );
         }
     }
 
@@ -113,6 +134,41 @@ public class CompositeGauge implements Gauge
     public String getUnit()
     {
         return primary.getUnit();
+    }
+
+    public void reset()
+    {
+        primary.reset();
+    }
+
+    public Monitor getMonitor()
+    {
+        return primary.getMonitor();
+    }
+
+    public String getRole()
+    {
+        return primary.getRole();
+    }
+
+    public void setMonitor( Monitor monitor )
+    {
+        primary.setMonitor( monitor );
+    }
+
+    public void setRole( String role )
+    {
+        primary.setRole( role );
+    }
+
+    public void addListener( Listener listener )
+    {
+        primary.addListener( listener );
+    }
+
+    public void removeListener( Listener listener )
+    {
+        primary.removeListener( listener );
     }
 
 }

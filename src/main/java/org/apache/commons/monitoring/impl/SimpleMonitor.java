@@ -71,7 +71,17 @@ public class SimpleMonitor
 
     public boolean setValue( StatValue value, String role )
     {
+        value.setMonitor( this );
+        value.setRole( role );
         return values.putIfAbsent( role, value ) != null;
+    }
+
+    public void reset()
+    {
+        for ( StatValue value : values.values() )
+        {
+            value.reset();
+        }
     }
 
 }

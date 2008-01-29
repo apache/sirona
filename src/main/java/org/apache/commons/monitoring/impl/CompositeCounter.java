@@ -18,9 +18,13 @@
 package org.apache.commons.monitoring.impl;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.apache.commons.monitoring.Composite;
 import org.apache.commons.monitoring.Counter;
+import org.apache.commons.monitoring.Monitor;
+import org.apache.commons.monitoring.StatValue.Listener;
 
 /**
  * A composite implementation of {@link Counter} that delegates to a primary
@@ -32,11 +36,21 @@ import org.apache.commons.monitoring.Counter;
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public class CompositeCounter implements Counter
+public class CompositeCounter implements Counter, Composite<Counter>
 {
     private Counter primary;
 
     private Collection<Counter> secondary;
+
+    public Counter getPrimary()
+    {
+        return primary;
+    }
+
+    public Collection<Counter> getSecondary()
+    {
+        return Collections.unmodifiableCollection( secondary );
+    }
 
     public CompositeCounter( Counter primary )
     {
@@ -111,6 +125,41 @@ public class CompositeCounter implements Counter
     public String getUnit()
     {
         return primary.getUnit();
+    }
+
+    public void reset()
+    {
+        primary.reset();
+    }
+
+    public Monitor getMonitor()
+    {
+        return primary.getMonitor();
+    }
+
+    public String getRole()
+    {
+        return primary.getRole();
+    }
+
+    public void setMonitor( Monitor monitor )
+    {
+        primary.setMonitor( monitor );
+    }
+
+    public void setRole( String role )
+    {
+        primary.setRole( role );
+    }
+
+    public void addListener( Listener listener )
+    {
+        primary.addListener( listener );
+    }
+
+    public void removeListener( Listener listener )
+    {
+        primary.removeListener( listener );
     }
 
 

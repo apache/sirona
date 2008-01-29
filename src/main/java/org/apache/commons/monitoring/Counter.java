@@ -18,12 +18,19 @@
 package org.apache.commons.monitoring;
 
 /**
+ * A counter to collect application processed items (bytes received, lines processed by a batch,
+ * time elapsed by some processing ...).
+ *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public interface Counter
     extends StatValue
 {
 
+    /**
+     * Add value to the counter. Delta should not be negative (in such case a Gauge should be used).
+     * @param delta
+     */
     void add( long delta );
 
     /**

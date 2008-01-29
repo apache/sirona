@@ -18,9 +18,11 @@
 package org.apache.commons.monitoring.impl;
 
 import org.apache.commons.monitoring.Counter;
+import org.apache.commons.monitoring.Monitor;
 
 public class SimpleCounter
-    extends SimpleValue implements Counter
+    extends SimpleValue
+    implements Counter
 {
     private long value;
 
@@ -36,19 +38,34 @@ public class SimpleCounter
         return value;
     }
 
+    public synchronized void reset()
+    {
+        sum = 0;
+        sumOfSquares = 0;
+        value = 0;
+    }
+
     /**
      * {@inheritDoc}
      */
-    public synchronized void set( long l )
+    public void set( long l )
     {
-        value = l;
-        computeStats( l );
+        synchronized ( this )
+        {
+            value = l;
+            computeStats( l );
+        }
+        notifyValueChanged( l );
     }
 
-    public synchronized void add( long delta )
+    public void add( long delta )
     {
-        value += delta;
-        computeStats( delta );
+        synchronized ( this )
+        {
+            value += delta;
+            computeStats( delta );
+        }
+        notifyValueChanged( delta );
     }
 
     @Override
@@ -62,7 +79,7 @@ public class SimpleCounter
     @Override
     public double getMean()
     {
-        return ((double) sum) / getHits();
+        return ( (double) sum ) / getHits();
     }
 
     @Override
@@ -77,7 +94,5 @@ public class SimpleCounter
         // TODO Auto-generated method stub
         return 0;
     }
-
-
 
 }

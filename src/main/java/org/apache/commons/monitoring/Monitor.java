@@ -44,7 +44,7 @@ package org.apache.commons.monitoring;
  * based on a "role" String. The monitor can handle as many values as needed,
  * until any of them has a dedicated role. This allows to easily extend the
  * monitor by registering custom values.
- * 
+ *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public interface Monitor
@@ -79,10 +79,15 @@ public interface Monitor
     StatValue getValue( String role );
 
     /**
+     * Reset all StatValues (don't remove them)
+     */
+    void reset();
+
+    /**
      * Register a StatValue to the monitor with the specified role. If the
      * monitor already had a StatValue for the specified role, the registration
      * is rejected and the method returns <code>false</code>
-     * 
+     *
      * @param value the StatValue
      * @param role the StatValue role in the monitor.
      * @return <code>false</code> if there is already a StatValue for this

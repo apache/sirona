@@ -17,6 +17,7 @@
 
 package org.apache.commons.monitoring;
 
+
 /**
  * A <code>StatValue</code> is a numerical indicator of some monitored
  * application state with support for simple statistics.
@@ -36,6 +37,11 @@ public interface StatValue
      * @param l the value to set
      */
     void set( long l );
+
+    /**
+     * reset the statValue
+     */
+    void reset();
 
     /**
      * @return the minimum value
@@ -60,4 +66,22 @@ public interface StatValue
      */
     double getStandardDeviation();
 
+    void setMonitor( Monitor monitor );
+
+    Monitor getMonitor();
+
+    void setRole( String role );
+
+    String getRole();
+
+    void addListener( Listener listener );
+
+    void removeListener( Listener listener );
+
+    public static interface Listener
+    {
+        long getThreshold();
+
+        void exceeded( StatValue value, long l );
+    }
 }

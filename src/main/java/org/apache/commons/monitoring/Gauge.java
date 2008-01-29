@@ -18,7 +18,7 @@
 package org.apache.commons.monitoring;
 
 /**
- *
+ * A StatValue to expose application state, or resource consumption (open connections, active threads, ...)
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
@@ -26,5 +26,8 @@ public interface Gauge extends StatValue
 {
     void increment();
 
+    void add( long delta );
+
     void decrement();
+
 }

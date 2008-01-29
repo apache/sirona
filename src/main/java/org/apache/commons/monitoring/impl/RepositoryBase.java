@@ -91,8 +91,8 @@ public class RepositoryBase
     {
         Monitor monitor;
         monitor = new SimpleMonitor( key );
-        monitor.setValue( new SimpleCounter(), Monitor.PERFORMANCES );
-        monitor.setValue( new SimpleGauge(), Monitor.CONCURRENCY );
+        monitor.setValue( new CompositeCounter( new SimpleCounter() ), Monitor.PERFORMANCES );
+        monitor.setValue( new CompositeGauge( new SimpleGauge() ), Monitor.CONCURRENCY );
         return monitor;
     }
 
@@ -125,5 +125,14 @@ public class RepositoryBase
             }
         }
         return filtered;
+    }
+
+
+    public void reset()
+    {
+        for ( Monitor monitor : monitors.values() )
+        {
+            monitor.reset();
+        }
     }
 }

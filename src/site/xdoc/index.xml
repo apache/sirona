@@ -25,9 +25,31 @@
   <body>
 
     <section name="Commons Monitoring">
-
       <p>
-        Commons Monitoring.
+        Commons Monitoring provides a simple, lightweight toolkit to instrument java application.
+        Default monitoring capabilities includes performances and thread concurrency, but can easily be
+        extended to expose application state and resource monitoring, based on Counters and Gauges.
+      </p>
+    </section>
+
+    <section name="Concepts">
+      <p>
+        A <b>Monitor</b> defines a control point in the application. It can be associated to a resource,
+        a code fragment or anything relevant for the application. The monitor is unique and retrieved from
+        a <b>Repository</b>. It is identified by a name, a category (technical description of the application
+        component) and a subsystem (functional description).
+      </p>
+      <p>
+        The monitor maintains a set of StatValues, that can be either <b>Counter</b>s or <b>Gauge</b>s. A
+        Counter will get incremented any time the application does its work and expose the result to
+        the monitoring backbone (byte received, lines processed, ...). A Gauge allows the application to
+        expose how a resource is used (active connections). Each StatValue is identified by a ROLE in the
+        monitor.
+      </p>
+      <p>
+        Commons Monitoring provides Helpers to instrument application, for example to monitor web application
+        Request or JDBC operations, so that in many case you don't have to know commons-monitoring API to
+        get basic instrumentation on your application.
       </p>
     </section>
 

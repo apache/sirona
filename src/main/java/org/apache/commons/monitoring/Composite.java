@@ -15,21 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.commons.monitoring.reporting;
+package org.apache.commons.monitoring;
 
-import java.util.Arrays;
 import java.util.Collection;
 
-import org.apache.commons.monitoring.Monitor;
-
 /**
- * Render a collection of monitor for reporting
+ * A composite component that delegates to a primary implementation and
+ * maintains a set of secondary instances.
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public interface Renderer
+public interface Composite<T>
 {
-    Collection<String> DEFAULT_ROLES = Arrays.asList( new String[] { Monitor.CONCURRENCY, Monitor.PERFORMANCES } );
+    /**
+     * @return the primary instance
+     */
+    T getPrimary();
 
-    void render( Collection<Monitor> monitors );
+    /**
+     * @return an (unmodifiable) collection of secondary instances
+     */
+    Collection<T> getSecondary();
+
+    /**
+     * Register a secondary instance
+     * @param secondary
+     */
+    public void addSecondary( T secondary );
+
+    /**
+     * Deregister a secondary instance
+     * @param secondary
+     */
+    public void removeSecondary( T secondary );
 }
