@@ -55,7 +55,7 @@ public class ThreadSafeGauge
     public void increment()
     {
         long l = threadSafeIncrement();
-        notifyValueChanged( l );
+        fireValueChanged( l );
     }
 
     protected synchronized long threadSafeIncrement()
@@ -70,7 +70,7 @@ public class ThreadSafeGauge
     public void add( long delta )
     {
         long l = trheadSageAdd( delta );
-        notifyValueChanged( l );
+        fireValueChanged( l );
     }
 
     protected synchronized long trheadSageAdd( long delta )
@@ -85,8 +85,8 @@ public class ThreadSafeGauge
 
     public void decrement()
     {
-        long l = threadSafeDecrement();;
-        notifyValueChanged( l );
+        long l = threadSafeDecrement();
+        fireValueChanged( l );
     }
 
     protected synchronized long threadSafeDecrement()
@@ -129,8 +129,7 @@ public class ThreadSafeGauge
     @Override
     protected long getSquares()
     {
-        // TODO Auto-generated method stub
-        return 0;
+        return sumOfSquares;
     }
 
     @Override
@@ -147,7 +146,7 @@ public class ThreadSafeGauge
     public void set( long l )
     {
         threadSafeSet( l );
-        notifyValueChanged( l );
+        fireValueChanged( l );
     }
 
     protected synchronized void threadSafeSet( long l )

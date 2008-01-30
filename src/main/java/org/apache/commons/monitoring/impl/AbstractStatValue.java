@@ -90,15 +90,12 @@ public abstract class AbstractStatValue
         hits++;
     }
 
-    protected void notifyValueChanged( long l )
+    protected void fireValueChanged( long l )
     {
-        // Notify listeners if Threshold exceeded
+        // Notify listeners
         for ( Listener listener : listeners )
         {
-            if ( listener.getThreshold() < l )
-            {
-                listener.exceeded( this, l );
-            }
+            listener.onValueChanged( this, l );
         }
     }
 

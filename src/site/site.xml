@@ -17,18 +17,17 @@
 -->
 <project name="Monitoring">
 
-  <!--
   <bannerRight>
     <name>Commons Monitoring</name>
     <src>/images/logo.png</src>
     <href>/index.html</href>
   </bannerRight>
-  -->
 
   <body>
     <menu name="Monitoring">
       <item name="Overview"            href="/index.html"/>
       <item name="Proposal"            href="/PROPOSAL.html"/>
+      <item name="Tutorial"            href="/tutorial.html"/>
       <item name="Wiki"                href="http://wiki.apache.org/commons/Monitoring"/>
     </menu>
 

@@ -32,7 +32,7 @@ public class MonitoringTest
     extends TestCase
 {
 
-    public void testConcurrencyMonitoring()
+    public void testStopWatchConcurrencyMonitoring()
         throws Exception
     {
         Monitoring.setRepository( new DefaultRepository() );
@@ -65,7 +65,7 @@ public class MonitoringTest
             {
                 public void run()
                 {
-                    for ( int i = 0; i < loops; i++ )
+                    for ( int j = 0; j < loops; j++ )
                     {
                         Monitor monitor = Monitoring.getMonitor( "MonitoringTest.testMultiThreading", "test", "utils" );
                         monitor.getCounter( "COUNTER" ).add( 1 );
@@ -89,48 +89,6 @@ public class MonitoringTest
         assertEquals( threads * loops, monitor.getCounter( "COUNTER" ).getHits() );
         assertEquals( threads * loops, monitor.getCounter( "COUNTER" ).get() );
         assertEquals( threads * loops, monitor.getGauge( "GAUGE" ).get() );
-    }
-
-    public void testCounterListeners()
-        throws Exception
-    {
-        Repository repository = new DefaultRepository();
-        final Monitor monitor = repository.getMonitor( "MonitoringTest.testMonitoring", "test", "utils" );
-        Counter counter = monitor.getCounter( Monitor.PERFORMANCES );
-
-        TestListener listener = new TestListener( monitor );
-        counter.addListener( listener );
-
-        counter.add( 1 );
-        assertEquals( "unexpected listener notification", 0, listener.count );
-        counter.add( 10 );
-        assertEquals( "listener didn't get notified", 1, listener.count );
-    }
-
-    private final class TestListener
-        implements StatValue.Listener
-    {
-        private final Monitor monitor;
-
-        long count = 0;
-
-        private TestListener( Monitor monitor )
-        {
-            this.monitor = monitor;
-        }
-
-        public void exceeded( StatValue value, long l )
-        {
-            count++;
-            assertEquals( 10, l );
-            assertEquals( Monitor.PERFORMANCES, value.getRole() );
-            assertEquals( monitor, value.getMonitor() );
-        }
-
-        public long getThreshold()
-        {
-            return 5;
-        }
     }
 
 }

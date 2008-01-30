@@ -36,17 +36,6 @@ public abstract class AbstractMonitor implements Monitor
 
     /**
      * Constructor
-     * @param name monitor name
-     * @param category monitor (technical) category
-     * @param subsystem monitor (functional) subsystem
-     */
-    public AbstractMonitor( String name, String category, String subsystem )
-    {
-        this( new Key( name, category, subsystem ) );
-    }
-
-    /**
-     * Constructor
      * @param key the monitor identifier
      */
     public AbstractMonitor( Key key )

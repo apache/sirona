@@ -21,7 +21,7 @@ import junit.framework.TestCase;
 
 import org.apache.commons.monitoring.Gauge;
 
-public class SimpleGaugeTest
+public class ThreadSafeGaugeTest
     extends TestCase
 {
     private long time;

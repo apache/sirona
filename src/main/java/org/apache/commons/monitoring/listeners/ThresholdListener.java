@@ -15,34 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.commons.monitoring.impl;
+package org.apache.commons.monitoring.listeners;
 
-import org.apache.commons.monitoring.Counter;
-import org.apache.commons.monitoring.Gauge;
+import org.apache.commons.monitoring.StatValue;
+import org.apache.commons.monitoring.StatValue.Listener;
 
 /**
- * A Monitor implementation that creates {@link Composite} Gauges and Counters.
- *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public class CompositeValuesMonitor extends CreateValuesOnDemandMonitor
+public abstract class ThresholdListener
+    implements Listener
 {
+    public abstract long getThreshold();
 
-    public CompositeValuesMonitor( Key key )
+    public final void onValueChanged( StatValue value, long l )
     {
-        super( key );
+        if ( l > getThreshold() )
+        {
+            exceed( value, l );
+        }
     }
 
-    @Override
-    protected Counter newCounterInstance()
-    {
-        return new CompositeCounter();
-    }
-
-    @Override
-    protected Gauge newGaugeInstance()
-    {
-        return new CompositeGauge();
-    }
-
+    public abstract void  exceed( StatValue value, long l );
 }

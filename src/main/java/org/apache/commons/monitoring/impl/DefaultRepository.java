@@ -92,10 +92,7 @@ public class DefaultRepository
         if ( monitor == null )
         {
             monitor = newMonitorInstance( key );
-            for ( Listener listener : listeners )
-            {
-                listener.newMonitorInstance( monitor );
-            }
+
             Monitor previous = monitors.putIfAbsent( key, monitor );
             if ( previous != null )
             {
@@ -108,7 +105,7 @@ public class DefaultRepository
     protected Monitor newMonitorInstance( Monitor.Key key )
     {
         Monitor monitor;
-        monitor = new CreateValuesOnDemandMonitor( key );
+        monitor = new CompositeValuesMonitor( key );
         return monitor;
     }
 

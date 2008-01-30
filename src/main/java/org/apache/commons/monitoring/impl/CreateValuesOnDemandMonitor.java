@@ -19,10 +19,9 @@ package org.apache.commons.monitoring.impl;
 
 import org.apache.commons.monitoring.Counter;
 import org.apache.commons.monitoring.Gauge;
-import org.apache.commons.monitoring.Monitor;
 
 /**
- * implementation of the {@link Monitor} interface that creates StatValues on
+ * implementation of the <code>Monitor</code> interface that creates StatValues on
  * demand. The application can request for Counters/Gauges without having to
  * handle instantiation of monitors with all required StatValues pre-registered.
  *
@@ -35,11 +34,6 @@ public class CreateValuesOnDemandMonitor
     public CreateValuesOnDemandMonitor( Key key )
     {
         super( key );
-    }
-
-    public CreateValuesOnDemandMonitor( String name, String category, String subsystem )
-    {
-        super( name, category, subsystem );
     }
 
     /**

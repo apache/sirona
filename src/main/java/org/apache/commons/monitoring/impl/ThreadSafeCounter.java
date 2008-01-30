@@ -60,7 +60,7 @@ public class ThreadSafeCounter
             value = l;
             computeStats( l );
         }
-        notifyValueChanged( l );
+        fireValueChanged( l );
     }
 
     public void add( long delta )
@@ -70,7 +70,7 @@ public class ThreadSafeCounter
             value += delta;
             computeStats( delta );
         }
-        notifyValueChanged( delta );
+        fireValueChanged( delta );
     }
 
     @Override
@@ -96,8 +96,7 @@ public class ThreadSafeCounter
     @Override
     public long getSum()
     {
-        // TODO Auto-generated method stub
-        return 0;
+        return sum;
     }
 
 }

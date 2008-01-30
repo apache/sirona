@@ -21,7 +21,7 @@ import junit.framework.TestCase;
 
 import org.apache.commons.monitoring.Counter;
 
-public class SimpleCounterTest
+public class ThreadSafeCounterTest
     extends TestCase
 {
 
