@@ -61,18 +61,24 @@ public interface Monitor
     Key getKey();
 
     /**
+     * Get a Counter
+     *
      * @param role a unique identifier for a Counter in the monitor
      * @return the Counter
      */
     Counter getCounter( String role );
 
     /**
+     * Get a Gauge
+     *
      * @param role a unique identifier for a Gauge in the monitor
      * @return the Gauge
      */
     Gauge getGauge( String role );
 
     /**
+     * Retrieve a StatValue.
+     *
      * @param role a unique identifier for a StatValue in the monitor
      * @return the StatValue
      */
@@ -82,18 +88,6 @@ public interface Monitor
      * Reset all StatValues (don't remove them)
      */
     void reset();
-
-    /**
-     * Register a StatValue to the monitor with the specified role. If the
-     * monitor already had a StatValue for the specified role, the registration
-     * is rejected and the method returns <code>false</code>
-     *
-     * @param value the StatValue
-     * @param role the StatValue role in the monitor.
-     * @return <code>false</code> if there is already a StatValue for this
-     * role in the monitor.
-     */
-    boolean setValue( StatValue value, String role );
 
     /**
      * Identifier class for Monitors

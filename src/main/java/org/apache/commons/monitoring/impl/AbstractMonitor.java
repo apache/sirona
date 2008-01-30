@@ -20,62 +20,76 @@ package org.apache.commons.monitoring.impl;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import org.apache.commons.monitoring.Counter;
-import org.apache.commons.monitoring.Gauge;
 import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.StatValue;
 
 /**
- * Simple implementation of the {@link Monitor} interface.
+ * Abstract {@link Monitor} implementation with implementation fo base methods
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public class SimpleMonitor
-    implements Monitor
+public abstract class AbstractMonitor implements Monitor
 {
-    private final ConcurrentMap<String, StatValue> values;
 
-    private final Key key;
+    protected final ConcurrentMap<String, StatValue> values;
+    protected final Key key;
 
-    public SimpleMonitor( String name, String category, String subsystem )
+    /**
+     * Constructor
+     * @param name monitor name
+     * @param category monitor (technical) category
+     * @param subsystem monitor (functional) subsystem
+     */
+    public AbstractMonitor( String name, String category, String subsystem )
     {
         this( new Key( name, category, subsystem ) );
     }
 
-    public SimpleMonitor( Key key )
+    /**
+     * Constructor
+     * @param key the monitor identifier
+     */
+    public AbstractMonitor( Key key )
     {
         super();
         this.key = key;
         this.values = new ConcurrentHashMap<String, StatValue>();
     }
 
-    public Counter getCounter( String role )
-    {
-        return (Counter) getValue( role );
-    }
 
-    public Gauge getGauge( String role )
-    {
-        return (Gauge) getValue( role );
-    }
-
+    /**
+     * {@inheritDoc}
+     */
     public Key getKey()
     {
         return key;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public StatValue getValue( String role )
     {
         return values.get( role );
     }
 
-    public boolean setValue( StatValue value, String role )
+    /**
+     * Register the StatValue for the role, if none was registered before
+     * @param value
+     * @param role
+     * @return the value registered, or a previously existing one
+     */
+    public <T extends StatValue> T register( T value, String role )
     {
         value.setMonitor( this );
         value.setRole( role );
-        return values.putIfAbsent( role, value ) != null;
+        T previous = (T) values.putIfAbsent( role, value );
+        return previous != null ? previous : value;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void reset()
     {
         for ( StatValue value : values.values() )

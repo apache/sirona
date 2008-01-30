@@ -23,8 +23,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.monitoring.Composite;
 import org.apache.commons.monitoring.Counter;
-import org.apache.commons.monitoring.Monitor;
-import org.apache.commons.monitoring.StatValue.Listener;
 
 /**
  * A composite implementation of {@link Counter} that delegates to a primary
@@ -36,26 +34,18 @@ import org.apache.commons.monitoring.StatValue.Listener;
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public class CompositeCounter implements Counter, Composite<Counter>
+public class CompositeCounter extends ThreadSafeCounter implements Composite<Counter>
 {
-    private Counter primary;
-
     private Collection<Counter> secondary;
-
-    public Counter getPrimary()
-    {
-        return primary;
-    }
 
     public Collection<Counter> getSecondary()
     {
         return Collections.unmodifiableCollection( secondary );
     }
 
-    public CompositeCounter( Counter primary )
+    public CompositeCounter()
     {
         super();
-        this.primary = primary;
         this.secondary = new CopyOnWriteArrayList<Counter>();
     }
 
@@ -71,7 +61,7 @@ public class CompositeCounter implements Counter, Composite<Counter>
 
     public void add( long delta )
     {
-        primary.add( delta );
+        super.add( delta );
         for ( Counter counter : secondary )
         {
             counter.add( delta );
@@ -80,88 +70,11 @@ public class CompositeCounter implements Counter, Composite<Counter>
 
     public void set( long l )
     {
-        primary.set( l );
+        super.set( l );
         for ( Counter counter : secondary )
         {
             counter.set( l );
         }
     }
-
-    public long get()
-    {
-        return primary.get();
-    }
-
-    public int getHits()
-    {
-        return primary.getHits();
-    }
-
-    public long getMax()
-    {
-        return primary.getMax();
-    }
-
-    public double getMean()
-    {
-        return primary.getMean();
-    }
-
-    public long getMin()
-    {
-        return primary.getMin();
-    }
-
-    public double getStandardDeviation()
-    {
-        return primary.getStandardDeviation();
-    }
-
-    public long getSum()
-    {
-        return primary.getSum();
-    }
-
-    public String getUnit()
-    {
-        return primary.getUnit();
-    }
-
-    public void reset()
-    {
-        primary.reset();
-    }
-
-    public Monitor getMonitor()
-    {
-        return primary.getMonitor();
-    }
-
-    public String getRole()
-    {
-        return primary.getRole();
-    }
-
-    public void setMonitor( Monitor monitor )
-    {
-        primary.setMonitor( monitor );
-    }
-
-    public void setRole( String role )
-    {
-        primary.setRole( role );
-    }
-
-    public void addListener( Listener listener )
-    {
-        primary.addListener( listener );
-    }
-
-    public void removeListener( Listener listener )
-    {
-        primary.removeListener( listener );
-    }
-
-
 
 }

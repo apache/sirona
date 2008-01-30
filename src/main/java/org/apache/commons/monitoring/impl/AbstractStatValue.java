@@ -29,7 +29,7 @@ import org.apache.commons.monitoring.StatValue;
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public abstract class SimpleValue
+public abstract class AbstractStatValue
        implements StatValue
 {
     private Monitor monitor;

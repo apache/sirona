@@ -17,37 +17,37 @@
 
 package org.apache.commons.monitoring.impl;
 
-import junit.framework.TestCase;
-
 import org.apache.commons.monitoring.Counter;
+import org.apache.commons.monitoring.Gauge;
 
-public class SimpleCounterTest
-    extends TestCase
+/**
+ * A Monitor implementation that creates {@link Composite} Gauges and Counters.
+ *
+ * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
+ */
+public class CompositeValuesMonitor extends CreateValuesOnDemandMonitor
 {
 
-    public void testValue()
-        throws Exception
+    public CompositeValuesMonitor( Key key )
     {
-        Counter counter = new ThreadSafeCounter();
-
-        counter.set( 1 );
-        assertEquals( 1, counter.getMin() );
-        assertEquals( 1, counter.getMax() );
-        assertEquals( 1, counter.get() );
-
-        counter.add( 10 );
-        assertEquals( 1, counter.getMin() );
-        assertEquals( 10, counter.getMax() );
-        assertEquals( 11, counter.get() );
-
-        counter.add( -2 );
-        assertEquals( -2, counter.getMin() );
-        assertEquals( 10, counter.getMax() );
-        assertEquals( 9, counter.get() );
-
-        assertEquals( 3, counter.getHits() );
-        assertEquals( 3.0D, counter.getMean(), 0D );
+        super( key );
     }
 
+    public CompositeValuesMonitor( String name, String category, String subsystem )
+    {
+        super( name, category, subsystem );
+    }
+
+    @Override
+    protected Counter newCounterInstance()
+    {
+        return new CompositeCounter();
+    }
+
+    @Override
+    protected Gauge newGaugeInstance()
+    {
+        return new CompositeGauge();
+    }
 
 }

@@ -29,7 +29,7 @@ public class SimpleGaugeTest
     public void testValue()
         throws Exception
     {
-        Gauge gauge = new SimpleGauge();
+        Gauge gauge = new ThreadSafeGauge();
 
         gauge.set( 1 );
         assertEquals( 1, gauge.getMin() );
@@ -85,7 +85,7 @@ public class SimpleGaugeTest
     }
 
     private class MockTimeGauge
-        extends SimpleGauge
+        extends ThreadSafeGauge
     {
         @Override
         protected long nanoTime()

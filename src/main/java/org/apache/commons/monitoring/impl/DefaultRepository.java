@@ -21,24 +21,38 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.Repository;
 import org.apache.commons.monitoring.Monitor.Key;
 
-public class RepositoryBase
+public class DefaultRepository
     implements Repository
 {
 
     public final ConcurrentMap<Monitor.Key, Monitor> monitors;
 
-    public RepositoryBase()
+    private List<Listener> listeners = new CopyOnWriteArrayList<Listener>();
+
+    public DefaultRepository()
     {
         super();
         this.monitors = new ConcurrentHashMap<Monitor.Key, Monitor>( 50 );
+    }
+
+    public void addListener( Listener listener )
+    {
+        listeners.add( listener );
+    }
+
+    public void removeListener( Listener listener )
+    {
+        listeners.remove( listener );
     }
 
     public Monitor getMonitor( String name )
@@ -78,6 +92,10 @@ public class RepositoryBase
         if ( monitor == null )
         {
             monitor = newMonitorInstance( key );
+            for ( Listener listener : listeners )
+            {
+                listener.newMonitorInstance( monitor );
+            }
             Monitor previous = monitors.putIfAbsent( key, monitor );
             if ( previous != null )
             {
@@ -90,9 +108,7 @@ public class RepositoryBase
     protected Monitor newMonitorInstance( Monitor.Key key )
     {
         Monitor monitor;
-        monitor = new SimpleMonitor( key );
-        monitor.setValue( new CompositeCounter( new SimpleCounter() ), Monitor.PERFORMANCES );
-        monitor.setValue( new CompositeGauge( new SimpleGauge() ), Monitor.CONCURRENCY );
+        monitor = new CreateValuesOnDemandMonitor( key );
         return monitor;
     }
 

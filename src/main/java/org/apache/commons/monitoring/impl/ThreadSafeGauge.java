@@ -18,16 +18,18 @@
 package org.apache.commons.monitoring.impl;
 
 import org.apache.commons.monitoring.Gauge;
-import org.apache.commons.monitoring.Monitor;
 
 /**
- * Simple implementation of a Gauge. Maintains a total of (value * time) on each
- * gauge increment/decrement to compute the mean value.
+ * Thread-safe implementation of <code>Gauge</code>, based on
+ * synchronized methods.
+ * <p>
+ * Maintains a sum of (value * time) on each gauge increment/decrement operation to
+ * compute the mean value.
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public class SimpleGauge
-    extends SimpleValue
+public class ThreadSafeGauge
+    extends AbstractStatValue
     implements Gauge
 {
     private long value;
@@ -52,39 +54,48 @@ public class SimpleGauge
 
     public void increment()
     {
-        long l;
-        synchronized ( this )
-        {
-            computeSums();
-            l = ++value;
-            computeStats( l );
-        }
+        long l = threadSafeIncrement();
         notifyValueChanged( l );
+    }
+
+    protected synchronized long threadSafeIncrement()
+    {
+        long l;
+        computeSums();
+        l = ++value;
+        computeStats( l );
+        return l;
     }
 
     public void add( long delta )
     {
-        long l;
-        synchronized ( this )
-        {
-            computeSums();
-            value += delta;
-            l = value;
-            computeStats( value );
-        }
+        long l = trheadSageAdd( delta );
         notifyValueChanged( l );
+    }
+
+    protected synchronized long trheadSageAdd( long delta )
+    {
+        long l;
+        computeSums();
+        value += delta;
+        l = value;
+        computeStats( value );
+        return l;
     }
 
     public void decrement()
     {
-        long l;
-        synchronized ( this )
-        {
-            computeSums();
-            l = --value;
-            computeStats( l );
-        }
+        long l = threadSafeDecrement();;
         notifyValueChanged( l );
+    }
+
+    protected synchronized long threadSafeDecrement()
+    {
+        long l;
+        computeSums();
+        l = --value;
+        computeStats( l );
+        return l;
     }
 
     protected void computeSums()
@@ -133,7 +144,13 @@ public class SimpleGauge
         return value;
     }
 
-    public synchronized void set( long l )
+    public void set( long l )
+    {
+        threadSafeSet( l );
+        notifyValueChanged( l );
+    }
+
+    protected synchronized void threadSafeSet( long l )
     {
         computeSums();
         value = l;

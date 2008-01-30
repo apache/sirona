@@ -17,9 +17,13 @@
 
 package org.apache.commons.monitoring;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
 import junit.framework.TestCase;
 
-import org.apache.commons.monitoring.impl.RepositoryBase;
+import org.apache.commons.monitoring.impl.DefaultRepository;
 
 /**
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
@@ -27,10 +31,11 @@ import org.apache.commons.monitoring.impl.RepositoryBase;
 public class MonitoringTest
     extends TestCase
 {
-    public void testMonitoring()
+
+    public void testConcurrencyMonitoring()
         throws Exception
     {
-        Monitoring.setRepository( new RepositoryBase() );
+        Monitoring.setRepository( new DefaultRepository() );
 
         StopWatch stopWatch1 = Monitoring.start( "MonitoringTest.testMonitoring", "test", "utils" );
         StopWatch stopWatch2 = Monitoring.start( "MonitoringTest.testMonitoring", "test", "utils" );
@@ -45,10 +50,51 @@ public class MonitoringTest
         assertEquals( 0, concurrency.get() );
     }
 
-    public void testListeners()
+    public void testThreadSafety()
         throws Exception
     {
-        Repository repository = new RepositoryBase();
+        int threads = 50;
+        final int loops = 10000;
+
+        Monitoring.setRepository( new DefaultRepository() );
+
+        ExecutorService pool = Executors.newFixedThreadPool( threads );
+        for ( int i = 0; i < threads; i++ )
+        {
+            pool.execute( new Runnable()
+            {
+                public void run()
+                {
+                    for ( int i = 0; i < loops; i++ )
+                    {
+                        Monitor monitor = Monitoring.getMonitor( "MonitoringTest.testMultiThreading", "test", "utils" );
+                        monitor.getCounter( "COUNTER" ).add( 1 );
+                        monitor.getGauge( "GAUGE" ).increment();
+                    }
+                    try
+                    {
+                        Thread.sleep( (long) ( Math.random() * 100 ) );
+                    }
+                    catch ( InterruptedException e )
+                    {
+                        // ignore
+                    }
+                }
+            } );
+        }
+        pool.shutdown();
+        pool.awaitTermination( 30, TimeUnit.SECONDS );
+
+        Monitor monitor = Monitoring.getMonitor( "MonitoringTest.testMultiThreading", "test", "utils" );
+        assertEquals( threads * loops, monitor.getCounter( "COUNTER" ).getHits() );
+        assertEquals( threads * loops, monitor.getCounter( "COUNTER" ).get() );
+        assertEquals( threads * loops, monitor.getGauge( "GAUGE" ).get() );
+    }
+
+    public void testCounterListeners()
+        throws Exception
+    {
+        Repository repository = new DefaultRepository();
         final Monitor monitor = repository.getMonitor( "MonitoringTest.testMonitoring", "test", "utils" );
         Counter counter = monitor.getCounter( Monitor.PERFORMANCES );
 

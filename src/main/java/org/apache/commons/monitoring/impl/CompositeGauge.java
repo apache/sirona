@@ -19,12 +19,10 @@ package org.apache.commons.monitoring.impl;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.LinkedList;
 
-import org.apache.commons.monitoring.Counter;
+import org.apache.commons.monitoring.Composite;
 import org.apache.commons.monitoring.Gauge;
-import org.apache.commons.monitoring.Monitor;
-import org.apache.commons.monitoring.StatValue.Listener;
 
 /**
  * A composite implementation of {@link Gauge} that delegates to a primary
@@ -36,139 +34,70 @@ import org.apache.commons.monitoring.StatValue.Listener;
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public class CompositeGauge implements Gauge
+public class CompositeGauge extends ThreadSafeGauge implements Composite<Gauge>
 {
-    private Gauge primary;
-
     private Collection<Gauge> secondary;
-
-    public Gauge getPrimary()
-    {
-        return primary;
-    }
 
     public Collection<Gauge> getSecondary()
     {
         return Collections.unmodifiableCollection( secondary );
     }
 
-    public CompositeGauge( Gauge primary )
+    public CompositeGauge()
     {
         super();
-        this.primary = primary;
-        this.secondary = new CopyOnWriteArrayList<Gauge>();
+        this.secondary = new LinkedList<Gauge>();
     }
 
     public synchronized void addSecondary( Gauge gauge )
     {
-        gauge.set( primary.get() );
+        gauge.set( get() );
         secondary.add( gauge );
     }
 
-    public void removeSecondary( Gauge gauge )
+    public synchronized void removeSecondary( Gauge gauge )
     {
         secondary.remove( gauge );
     }
 
-    public synchronized void increment()
+    @Override
+    protected synchronized long threadSafeIncrement()
     {
-        primary.increment();
         for ( Gauge gauge : secondary )
         {
             gauge.increment();
         }
+        return super.threadSafeIncrement();
     }
 
-    public void add( long delta )
+    @Override
+    protected synchronized long threadSafeDecrement()
     {
-        primary.add( delta );
+        for ( Gauge gauge : secondary )
+        {
+            gauge.decrement();
+        }
+        return super.threadSafeDecrement();
+    }
+
+    @Override
+    protected synchronized long trheadSageAdd( long delta )
+    {
         for ( Gauge gauge : secondary )
         {
             gauge.add( delta );
         }
+        return super.trheadSageAdd( delta );
     }
 
-    public synchronized void decrement()
+
+    @Override
+    protected synchronized void threadSafeSet( long value )
     {
-        primary.decrement();
         for ( Gauge gauge : secondary )
         {
-            gauge.increment();
+            gauge.set( value );
         }
+        super.threadSafeSet( value );
     }
-
-    public synchronized void set( long l )
-    {
-        primary.set( l );
-        for ( Gauge gauge : secondary )
-        {
-            gauge.set( l );
-        }
-    }
-
-    public long get()
-    {
-        return primary.get();
-    }
-
-    public long getMax()
-    {
-        return primary.getMax();
-    }
-
-    public double getMean()
-    {
-        return primary.getMean();
-    }
-
-    public long getMin()
-    {
-        return primary.getMin();
-    }
-
-    public double getStandardDeviation()
-    {
-        return primary.getStandardDeviation();
-    }
-
-    public String getUnit()
-    {
-        return primary.getUnit();
-    }
-
-    public void reset()
-    {
-        primary.reset();
-    }
-
-    public Monitor getMonitor()
-    {
-        return primary.getMonitor();
-    }
-
-    public String getRole()
-    {
-        return primary.getRole();
-    }
-
-    public void setMonitor( Monitor monitor )
-    {
-        primary.setMonitor( monitor );
-    }
-
-    public void setRole( String role )
-    {
-        primary.setRole( role );
-    }
-
-    public void addListener( Listener listener )
-    {
-        primary.addListener( listener );
-    }
-
-    public void removeListener( Listener listener )
-    {
-        primary.removeListener( listener );
-    }
-
 }

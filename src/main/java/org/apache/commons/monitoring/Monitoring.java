@@ -17,7 +17,7 @@
 
 package org.apache.commons.monitoring;
 
-import org.apache.commons.monitoring.impl.RepositoryBase;
+import org.apache.commons.monitoring.impl.DefaultRepository;
 
 /**
  * Utility class for simpified application instrumentation
@@ -31,7 +31,7 @@ public final class Monitoring
         super();
     }
 
-    private static Repository repository = new RepositoryBase();
+    private static Repository repository = new DefaultRepository();
 
     public static Monitor getMonitor( String name, String category, String subsystem )
     {

@@ -28,9 +28,7 @@ import junit.framework.TestCase;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.monitoring.Monitor;
-import org.apache.commons.monitoring.impl.SimpleCounter;
-import org.apache.commons.monitoring.impl.SimpleGauge;
-import org.apache.commons.monitoring.impl.SimpleMonitor;
+import org.apache.commons.monitoring.impl.CreateValuesOnDemandMonitor;
 
 public class RendererTest
     extends TestCase
@@ -42,15 +40,13 @@ public class RendererTest
         throws Exception
     {
         monitors = new LinkedList<Monitor>();
-        Monitor m1 = new SimpleMonitor( "JsonRendererTest.setUp", "test", "reporting" );
-        m1.setValue( new SimpleCounter(), Monitor.PERFORMANCES );
-        m1.setValue( new SimpleGauge(), Monitor.CONCURRENCY );
+        Monitor m1 = new CreateValuesOnDemandMonitor( "JsonRendererTest.setUp", "test", "reporting" );
         m1.getCounter( Monitor.PERFORMANCES ).add( 10 );
+        m1.getGauge( Monitor.CONCURRENCY );
         monitors.add( m1 );
 
-        Monitor m2 = new SimpleMonitor( "TestCase", "test", "junit" );
-        m2.setValue( new SimpleCounter(), Monitor.PERFORMANCES );
-        m2.setValue( new SimpleGauge(), Monitor.CONCURRENCY );
+        Monitor m2 = new CreateValuesOnDemandMonitor( "TestCase", "test", "junit" );
+        m2.getCounter( Monitor.PERFORMANCES );
         m2.getGauge( Monitor.CONCURRENCY ).increment();
         monitors.add( m2 );
     }

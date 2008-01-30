@@ -65,4 +65,32 @@ public interface Repository
      */
     void reset();
 
+    /**
+     * @param listener listener to get registered
+     */
+    void addListener( Listener listener );
+
+    /**
+     *
+     * @param listener listener to get deregistered
+     */
+    void removeListener( Listener listener );
+
+    /**
+     * Listener interface to get notified on repository events
+     *
+     * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
+     */
+    static interface Listener
+    {
+        /**
+         * A monitor has just been created. Can be used to add custom StatValues or
+         * to register StatValue.Listener for all monitors that declare the same category or
+         * subsystem.
+         *
+         * @param monitor
+         */
+        void newMonitorInstance( Monitor monitor );
+    }
+
 }

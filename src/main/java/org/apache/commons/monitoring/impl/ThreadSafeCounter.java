@@ -18,10 +18,15 @@
 package org.apache.commons.monitoring.impl;
 
 import org.apache.commons.monitoring.Counter;
-import org.apache.commons.monitoring.Monitor;
 
-public class SimpleCounter
-    extends SimpleValue
+/**
+ * Thread-safe implementation of <code>Counter</code>, based on
+ * synchronized methods.
+ *
+ * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
+ */
+public class ThreadSafeCounter
+    extends AbstractStatValue
     implements Counter
 {
     private long value;

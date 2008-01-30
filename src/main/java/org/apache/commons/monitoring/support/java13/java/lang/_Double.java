@@ -15,32 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.commons.monitoring;
-
-import java.util.Collection;
+package org.apache.commons.monitoring.support.java13.java.lang;
 
 /**
- * A composite component that delegates to a primary implementation and
- * maintains a set of secondary instances.
- *
- * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
+ * @author <a href="mailto:nicolas.deloof@gmail.com">Nicolas De Loof</a>
  */
-public interface Composite<T>
+public class _Double
 {
-    /**
-     * @return an (unmodifiable) collection of secondary instances
-     */
-    Collection<T> getSecondary();
-
-    /**
-     * Register a secondary instance
-     * @param secondary
-     */
-    public void addSecondary( T secondary );
-
-    /**
-     * Deregister a secondary instance
-     * @param secondary
-     */
-    public void removeSecondary( T secondary );
+    public static Double valueOf( double d )
+    {
+        return new Double( d );
+    }
 }
