@@ -34,15 +34,15 @@ public class CompositeValuesMonitor extends CreateValuesOnDemandMonitor
     }
 
     @Override
-    protected Counter newCounterInstance()
+    protected Counter newCounterInstance( String role )
     {
-        return new CompositeCounter();
+        return new CompositeCounter( role );
     }
 
     @Override
-    protected Gauge newGaugeInstance()
+    protected Gauge newGaugeInstance( String role )
     {
-        return new CompositeGauge();
+        return new CompositeGauge( role );
     }
 
 }

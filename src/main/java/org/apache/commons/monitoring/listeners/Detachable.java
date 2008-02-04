@@ -15,34 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.commons.monitoring;
-
-import java.util.Collection;
+package org.apache.commons.monitoring.listeners;
 
 /**
- * A composite component that delegates to a primary implementation and
- * maintains a set of secondary instances.
- *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public interface Composite<T>
+public interface Detachable
 {
     /**
-     * @return an (unmodifiable) collection of secondary instances
+     * Detach the instance from live monitoring beackbone. Any new monitoring
+     * event will not affect datas in this component.
      */
-    Collection<T> getSecondary();
-
-    /**
-     * Create a secondary instance
-     *
-     * @param secondary
-     */
-    public T createSecondary();
-
-    /**
-     * Deregister a secondary instance
-     *
-     * @param secondary
-     */
-    public void removeSecondary( T secondary );
+    void detach();
 }

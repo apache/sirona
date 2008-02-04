@@ -28,7 +28,7 @@ public class ThreadSafeCounterTest
     public void testValue()
         throws Exception
     {
-        Counter counter = new ThreadSafeCounter();
+        Counter counter = new ThreadSafeCounter( "test" );
 
         counter.set( 1 );
         assertEquals( 1, counter.getMin() );

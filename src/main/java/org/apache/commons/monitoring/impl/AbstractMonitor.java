@@ -17,27 +17,27 @@
 
 package org.apache.commons.monitoring.impl;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import org.apache.commons.monitoring.Counter;
+import org.apache.commons.monitoring.Gauge;
 import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.StatValue;
 
 /**
- * Abstract {@link Monitor} implementation with implementation fo base methods
+ * Abstract {@link Monitor} implementation with implementation for base methods
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public abstract class AbstractMonitor implements Monitor
 {
 
-    protected final ConcurrentMap<String, StatValue> values;
-    protected final Key key;
+    private final ConcurrentMap<String, StatValue> values;
+    private final Key key;
 
-    /**
-     * Constructor
-     * @param key the monitor identifier
-     */
     public AbstractMonitor( Key key )
     {
         super();
@@ -45,11 +45,10 @@ public abstract class AbstractMonitor implements Monitor
         this.values = new ConcurrentHashMap<String, StatValue>();
     }
 
-
     /**
      * {@inheritDoc}
      */
-    public Key getKey()
+    public final Key getKey()
     {
         return key;
     }
@@ -57,23 +56,32 @@ public abstract class AbstractMonitor implements Monitor
     /**
      * {@inheritDoc}
      */
-    public StatValue getValue( String role )
+    public final StatValue getValue( String role )
     {
         return values.get( role );
     }
 
+    public final Collection<String> getRoles()
+    {
+        return Collections.unmodifiableCollection( values.keySet() );
+    }
+
+    public final Collection<StatValue> getValues()
+    {
+        return Collections.unmodifiableCollection( values.values() );
+    }
+
     /**
-     * Register the StatValue for the role, if none was registered before
-     * @param value
-     * @param role
-     * @return the value registered, or a previously existing one
+     * Register a new StatValue in the monitor
+     *
+     * @param value StatValue instance to get registered
+     * @return a previously registered StatValue if existed, or <code>null</code>
+     * if value has been successfully registered
      */
-    public <T extends StatValue> T register( T value, String role )
+    protected <T extends StatValue> T register( T value )
     {
         value.setMonitor( this );
-        value.setRole( role );
-        T previous = (T) values.putIfAbsent( role, value );
-        return previous != null ? previous : value;
+        return (T) values.putIfAbsent( value.getRole(), value );
     }
 
     /**
@@ -85,6 +93,16 @@ public abstract class AbstractMonitor implements Monitor
         {
             value.reset();
         }
+    }
+
+    public Counter getCounter( String role )
+    {
+        return (Counter) getValue( role );
+    }
+
+    public Gauge getGauge( String role )
+    {
+        return (Gauge) getValue( role );
     }
 
 }

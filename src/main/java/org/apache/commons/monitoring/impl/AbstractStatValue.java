@@ -46,6 +46,12 @@ public abstract class AbstractStatValue
 
     private List<Listener> listeners = new CopyOnWriteArrayList<Listener>();
 
+    public AbstractStatValue( String role )
+    {
+        super();
+        this.role = role;
+    }
+
     public void addListener( Listener listener )
     {
         listeners.add( listener );

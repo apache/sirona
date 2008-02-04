@@ -104,7 +104,7 @@ public class StopWatchTest
             super( monitor );
         }
 
-        protected long nanotime()
+        protected long time()
         {
             return time;
         }

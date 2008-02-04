@@ -43,15 +43,17 @@ public class CompositeCounter extends ThreadSafeCounter implements Composite<Cou
         return Collections.unmodifiableCollection( secondary );
     }
 
-    public CompositeCounter()
+    public CompositeCounter( String role )
     {
-        super();
+        super( role );
         this.secondary = new CopyOnWriteArrayList<Counter>();
     }
 
-    public void addSecondary( Counter counter )
+    public Counter createSecondary()
     {
+        Counter counter = new ThreadSafeCounter( getRole() );
         secondary.add( counter );
+        return counter;
     }
 
     public void removeSecondary( Counter counter )

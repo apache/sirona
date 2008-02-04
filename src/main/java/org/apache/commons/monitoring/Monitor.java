@@ -17,6 +17,9 @@
 
 package org.apache.commons.monitoring;
 
+import java.util.Collection;
+
+
 /**
  * A <code>Monitor</code> is an abstraction of some application resource that
  * is instrumented with a set of indicators (Gauges or Counters).
@@ -83,6 +86,18 @@ public interface Monitor
      * @return the StatValue
      */
     StatValue getValue( String role );
+
+    /**
+     *
+     * @return an unmodifiable collection of registered statValues roles
+     */
+    Collection<String> getRoles();
+
+    /**
+     *
+     * @return an unmodifiable collection of registered statValues
+     */
+    Collection<StatValue> getValues();
 
     /**
      * Reset all StatValues (don't remove them)
@@ -205,5 +220,14 @@ public interface Monitor
             return subsystem;
         }
 
+    }
+
+    void addListener( Listener listener );
+
+    void removeListener( Listener listener );
+
+    public static interface Listener
+    {
+        void onStatValueRegistered( StatValue value );
     }
 }

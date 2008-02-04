@@ -43,6 +43,11 @@ public class ThreadSafeGauge
     // Use a double so that unset can be detected as "Not a Number"
     private double firstUse = Double.NaN;
 
+    public ThreadSafeGauge( String role )
+    {
+        super( role );
+    }
+
     public synchronized void reset()
     {
         // Don't reset value !
@@ -100,7 +105,7 @@ public class ThreadSafeGauge
 
     protected void computeSums()
     {
-        long now = nanoTime();
+        long now = time();
         if ( Double.isNaN( firstUse ) )
         {
             firstUse = now;
@@ -115,15 +120,15 @@ public class ThreadSafeGauge
         lastUse = now;
     }
 
-    protected long nanoTime()
+    protected long time()
     {
-        return System.nanoTime();
+        return System.currentTimeMillis();
     }
 
     @Override
     public synchronized double getMean()
     {
-        return ( (double) sum ) / ( nanoTime() - firstUse );
+        return ( (double) sum ) / ( time() - firstUse );
     }
 
     @Override

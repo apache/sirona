@@ -57,7 +57,7 @@ public class StopWatch
     {
         super();
         this.monitor = monitor;
-        startedAt = nanotime();
+        startedAt = time();
         if ( monitor != null )
         {
             monitor.getGauge( Monitor.CONCURRENCY ).increment();
@@ -81,7 +81,7 @@ public class StopWatch
         else
         {
             // Still running !
-            delay = nanotime() - startedAt - pauseDelay;
+            delay = time() - startedAt - pauseDelay;
         }
         return delay;
     }
@@ -94,7 +94,7 @@ public class StopWatch
     {
         if ( !paused && !stoped )
         {
-            stopedAt = nanotime();
+            stopedAt = time();
             paused = true;
         }
     }
@@ -106,7 +106,7 @@ public class StopWatch
     {
         if ( paused && !stoped )
         {
-            pauseDelay = nanotime() - stopedAt;
+            pauseDelay = time() - stopedAt;
             paused = false;
             stopedAt = 0;
         }
@@ -120,7 +120,7 @@ public class StopWatch
     {
         if ( !stoped )
         {
-            long t = nanotime();
+            long t = time();
             if ( paused )
             {
                 pauseDelay = t - stopedAt;
@@ -210,17 +210,16 @@ public class StopWatch
     }
 
     /**
-     * Returns the current value of the most precise available system timer, in
-     * nanoseconds. The real precision depends on the JVM and the underlying
-     * system. On JRE before java5, <tt>backport-util-concurrent</tt> provides
-     * some limited support for equivalent timer.
+     * Simple benchmark demonstrates that java5 System.currentTimeMillis is FAR
+     * quicker than System.nanoTime. The lack of precision for using ms as time
+     * unit is not blocking for a monitoring toolkit (it may be for a profiler)
      *
-     * @see System#nanoTime()
-     * @return time in nanosecond
+     * @return time with ms precision
+     * @see org.apache.commons.monitoring.bench.CurrentTimeMillisVsNanoTime
      */
-    protected long nanotime()
+    protected long time()
     {
-        return System.nanoTime();
+        return System.currentTimeMillis();
     }
 
     /**

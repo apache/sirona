@@ -29,7 +29,7 @@ public class ThreadSafeGaugeTest
     public void testValue()
         throws Exception
     {
-        Gauge gauge = new ThreadSafeGauge();
+        Gauge gauge = new ThreadSafeGauge( "test" );
 
         gauge.set( 1 );
         assertEquals( 1, gauge.getMin() );
@@ -68,7 +68,7 @@ public class ThreadSafeGaugeTest
     public void testCompteMean()
         throws Exception
     {
-        Gauge gauge = new MockTimeGauge();
+        Gauge gauge = new MockTimeGauge( "test" );
 
         time = 0;
         gauge.increment();
@@ -84,11 +84,23 @@ public class ThreadSafeGaugeTest
         assertEquals( 1.5D, gauge.getMean(), 0D );
     }
 
+    /**
+     * A custom ThreadSafeGauge that use a mock nanoTime implementation to make
+     * timing predictable during unit test execution.
+     *
+     * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
+     */
     private class MockTimeGauge
         extends ThreadSafeGauge
     {
+
+        public MockTimeGauge( String role )
+        {
+            super( role );
+        }
+
         @Override
-        protected long nanoTime()
+        protected long time()
         {
             return time;
         }

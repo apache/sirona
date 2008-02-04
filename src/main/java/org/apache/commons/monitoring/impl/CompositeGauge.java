@@ -43,16 +43,19 @@ public class CompositeGauge extends ThreadSafeGauge implements Composite<Gauge>
         return Collections.unmodifiableCollection( secondary );
     }
 
-    public CompositeGauge()
+    public CompositeGauge( String role )
     {
-        super();
+        super( role );
         this.secondary = new LinkedList<Gauge>();
     }
 
-    public synchronized void addSecondary( Gauge gauge )
+    public synchronized Gauge createSecondary()
     {
+        // Must be synchronized to ensure the new gauge shares the primary initial value
+        Gauge gauge = new ThreadSafeGauge( getRole() );
         gauge.set( get() );
         secondary.add( gauge );
+        return gauge;
     }
 
     public synchronized void removeSecondary( Gauge gauge )

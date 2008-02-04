@@ -29,11 +29,17 @@ public class ThreadSafeCounter
     extends AbstractStatValue
     implements Counter
 {
+
     private long value;
 
     private long sum;
 
     private long sumOfSquares;
+
+    public ThreadSafeCounter( String role )
+    {
+        super( role );
+    }
 
     /**
      * {@inheritDoc}

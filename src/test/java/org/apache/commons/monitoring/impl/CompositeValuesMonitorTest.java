@@ -51,14 +51,14 @@ public class CompositeValuesMonitorTest
     {
         Monitor monitor = new CompositeValuesMonitor( new Monitor.Key( "MonitorTest.testComposite", "test", "utils" ) );
         Counter counter = monitor.getCounter( "COUNTER" );
-        Counter secondary = new ThreadSafeCounter();
         Composite<Counter> composite = (Composite<Counter>) counter;
 
         counter.add( 1 );
         assertEquals( 1, counter.get() );
+
+        Counter secondary = composite.createSecondary();
         assertEquals( 0, secondary.get() );
 
-        composite.addSecondary( secondary );
         counter.add( 1 );
         assertEquals( 2, counter.get() );
         assertEquals( 1, secondary.get() );
@@ -78,14 +78,13 @@ public class CompositeValuesMonitorTest
     {
         Monitor monitor = new CompositeValuesMonitor( new Monitor.Key( "MonitorTest.testComposite", "test", "utils" ) );
         Gauge gauge = monitor.getGauge( "GAUGE" );
-        Gauge secondary = new ThreadSafeGauge();
         Composite<Gauge> composite = (Composite<Gauge>) gauge;
 
         gauge.increment();
         assertEquals( 1, gauge.get() );
+        Gauge secondary = composite.createSecondary();
         assertEquals( 0, secondary.get() );
 
-        composite.addSecondary( secondary );
         gauge.increment();
         assertEquals( 2, gauge.get() );
         assertEquals( 2, secondary.get() );

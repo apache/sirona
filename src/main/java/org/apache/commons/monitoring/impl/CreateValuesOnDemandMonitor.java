@@ -28,7 +28,7 @@ import org.apache.commons.monitoring.Gauge;
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public class CreateValuesOnDemandMonitor
-    extends AbstractMonitor
+    extends ListenableMonitor
 {
 
     public CreateValuesOnDemandMonitor( Key key )
@@ -39,6 +39,7 @@ public class CreateValuesOnDemandMonitor
     /**
      * Retrieve a Counter or create a new one for the role
      */
+    @Override
     public Counter getCounter( String role )
     {
         Counter counter = (Counter) getValue( role );
@@ -46,20 +47,24 @@ public class CreateValuesOnDemandMonitor
         {
             return counter;
         }
-        return register( newCounterInstance(), role );
+        counter = newCounterInstance( role );
+        Counter previous = register( counter );
+        return previous != null ? previous : counter;
     }
 
     /**
      * Create a new Counter instance
      */
-    protected Counter newCounterInstance()
+    protected Counter newCounterInstance( String role )
     {
-        return new ThreadSafeCounter();
+        return new ThreadSafeCounter( role );
+
     }
 
     /**
      * Retrieve a Gauge or create a new one for the role
      */
+    @Override
     public Gauge getGauge( String role )
     {
         Gauge gauge = (Gauge) getValue( role );
@@ -67,15 +72,17 @@ public class CreateValuesOnDemandMonitor
         {
             return gauge;
         }
-        return register( newGaugeInstance(), role );
+        gauge = newGaugeInstance( role );
+        Gauge previous = register( gauge );
+        return previous != null ? previous : gauge;
     }
 
     /**
      * Create a new Gauge instance
      */
-    protected Gauge newGaugeInstance()
+    protected Gauge newGaugeInstance( String role )
     {
-        return new ThreadSafeGauge();
+        return  new ThreadSafeGauge( role );
     }
 
 }
