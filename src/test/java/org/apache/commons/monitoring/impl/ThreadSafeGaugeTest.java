@@ -100,7 +100,7 @@ public class ThreadSafeGaugeTest
         }
 
         @Override
-        protected long time()
+        protected long nanotime()
         {
             return time;
         }

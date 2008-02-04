@@ -83,7 +83,7 @@ public class CompositeValuesMonitorTest
         gauge.increment();
         assertEquals( 1, gauge.get() );
         Gauge secondary = composite.createSecondary();
-        assertEquals( 0, secondary.get() );
+        assertEquals( 1, secondary.get() );
 
         gauge.increment();
         assertEquals( 2, gauge.get() );

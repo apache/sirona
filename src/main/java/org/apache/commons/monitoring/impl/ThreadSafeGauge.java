@@ -105,7 +105,7 @@ public class ThreadSafeGauge
 
     protected void computeSums()
     {
-        long now = time();
+        long now = nanotime();
         if ( Double.isNaN( firstUse ) )
         {
             firstUse = now;
@@ -120,15 +120,15 @@ public class ThreadSafeGauge
         lastUse = now;
     }
 
-    protected long time()
+    protected long nanotime()
     {
-        return System.currentTimeMillis();
+        return System.nanoTime();
     }
 
     @Override
     public synchronized double getMean()
     {
-        return ( (double) sum ) / ( time() - firstUse );
+        return ( (double) sum ) / ( nanotime() - firstUse );
     }
 
     @Override
