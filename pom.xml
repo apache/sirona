@@ -32,6 +32,9 @@
   <name>Commons Monitoring (Sandbox)</name>
   <url>http://commons.apache.org/sandbox/monitoring/</url>
   <inceptionYear>2008</inceptionYear>
+  <description>
+    Monitoring provides a simple, lightweight toolkit to instrument java application monitoring capabilities, including performances and thread concurrency.
+  </description>
 
   <dependencies>
     <dependency>
