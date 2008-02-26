@@ -20,6 +20,8 @@ package org.apache.commons.monitoring;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.monitoring.impl.DefaultStopWatch;
+
 /**
  * Sometime we need to compare elapsed time from a high level process with fine-grained
  * sub-processes to find bottlenecks or errors. The <code>ExecutionStack</code> allows
@@ -41,9 +43,9 @@ public class ExecutionStack
         super();
     }
 
-    private static ThreadLocal<List<StopWatch>> local = new ThreadLocal<List<StopWatch>>();
+    private static ThreadLocal<List<DefaultStopWatch>> local = new ThreadLocal<List<DefaultStopWatch>>();
 
-    public static void push( StopWatch stopWatch )
+    public static void push( DefaultStopWatch stopWatch )
     {
         getExecution().add( stopWatch );
     }
@@ -89,12 +91,12 @@ public class ExecutionStack
     /**
      * @return the ordered list of StopWatches used during execution
      */
-    public static List<StopWatch> getExecution()
+    public static List<DefaultStopWatch> getExecution()
     {
-        List<StopWatch> exec = local.get();
+        List<DefaultStopWatch> exec = local.get();
         if (exec == null)
         {
-            exec = new LinkedList<StopWatch>();
+            exec = new LinkedList<DefaultStopWatch>();
             local.set( exec );
         }
         return local.get();

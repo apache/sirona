@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0"?>
 <!--
  Licensed to the Apache Software Foundation (ASF) under one or more
  contributor license agreements.  See the NOTICE file distributed with
@@ -15,27 +15,20 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<project name="Monitoring">
 
-  <bannerRight>
-    <name>Commons Monitoring</name>
-    <src>/images/monitoring-logo-white.png</src>
-    <href>/index.html</href>
-  </bannerRight>
+<document>
+
+<properties>
+    <title>Repporting</title>
+  </properties>
 
   <body>
-    <menu name="Monitoring">
-      <item name="Overview"            href="/index.html"/>
-      <item name="Proposal"            href="/PROPOSAL.html"/>
-      <item name="Wiki"                href="http://wiki.apache.org/commons/Monitoring"/>
-    </menu>
-    <menu name="User Guide">
-      <item name="Quick Tutorial"      href="/tutorial.html"/>
-      <item name="Instrumentation"     href="/instrumentation.html"/>
-      <item name="Listeners"           href="/listeners.html"/>
-      <item name="Reporting"           href="/reporting.html"/>
-    </menu>
+    <section name="Repporting">
+      <p>
+      TODO ...
+      </p>
+    </section>
 
   </body>
 
-</project>
+</document>

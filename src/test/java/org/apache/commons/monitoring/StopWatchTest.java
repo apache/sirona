@@ -17,6 +17,8 @@
 
 package org.apache.commons.monitoring;
 
+import org.apache.commons.monitoring.impl.DefaultStopWatch;
+
 import junit.framework.TestCase;
 
 /**
@@ -96,8 +98,9 @@ public class StopWatchTest
         assertTrue( stopWatch.isStoped() );
     }
 
+
     private class MockTimeWatch
-        extends StopWatch
+        extends DefaultStopWatch
     {
         public MockTimeWatch( Monitor monitor )
         {

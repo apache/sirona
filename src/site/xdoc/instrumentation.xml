@@ -1,0 +1,181 @@
+<?xml version="1.0"?>
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one or more
+ contributor license agreements.  See the NOTICE file distributed with
+ this work for additional information regarding copyright ownership.
+ The ASF licenses this file to You under the Apache License, Version 2.0
+ (the "License"); you may not use this file except in compliance with
+ the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<document>
+
+<properties>
+    <title>Instrumentation of the monitored application</title>
+  </properties>
+
+  <body>
+
+    <section name="Introduction">
+      <p>
+        Before anything can be reported, the application have to expose it's state to the monitoring
+        infrastructure. In Commons Monitoring vocabulary this is called <b>instrumentation</b> of the
+        application. Commons Monitoring defines a simple lightweight API for this purpose.
+      </p>
+    </section>
+
+    <section name="Concepts">
+      <subsection name="Monitors">
+      <p>
+        The application exposes it's state based on <b>monitors</b>. A monitor is an abstraction for any
+        element in the application that can expose state or resource consumption. It is identified by :
+        <ul>
+            <li>a <b>name</b> that is the human readable representation of the exposed state</li>
+            <li>a <b>category</b> that matches technical layering of the application
+            ("web", "model", "dao"...)</li>
+            <li>a <b>subsystem</b> that associate the monitor to a functional subsystem in the application
+            ("admin", "accounts management" ...)</li>
+        </ul>
+      </p>
+      <p>
+
+        Only the name is required, but category and subsystem is a nice way to group monitors by technical
+        or functional criteria.
+      </p>
+      </subsection>
+      <subsection name="Repository">
+      <p>
+        Monitors are registered in a repository, that ensure a monitor is unique for a name/category/subsytem
+        Key. The repository is used to retrieve existing monitors and create new ones. The default repository
+        implementation <code>org.apache.commons.monitoring.impl.DefaultRepository</code> creates new Monitor
+        instance when a non-existing one is requested, so you don't have to worry about monitors management.
+        <pre>
+            Monitor monitor = repository.getMonitor( "MyService.myMethod" );
+            Monitor monitor = repository.getMonitor( "SoapEndpoint.process", "soap" );
+            Monitor monitor = repository.getMonitor( "/admin/userEdit.do", "struts", "user management" );
+        </pre>
+      </p>
+      </subsection>
+      <subsection name="Counters and Gauges">
+      <p>
+        Monitors manage a set of <code>StatValues</code> that the application uses to expose state.
+        There is two types of values that application can use, depending on the data to be exposed :
+        <ul>
+          <li>a <b>Counter</b> is used to expose cumulative events. The value a counter maintains
+            will grow during the application life :  time elapsed by some code to execute, number of bytes or
+            lines proceeded by a batch process, number of requests on a web URI...
+            <br/>
+            A counter is used by application using the <code>add()</code> method
+            to expose how the counter must increment when some operation have proceeded.
+          </li>
+          <li>a <b>Gauge</b> is used to expose an internal state that increases and decreases
+            during application life : concurrent threads, open connections, active users...
+            <br/>
+            A gauge is used by the application using the <code>incremenet()</code> and <code>decrement()</code>
+            methods to expose the application state changes. The <code>set()</code> method can also be used to
+            force an initial value or to expose an absolute value when the application does not compute it's state
+            as a change from a previous value. Typically, a <code>connectionManager</code> component will use
+            increment/decrement to expose active connections, and a <code>fileSystemMonitor</code> will use
+            set to expose free space on disks.
+          </li>
+        </ul>
+      </p>
+      <p>
+        In both cases, the statValues compute statistical information from what the application exposes, like
+        min / max / mean and standardDeviation, that in many case is more informative than the current value.
+      </p>
+      <p>
+        The statValues are identified in a monitor by a role. There is predefined roles for performances and
+        concurrency monitoring, and any other relevant counter/gauge can be registered to a monitor. The default
+        <code>org.apache.commons.monitoring.impl.CreateValuesOnDemandMonitor</code> monitor implementation will
+        create the required Gauge/Counters implementation when a statValue is requested by the application.
+        <pre>
+            Monitor monitor = repository.getMonitor( "SoapEndpoint.process", "soap" );
+
+            // Process a SOAP message
+
+            // retrieve the custom Counter for the "byte" role
+            monitor.getCounter( "bytes" ).add( SOAPMessage.getSize() );
+        </pre>
+      </p>
+      </subsection>
+      <subsection name="StopWatches">
+      <p>Performance monitoring is first-class use case of Commons Monitoring. The
+        <code>org.apache.commons.monitoring.StopWatch</code> class provides the necessary tooling
+        to compute and monitor code or service invocation performances. A StopWatch is created
+        by the repository for a monitor. The stopwatch is initialy "started", and will compute
+        elapsed time until it is stopped by the application. The application MUST ALLWAYS stop
+        the StopWatches it has created ! To ensure this, always use a finally block :
+        <pre>
+            StopWatch stopWatch = repository.start( myMonitor );
+            try
+            {
+                // Do something that takes time and requires monitoring
+            }
+            finally
+            {
+                stopWatch.stop();
+            }
+        </pre>
+      </p>
+      <p>
+        You can nest stopWatches, in many case by monitoring some high-level process (for example web
+        request rendering time) and nested low-level service (remote service invocation, JDBC request...).
+        The StopWatch provides two methods for executed code performance :
+        <ul>
+            <li><code>getElapsedTime()</code> returns the time (in ns) elapsed between the stopWatch creation
+            and the moment it was stopped, including any other sub-process</li>
+            <li><code>getRunningTime()</code> returns same time MINUS time elapsed in StopWatches that
+            monitor sub-processes.</li>
+        </ul>
+        The monitor maintains statistics about those informations as the PERFORMANCE and RESPONSE_TIME
+        counters. First one only computes performance of the target code, not sub-processes.
+      </p>
+      <p>
+        The default StopWatch implementation (<code>org.apache.commons.monitoring.impl.DefaultStopWatch.java</code>)
+        can optionally maintain the List of StopWatches involved in the current thread processing via the
+        <code>ExecutionStack</code>. To enable this feature, invoke <code>DefaultStopWatch.setTraceExecution()</code>
+        at application startup.
+      </p>
+      </subsection>
+    </section>
+
+    <section name="Helpers">
+      <p>
+        The <b>Monitoring</b> class is a convenience utility class to make application instrumentation
+        as simple as possible. To monitor application performance, simply do :
+        <pre>
+        public void myMethodToGetMonitored()
+        {
+            StopWatch stopWatch = Monitoring.start( "MyClass.myMethod" );
+            try
+            {
+                // Do something that takes time and requires monitoring
+            }
+            finally
+            {
+                stopWatch.stop();
+            }
+        }
+        </pre>
+        The StopWatch class will compute the time elapsed during code execution and report it to the
+        monitor "MyClass.myMethod".
+      </p>
+      <p>
+        Other helper classes are provided for simplier use with commons frameworks. The
+        <code>org.apache.commons.monitoring.aop</code> package contains for example classes for use with
+        AOP frameworks to automagically instrument application components.
+      </p>
+    </section>
+
+  </body>
+
+</document>

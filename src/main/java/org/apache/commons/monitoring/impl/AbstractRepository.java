@@ -27,6 +27,7 @@ import java.util.concurrent.ConcurrentMap;
 
 import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.Repository;
+import org.apache.commons.monitoring.StopWatch;
 import org.apache.commons.monitoring.Monitor.Key;
 
 /**
@@ -134,6 +135,16 @@ public abstract class AbstractRepository
         {
             monitor.reset();
         }
+    }
+
+
+    /**
+     * {@inheritDoc}
+     * @see org.apache.commons.monitoring.Repository#start(org.apache.commons.monitoring.Monitor)
+     */
+    public StopWatch start( Monitor monitor )
+    {
+        return new DefaultStopWatch( monitor );
     }
 
 }

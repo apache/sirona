@@ -65,4 +65,5 @@ public class DefaultRepository extends AbstractRepository
     {
         return new CompositeValuesMonitor( key );
     }
+
 }

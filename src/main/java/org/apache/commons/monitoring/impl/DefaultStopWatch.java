@@ -15,15 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.commons.monitoring;
+package org.apache.commons.monitoring.impl;
+
+import java.util.Stack;
+
+import org.apache.commons.monitoring.ExecutionStack;
+import org.apache.commons.monitoring.Monitor;
+import org.apache.commons.monitoring.StopWatch;
 
 /**
  * Estimates the time required for process execution (monitored method, service
- * invocation, database request...)
+ * invocation, database request...).
+ * <p>
+ * The StopWatch maintains a threadLocal stack of active StopWatches. When a new
+ * StopWatch is created by a sub-process, it automatically pause the "parent"
+ * running StopWatch, so that the top-level elapsed time = Sum( all StopWatches
+ * running times ).
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public class StopWatch
+public class DefaultStopWatch implements StopWatch
 {
     /** Time the probe was started */
     private final long startedAt;
@@ -43,7 +54,9 @@ public class StopWatch
     /** Monitor that is notified of process execution state */
     private final Monitor monitor;
 
-    private static boolean useExecutionStack;
+    private static boolean traceExecution;
+
+    private static final ThreadLocal<Stack<DefaultStopWatch>> STACK = new ThreadLocal<Stack<DefaultStopWatch>>();
 
     /**
      * Constructor.
@@ -53,7 +66,7 @@ public class StopWatch
      *
      * @param monitor the monitor associated with the process to be monitored
      */
-    public StopWatch( Monitor monitor )
+    public DefaultStopWatch( Monitor monitor )
     {
         super();
         this.monitor = monitor;
@@ -62,33 +75,64 @@ public class StopWatch
         {
             monitor.getGauge( Monitor.CONCURRENCY ).increment();
         }
-        if ( useExecutionStack )
+        push();
+        if ( traceExecution )
         {
             ExecutionStack.push( this );
         }
     }
 
+    private void push()
+    {
+        Stack<DefaultStopWatch> stack = getStack();
+        if ( !stack.empty() )
+        {
+            stack.peek().pause();
+        }
+        stack.push( this );
+    }
+
+    private void pop()
+    {
+        Stack<DefaultStopWatch> stack = getStack();
+        stack.pop();
+        if ( !stack.empty() )
+        {
+            stack.peek().resume();
+        }
+    }
+
+    private Stack<DefaultStopWatch> getStack()
+    {
+        Stack<DefaultStopWatch> stack = STACK.get();
+        if ( stack == null )
+        {
+            stack = new Stack<DefaultStopWatch>();
+            STACK.set( stack );
+        }
+        return stack;
+    }
+
     /**
-     * @return Elapsed time (in nanoseconds) for the monitored process
+     * {@inheritDoc}
+     * @see org.apache.commons.monitoring.StopWatch#getElapsedTime()
      */
     public long getElapsedTime()
     {
-        long delay;
         if ( stoped || paused )
         {
-            delay = stopedAt - startedAt - pauseDelay;
+            return stopedAt - startedAt - pauseDelay;
         }
         else
         {
             // Still running !
-            delay = nanotime() - startedAt - pauseDelay;
+            return nanotime() - startedAt - pauseDelay;
         }
-        return delay;
     }
 
     /**
-     * Temporary stop the StopWatch. Elapsed time calculation will not include
-     * time spent in paused mode.
+     * {@inheritDoc}
+     * @see org.apache.commons.monitoring.StopWatch#pause()
      */
     public void pause()
     {
@@ -100,7 +144,8 @@ public class StopWatch
     }
 
     /**
-     * Resume the StopWatch after a pause.
+     * {@inheritDoc}
+     * @see org.apache.commons.monitoring.StopWatch#resume()
      */
     public void resume()
     {
@@ -113,8 +158,8 @@ public class StopWatch
     }
 
     /**
-     * Stop monitoring the process. A StopWatch created with
-     * {@link #start(Monitor)} cannot be re-used after stopped has been called.
+     * {@inheritDoc}
+     * @see org.apache.commons.monitoring.StopWatch#stop()
      */
     public void stop()
     {
@@ -132,19 +177,17 @@ public class StopWatch
                 monitor.getGauge( Monitor.CONCURRENCY ).decrement();
                 monitor.getCounter( Monitor.PERFORMANCES ).add( getElapsedTime() );
             }
+            pop();
         }
-        if ( useExecutionStack && ExecutionStack.isFinished() )
+        if ( traceExecution && ExecutionStack.isFinished() )
         {
             ExecutionStack.clear();
         }
     }
 
     /**
-     * Convenience method to stop or cancel a Stopwatch depending on success of
-     * monitored operation
-     *
-     * @param canceled
-     * @return time elapsed since the probe has been started
+     * {@inheritDoc}
+     * @see org.apache.commons.monitoring.StopWatch#stop(boolean)
      */
     public void stop( boolean canceled )
     {
@@ -159,17 +202,8 @@ public class StopWatch
     }
 
     /**
-     * Cancel monitoring. Elapsed time will not be computed and will not be
-     * published to the monitor.
-     * <p>
-     * In some circumstances you want to monitor time elapsed from early stage
-     * of computation, and discover latter if the computed data is relevant. For
-     * example, monitoring a messaging system, but beeing interested only by
-     * some types of messages. In such case, a StopWatch can be started early
-     * and canceled when the application is able to determine it's relevancy.
-     * <p>
-     * In any way, the probe will still report thread concurrency even if
-     * canceled.
+     * {@inheritDoc}
+     * @see org.apache.commons.monitoring.StopWatch#cancel()
      */
     public void cancel()
     {
@@ -180,8 +214,9 @@ public class StopWatch
             {
                 monitor.getGauge( Monitor.CONCURRENCY ).decrement();
             }
+            pop();
         }
-        if ( useExecutionStack && ExecutionStack.isFinished() )
+        if ( traceExecution && ExecutionStack.isFinished() )
         {
             ExecutionStack.clear();
         }
@@ -224,7 +259,8 @@ public class StopWatch
     }
 
     /**
-     * @return <code>true</code> if the StopWatch has been stopped
+     * {@inheritDoc}
+     * @see org.apache.commons.monitoring.StopWatch#isStoped()
      */
     public boolean isStoped()
     {
@@ -232,7 +268,8 @@ public class StopWatch
     }
 
     /**
-     * @return <code>true</code> if the StopWatch has been paused
+     * {@inheritDoc}
+     * @see org.apache.commons.monitoring.StopWatch#isPaused()
      */
     public boolean isPaused()
     {
@@ -264,13 +301,22 @@ public class StopWatch
     }
 
     /**
+     * {@inheritDoc}
+     * @see org.apache.commons.monitoring.StopWatch#getMonitor()
+     */
+    public Monitor getMonitor()
+    {
+        return monitor;
+    }
+
+    /**
      * Enable automatic registration to the ExecutionStack and cleanup after the
      * last stopWatch has been stopped.
      *
-     * @param useExecutionStack
+     * @param traceExecution
      */
-    public static void setUseExecutionStack( boolean useExecutionStack )
+    public static void setTraceExecution( boolean traceExecution )
     {
-        StopWatch.useExecutionStack = useExecutionStack;
+        DefaultStopWatch.traceExecution = traceExecution;
     }
 }

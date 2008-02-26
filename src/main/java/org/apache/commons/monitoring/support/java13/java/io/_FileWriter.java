@@ -15,39 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.commons.monitoring;
+package org.apache.commons.monitoring.support.java13.java.io;
 
-import org.apache.commons.monitoring.impl.DefaultStopWatch;
-
-import junit.framework.TestCase;
+import java.io.File;
 
 /**
- *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public class ExecutionStackTest
-    extends TestCase
+public class _FileWriter
 {
-    public void testExcution()
-        throws Exception
+    public static Object[] convertConstructorArguments( File file, boolean append )
     {
-        DefaultStopWatch s1 = new DefaultStopWatch( null );
-        ExecutionStack.push( s1 );
-        DefaultStopWatch s2 = new DefaultStopWatch( null );
-        ExecutionStack.push( s2 );
-        DefaultStopWatch s3 = new DefaultStopWatch( null );
-        ExecutionStack.push( s3 );
-
-        ExecutionStack.pause();
-        assertTrue( s1.isPaused() );
-        assertTrue( s2.isPaused() );
-        assertTrue( s3.isPaused() );
-
-        ExecutionStack.resume();
-        assertTrue( ! s1.isPaused() );
-        assertTrue( ! s2.isPaused() );
-        assertTrue( ! s3.isPaused() );
-
-        ExecutionStack.clear();
+        return new Object[] { file.getAbsolutePath(), append };
     }
 }

@@ -52,7 +52,7 @@ import java.util.Collection;
  */
 public interface Monitor
 {
-    /** default role key for execution performances */
+    /** default role key for code performances */
     String PERFORMANCES = "performances";
 
     /** default role for multi-thread concurrency */

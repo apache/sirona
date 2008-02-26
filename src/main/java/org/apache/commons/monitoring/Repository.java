@@ -77,6 +77,13 @@ public interface Repository
     void removeListener( Listener listener );
 
     /**
+     * Start a StopWatch to monitor execution
+     * @param monitor the monitor associated with the process
+     * @return a running StopWatch
+     */
+    StopWatch start( Monitor monitor );
+
+    /**
      * Listener interface to get notified on repository events
      *
      * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>

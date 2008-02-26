@@ -18,6 +18,7 @@
 package org.apache.commons.monitoring;
 
 import org.apache.commons.monitoring.impl.DefaultRepository;
+import org.apache.commons.monitoring.impl.DefaultStopWatch;
 
 /**
  * Utility class for simpified application instrumentation
@@ -60,7 +61,7 @@ public final class Monitoring
 
     public static StopWatch start( String name, String category, String subsystem )
     {
-        return new StopWatch( getMonitor( name, category, subsystem ) );
+        return repository.start( getMonitor( name, category, subsystem ) );
     }
 
     public static void setRepository( Repository repository )
