@@ -20,8 +20,6 @@ package org.apache.commons.monitoring;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.monitoring.StopWatch;
-
 /**
  * Sometime we need to compare elapsed time from a high level process with fine-grained
  * sub-processes to find bottlenecks or errors. The <code>ExecutionStack</code> allows

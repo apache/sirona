@@ -85,7 +85,7 @@ public abstract class AbstractPeriodicLogger
         }
         catch (Exception exception)
         {
-            // catch any exception, as throwing it will stop the time
+            // catch any exception, as throwing it will stop the timer
         }
     }
 

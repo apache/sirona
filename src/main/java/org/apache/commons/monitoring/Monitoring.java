@@ -18,7 +18,6 @@
 package org.apache.commons.monitoring;
 
 import org.apache.commons.monitoring.impl.repositories.DefaultRepository;
-import org.apache.commons.monitoring.StopWatch;
 
 /**
  * Utility class for simpified application instrumentation

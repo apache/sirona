@@ -19,7 +19,6 @@ package org.apache.commons.monitoring;
 
 import junit.framework.TestCase;
 
-import org.apache.commons.monitoring.impl.stopwatches.DefaultStopWatch;
 import org.apache.commons.monitoring.impl.stopwatches.ExecutionStopWatch;
 
 /**
