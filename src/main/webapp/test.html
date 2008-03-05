@@ -1,0 +1,90 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<link rel='stylesheet' type='text/css' href='/monitoring/monitoring/resources/commons-monitoring.css' />
+<script type="text/javascript" src="/monitoring/monitoring/resources/jquery-1.2.3.pack.js"></script>
+<script type="text/javascript" src="/monitoring/monitoring/resources/jquery.tablesorter.pack.js"></script>
+<script type="text/javascript" src="/monitoring/monitoring/resources/commons-monitoring.js"></script>
+</head>
+<body>
+<table cellspacing="1" id="monitoring">
+  <thead>
+    <tr>
+      <th rowspan='2'>name</th>
+      <th rowspan='2'>category</th>
+      <th rowspan='2'>subsystem</th>
+      <td colspan='5'>concurrency</td>
+      <td colspan='7'>performances (ns)</td>
+    </tr>
+    <tr>
+      <th>value</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>dev.</th>
+      <th>value</th>
+      <th>min</th>
+      <th>max</th>
+      <th>mean</th>
+      <th>dev.</th>
+      <th>sum</th>
+      <th>hits</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>JsonRendererTest.setUp</td>
+      <td>test</td>
+      <td>reporting</td>
+      <td title='concurrency'>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td title='performances'>10</td>
+      <td>10</td>
+      <td>10</td>
+      <td>10.0</td>
+      <td>NaN</td>
+      <td>10</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>JsonRendererTest.setDown</td>
+      <td>test</td>
+      <td>reporting</td>
+      <td title='concurrency'>5</td>
+      <td>5</td>
+      <td>5</td>
+      <td>5</td>
+      <td>5</td>
+      <td title='performances'>5</td>
+      <td>1</td>
+      <td>2</td>
+      <td>30.0</td>
+      <td>NaN</td>
+      <td>12</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <td>TestCase</td>
+      <td>test</td>
+      <td>junit</td>
+      <td title='concurrency'>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0.0</td>
+      <td>NaN</td>
+      <td title='performances'>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+</body>
+</html>

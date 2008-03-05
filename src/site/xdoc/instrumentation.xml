@@ -55,13 +55,16 @@
       <p>
         Monitors are registered in a repository, that ensure a monitor is unique for a name/category/subsytem
         Key. The repository is used to retrieve existing monitors and create new ones. The default repository
-        implementation <code>org.apache.commons.monitoring.impl.DefaultRepository</code> creates new Monitor
-        instance when a non-existing one is requested, so you don't have to worry about monitors management.
+        implementation <code>org.apache.commons.monitoring.impl.repositories.DefaultRepository</code> creates new
+        Monitor instance when a non-existing one is requested, so you don't have to worry about monitors management.
         <pre>
             Monitor monitor = repository.getMonitor( "MyService.myMethod" );
             Monitor monitor = repository.getMonitor( "SoapEndpoint.process", "soap" );
             Monitor monitor = repository.getMonitor( "/admin/userEdit.do", "struts", "user management" );
         </pre>
+        You may use a custom repository by extending one of the provided implementations. You can also
+        use the <code>ConfigurableImplementationsRepository</code> implementation, when you only want to configure
+        custom implementation classes for StopWatches and Monitors.
       </p>
       </subsection>
       <subsection name="Counters and Gauges">

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.commons.monitoring.impl;
+package org.apache.commons.monitoring.impl.repositories;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -27,11 +27,11 @@ import java.util.concurrent.ConcurrentMap;
 
 import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.Repository;
-import org.apache.commons.monitoring.StopWatch;
 import org.apache.commons.monitoring.Monitor.Key;
 
 /**
- * Abstract implementation of {@link Repository} with support for base methods
+ * Abstract implementation of {@link Repository} with support for base methods.
+ * <p>
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
@@ -43,6 +43,7 @@ public abstract class AbstractRepository
     public AbstractRepository()
     {
         super();
+        // register default implementation.
         this.monitors = new ConcurrentHashMap<Monitor.Key, Monitor>( 50 );
     }
 
@@ -135,16 +136,6 @@ public abstract class AbstractRepository
         {
             monitor.reset();
         }
-    }
-
-
-    /**
-     * {@inheritDoc}
-     * @see org.apache.commons.monitoring.Repository#start(org.apache.commons.monitoring.Monitor)
-     */
-    public StopWatch start( Monitor monitor )
-    {
-        return new DefaultStopWatch( monitor );
     }
 
 }

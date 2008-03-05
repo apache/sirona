@@ -15,22 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.commons.monitoring.impl;
+package org.apache.commons.monitoring.impl.stopwatches;
 
-import java.util.Stack;
-
-import org.apache.commons.monitoring.ExecutionStack;
 import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.StopWatch;
 
 /**
  * Estimates the time required for process execution (monitored method, service
  * invocation, database request...).
- * <p>
- * The StopWatch maintains a threadLocal stack of active StopWatches. When a new
- * StopWatch is created by a sub-process, it automatically pause the "parent"
- * running StopWatch, so that the top-level elapsed time = Sum( all StopWatches
- * running times ).
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
@@ -54,10 +46,6 @@ public class DefaultStopWatch implements StopWatch
     /** Monitor that is notified of process execution state */
     private final Monitor monitor;
 
-    private static boolean traceExecution;
-
-    private static final ThreadLocal<Stack<DefaultStopWatch>> STACK = new ThreadLocal<Stack<DefaultStopWatch>>();
-
     /**
      * Constructor.
      * <p>
@@ -75,42 +63,6 @@ public class DefaultStopWatch implements StopWatch
         {
             monitor.getGauge( Monitor.CONCURRENCY ).increment();
         }
-        push();
-        if ( traceExecution )
-        {
-            ExecutionStack.push( this );
-        }
-    }
-
-    private void push()
-    {
-        Stack<DefaultStopWatch> stack = getStack();
-        if ( !stack.empty() )
-        {
-            stack.peek().pause();
-        }
-        stack.push( this );
-    }
-
-    private void pop()
-    {
-        Stack<DefaultStopWatch> stack = getStack();
-        stack.pop();
-        if ( !stack.empty() )
-        {
-            stack.peek().resume();
-        }
-    }
-
-    private Stack<DefaultStopWatch> getStack()
-    {
-        Stack<DefaultStopWatch> stack = STACK.get();
-        if ( stack == null )
-        {
-            stack = new Stack<DefaultStopWatch>();
-            STACK.set( stack );
-        }
-        return stack;
     }
 
     /**
@@ -177,11 +129,6 @@ public class DefaultStopWatch implements StopWatch
                 monitor.getGauge( Monitor.CONCURRENCY ).decrement();
                 monitor.getCounter( Monitor.PERFORMANCES ).add( getElapsedTime() );
             }
-            pop();
-        }
-        if ( traceExecution && ExecutionStack.isFinished() )
-        {
-            ExecutionStack.clear();
         }
     }
 
@@ -214,11 +161,6 @@ public class DefaultStopWatch implements StopWatch
             {
                 monitor.getGauge( Monitor.CONCURRENCY ).decrement();
             }
-            pop();
-        }
-        if ( traceExecution && ExecutionStack.isFinished() )
-        {
-            ExecutionStack.clear();
         }
     }
 
@@ -228,7 +170,7 @@ public class DefaultStopWatch implements StopWatch
      * Monitored application should use a <code>try/finally</code> block to
      * ensure on of {@link #stop()} or {@link #cancel()} method is invoked, even
      * when an exception occurs. To avoid StopWatches to keep running if the
-     * application didn't follow this recommandation, the finalizer is used to
+     * application didn't follow this recommendation, the finalizer is used to
      * cancel the StopWatch and will log a educational warning.
      *
      * @see java.lang.Object#finalize()
@@ -307,16 +249,5 @@ public class DefaultStopWatch implements StopWatch
     public Monitor getMonitor()
     {
         return monitor;
-    }
-
-    /**
-     * Enable automatic registration to the ExecutionStack and cleanup after the
-     * last stopWatch has been stopped.
-     *
-     * @param traceExecution
-     */
-    public static void setTraceExecution( boolean traceExecution )
-    {
-        DefaultStopWatch.traceExecution = traceExecution;
     }
 }

@@ -65,16 +65,6 @@ public interface Repository
      */
     void reset();
 
-    /**
-     * @param listener listener to get registered
-     */
-    void addListener( Listener listener );
-
-    /**
-     *
-     * @param listener listener to get deregistered
-     */
-    void removeListener( Listener listener );
 
     /**
      * Start a StopWatch to monitor execution
@@ -85,10 +75,8 @@ public interface Repository
 
     /**
      * Listener interface to get notified on repository events
-     *
-     * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
      */
-    static interface Listener
+    public static interface Listener
     {
         /**
          * A monitor has just been created. Can be used to add custom StatValues or
@@ -98,6 +86,23 @@ public interface Repository
          * @param monitor
          */
         void newMonitorInstance( Monitor monitor );
+    }
+
+    /**
+     * Repository that accepts Listeners and notify them on repository events
+     */
+    public static interface Observable extends Repository
+    {
+
+        /**
+         * @param listener listener to get registered
+         */
+        void addListener( Listener listener );
+
+        /**
+         * @param listener listener to get removed
+         */
+        void removeListener( Listener listener );
     }
 
 }

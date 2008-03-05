@@ -20,7 +20,7 @@ package org.apache.commons.monitoring;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.monitoring.impl.DefaultStopWatch;
+import org.apache.commons.monitoring.StopWatch;
 
 /**
  * Sometime we need to compare elapsed time from a high level process with fine-grained
@@ -43,33 +43,11 @@ public class ExecutionStack
         super();
     }
 
-    private static ThreadLocal<List<DefaultStopWatch>> local = new ThreadLocal<List<DefaultStopWatch>>();
+    private static ThreadLocal<List<StopWatch>> local = new ThreadLocal<List<StopWatch>>();
 
-    public static void push( DefaultStopWatch stopWatch )
+    public static void push( StopWatch stopWatch )
     {
         getExecution().add( stopWatch );
-    }
-
-    /**
-     * Pause all running stopWatches
-     */
-    public static void pause()
-    {
-        for ( StopWatch stopWatch : getExecution() )
-        {
-            stopWatch.pause();
-        }
-    }
-
-    /**
-     * Resume all stopWatches
-     */
-    public static void resume()
-    {
-        for ( StopWatch stopWatch : getExecution() )
-        {
-            stopWatch.resume();
-        }
     }
 
     /**
@@ -89,14 +67,25 @@ public class ExecutionStack
     }
 
     /**
+     * Indicates if the StopWatch is the top-level element in the execution
+     * @param stopWatch a stopwatch to test
+     * @return <code>true</code> is the stopWatch is the first one registered during execution
+     */
+    public static boolean isTopLevel( StopWatch stopWatch )
+    {
+        List<StopWatch> exec = local.get();
+        return ( exec != null ) && ( ! exec.isEmpty() ) && stopWatch.equals( exec.get( 0 ) );
+    }
+
+    /**
      * @return the ordered list of StopWatches used during execution
      */
-    public static List<DefaultStopWatch> getExecution()
+    public static List<StopWatch> getExecution()
     {
-        List<DefaultStopWatch> exec = local.get();
+        List<StopWatch> exec = local.get();
         if (exec == null)
         {
-            exec = new LinkedList<DefaultStopWatch>();
+            exec = new LinkedList<StopWatch>();
             local.set( exec );
         }
         return local.get();

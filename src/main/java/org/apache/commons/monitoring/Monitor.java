@@ -222,12 +222,28 @@ public interface Monitor
 
     }
 
-    void addListener( Listener listener );
 
-    void removeListener( Listener listener );
-
+    /**
+     * Listener interface to get notified on montor events
+     */
     public static interface Listener
     {
         void onStatValueRegistered( StatValue value );
+    }
+
+    /**
+     * Monitor that accepts Listeners and notify them on monitor events
+     */
+    public static interface Observable extends Monitor
+    {
+        /**
+         * @param listener listener to get registered
+         */
+        void addListener( Listener listener );
+
+        /**
+         * @param listener listener to get removed
+         */
+        void removeListener( Listener listener );
     }
 }

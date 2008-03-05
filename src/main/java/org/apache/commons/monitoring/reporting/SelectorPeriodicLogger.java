@@ -17,37 +17,37 @@
 
 package org.apache.commons.monitoring.reporting;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Writer;
 
 import org.apache.commons.monitoring.Repository;
 
 /**
- * An abstract periodic logger implementation that uses a predefine set of
- * "indicators" to output monitored state in a log.
+ * A periodic logger implementation that uses a set of selector to extract
+ * monitoring datas to log.
  * <p>
  * Typical use case is to produce a fixed format (CSV, Excel-like, tabular...)
  * in a log file, with a new line for each period.
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public abstract class AppendToFilePeriodicLogger
+public abstract class SelectorPeriodicLogger
     extends AbstractPeriodicLogger
 {
-
-    private File output;
+    private Selector[] selectors;
 
     /**
      * @param period the period (in ms) to log the monitoring state
      * @param repository the target monitoring repository
      * @param output the output file
      */
-    public AppendToFilePeriodicLogger( long period, Repository repository, File output )
+    public SelectorPeriodicLogger( long period, Repository.Observable repository, String[] selectors )
     {
         super( period, repository );
-        this.output = output;
+        this.selectors = new Selector[selectors.length];
+        for ( int i = 0; i < selectors.length; i++ )
+        {
+            this.selectors[i] = new Selector( selectors[i] );
+        }
     }
 
     /**
@@ -60,21 +60,21 @@ public abstract class AppendToFilePeriodicLogger
     protected final void log( Repository period )
         throws IOException
     {
-        output.mkdirs();
-        Writer writer = new FileWriter( output, true );
-        // Log the detached state
-        log( period, writer );
-        writer.close();
+        Object[] values = new Object[ selectors.length ];
+        for ( int i = 0; i < selectors.length; i++ )
+        {
+            values[i] = selectors[i].select( period );
+        }
+        log( values );
     }
 
     /**
-     * Log the data from the (secondary) repository generated during the period
+     * Log the data extracted by selectors
      *
-     * @param period secondary repository that observed the monitored state
-     * during the last active period
-     * @param writer the output to log repository
+     * @param values the data to log
      * @throws IOException any I/O error during log
      */
-    protected abstract void log( Repository period, Writer writer ) throws IOException;
+    protected abstract void log( Object[] values )
+        throws IOException;
 
 }

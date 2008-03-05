@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.commons.monitoring.impl;
+package org.apache.commons.monitoring.impl.monitors;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -28,24 +28,27 @@ import org.apache.commons.monitoring.StatValue;
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public abstract class ListenableMonitor extends AbstractMonitor implements Monitor
+public abstract class ObservableMonitor
+    extends AbstractMonitor
+    implements Monitor.Observable
 {
 
     private List<Listener> listeners;
 
     /**
      * Constructor
+     *
      * @param key the monitor identifier
      */
-    public ListenableMonitor( Key key )
+    public ObservableMonitor( Key key )
     {
         super( key );
         this.listeners = new CopyOnWriteArrayList<Listener>();
     }
 
-
     /**
      * Register the StatValue for the role, if none was registered before
+     *
      * @param value
      * @param role
      * @return the value registered, or a previously existing one
@@ -54,7 +57,7 @@ public abstract class ListenableMonitor extends AbstractMonitor implements Monit
     protected <T extends StatValue> T register( T value )
     {
         T previous = (T) super.register( value );
-        if (previous != null)
+        if ( previous != null )
         {
             return previous;
         }
@@ -64,7 +67,6 @@ public abstract class ListenableMonitor extends AbstractMonitor implements Monit
         }
         return null;
     }
-
 
     public void addListener( Listener listener )
     {

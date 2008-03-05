@@ -18,7 +18,7 @@
 package org.apache.commons.monitoring.listener;
 
 import org.apache.commons.monitoring.Repository;
-import org.apache.commons.monitoring.impl.DefaultRepository;
+import org.apache.commons.monitoring.impl.repositories.DefaultRepository;
 import org.apache.commons.monitoring.listeners.SecondaryRepository;
 
 import junit.framework.TestCase;
@@ -33,7 +33,7 @@ public class SecondaryReposioryTest
     public void testSecondaryRepository()
         throws Exception
     {
-        Repository primary = new DefaultRepository();
+        Repository.Observable primary = new DefaultRepository();
         primary.getMonitor( "test" ).getCounter( "COUNTER" ).add( 10 );
         primary.getMonitor( "test" ).getGauge( "GAUGE" ).set( 5 );
 

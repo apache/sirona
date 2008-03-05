@@ -20,6 +20,7 @@ package org.apache.commons.monitoring.impl;
 import junit.framework.TestCase;
 
 import org.apache.commons.monitoring.Gauge;
+import org.apache.commons.monitoring.impl.values.ThreadSafeGauge;
 
 public class ThreadSafeGaugeTest
     extends TestCase

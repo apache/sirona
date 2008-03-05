@@ -20,6 +20,7 @@ package org.apache.commons.monitoring.impl;
 import junit.framework.TestCase;
 
 import org.apache.commons.monitoring.Counter;
+import org.apache.commons.monitoring.impl.values.ThreadSafeCounter;
 
 public class ThreadSafeCounterTest
     extends TestCase

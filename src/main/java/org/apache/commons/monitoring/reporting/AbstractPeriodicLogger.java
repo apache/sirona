@@ -40,7 +40,7 @@ public abstract class AbstractPeriodicLogger
     private Timer timer;
 
     /** The observed repository */
-    private Repository repository;
+    private Repository.Observable repository;
 
     /** The observed repository */
     private SecondaryRepository secondary;
@@ -50,7 +50,7 @@ public abstract class AbstractPeriodicLogger
      * @param period the period (in ms) to log the monitoring state
      * @param repository the target monitoring repository
      */
-    public AbstractPeriodicLogger( long period, Repository repository )
+    public AbstractPeriodicLogger( long period, Repository.Observable repository )
     {
         super();
         this.secondary = new SecondaryRepository( repository );

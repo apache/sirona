@@ -18,7 +18,6 @@
 package org.apache.commons.monitoring.reporting;
 
 import java.io.PrintWriter;
-import java.util.Collection;
 
 import org.apache.commons.monitoring.Counter;
 import org.apache.commons.monitoring.StatValue;
@@ -34,38 +33,33 @@ public class TxtRenderer
 {
     private static final String HR = "\n--------------------------------------------------------------------------------\n";
 
-    public TxtRenderer( PrintWriter writer, Collection<String> roles )
-    {
-        super( writer, roles );
-    }
-
     /**
      * {@inheritDoc}
      * @see org.apache.commons.monitoring.reporting.AbstractRenderer#render(org.apache.commons.monitoring.StatValue, java.lang.String)
      */
     @Override
-    public void render( StatValue value, String role )
+    public void render( PrintWriter writer, StatValue value )
     {
-        write( role );
-        write( "\n    value  : " );
-        write( String.valueOf( value.get() ) );
-        write( "\n    min    : " );
-        write( String.valueOf( value.getMin() ) );
-        write( "\n    max    : " );
-        write( String.valueOf( value.getMax() ) );
-        write( "\n    mean   : " );
-        write( String.valueOf( value.getMean() ) );
-        write( "\n    stdDev : " );
-        write( String.valueOf( value.getStandardDeviation() ) );
+        writer.append( value.getRole() );
+        writer.append( "\n    value  : " );
+        writer.append( String.valueOf( value.get() ) );
+        writer.append( "\n    min    : " );
+        writer.append( String.valueOf( value.getMin() ) );
+        writer.append( "\n    max    : " );
+        writer.append( String.valueOf( value.getMax() ) );
+        writer.append( "\n    mean   : " );
+        writer.append( String.valueOf( value.getMean() ) );
+        writer.append( "\n    stdDev : " );
+        writer.append( String.valueOf( value.getStandardDeviation() ) );
         if ( value instanceof Counter )
         {
             Counter counter = (Counter) value;
-            write( "\n    total  : " );
-            write( String.valueOf( counter.getSum() ) );
-            write( "\n    hits   : " );
-            write( String.valueOf( counter.getHits() ) );
+            writer.append( "\n    total  : " );
+            writer.append( String.valueOf( counter.getSum() ) );
+            writer.append( "\n    hits   : " );
+            writer.append( String.valueOf( counter.getHits() ) );
         }
-        write( "\n" );
+        writer.append( "\n" );
     }
 
     /**
@@ -73,11 +67,11 @@ public class TxtRenderer
      * @see org.apache.commons.monitoring.reporting.AbstractRenderer#render(org.apache.commons.monitoring.Monitor.Key)
      */
     @Override
-    public void render( Key key )
+    public void render( PrintWriter writer, Key key )
     {
-        write( HR );
-        write( key.toString() );
-        write( HR );
+        writer.append( HR );
+        writer.append( key.toString() );
+        writer.append( HR );
     }
 
 }

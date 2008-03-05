@@ -22,6 +22,7 @@ import java.util.Set;
 
 import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.Repository;
+import org.apache.commons.monitoring.impl.repositories.DefaultRepository;
 
 import junit.framework.TestCase;
 

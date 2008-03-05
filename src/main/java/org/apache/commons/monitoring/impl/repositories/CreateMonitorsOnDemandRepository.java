@@ -15,34 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.commons.monitoring.impl;
-
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+package org.apache.commons.monitoring.impl.repositories;
 
 import org.apache.commons.monitoring.Monitor;
+import org.apache.commons.monitoring.Monitor.Key;
 
-public class DefaultRepository extends AbstractRepository
+/**
+ * Abstract implementation of a Repository that creates and register new Monitor instances
+ * as the monitored application request them.
+ *
+ * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
+ */
+public abstract class CreateMonitorsOnDemandRepository
+    extends ObservableRepository
 {
 
-    private List<Listener> listeners = new CopyOnWriteArrayList<Listener>();
-
-    public DefaultRepository()
-    {
-        super();
-    }
-
-    public void addListener( Listener listener )
-    {
-        listeners.add( listener );
-    }
-
-    public void removeListener( Listener listener )
-    {
-        listeners.remove( listener );
-    }
-
-    public Monitor getMonitor( Monitor.Key key )
+    /**
+     * Retrieve a monitor an creates / register a new instance if required
+     * <p>
+     * {@inheritDoc}
+     * @see org.apache.commons.monitoring.impl.repositories.AbstractRepository#getMonitor(org.apache.commons.monitoring.Monitor.Key)
+     */
+    @Override
+    protected Monitor getMonitor( Key key )
     {
         Monitor monitor = super.getMonitor( key );
         if ( monitor == null )
@@ -51,19 +46,12 @@ public class DefaultRepository extends AbstractRepository
             Monitor previous = register( monitor );
             if ( previous != null )
             {
-                return  previous;
-            }
-            for ( Listener listener : listeners )
-            {
-                listener.newMonitorInstance( monitor );
+                monitor = previous;
             }
         }
         return monitor;
     }
 
-    protected Monitor newMonitorInstance( Monitor.Key key )
-    {
-        return new CompositeValuesMonitor( key );
-    }
+    protected abstract Monitor newMonitorInstance( Key key );
 
 }

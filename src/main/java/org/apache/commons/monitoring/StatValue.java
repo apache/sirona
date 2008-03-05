@@ -26,7 +26,6 @@ package org.apache.commons.monitoring;
  */
 public interface StatValue
 {
-    String getUnit();
 
     /**
      * @return the value
@@ -78,10 +77,10 @@ public interface StatValue
 
     void removeListener( Listener listener );
 
+    String getUnit();
+
     /**
      * Listener for StatValue events
-     *
-     * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
      */
     public static interface Listener
     {

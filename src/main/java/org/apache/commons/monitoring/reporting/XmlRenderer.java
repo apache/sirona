@@ -29,70 +29,70 @@ public class XmlRenderer
     extends AbstractRenderer
 {
 
-    public XmlRenderer( PrintWriter writer, Collection<String> roles )
+    /**
+     * {@inheritDoc}
+     * @see org.apache.commons.monitoring.reporting.AbstractRenderer#render(java.io.PrintWriter, java.util.Collection, org.apache.commons.monitoring.reporting.Renderer.Filter)
+     */
+    @Override
+    public void render( PrintWriter writer, Collection<Monitor> monitors, Filter filter )
     {
-        super( writer, roles );
+        writer.append( "<monitors>" );
+        super.render( writer, monitors, filter );
+        writer.append( "</monitors>" );
     }
 
     @Override
-    public void render( Collection<Monitor> monitors )
+    public void render( PrintWriter writer, Monitor monitor, Filter filter )
     {
-        write( "<monitors>" );
-        super.render( monitors );
-        write( "</monitors>" );
+        writer.append( "<monitor " );
+        super.render( writer, monitor, filter );
+        writer.append( "</monitor>" );
     }
 
     @Override
-    public void render( Monitor monitor )
+    public void render( PrintWriter writer, Key key )
     {
-        write( "<monitor " );
-        super.render( monitor );
-        write( "</monitor>" );
-    }
-
-    @Override
-    public void render( Key key )
-    {
-        write( "name=\"" );
-        write( key.getName() );
+        writer.append( "name=\"" );
+        writer.append( key.getName() );
         if ( key.getCategory() != null )
         {
-            write( "\" category=\"" );
-            write( key.getCategory() );
+            writer.append( "\" category=\"" );
+            writer.append( key.getCategory() );
         }
         if ( key.getSubsystem() != null )
         {
-            write( "\" subsystem=\"" );
-            write( key.getSubsystem() );
+            writer.append( "\" subsystem=\"" );
+            writer.append( key.getSubsystem() );
         }
-        write( "\">" );
+        writer.append( "\">" );
     }
 
-    @Override
-    public void render( StatValue value, String role )
-    {
-        write( "<" );
-        write( role );
 
-        write( " value=\"" );
-        write( String.valueOf( value.get() ) );
-        write( "\" min=\"" );
-        write( String.valueOf( value.getMin() ) );
-        write( "\" max=\"" );
-        write( String.valueOf( value.getMax() ) );
-        write( "\" mean=\"" );
-        write( String.valueOf( value.getMean() ) );
-        write( "\" stdDev=\"" );
-        write( String.valueOf( value.getStandardDeviation() ) );
+    @Override
+    public void render( PrintWriter writer, StatValue value )
+    {
+        writer.append( "<" );
+        writer.append( value.getRole() );
+
+        writer.append( " value=\"" );
+        writer.append( String.valueOf( value.get() ) );
+        writer.append( "\" min=\"" );
+        writer.append( String.valueOf( value.getMin() ) );
+        writer.append( "\" max=\"" );
+        writer.append( String.valueOf( value.getMax() ) );
+        writer.append( "\" mean=\"" );
+        writer.append( String.valueOf( value.getMean() ) );
+        writer.append( "\" stdDev=\"" );
+        writer.append( String.valueOf( value.getStandardDeviation() ) );
         if ( value instanceof Counter )
         {
             Counter counter = (Counter) value;
-            write( "\" total=\"" );
-            write( String.valueOf( counter.getSum() ) );
-            write( "\" hits=\"" );
-            write( String.valueOf( counter.getHits() ) );
+            writer.append( "\" total=\"" );
+            writer.append( String.valueOf( counter.getSum() ) );
+            writer.append( "\" hits=\"" );
+            writer.append( String.valueOf( counter.getHits() ) );
         }
-        write( "\"/>" );
+        writer.append( "\"/>" );
     }
 
 }

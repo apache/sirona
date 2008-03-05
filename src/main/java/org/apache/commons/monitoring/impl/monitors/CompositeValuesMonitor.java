@@ -15,31 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.commons.monitoring;
+package org.apache.commons.monitoring.impl.monitors;
 
-import junit.framework.TestCase;
-
-import org.apache.commons.monitoring.impl.stopwatches.DefaultStopWatch;
-import org.apache.commons.monitoring.impl.stopwatches.ExecutionStopWatch;
+import org.apache.commons.monitoring.Counter;
+import org.apache.commons.monitoring.Gauge;
+import org.apache.commons.monitoring.impl.values.CompositeCounter;
+import org.apache.commons.monitoring.impl.values.CompositeGauge;
 
 /**
+ * A Monitor implementation that creates {@link Composite} Gauges and Counters.
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public class ExecutionStackTest
-    extends TestCase
+public class CompositeValuesMonitor extends CreateValuesOnDemandMonitor
 {
-    public void testExecutionStopWatch()
-        throws Exception
-    {
-        StopWatch s1 = new ExecutionStopWatch( null );
-        StopWatch s2 = new ExecutionStopWatch( null );
 
-        assertTrue( ExecutionStack.isTopLevel( s1 ) );
-        assertTrue( ! ExecutionStack.isTopLevel( s2 ) );
-        s2.stop();
-        assertEquals( 2, ExecutionStack.getExecution().size() );
-        s1.stop();
-        assertTrue( ExecutionStack.getExecution().isEmpty() );
+    public CompositeValuesMonitor( Key key )
+    {
+        super( key );
     }
+
+    @Override
+    protected Counter newCounterInstance( String role )
+    {
+        return new CompositeCounter( role );
+    }
+
+    @Override
+    protected Gauge newGaugeInstance( String role )
+    {
+        return new CompositeGauge( role );
+    }
+
 }

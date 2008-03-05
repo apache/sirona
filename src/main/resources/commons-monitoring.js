@@ -15,34 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.commons.monitoring.impl;
-
-import org.apache.commons.monitoring.Counter;
-import org.apache.commons.monitoring.Gauge;
-
-/**
- * A Monitor implementation that creates {@link Composite} Gauges and Counters.
- *
- * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
- */
-public class CompositeValuesMonitor extends CreateValuesOnDemandMonitor
-{
-
-    public CompositeValuesMonitor( Key key )
+$(document).ready(function()
     {
-        super( key );
+        $("#monitoring").tablesorter( { widgets: ['zebra'] } );
     }
-
-    @Override
-    protected Counter newCounterInstance( String role )
-    {
-        return new CompositeCounter( role );
-    }
-
-    @Override
-    protected Gauge newGaugeInstance( String role )
-    {
-        return new CompositeGauge( role );
-    }
-
-}
+);

@@ -17,7 +17,6 @@
 
 package org.apache.commons.monitoring.reporting;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Collection;
@@ -28,7 +27,7 @@ import junit.framework.TestCase;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.monitoring.Monitor;
-import org.apache.commons.monitoring.impl.CreateValuesOnDemandMonitor;
+import org.apache.commons.monitoring.impl.monitors.CreateValuesOnDemandMonitor;
 
 public class RendererTest
     extends TestCase
@@ -40,14 +39,12 @@ public class RendererTest
         throws Exception
     {
         monitors = new LinkedList<Monitor>();
-        Monitor m1 = new CreateValuesOnDemandMonitor(
-            new Monitor.Key( "JsonRendererTest.setUp", "test", "reporting" ) );
+        Monitor m1 = new CreateValuesOnDemandMonitor( new Monitor.Key( "JsonRendererTest.setUp", "test", "reporting" ) );
         m1.getCounter( Monitor.PERFORMANCES ).add( 10 );
         m1.getGauge( Monitor.CONCURRENCY );
         monitors.add( m1 );
 
-        Monitor m2 = new CreateValuesOnDemandMonitor(
-            new Monitor.Key( "TestCase", "test", "junit" ) );
+        Monitor m2 = new CreateValuesOnDemandMonitor( new Monitor.Key( "TestCase", "test", "junit" ) );
         m2.getCounter( Monitor.PERFORMANCES );
         m2.getGauge( Monitor.CONCURRENCY ).increment();
         monitors.add( m2 );
@@ -56,42 +53,38 @@ public class RendererTest
     public void testRenderToJson()
         throws Exception
     {
-        StringWriter out = new StringWriter();
-        Renderer renderer = new JsonRenderer( new PrintWriter( out ), Renderer.DEFAULT_ROLES );
-        renderer.render( monitors );
-        assertEqualsIgnoreLineEnds( expected( "js" ), out.toString() );
+        assertExpectedRendering( new JsonRenderer(), "js" );
     }
 
     public void testRenderToXml()
         throws Exception
     {
-        StringWriter out = new StringWriter();
-        Renderer renderer = new XmlRenderer( new PrintWriter( out ), Renderer.DEFAULT_ROLES );
-        renderer.render( monitors );
-        assertEqualsIgnoreLineEnds( expected( "xml" ), out.toString() );
+        assertExpectedRendering( new XmlRenderer(), "xml" );
     }
 
     public void testRenderToTxt()
         throws Exception
     {
+        assertExpectedRendering( new TxtRenderer(), "txt" );
+    }
+
+    public void testRenderToHtml()
+        throws Exception
+    {
+        assertExpectedRendering( new HtmlRenderer(), "html" );
+    }
+
+    protected void assertExpectedRendering( Renderer renderer, String format )
+        throws Exception
+    {
         StringWriter out = new StringWriter();
-        Renderer renderer = new TxtRenderer( new PrintWriter( out ), Renderer.DEFAULT_ROLES );
-        renderer.render( monitors );
-        assertEqualsIgnoreLineEnds( expected( "txt" ), out.toString() );
-    }
-
-    private void assertEqualsIgnoreLineEnds( String expected, String actual )
-    {
-        expected = StringUtils.remove( StringUtils.remove( expected, "\n" ), "\r" );
+        renderer.render( new PrintWriter( out ), monitors );
+        String actual = out.toString();
         actual = StringUtils.remove( StringUtils.remove( actual, "\n" ), "\r" );
-        assertEquals( expected, actual );
-    }
 
-    private String expected( String format )
-        throws IOException
-    {
         String expected = IOUtils.toString( getClass().getResourceAsStream( "RendererTest." + format ) );
         expected = StringUtils.remove( StringUtils.remove( expected, '\n' ), '\r' );
-        return expected;
+
+        assertEquals( expected, actual );
     }
 }

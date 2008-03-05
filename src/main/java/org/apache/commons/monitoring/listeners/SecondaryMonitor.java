@@ -20,7 +20,7 @@ package org.apache.commons.monitoring.listeners;
 import org.apache.commons.monitoring.Composite;
 import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.StatValue;
-import org.apache.commons.monitoring.impl.AbstractMonitor;
+import org.apache.commons.monitoring.impl.monitors.AbstractMonitor;
 
 /**
  * A Monitor implementation that maintains a set of secondary StatValues in sync
@@ -38,11 +38,11 @@ public class SecondaryMonitor
 {
 
     /** The primary monitor */
-    private Monitor monitor;
+    private Monitor.Observable monitor;
 
     private boolean detached;
 
-    public SecondaryMonitor( Monitor monitor )
+    public SecondaryMonitor( Monitor.Observable monitor )
     {
         super( monitor.getKey() );
         this.monitor = monitor;
@@ -54,6 +54,7 @@ public class SecondaryMonitor
         monitor.addListener( this );
     }
 
+    @SuppressWarnings("unchecked")
     public void detach()
     {
         this.detached = true;
@@ -66,22 +67,13 @@ public class SecondaryMonitor
         }
     }
 
+    @SuppressWarnings("unchecked")
     public void onStatValueRegistered( StatValue value )
     {
         if ( !detached && value instanceof Composite )
         {
             register( ( (Composite<StatValue>) value ).createSecondary() );
         }
-    }
-
-    public void addListener( Listener listener )
-    {
-        throw new UnsupportedOperationException( "Only primary Monitor accepts listeners" );
-    }
-
-    public void removeListener( Listener listener )
-    {
-        throw new UnsupportedOperationException( "Only primary Monitor accepts listeners" );
     }
 
 }

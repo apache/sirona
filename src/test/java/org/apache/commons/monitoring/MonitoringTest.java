@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 import junit.framework.TestCase;
 
-import org.apache.commons.monitoring.impl.DefaultRepository;
+import org.apache.commons.monitoring.impl.repositories.DefaultRepository;
 
 /**
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>

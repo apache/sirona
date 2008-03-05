@@ -61,9 +61,8 @@
       <p>
         The StopWatches used to monitor execution can be registered in the <code>ExecutionStack</code> utility
         class that maintain the set of active stopWatches for the current thread. It is recommended
-        to let the stopWatches register themselves by calling <code>DefaultStopWatch.setTraceExecution( true )</code>
-        at application startup, as all registered StopWatches MUST be removed before the thread stops or
-        proceed another task/request.
+        to let the stopWatches register themselves and cleaning the stack by configuring the Repository to use
+        <code>ExecutionStopWatch</code> StopWatch implementation.
       </p>
       <p>
         When the Listener on the business process detects some overload, it can look at the ExecutionStack

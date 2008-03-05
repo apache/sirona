@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.commons.monitoring.impl;
+package org.apache.commons.monitoring.impl.values;
 
 import java.util.Collection;
 import java.util.Collections;

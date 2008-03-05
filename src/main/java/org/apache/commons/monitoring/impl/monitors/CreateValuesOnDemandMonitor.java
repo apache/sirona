@@ -15,10 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.commons.monitoring.impl;
+package org.apache.commons.monitoring.impl.monitors;
 
 import org.apache.commons.monitoring.Counter;
 import org.apache.commons.monitoring.Gauge;
+import org.apache.commons.monitoring.impl.values.ThreadSafeCounter;
+import org.apache.commons.monitoring.impl.values.ThreadSafeGauge;
 
 /**
  * implementation of the <code>Monitor</code> interface that creates StatValues on
@@ -28,7 +30,7 @@ import org.apache.commons.monitoring.Gauge;
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public class CreateValuesOnDemandMonitor
-    extends ListenableMonitor
+    extends ObservableMonitor
 {
 
     public CreateValuesOnDemandMonitor( Key key )
@@ -58,7 +60,6 @@ public class CreateValuesOnDemandMonitor
     protected Counter newCounterInstance( String role )
     {
         return new ThreadSafeCounter( role );
-
     }
 
     /**

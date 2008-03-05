@@ -21,6 +21,7 @@ import org.apache.commons.monitoring.Composite;
 import org.apache.commons.monitoring.Counter;
 import org.apache.commons.monitoring.Gauge;
 import org.apache.commons.monitoring.Monitor;
+import org.apache.commons.monitoring.impl.monitors.CompositeValuesMonitor;
 
 import junit.framework.TestCase;
 

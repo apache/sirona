@@ -19,7 +19,6 @@ package org.apache.commons.monitoring.reporting;
 
 import java.io.PrintWriter;
 import java.util.Collection;
-import java.util.Iterator;
 
 import org.apache.commons.monitoring.Counter;
 import org.apache.commons.monitoring.Monitor;
@@ -29,92 +28,74 @@ import org.apache.commons.monitoring.Monitor.Key;
 public class JsonRenderer
     extends AbstractRenderer
 {
-    private final Collection<String> roles;
-
-    public JsonRenderer( PrintWriter writer, Collection<String> roles )
+    @Override
+    public void render( PrintWriter writer, Collection<Monitor> monitors, Filter filter )
     {
-        super( writer, roles );
-        this.roles = roles;
+        writer.append( "[" );
+        super.render( writer, monitors, filter );
+        writer.append( "]" );
     }
 
     @Override
-    public void render( Collection<Monitor> monitors )
+    @SuppressWarnings("unchecked")
+    protected void hasNext( PrintWriter writer, Class type )
     {
-        write( "[" );
-        for ( Iterator<Monitor> iterator = monitors.iterator(); iterator.hasNext(); )
-        {
-            Monitor monitor = iterator.next();
-            render( monitor );
-            if ( iterator.hasNext() )
-            {
-                write( "," );
-            }
-        }
-        write( "]" );
+        writer.append( ',' );
     }
 
     @Override
-    public void render( Monitor monitor )
+    public void render( PrintWriter writer, Monitor monitor, Filter filter )
     {
-        write( "{" );
-        render( monitor.getKey() );
-        if ( !roles.isEmpty() )
+        writer.append( "{" );
+        if ( renderStatValues( writer, monitor, filter ) > 0 )
         {
-            write( "," );
+            writer.append( "," );
         }
-        for ( Iterator<String> iterator = roles.iterator(); iterator.hasNext(); )
-        {
-            String role = iterator.next();
-            render( monitor.getValue( role ), role );
-            if ( iterator.hasNext() )
-            {
-                write( "," );
-            }
-        }
-        write( "}" );
+        render( writer, monitor.getKey() );
+        writer.append( "}" );
     }
 
     @Override
-    public void render( Key key )
+    public void render( PrintWriter writer, Key key )
     {
-        write( "key:{name:\"" );
-        write( key.getName() );
+        writer.append( "key:{name:\"" );
+        writer.append( key.getName() );
         if ( key.getCategory() != null )
         {
-            write( "\",category:\"" );
-            write( key.getCategory() );
+            writer.append( "\",category:\"" );
+            writer.append( key.getCategory() );
         }
         if ( key.getSubsystem() != null )
         {
-            write( "\",subsystem:\"" );
-            write( key.getSubsystem() );
+            writer.append( "\",subsystem:\"" );
+            writer.append( key.getSubsystem() );
         }
-        write( "\"}" );
+        writer.append( "\"}" );
     }
 
     @Override
-    public void render( StatValue value, String role )
+    public void render( PrintWriter writer, StatValue value )
     {
-        write( role );
-        write( ":{value:\"" );
-        write( String.valueOf( value.get() ) );
-        write( "\",min:\"" );
-        write( String.valueOf( value.getMin() ) );
-        write( "\",max:\"" );
-        write( String.valueOf( value.getMax() ) );
-        write( "\",mean:\"" );
-        write( String.valueOf( value.getMean() ) );
-        write( "\",stdDev:\"" );
-        write( String.valueOf( value.getStandardDeviation() ) );
+        writer.append( value.getRole() );
+        writer.append( ":{value:\"" );
+        writer.append( String.valueOf( value.get() ) );
+        writer.append( "\",min:\"" );
+        writer.append( String.valueOf( value.getMin() ) );
+        writer.append( "\",max:\"" );
+        writer.append( String.valueOf( value.getMax() ) );
+        writer.append( "\",mean:\"" );
+        writer.append( String.valueOf( value.getMean() ) );
+        writer.append( "\",stdDev:\"" );
+        writer.append( String.valueOf( value.getStandardDeviation() ) );
         if ( value instanceof Counter )
         {
             Counter counter = (Counter) value;
-            write( "\",total:\"" );
-            write( String.valueOf( counter.getSum() ) );
-            write( "\",hits:\"" );
-            write( String.valueOf( counter.getHits() ) );
+            writer.append( "\",total:\"" );
+            writer.append( String.valueOf( counter.getSum() ) );
+            writer.append( "\",hits:\"" );
+            writer.append( String.valueOf( counter.getHits() ) );
         }
-        write( "\"}" );
+        writer.append( "\"}" );
     }
 
 }

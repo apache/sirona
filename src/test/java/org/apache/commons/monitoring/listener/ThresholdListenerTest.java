@@ -22,7 +22,7 @@ import junit.framework.TestCase;
 import org.apache.commons.monitoring.Counter;
 import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.StatValue;
-import org.apache.commons.monitoring.impl.CreateValuesOnDemandMonitor;
+import org.apache.commons.monitoring.impl.monitors.CreateValuesOnDemandMonitor;
 import org.apache.commons.monitoring.listeners.ThresholdListener;
 
 /**

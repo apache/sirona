@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.commons.monitoring.impl;
+package org.apache.commons.monitoring.impl.monitors;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -78,6 +78,7 @@ public abstract class AbstractMonitor implements Monitor
      * @return a previously registered StatValue if existed, or <code>null</code>
      * if value has been successfully registered
      */
+    @SuppressWarnings("unchecked")
     protected <T extends StatValue> T register( T value )
     {
         value.setMonitor( this );

@@ -17,31 +17,41 @@
 
 package org.apache.commons.monitoring.listeners;
 
-import java.util.Collection;
-
 import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.Repository;
-import org.apache.commons.monitoring.impl.AbstractRepository;
+import org.apache.commons.monitoring.StopWatch;
+import org.apache.commons.monitoring.impl.repositories.AbstractRepository;
 
 /**
+ * A repository implementation that registers as a <tt>Listener</tt> to an
+ * <tt>Observable</tt> repository and maintains a set of Monitors in sync with
+ * the observed repository.
+ * <p>
+ * As a <tt>Detachable</tt> implementation, the SecondaryRepository can be
+ * detached from the observed repository and used to build a report for the
+ * observed period.
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public class SecondaryRepository
-    extends AbstractRepository implements Repository.Listener, Detachable
+    extends AbstractRepository
+    implements Repository.Listener, Detachable
 {
-    private Repository repository;
+    private Repository.Observable repository;
 
     private boolean detached;
 
-    public SecondaryRepository( Repository repository )
+    public SecondaryRepository( Repository.Observable repository )
     {
         super();
         this.repository = repository;
         this.detached = false;
         for ( Monitor monitor : repository.getMonitors() )
         {
-            register( new SecondaryMonitor( monitor ) );
+            if ( monitor instanceof Monitor.Observable )
+            {
+                register( new SecondaryMonitor( (Monitor.Observable) monitor ) );
+            }
         }
         repository.addListener( this );
     }
@@ -52,7 +62,7 @@ public class SecondaryRepository
         repository.removeListener( this );
         for ( Monitor monitor : getMonitors() )
         {
-            ((Detachable) monitor).detach();
+            ( (Detachable) monitor ).detach();
         }
     }
 
@@ -61,26 +71,18 @@ public class SecondaryRepository
      */
     public void newMonitorInstance( Monitor monitor )
     {
-        if ( ! detached )
+        if ( !detached && monitor instanceof Monitor.Observable )
         {
-            register( new SecondaryMonitor( monitor ) );
+            register( new SecondaryMonitor( (Monitor.Observable) monitor ) );
         }
     }
 
     /**
-     * @see org.apache.commons.monitoring.Repository#addListener(org.apache.commons.monitoring.Repository.Listener)
+     * {@inheritDoc}
+     * @see org.apache.commons.monitoring.Repository#start(org.apache.commons.monitoring.Monitor)
      */
-    public void addListener( Listener listener )
+    public StopWatch start( Monitor monitor )
     {
-        throw new UnsupportedOperationException( "Only primary Repository accepts listeners" );
+        throw new UnsupportedOperationException( "Not available on a secondary repository" );
     }
-
-    /**
-     * @see org.apache.commons.monitoring.Repository#removeListener(org.apache.commons.monitoring.Repository.Listener)
-     */
-    public void removeListener( Listener listener )
-    {
-        throw new UnsupportedOperationException( "Only primary Repository accepts listeners" );
-    }
-
 }
