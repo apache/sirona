@@ -36,6 +36,14 @@
       <item name="Reporting"           href="/reporting.html"/>
     </menu>
 
+    <menu name="Development">
+      <item name="Mailing Lists"           href="/mail-lists.html"/>
+      <item name="Issue Tracking"          href="/issue-tracking.html"/>
+      <item name="Team"                    href="/team-list.html"/>
+      <item name="Source Repository"       href="/source-repository.html"/>
+      <item name="Javadoc (latest)"        href="/apidocs/index.html"/>
+    </menu>
+
   </body>
 
 </project>
