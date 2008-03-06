@@ -76,7 +76,7 @@
         </ul>
         By combining the request URI path and parameters, you can filter what is relevant for you. Bookmark
         the valuable URIs ! Example :
-        <tt>http://myserver/monitoring/monitors?performances.unit=ms&performances.value=false&performances.sum=false</tt>
+        <tt>http://myserver/monitoring/monitors?performances.unit=ms&amp;performances.value=false&amp;performances.sum=false</tt>
       </p>
       </subsection>
       <subsection name="Web UI">

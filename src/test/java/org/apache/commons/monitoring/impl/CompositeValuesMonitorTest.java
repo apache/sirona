@@ -17,14 +17,14 @@
 
 package org.apache.commons.monitoring.impl;
 
+import junit.framework.TestCase;
+
 import org.apache.commons.monitoring.Composite;
 import org.apache.commons.monitoring.Counter;
 import org.apache.commons.monitoring.Gauge;
 import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.Unit;
 import org.apache.commons.monitoring.impl.monitors.CompositeValuesMonitor;
-
-import junit.framework.TestCase;
 
 ;
 
@@ -48,6 +48,7 @@ public class CompositeValuesMonitorTest
         assertEquals( 0, counter.get() );
     }
 
+    @SuppressWarnings("unchecked")
     public void testCompositeCounter()
         throws Exception
     {
@@ -75,6 +76,7 @@ public class CompositeValuesMonitorTest
         assertEquals( 3, secondary.get() );
     }
 
+    @SuppressWarnings("unchecked")
     public void testCompositeGauge()
         throws Exception
     {

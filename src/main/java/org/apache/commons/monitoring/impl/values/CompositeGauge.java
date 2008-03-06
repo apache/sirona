@@ -23,7 +23,6 @@ import java.util.LinkedList;
 
 import org.apache.commons.monitoring.Composite;
 import org.apache.commons.monitoring.Gauge;
-import org.apache.commons.monitoring.Unit;
 
 /**
  * A composite implementation of {@link Gauge} that delegates to a primary

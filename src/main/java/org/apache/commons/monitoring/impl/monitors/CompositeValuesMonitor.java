@@ -19,16 +19,17 @@ package org.apache.commons.monitoring.impl.monitors;
 
 import org.apache.commons.monitoring.Counter;
 import org.apache.commons.monitoring.Gauge;
-import org.apache.commons.monitoring.Unit;
 import org.apache.commons.monitoring.impl.values.CompositeCounter;
 import org.apache.commons.monitoring.impl.values.CompositeGauge;
 
 /**
- * A Monitor implementation that creates {@link Composite} Gauges and Counters.
+ * A Monitor implementation that creates
+ * {@link org.apache.commons.monitoring.Composite} Gauges and Counters.
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public class CompositeValuesMonitor extends CreateValuesOnDemandMonitor
+public class CompositeValuesMonitor
+    extends CreateValuesOnDemandMonitor
 {
 
     public CompositeValuesMonitor( Key key )

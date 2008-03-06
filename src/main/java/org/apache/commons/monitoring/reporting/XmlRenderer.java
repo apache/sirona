@@ -20,11 +20,9 @@ package org.apache.commons.monitoring.reporting;
 import java.io.PrintWriter;
 import java.util.Collection;
 
-import org.apache.commons.monitoring.Counter;
 import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.StatValue;
 import org.apache.commons.monitoring.Monitor.Key;
-import org.apache.commons.monitoring.reporting.Renderer.Options;
 
 public class XmlRenderer
     extends AbstractRenderer

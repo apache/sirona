@@ -34,6 +34,7 @@
       <item name="Instrumentation"     href="/instrumentation.html"/>
       <item name="Listeners"           href="/listeners.html"/>
       <item name="Reporting"           href="/reporting.html"/>
+      <item name="Use in a Webapp"     href="/web.html"/>
     </menu>
 
     <menu name="Development">

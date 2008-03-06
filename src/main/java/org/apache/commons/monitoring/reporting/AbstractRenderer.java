@@ -32,7 +32,6 @@ import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.StatValue;
 import org.apache.commons.monitoring.Unit;
 import org.apache.commons.monitoring.Monitor.Key;
-import org.apache.commons.monitoring.reporting.Renderer.Options;
 
 /**
  * Render a collection of monitor for reporting

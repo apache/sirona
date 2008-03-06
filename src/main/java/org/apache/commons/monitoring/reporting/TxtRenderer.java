@@ -19,10 +19,8 @@ package org.apache.commons.monitoring.reporting;
 
 import java.io.PrintWriter;
 
-import org.apache.commons.monitoring.Counter;
 import org.apache.commons.monitoring.StatValue;
 import org.apache.commons.monitoring.Monitor.Key;
-import org.apache.commons.monitoring.reporting.Renderer.Options;
 
 /**
  * A simple TXT renderer, typically to dump monitoring status in a log file
