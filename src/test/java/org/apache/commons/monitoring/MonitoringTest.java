@@ -58,6 +58,7 @@ public class MonitoringTest
 
         Monitoring.setRepository( new DefaultRepository() );
 
+        StopWatch s = Monitoring.start( "testThreadSafety" );
         ExecutorService pool = Executors.newFixedThreadPool( threads );
         for ( int i = 0; i < threads; i++ )
         {
@@ -83,12 +84,18 @@ public class MonitoringTest
             } );
         }
         pool.shutdown();
-        pool.awaitTermination( 30, TimeUnit.SECONDS );
+        pool.awaitTermination( 120, TimeUnit.SECONDS );
+
+        System.out.println( (threads * loops) + " executions took " + s.getElapsedTime() + "ns" );
 
         Monitor monitor = Monitoring.getMonitor( "MonitoringTest.testMultiThreading", "test", "utils" );
-        assertEquals( threads * loops, monitor.getCounter( "COUNTER" ).getHits() );
-        assertEquals( threads * loops, monitor.getCounter( "COUNTER" ).get() );
-        assertEquals( threads * loops, monitor.getGauge( "GAUGE" ).get() );
+
+        Counter counter = monitor.getCounter( "COUNTER" );
+        assertEquals( counter.getClass() + " is not thread safe", threads * loops, counter.getHits() );
+        assertEquals( counter.getClass() + " is not thread safe", threads * loops, counter.get() );
+
+        Gauge gauge = monitor.getGauge( "GAUGE" );
+        assertEquals( gauge.getClass() + " is not thread safe", threads * loops, gauge.get() );
     }
 
 }
