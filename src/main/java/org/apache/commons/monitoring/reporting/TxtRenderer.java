@@ -45,12 +45,12 @@ public class TxtRenderer
     }
 
     @Override
-    protected void render( PrintWriter writer, StatValue value, String attribute, Number number, Options options )
+    protected void render( PrintWriter writer, StatValue value, String attribute, Number number, Options options, int ratio )
     {
         writer.print( "    " );
         writer.print( attribute );
         writer.print( " : " );
-        super.render( writer, value, attribute, number, options );
+        super.render( writer, value, attribute, number, options, ratio );
         writer.println();
     }
 

@@ -154,27 +154,14 @@ public class HtmlRenderer
         writer.print( ")" );
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @see org.apache.commons.monitoring.reporting.AbstractRenderer#render(java.io.PrintWriter,
-     * org.apache.commons.monitoring.StatValue, String, Number,
-     * org.apache.commons.monitoring.reporting.Renderer.Options)
-     */
     @Override
-    protected void render( PrintWriter writer, StatValue value, String attribute, Number number, Options options )
+    protected void render( PrintWriter writer, StatValue value, String attribute, Number number, Options options, int ratio )
     {
         writer.print( "<td>" );
-        super.render( writer, value, attribute, number, options );
+        super.render( writer, value, attribute, number, options, ratio );
         writer.print( "</td>" );
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @see org.apache.commons.monitoring.reporting.AbstractRenderer#render(java.io.PrintWriter,
-     * org.apache.commons.monitoring.Monitor.Key)
-     */
     @Override
     protected void render( PrintWriter writer, Key key )
     {

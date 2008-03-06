@@ -53,12 +53,12 @@ public abstract class AbstractRenderer
         {
             if ( options.render( monitor ) )
             {
-                if (count > 0)
+                if ( count > 0 )
                 {
                     hasNext( writer, Monitor.class );
                 }
                 render( writer, monitor, options );
-                count ++;
+                count++;
             }
         }
     }
@@ -83,7 +83,7 @@ public abstract class AbstractRenderer
         {
             StatValue value = (StatValue) iterator.next();
             render( writer, value, options );
-            if (iterator.hasNext())
+            if ( iterator.hasNext() )
             {
                 hasNext( writer, StatValue.class );
             }
@@ -97,7 +97,7 @@ public abstract class AbstractRenderer
         for ( Iterator<StatValue> iterator = values.iterator(); iterator.hasNext(); )
         {
             StatValue value = (StatValue) iterator.next();
-            if ( ! options.render( value ))
+            if ( !options.render( value ) )
             {
                 iterator.remove();
             }
@@ -108,7 +108,7 @@ public abstract class AbstractRenderer
             {
                 return value1.getRole().compareTo( value2.getRole() );
             }
-        });
+        } );
         return values;
     }
 
@@ -119,7 +119,7 @@ public abstract class AbstractRenderer
             Counter counter = (Counter) value;
             if ( options.render( value, "hits" ) )
             {
-                render( writer, value, "hits", counter.getHits(), options );
+                render( writer, value, "hits", counter.getHits(), options, 0 );
             }
             if ( options.render( value, "sum" ) )
             {
@@ -140,50 +140,73 @@ public abstract class AbstractRenderer
         }
         if ( options.render( value, "deviation" ) )
         {
-            render( writer, value, "deviation", value.getStandardDeviation(), options );
+            render( writer, value, "deviation", value.getStandardDeviation(), options, 1 );
         }
         if ( options.render( value, "value" ) )
         {
-            render( writer, value, "value", value.get(), options );
+            render( writer, value, "value", value.get(), options, 1 );
         }
     }
 
     protected abstract void render( PrintWriter writer, Key key );
 
-
     protected void render( PrintWriter writer, StatValue value, String attribute, Number number, Options options )
+    {
+        render( writer, value, attribute, number, options, 1 );
+    }
+
+    /**
+     * Render a StatValue attribute
+     *
+     * @param writer output
+     * @param value the StatValue that hold data to be rendered
+     * @param attribute the StatValue attribute name to be rendered
+     * @param number the the StatValue attribute value to be rendered
+     * @param ratio the ratio between attribute unit and statValue unit (in power of 10)
+     * @param options the rendering options
+     */
+    protected void render( PrintWriter writer, StatValue value, String attribute, Number number, Options options,
+                           int ratio )
     {
         if ( number instanceof Double )
         {
-            renderInternal( writer, value, attribute, number.doubleValue(), options );
+            renderInternal( writer, value, attribute, number.doubleValue(), options, ratio );
         }
         else
         {
-            renderInternal( writer, value, attribute, number.longValue(), options );
+            renderInternal( writer, value, attribute, number.longValue(), options, ratio );
         }
     }
 
-    private void renderInternal( PrintWriter writer, StatValue value, String attribute, long l, Options options )
+    private void renderInternal( PrintWriter writer, StatValue value, String attribute, long l, Options options,
+                                 int ratio )
     {
         Unit unit = options.unitFor( value );
-        if (unit != null)
+        if ( unit != null )
         {
-            l = l / unit.getScale();
+            while ( ratio-- > 0 )
+            {
+                l = l / unit.getScale();
+            }
         }
         writer.append( NumberFormat.getInstance( options.getLocale() ).format( l ) );
     }
 
-    private void renderInternal( PrintWriter writer, StatValue value, String attribute, double d, Options options )
+    private void renderInternal( PrintWriter writer, StatValue value, String attribute, double d, Options options,
+                                 int ratio )
     {
-        if (Double.isNaN( d ))
+        if ( Double.isNaN( d ) )
         {
             writer.append( "-" );
             return;
         }
         Unit unit = options.unitFor( value );
-        if (unit != null)
+        if ( unit != null )
         {
-            d = d / unit.getScale();
+            while ( ratio-- > 0 )
+            {
+                d = d / unit.getScale();
+            }
         }
         writer.append( DecimalFormat.getNumberInstance( options.getLocale() ).format( d ) );
     }

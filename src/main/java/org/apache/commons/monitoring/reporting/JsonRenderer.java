@@ -81,26 +81,27 @@ public class JsonRenderer
         writer.print( "}" );
     }
 
+    /** Current rendering state */
     private StatValue currentValue;
-    private boolean first;
+    private boolean firstAttribute;
 
     @Override
-    protected void render( PrintWriter writer, StatValue value, String attribute, Number number, Options options )
+    protected void render( PrintWriter writer, StatValue value, String attribute, Number number, Options options, int ratio )
     {
         if (currentValue != value)
         {
             currentValue = value;
-            first = true;
+            firstAttribute = true;
         }
 
-        if (!first)
+        if (!firstAttribute)
         {
             writer.print( ',' );
         }
         writer.print( attribute );
         writer.print( ":\"" );
-        super.render( writer, value, attribute, number, options );
+        super.render( writer, value, attribute, number, options, ratio );
         writer.print( '\"' );
-        first = false;
+        firstAttribute = false;
     }
 }
