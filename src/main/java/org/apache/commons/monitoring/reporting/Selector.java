@@ -92,7 +92,7 @@ public class Selector
             throw new IllegalArgumentException( "Failed to invoke " + accessor );
         }
 
-        if ( resource instanceof Collection )
+        if ( resource instanceof Collection && ! path.isEmpty() )
         {
             Collection input = (Collection) resource;
             Collection result = new ArrayList( input.size() );

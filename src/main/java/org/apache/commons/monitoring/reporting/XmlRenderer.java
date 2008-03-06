@@ -24,6 +24,7 @@ import org.apache.commons.monitoring.Counter;
 import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.StatValue;
 import org.apache.commons.monitoring.Monitor.Key;
+import org.apache.commons.monitoring.reporting.Renderer.Options;
 
 public class XmlRenderer
     extends AbstractRenderer
@@ -31,68 +32,60 @@ public class XmlRenderer
 
     /**
      * {@inheritDoc}
-     * @see org.apache.commons.monitoring.reporting.AbstractRenderer#render(java.io.PrintWriter, java.util.Collection, org.apache.commons.monitoring.reporting.Renderer.Filter)
+     * @see org.apache.commons.monitoring.reporting.AbstractRenderer#render(java.io.PrintWriter, java.util.Collection, org.apache.commons.monitoring.reporting.Renderer.Options)
      */
     @Override
-    public void render( PrintWriter writer, Collection<Monitor> monitors, Filter filter )
+    public void render( PrintWriter writer, Collection<Monitor> monitors, Options options )
     {
-        writer.append( "<monitors>" );
-        super.render( writer, monitors, filter );
-        writer.append( "</monitors>" );
+        writer.print( "<monitors>" );
+        super.render( writer, monitors, options );
+        writer.print( "</monitors>" );
     }
 
     @Override
-    public void render( PrintWriter writer, Monitor monitor, Filter filter )
+    public void render( PrintWriter writer, Monitor monitor, Options options )
     {
-        writer.append( "<monitor " );
-        super.render( writer, monitor, filter );
-        writer.append( "</monitor>" );
+        writer.print( "<monitor " );
+        super.render( writer, monitor, options );
+        writer.print( "</monitor>" );
     }
 
     @Override
     public void render( PrintWriter writer, Key key )
     {
-        writer.append( "name=\"" );
-        writer.append( key.getName() );
+        writer.print( "name=\"" );
+        writer.print( key.getName() );
         if ( key.getCategory() != null )
         {
-            writer.append( "\" category=\"" );
-            writer.append( key.getCategory() );
+            writer.print( "\" category=\"" );
+            writer.print( key.getCategory() );
         }
         if ( key.getSubsystem() != null )
         {
-            writer.append( "\" subsystem=\"" );
-            writer.append( key.getSubsystem() );
+            writer.print( "\" subsystem=\"" );
+            writer.print( key.getSubsystem() );
         }
-        writer.append( "\">" );
+        writer.print( "\">" );
     }
 
 
     @Override
-    public void render( PrintWriter writer, StatValue value )
+    public void render( PrintWriter writer, StatValue value, Options options )
     {
-        writer.append( "<" );
-        writer.append( value.getRole() );
+        writer.print( "<" );
+        writer.print( value.getRole() );
+        super.render( writer, value, options );
+        writer.print( "/>" );
+    }
 
-        writer.append( " value=\"" );
-        writer.append( String.valueOf( value.get() ) );
-        writer.append( "\" min=\"" );
-        writer.append( String.valueOf( value.getMin() ) );
-        writer.append( "\" max=\"" );
-        writer.append( String.valueOf( value.getMax() ) );
-        writer.append( "\" mean=\"" );
-        writer.append( String.valueOf( value.getMean() ) );
-        writer.append( "\" stdDev=\"" );
-        writer.append( String.valueOf( value.getStandardDeviation() ) );
-        if ( value instanceof Counter )
-        {
-            Counter counter = (Counter) value;
-            writer.append( "\" total=\"" );
-            writer.append( String.valueOf( counter.getSum() ) );
-            writer.append( "\" hits=\"" );
-            writer.append( String.valueOf( counter.getHits() ) );
-        }
-        writer.append( "\"/>" );
+    @Override
+    protected void render( PrintWriter writer, StatValue value, String attribute, Number number, Options options )
+    {
+        writer.print( ' ' );
+        writer.print( attribute );
+        writer.print( "=\"" );
+        super.render( writer, value, attribute, number, options );
+        writer.print( '\"' );
     }
 
 }

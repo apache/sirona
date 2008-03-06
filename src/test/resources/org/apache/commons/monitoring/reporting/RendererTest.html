@@ -1,24 +1,31 @@
-<html><body>
-<table>
+<html>
+<body>
+<table border='1'>
 <thead>
-<tr><th rowspan='2'>name</th><th rowspan='2'>category</th>
-<th rowspan='2'>subsystem</th><th colspan='5'>concurrency</th><th colspan='7'>performances</th></tr>
-<tr>
-<th>value</th><th>min</th><th>max</th><th>mean</th><th>dev.</th>
-<th>value</th><th>min</th><th>max</th><th>mean</th><th>dev.</th><th>sum</th><th>hits</th>
+<tr><th rowspan='2'>name</th><th rowspan='2'>category</th><th rowspan='2'>subsystem</th>
+<td colspan='5'>concurrency</td>
+<td colspan='7'>performances (ns)</td>
+</tr>
+<tr><th>min</th><th>max</th><th>mean</th><th>deviation</th><th>value</th>
+<th>hits</th><th>sum</th><th>min</th><th>max</th><th>mean</th><th>deviation</th><th>value</th>
 </tr>
 </thead>
+
 <tbody>
+
 <tr>
 <td>JsonRendererTest.setUp</td><td>test</td><td>reporting</td>
-<td title='concurrency'>0</td><td>0</td><td>0</td><td>NaN</td><td>NaN</td>
-<td title='performances'>10</td><td>10</td><td>10</td><td>10.0</td><td>NaN</td><td>10</td><td>1</td>
+<td>0</td><td>0</td><td>-</td><td>-</td><td>0</td>
+<td>1</td><td>10</td><td>10</td><td>10</td><td>10</td><td>-</td><td>10</td>
 </tr>
 
-<tr><td>TestCase</td><td>test</td><td>junit</td>
-<td title='concurrency'>1</td><td>1</td><td>1</td><td>0.0</td><td>NaN</td>
-<td title='performances'>0</td><td>0</td><td>0</td><td>NaN</td><td>NaN</td><td>0</td><td>0</td>
+<tr>
+<td>TestCase</td><td>test</td><td>junit</td>
+<td>1</td><td>1</td><td>0</td><td>-</td><td>1</td>
+<td>0</td><td>0</td><td>0</td><td>0</td><td>-</td><td>-</td><td>0</td>
 </tr>
 
-</tbody></table>
-</body></html>
+</tbody>
+</table>
+</body>
+</html>

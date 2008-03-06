@@ -19,6 +19,7 @@ package org.apache.commons.monitoring.impl.stopwatches;
 
 import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.StopWatch;
+import org.apache.commons.monitoring.Unit;
 
 /**
  * Estimates the time required for process execution (monitored method, service
@@ -61,7 +62,7 @@ public class DefaultStopWatch implements StopWatch
         startedAt = nanotime();
         if ( monitor != null )
         {
-            monitor.getGauge( Monitor.CONCURRENCY ).increment();
+            monitor.getGauge( Monitor.CONCURRENCY ).increment(Unit.NONE);
         }
     }
 
@@ -126,8 +127,8 @@ public class DefaultStopWatch implements StopWatch
             stoped = true;
             if ( monitor != null )
             {
-                monitor.getGauge( Monitor.CONCURRENCY ).decrement();
-                monitor.getCounter( Monitor.PERFORMANCES ).add( getElapsedTime() );
+                monitor.getGauge( Monitor.CONCURRENCY ).decrement(Unit.NONE);
+                monitor.getCounter( Monitor.PERFORMANCES ).add( getElapsedTime(), Unit.NANOS );
             }
         }
     }
@@ -159,7 +160,7 @@ public class DefaultStopWatch implements StopWatch
             stoped = true;
             if ( monitor != null )
             {
-                monitor.getGauge( Monitor.CONCURRENCY ).decrement();
+                monitor.getGauge( Monitor.CONCURRENCY ).decrement(Unit.NONE);
             }
         }
     }

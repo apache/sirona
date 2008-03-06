@@ -20,6 +20,7 @@ package org.apache.commons.monitoring.impl;
 import junit.framework.TestCase;
 
 import org.apache.commons.monitoring.Gauge;
+import org.apache.commons.monitoring.Unit;
 import org.apache.commons.monitoring.impl.values.ThreadSafeGauge;
 
 public class ThreadSafeGaugeTest
@@ -32,18 +33,18 @@ public class ThreadSafeGaugeTest
     {
         Gauge gauge = new ThreadSafeGauge( "test" );
 
-        gauge.set( 1 );
+        gauge.set( 1, Unit.NONE );
         assertEquals( 1, gauge.getMin() );
         assertEquals( 1, gauge.getMax() );
         assertEquals( 1, gauge.get() );
 
-        gauge.increment();
+        gauge.increment(Unit.NONE);
         assertEquals( 1, gauge.getMin() );
         assertEquals( 2, gauge.getMax() );
         assertEquals( 2, gauge.get() );
 
-        gauge.decrement();
-        gauge.decrement();
+        gauge.decrement(Unit.NONE);
+        gauge.decrement(Unit.NONE);
         assertEquals( 0, gauge.getMin() );
         assertEquals( 2, gauge.getMax() );
         assertEquals( 0, gauge.get() );
@@ -72,14 +73,14 @@ public class ThreadSafeGaugeTest
         Gauge gauge = new MockTimeGauge( "test" );
 
         time = 0;
-        gauge.increment();
+        gauge.increment(Unit.NONE);
         time++;
-        gauge.increment();
+        gauge.increment(Unit.NONE);
         time++;
         time++;
-        gauge.decrement();
+        gauge.decrement(Unit.NONE);
         time++;
-        gauge.decrement();
+        gauge.decrement(Unit.NONE);
 
         assertEquals( 0, gauge.get() );
         assertEquals( 1.5D, gauge.getMean(), 0D );

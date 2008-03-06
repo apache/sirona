@@ -26,8 +26,13 @@ import junit.framework.TestCase;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.monitoring.Counter;
 import org.apache.commons.monitoring.Monitor;
+import org.apache.commons.monitoring.StatValue;
+import org.apache.commons.monitoring.Unit;
 import org.apache.commons.monitoring.impl.monitors.CreateValuesOnDemandMonitor;
+import org.apache.commons.monitoring.impl.values.ThreadSafeCounter;
+import org.apache.commons.monitoring.reporting.Renderer.Options;
 
 public class RendererTest
     extends TestCase
@@ -40,13 +45,13 @@ public class RendererTest
     {
         monitors = new LinkedList<Monitor>();
         Monitor m1 = new CreateValuesOnDemandMonitor( new Monitor.Key( "JsonRendererTest.setUp", "test", "reporting" ) );
-        m1.getCounter( Monitor.PERFORMANCES ).add( 10 );
+        m1.getCounter( Monitor.PERFORMANCES ).add( 10, Unit.NANOS );
         m1.getGauge( Monitor.CONCURRENCY );
         monitors.add( m1 );
 
         Monitor m2 = new CreateValuesOnDemandMonitor( new Monitor.Key( "TestCase", "test", "junit" ) );
         m2.getCounter( Monitor.PERFORMANCES );
-        m2.getGauge( Monitor.CONCURRENCY ).increment();
+        m2.getGauge( Monitor.CONCURRENCY ).increment(Unit.NONE);
         monitors.add( m2 );
     }
 
@@ -72,6 +77,26 @@ public class RendererTest
         throws Exception
     {
         assertExpectedRendering( new HtmlRenderer(), "html" );
+    }
+
+    public void testOptions()
+        throws Exception
+    {
+        Options options = new OptionsSupport()
+        {
+            public Unit unitFor( StatValue value )
+            {
+                return Unit.MICROS;
+            }
+        };
+
+        AbstractRenderer renderer = new XmlRenderer();
+        Counter counter = new ThreadSafeCounter( "test" );
+        counter.add( 1, Unit.MILLIS );
+        counter.add( 1, Unit.MICROS );
+        StringWriter writer = new StringWriter();
+        renderer.render( new PrintWriter( writer ), counter, "mean", counter.getMean(), options );
+        assertEquals( " mean=\"500.5\"", writer.toString() );
     }
 
     protected void assertExpectedRendering( Renderer renderer, String format )

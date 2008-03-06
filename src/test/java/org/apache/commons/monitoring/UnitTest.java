@@ -17,17 +17,22 @@
 
 package org.apache.commons.monitoring;
 
+import junit.framework.TestCase;
+
 /**
- * A StatValue to expose application state, or resource consumption (open connections, active threads, ...)
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public interface Gauge extends StatValue
+public class UnitTest
+    extends TestCase
 {
-    void increment(Unit unit);
-
-    void add( long delta, Unit unit );
-
-    void decrement(Unit unit);
-
+    public void testScales()
+        throws Exception
+    {
+        assertEquals( Unit.NANOS, Unit.HOUR.getPrimary() );
+        assertEquals( Unit.NANOS, Unit.NANOS.getDerived( "ns" ) );
+        assertEquals( Unit.MICROS, Unit.NANOS.getDerived( "µs" ) );
+        assertEquals( Unit.MILLIS, Unit.NANOS.getDerived( "ms" ) );
+        assertEquals( Unit.SECOND, Unit.NANOS.getDerived( "s" ) );
+    }
 }

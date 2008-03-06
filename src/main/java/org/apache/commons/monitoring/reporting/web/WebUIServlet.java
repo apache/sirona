@@ -120,6 +120,7 @@ public class WebUIServlet
         List<String> accept = getAcceptedMimeTypes( request );
         if ( accept.contains( "text/html" ) )
         {
+            response.setContentType( "text/html;charset=iso-8859-1" );
             return new NiceHtmlRenderer( request.getContextPath() + request.getServletPath() );
         }
         return super.getRenderer( request, response );

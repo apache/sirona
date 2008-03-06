@@ -4,19 +4,20 @@ category=test
 subsystem=reporting
 --------------------------------------------------------------------------------
 concurrency
-    value  : 0
-    min    : 0
-    max    : 0
-    mean   : NaN
-    stdDev : NaN
+    min : 0
+    max : 0
+    mean : -
+    deviation : -
+    value : 0
+
 performances
-    value  : 10
-    min    : 10
-    max    : 10
-    mean   : 10.0
-    stdDev : NaN
-    total  : 10
-    hits   : 1
+    hits : 1
+    sum : 10
+    min : 10
+    max : 10
+    mean : 10
+    deviation : -
+    value : 10
 
 --------------------------------------------------------------------------------
 name=TestCase
@@ -24,16 +25,17 @@ category=test
 subsystem=junit
 --------------------------------------------------------------------------------
 concurrency
-    value  : 1
-    min    : 1
-    max    : 1
-    mean   : 0.0
-    stdDev : NaN
+    min : 1
+    max : 1
+    mean : 0
+    deviation : -
+    value : 1
+
 performances
-    value  : 0
-    min    : 0
-    max    : 0
-    mean   : NaN
-    stdDev : NaN
-    total  : 0
-    hits   : 0
+    hits : 0
+    sum : 0
+    min : 0
+    max : 0
+    mean : -
+    deviation : -
+    value : 0

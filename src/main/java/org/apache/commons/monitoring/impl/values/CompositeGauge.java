@@ -23,18 +23,21 @@ import java.util.LinkedList;
 
 import org.apache.commons.monitoring.Composite;
 import org.apache.commons.monitoring.Gauge;
+import org.apache.commons.monitoring.Unit;
 
 /**
  * A composite implementation of {@link Gauge} that delegates to a primary
  * implementation and maintains a collection of secondary Gauges.
  * <p>
- * Typical use is to create monitoring graphs : On regular time intervals, a
- * new secondary Gauge is registered to computes stats for the current period,
- * and then removed.
+ * Typical use is to create monitoring graphs : On regular time intervals, a new
+ * secondary Gauge is registered to computes stats for the current period, and
+ * then removed.
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public class CompositeGauge extends ThreadSafeGauge implements Composite<Gauge>
+public class CompositeGauge
+    extends ThreadSafeGauge
+    implements Composite<Gauge>
 {
     private Collection<Gauge> secondary;
 
@@ -51,9 +54,15 @@ public class CompositeGauge extends ThreadSafeGauge implements Composite<Gauge>
 
     public synchronized Gauge createSecondary()
     {
-        // Must be synchronized to ensure the new gauge shares the primary initial value
+        // Must be synchronized to ensure the new gauge shares the primary
+        // initial value
         Gauge gauge = new ThreadSafeGauge( getRole() );
-        gauge.set( get() );
+        if ( getUnit() != null )
+        {
+            // If the primary gauge has not been used yet, unit is not set and
+            // value is default
+            gauge.set( get(), getUnit() );
+        }
         secondary.add( gauge );
         return gauge;
     }
@@ -64,42 +73,21 @@ public class CompositeGauge extends ThreadSafeGauge implements Composite<Gauge>
     }
 
     @Override
-    protected synchronized long threadSafeIncrement()
+    protected synchronized long threadSafeAdd( long delta )
     {
         for ( Gauge gauge : secondary )
         {
-            gauge.increment();
+            gauge.add( delta, getUnit() );
         }
-        return super.threadSafeIncrement();
+        return super.threadSafeAdd( delta );
     }
-
-    @Override
-    protected synchronized long threadSafeDecrement()
-    {
-        for ( Gauge gauge : secondary )
-        {
-            gauge.decrement();
-        }
-        return super.threadSafeDecrement();
-    }
-
-    @Override
-    protected synchronized long trheadSageAdd( long delta )
-    {
-        for ( Gauge gauge : secondary )
-        {
-            gauge.add( delta );
-        }
-        return super.trheadSageAdd( delta );
-    }
-
 
     @Override
     protected synchronized void threadSafeSet( long value )
     {
         for ( Gauge gauge : secondary )
         {
-            gauge.set( value );
+            gauge.set( value, getUnit() );
         }
         super.threadSafeSet( value );
     }

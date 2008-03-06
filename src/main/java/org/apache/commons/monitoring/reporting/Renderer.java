@@ -20,9 +20,11 @@ package org.apache.commons.monitoring.reporting;
 import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Locale;
 
 import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.StatValue;
+import org.apache.commons.monitoring.Unit;
 
 /**
  * Render a collection of monitor for reporting
@@ -35,38 +37,16 @@ public interface Renderer
 
     void render( PrintWriter writer, Collection<Monitor> monitors );
 
-    void render( PrintWriter writer, Collection<Monitor> monitors, Filter filter );
+    void render( PrintWriter writer, Collection<Monitor> monitors, Options options );
 
-    interface Filter
+    interface Options
     {
         boolean render( Object object );
-    }
 
-    /**
-     * Filter implementation to render only a selection of StatValues identified by roles
-     */
-    class RoleFilter
-        implements Filter
-    {
-        private Collection<String> roles;
+        boolean render( StatValue value, String attribute );
 
-        public RoleFilter( Collection<String> roles )
-        {
-            this.roles = roles;
-        }
+        Unit unitFor( StatValue value );
 
-        public RoleFilter( String[] roles )
-        {
-            this.roles = Arrays.asList( roles );
-        }
-
-        public boolean render( Object object )
-        {
-            if ( object instanceof StatValue )
-            {
-                return this.roles.contains( ( (StatValue) object ).getRole() );
-            }
-            return true;
-        }
+        Locale getLocale();
     }
 }

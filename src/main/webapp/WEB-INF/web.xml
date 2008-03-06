@@ -20,6 +20,21 @@
 
 <web-app>
 
+    <filter>
+        <filter-name>Monitoring</filter-name>
+        <filter-class>org.apache.commons.monitoring.servlet.MonitoringFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>Monitoring</filter-name>
+        <url-pattern>*.do</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>Monitoring</filter-name>
+        <url-pattern>*.action</url-pattern>
+    </filter-mapping>
+
     <servlet>
         <servlet-name>monitoring</servlet-name>
         <servlet-class>org.apache.commons.monitoring.reporting.web.WebUIServlet</servlet-class>

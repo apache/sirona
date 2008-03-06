@@ -18,6 +18,7 @@
 package org.apache.commons.monitoring.listener;
 
 import org.apache.commons.monitoring.Repository;
+import org.apache.commons.monitoring.Unit;
 import org.apache.commons.monitoring.impl.repositories.DefaultRepository;
 import org.apache.commons.monitoring.listeners.SecondaryRepository;
 
@@ -34,8 +35,8 @@ public class SecondaryReposioryTest
         throws Exception
     {
         Repository.Observable primary = new DefaultRepository();
-        primary.getMonitor( "test" ).getCounter( "COUNTER" ).add( 10 );
-        primary.getMonitor( "test" ).getGauge( "GAUGE" ).set( 5 );
+        primary.getMonitor( "test" ).getCounter( "COUNTER" ).add( 10, Unit.NONE );
+        primary.getMonitor( "test" ).getGauge( "GAUGE" ).set( 5, Unit.NONE );
 
         SecondaryRepository secondary = new SecondaryRepository( primary );
         assertNotNull( secondary.getMonitor( "test" ) );
@@ -44,19 +45,19 @@ public class SecondaryReposioryTest
         assertEquals( 0, secondary.getMonitor( "test" ).getCounter( "COUNTER" ).get() );
         assertEquals( 5, secondary.getMonitor( "test" ).getGauge( "GAUGE" ).get() );
 
-        primary.getMonitor( "test" ).getCounter( "COUNTER" ).add( 10 );
-        primary.getMonitor( "test" ).getGauge( "GAUGE" ).increment();
+        primary.getMonitor( "test" ).getCounter( "COUNTER" ).add( 10, Unit.NONE );
+        primary.getMonitor( "test" ).getGauge( "GAUGE" ).increment(Unit.NONE);
         assertEquals( 10, secondary.getMonitor( "test" ).getCounter( "COUNTER" ).get() );
         assertEquals( 6, secondary.getMonitor( "test" ).getGauge( "GAUGE" ).get() );
 
-        primary.getMonitor( "new" ).getCounter( "COUNTER" ).add( 10 );
+        primary.getMonitor( "new" ).getCounter( "COUNTER" ).add( 10, Unit.NONE );
         assertEquals( 10, secondary.getMonitor( "new" ).getCounter( "COUNTER" ).get() );
 
         secondary.detach();
 
-        primary.getMonitor( "anotherone" ).getCounter( "COUNTER" ).add( 10 );
-        primary.getMonitor( "test" ).getCounter( "COUNTER" ).add( 10 );
-        primary.getMonitor( "test" ).getGauge( "GAUGE" ).increment();
+        primary.getMonitor( "anotherone" ).getCounter( "COUNTER" ).add( 10, Unit.NONE );
+        primary.getMonitor( "test" ).getCounter( "COUNTER" ).add( 10, Unit.NONE );
+        primary.getMonitor( "test" ).getGauge( "GAUGE" ).increment(Unit.NONE);
         assertNull( secondary.getMonitor( "anotherone" ) );
         assertEquals( 30, primary.getMonitor( "test" ).getCounter( "COUNTER" ).get() );
         assertEquals( 10, secondary.getMonitor( "test" ).getCounter( "COUNTER" ).get() );

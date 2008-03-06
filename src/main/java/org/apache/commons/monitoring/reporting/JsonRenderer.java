@@ -20,7 +20,6 @@ package org.apache.commons.monitoring.reporting;
 import java.io.PrintWriter;
 import java.util.Collection;
 
-import org.apache.commons.monitoring.Counter;
 import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.StatValue;
 import org.apache.commons.monitoring.Monitor.Key;
@@ -29,73 +28,79 @@ public class JsonRenderer
     extends AbstractRenderer
 {
     @Override
-    public void render( PrintWriter writer, Collection<Monitor> monitors, Filter filter )
+    public void render( PrintWriter writer, Collection<Monitor> monitors, Options options )
     {
-        writer.append( "[" );
-        super.render( writer, monitors, filter );
-        writer.append( "]" );
+        writer.print( "[" );
+        super.render( writer, monitors, options );
+        writer.print( "]" );
     }
 
     @Override
     @SuppressWarnings("unchecked")
     protected void hasNext( PrintWriter writer, Class type )
     {
-        writer.append( ',' );
+        writer.print( ',' );
     }
 
     @Override
-    public void render( PrintWriter writer, Monitor monitor, Filter filter )
+    public void render( PrintWriter writer, Monitor monitor, Options options )
     {
-        writer.append( "{" );
-        if ( renderStatValues( writer, monitor, filter ) > 0 )
+        writer.print( "{" );
+        if ( renderStatValues( writer, monitor, options ) > 0 )
         {
-            writer.append( "," );
+            writer.print( "," );
         }
         render( writer, monitor.getKey() );
-        writer.append( "}" );
+        writer.print( "}" );
     }
 
     @Override
     public void render( PrintWriter writer, Key key )
     {
-        writer.append( "key:{name:\"" );
-        writer.append( key.getName() );
+        writer.print( "key:{name:\"" );
+        writer.print( key.getName() );
         if ( key.getCategory() != null )
         {
-            writer.append( "\",category:\"" );
-            writer.append( key.getCategory() );
+            writer.print( "\",category:\"" );
+            writer.print( key.getCategory() );
         }
         if ( key.getSubsystem() != null )
         {
-            writer.append( "\",subsystem:\"" );
-            writer.append( key.getSubsystem() );
+            writer.print( "\",subsystem:\"" );
+            writer.print( key.getSubsystem() );
         }
-        writer.append( "\"}" );
+        writer.print( "\"}" );
     }
 
     @Override
-    public void render( PrintWriter writer, StatValue value )
+    public void render( PrintWriter writer, StatValue value, Options options )
     {
-        writer.append( value.getRole() );
-        writer.append( ":{value:\"" );
-        writer.append( String.valueOf( value.get() ) );
-        writer.append( "\",min:\"" );
-        writer.append( String.valueOf( value.getMin() ) );
-        writer.append( "\",max:\"" );
-        writer.append( String.valueOf( value.getMax() ) );
-        writer.append( "\",mean:\"" );
-        writer.append( String.valueOf( value.getMean() ) );
-        writer.append( "\",stdDev:\"" );
-        writer.append( String.valueOf( value.getStandardDeviation() ) );
-        if ( value instanceof Counter )
-        {
-            Counter counter = (Counter) value;
-            writer.append( "\",total:\"" );
-            writer.append( String.valueOf( counter.getSum() ) );
-            writer.append( "\",hits:\"" );
-            writer.append( String.valueOf( counter.getHits() ) );
-        }
-        writer.append( "\"}" );
+        writer.print( value.getRole() );
+        writer.print( ":{" );
+        super.render( writer, value, options );
+        writer.print( "}" );
     }
 
+    private StatValue currentValue;
+    private boolean first;
+
+    @Override
+    protected void render( PrintWriter writer, StatValue value, String attribute, Number number, Options options )
+    {
+        if (currentValue != value)
+        {
+            currentValue = value;
+            first = true;
+        }
+
+        if (!first)
+        {
+            writer.print( ',' );
+        }
+        writer.print( attribute );
+        writer.print( ":\"" );
+        super.render( writer, value, attribute, number, options );
+        writer.print( '\"' );
+        first = false;
+    }
 }

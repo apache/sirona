@@ -22,6 +22,7 @@ import java.io.PrintWriter;
 import org.apache.commons.monitoring.Counter;
 import org.apache.commons.monitoring.StatValue;
 import org.apache.commons.monitoring.Monitor.Key;
+import org.apache.commons.monitoring.reporting.Renderer.Options;
 
 /**
  * A simple TXT renderer, typically to dump monitoring status in a log file
@@ -31,35 +32,28 @@ import org.apache.commons.monitoring.Monitor.Key;
 public class TxtRenderer
     extends AbstractRenderer
 {
-    private static final String HR = "\n--------------------------------------------------------------------------------\n";
+    private static final String HR = "--------------------------------------------------------------------------------";
 
     /**
      * {@inheritDoc}
      * @see org.apache.commons.monitoring.reporting.AbstractRenderer#render(org.apache.commons.monitoring.StatValue, java.lang.String)
      */
     @Override
-    public void render( PrintWriter writer, StatValue value )
+    public void render( PrintWriter writer, StatValue value, Options options )
     {
-        writer.append( value.getRole() );
-        writer.append( "\n    value  : " );
-        writer.append( String.valueOf( value.get() ) );
-        writer.append( "\n    min    : " );
-        writer.append( String.valueOf( value.getMin() ) );
-        writer.append( "\n    max    : " );
-        writer.append( String.valueOf( value.getMax() ) );
-        writer.append( "\n    mean   : " );
-        writer.append( String.valueOf( value.getMean() ) );
-        writer.append( "\n    stdDev : " );
-        writer.append( String.valueOf( value.getStandardDeviation() ) );
-        if ( value instanceof Counter )
-        {
-            Counter counter = (Counter) value;
-            writer.append( "\n    total  : " );
-            writer.append( String.valueOf( counter.getSum() ) );
-            writer.append( "\n    hits   : " );
-            writer.append( String.valueOf( counter.getHits() ) );
-        }
-        writer.append( "\n" );
+        writer.println( value.getRole() );
+        super.render( writer, value, options );
+        writer.println();
+    }
+
+    @Override
+    protected void render( PrintWriter writer, StatValue value, String attribute, Number number, Options options )
+    {
+        writer.print( "    " );
+        writer.print( attribute );
+        writer.print( " : " );
+        super.render( writer, value, attribute, number, options );
+        writer.println();
     }
 
     /**
@@ -69,9 +63,9 @@ public class TxtRenderer
     @Override
     public void render( PrintWriter writer, Key key )
     {
-        writer.append( HR );
-        writer.append( key.toString() );
-        writer.append( HR );
+        writer.println( HR );
+        writer.println( key.toString() );
+        writer.println( HR );
     }
 
 }

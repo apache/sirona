@@ -67,6 +67,7 @@ public interface Monitor
      * Get a Counter
      *
      * @param role a unique identifier for a Counter in the monitor
+     * @param unit the data unit to count
      * @return the Counter
      */
     Counter getCounter( String role );

@@ -31,7 +31,7 @@ public interface Counter
      * Add value to the counter. Delta should not be negative (in such case a Gauge should be used).
      * @param delta
      */
-    void add( long delta );
+    void add( long delta, Unit unit );
 
     /**
      * @return the sum of all set operations
@@ -42,5 +42,6 @@ public interface Counter
      * @return how many time the value has been set
      */
     int getHits();
+
 }
 

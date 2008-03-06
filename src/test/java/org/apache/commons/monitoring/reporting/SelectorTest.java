@@ -24,6 +24,7 @@ import junit.framework.TestCase;
 import org.apache.commons.monitoring.Counter;
 import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.Repository;
+import org.apache.commons.monitoring.Unit;
 import org.apache.commons.monitoring.impl.repositories.DefaultRepository;
 
 /**
@@ -38,12 +39,27 @@ public class SelectorTest
         Repository repository = new DefaultRepository();
         Selector selector = new Selector( "monitor/test/counter/performances" );
 
-        repository.getMonitor( "test" ).getCounter( Monitor.PERFORMANCES ).add( 1234 );
+        repository.getMonitor( "test" ).getCounter( Monitor.PERFORMANCES ).add( 1234, Unit.NANOS );
 
         Object value = selector.select( repository );
         assertTrue( value instanceof Counter );
         Counter counter = (Counter) value;
         assertEquals( 1234L, counter.get() );
+    }
+
+    public void testCollectionPath()
+        throws Exception
+    {
+        Repository repository = new DefaultRepository();
+        Selector selector = new Selector( "monitors" );
+
+        repository.getMonitor( "test" ).getCounter( Monitor.PERFORMANCES ).add( 1234, Unit.NANOS );
+
+        Object value = selector.select( repository );
+        assertTrue( value instanceof Collection );
+        Collection collection = (Collection) value;
+        assertEquals( 1, collection.size() );
+        assertTrue( collection.iterator().next() instanceof Monitor );
     }
 
     public void testSinglePathGet()
@@ -52,7 +68,7 @@ public class SelectorTest
         Repository repository = new DefaultRepository();
         Selector selector = new Selector( "monitor/test/counter/performances/" );
 
-        repository.getMonitor( "test" ).getCounter( Monitor.PERFORMANCES ).add( 1234 );
+        repository.getMonitor( "test" ).getCounter( Monitor.PERFORMANCES ).add( 1234, Unit.NANOS );
 
         Object value = selector.select( repository );
         assertEquals( "1234", value.toString() );
@@ -63,8 +79,8 @@ public class SelectorTest
         Repository repository = new DefaultRepository();
         Selector selector = new Selector( "monitors/counter/performances/" );
 
-        repository.getMonitor( "one" ).getCounter( Monitor.PERFORMANCES ).add( 1234 );
-        repository.getMonitor( "two" ).getCounter( Monitor.PERFORMANCES ).add( 5678 );
+        repository.getMonitor( "one" ).getCounter( Monitor.PERFORMANCES ).add( 1234, Unit.NANOS );
+        repository.getMonitor( "two" ).getCounter( Monitor.PERFORMANCES ).add( 5678, Unit.NANOS );
 
         Object value = selector.select( repository );
         assertTrue( value instanceof Collection );

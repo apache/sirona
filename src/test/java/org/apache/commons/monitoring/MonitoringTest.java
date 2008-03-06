@@ -68,8 +68,8 @@ public class MonitoringTest
                     for ( int j = 0; j < loops; j++ )
                     {
                         Monitor monitor = Monitoring.getMonitor( "MonitoringTest.testMultiThreading", "test", "utils" );
-                        monitor.getCounter( "COUNTER" ).add( 1 );
-                        monitor.getGauge( "GAUGE" ).increment();
+                        monitor.getCounter( "COUNTER" ).add( 1, Unit.NONE );
+                        monitor.getGauge( "GAUGE" ).increment(Unit.NONE);
                     }
                     try
                     {

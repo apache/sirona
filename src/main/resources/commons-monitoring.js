@@ -16,7 +16,14 @@
  */
 
 $(document).ready(function()
+{
+    $("#monitoring").tablesorter( { widgets: ['zebra'] } );
+    // TODO add a select unit feature, as ns are far too precise in many cases
+    /* $("#monitoring thead td .unit").each( function()
     {
-        $("#monitoring").tablesorter( { widgets: ['zebra'] } );
-    }
-);
+    	if ($(this).text() === "ns")
+    	{
+    		$(this).html( "<select><option>ns</option><option>µs</option><option>ms</option><option>s</option></select>" );
+    	}
+    } ); */
+} );

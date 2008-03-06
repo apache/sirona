@@ -35,7 +35,7 @@ public interface StatValue
     /**
      * @param l the value to set
      */
-    void set( long l );
+    void set( long l, Unit unit );
 
     /**
      * reset the statValue
@@ -65,19 +65,30 @@ public interface StatValue
      */
     double getStandardDeviation();
 
+    /**
+     * Set the monitor this value is attached to
+     * @param monitor
+     */
     void setMonitor( Monitor monitor );
 
+    /**
+     * @return the monitor this value is attached to
+     */
     Monitor getMonitor();
 
-    void setRole( String role );
-
+    /**
+     * @return the role for this value in the monitor
+     */
     String getRole();
+
+    /**
+     * @return the (primary) data unit
+     */
+    Unit getUnit();
 
     void addListener( Listener listener );
 
     void removeListener( Listener listener );
-
-    String getUnit();
 
     /**
      * Listener for StatValue events

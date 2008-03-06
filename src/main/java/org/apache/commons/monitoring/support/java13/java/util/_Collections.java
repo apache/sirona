@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.commons.monitoring;
+package org.apache.commons.monitoring.support.java13.java.util;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
- * A StatValue to expose application state, or resource consumption (open connections, active threads, ...)
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public interface Gauge extends StatValue
+public class _Collections
 {
-    void increment(Unit unit);
-
-    void add( long delta, Unit unit );
-
-    void decrement(Unit unit);
-
+    public static List emptyList()
+    {
+        return Collections.EMPTY_LIST;
+    }
 }

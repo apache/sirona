@@ -15,19 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.commons.monitoring;
+package org.apache.commons.monitoring.reporting;
+
+import java.util.Locale;
+
+import org.apache.commons.monitoring.StatValue;
+import org.apache.commons.monitoring.Unit;
 
 /**
- * A StatValue to expose application state, or resource consumption (open connections, active threads, ...)
+ * Support class to implement <code>Renderer.Option</code>
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public interface Gauge extends StatValue
+public class OptionsSupport
+    implements Renderer.Options
 {
-    void increment(Unit unit);
+    public boolean render( Object object )
+    {
+        return true;
+    }
 
-    void add( long delta, Unit unit );
+    public boolean render( StatValue value, String attribute )
+    {
+        return true;
+    }
 
-    void decrement(Unit unit);
+    public Locale getLocale()
+    {
+        return Locale.US;
+    }
 
+    public Unit unitFor( StatValue value )
+    {
+        return value.getUnit();
+    }
 }

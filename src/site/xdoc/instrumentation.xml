@@ -106,9 +106,24 @@
             // Process a SOAP message
 
             // retrieve the custom Counter for the "byte" role
-            monitor.getCounter( "bytes" ).add( SOAPMessage.getSize() );
+            monitor.getCounter( "bytes" ).add( SOAPMessage.getSize(), Unit.BYTES );
         </pre>
       </p>
+      </subsection>
+      <subsection name="Units">
+        <p>Counters and Gauge knows the data type they hold : when a first value is set/added to
+        a StatValue, it's internal Unit is set. Any other change/addition is checked for unit to
+        be compatible. "compatible" means the passed values can be converted to the same primary
+        unit. Units are defined using the <code>org.apache.commons.monitoring.Unit</code> class.
+        Any Unit has a primary unit, and the primary unit is its own primary. Two units are
+        compatible if they share the same primary unit. Units are for example <code>Unit.SECONDS</code>
+        that is compatible with <code>Unit.MILLIS</code> as they share the same primary unit
+        <code>Unit.NANOS</code>.
+        </p>
+        <p>
+        You can define your own units on the same basis, to ensure good usage of your monitors
+        and cleaner reporting.
+        </p>
       </subsection>
       <subsection name="StopWatches">
       <p>Performance monitoring is first-class use case of Commons Monitoring. The
@@ -132,13 +147,6 @@
       <p>
         You can nest stopWatches, in many case by monitoring some high-level process (for example web
         request rendering time) and nested low-level service (remote service invocation, JDBC request...).
-        The StopWatch provides two methods for executed code performance :
-        <ul>
-            <li><code>getElapsedTime()</code> returns the time (in ns) elapsed between the stopWatch creation
-            and the moment it was stopped, including any other sub-process</li>
-            <li><code>getRunningTime()</code> returns same time MINUS time elapsed in StopWatches that
-            monitor sub-processes.</li>
-        </ul>
         The monitor maintains statistics about those informations as the PERFORMANCE and RESPONSE_TIME
         counters. First one only computes performance of the target code, not sub-processes.
       </p>

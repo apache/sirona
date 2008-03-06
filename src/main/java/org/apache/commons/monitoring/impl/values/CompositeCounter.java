@@ -23,6 +23,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.monitoring.Composite;
 import org.apache.commons.monitoring.Counter;
+import org.apache.commons.monitoring.Unit;
 
 /**
  * A composite implementation of {@link Counter} that delegates to a primary
@@ -61,21 +62,21 @@ public class CompositeCounter extends ThreadSafeCounter implements Composite<Cou
         secondary.remove( counter );
     }
 
-    public void add( long delta )
+    public void add( long delta, Unit unit )
     {
-        super.add( delta );
+        super.add( delta, unit );
         for ( Counter counter : secondary )
         {
-            counter.add( delta );
+            counter.add( delta, unit );
         }
     }
 
-    public void set( long l )
+    public void set( long l, Unit unit )
     {
-        super.set( l );
+        super.set( l, unit );
         for ( Counter counter : secondary )
         {
-            counter.set( l );
+            counter.set( l, unit );
         }
     }
 

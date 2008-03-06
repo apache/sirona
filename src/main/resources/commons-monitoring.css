@@ -25,13 +25,15 @@ body {
     background-color: #fff;
 }
 table {
-    font-family:arial;
+    border:none;
+    font-family: arial, sans-serif;
     background-color: #cdcdcd;
     text-align: left;
     border-spacing: 1px;
 }
 
 th, td {
+    border:none;
     font-size: 0.8em;
 }
 
@@ -66,4 +68,11 @@ thead th.headerSortUp {
 
 thead th.headerSortDown {
     background: #8dbdd8 no-repeat center right url( "desc.gif ");
+}
+
+.unit select {
+    color: #8dbdd8;
+    cursor: pointer;
+    border: solid 1px #8dbdd8;
+    font-size: 0.8em;
 }

@@ -21,7 +21,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.concurrent.ConcurrentHashMap;
@@ -34,13 +37,16 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.Repository;
 import org.apache.commons.monitoring.StatValue;
+import org.apache.commons.monitoring.Unit;
 import org.apache.commons.monitoring.Monitor.Key;
 import org.apache.commons.monitoring.reporting.HtmlRenderer;
 import org.apache.commons.monitoring.reporting.JsonRenderer;
+import org.apache.commons.monitoring.reporting.OptionsSupport;
 import org.apache.commons.monitoring.reporting.Renderer;
 import org.apache.commons.monitoring.reporting.Selector;
 import org.apache.commons.monitoring.reporting.XmlRenderer;
-import org.apache.commons.monitoring.reporting.Renderer.Filter;
+import org.apache.commons.monitoring.reporting.Renderer.Options;
+import org.apache.commons.monitoring.servlet.ServletContextUtil;
 
 /**
  * A reporting servlet to format repository datas in HttpResponse, according to
@@ -50,7 +56,7 @@ import org.apache.commons.monitoring.reporting.Renderer.Filter;
  * header, from a set of registered Renderers</li>
  * <li> The request path is used as a <tt>Selector</tt> to retrieve a
  * collection of monitors from the repository</li>
- * <li> The request parameters are used to build a <tt>Renderer.Filter</tt></li>
+ * <li> The request parameters are used to build a <tt>Renderer.Options</tt></li>
  * </ul>
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
@@ -59,9 +65,6 @@ public class MonitoringServlet
     extends HttpServlet
 {
     private static final long serialVersionUID = 1L;
-
-    /** key for Repository as ServletContext attribute */
-    private static final String REPOSITORY_KEY = Repository.class.getName();
 
     private Map<String, Renderer> renderers = new ConcurrentHashMap<String, Renderer>();
 
@@ -81,18 +84,7 @@ public class MonitoringServlet
         renderers.put( "text/xml", new XmlRenderer() );
         renderers.put( "text/html", new HtmlRenderer() );
 
-        Object attribute = getServletContext().getAttribute( REPOSITORY_KEY );
-        if ( attribute != null )
-        {
-            if ( attribute instanceof Repository )
-            {
-                this.repository = (Repository) attribute;
-            }
-            else
-            {
-                throw new ServletException( "Attribute " + REPOSITORY_KEY + " in servletContext is not a Repository" );
-            }
-        }
+        repository = ServletContextUtil.getRepository( getServletContext() );
     }
 
     public void registerRenderer( String mimeType, Renderer renderer )
@@ -106,7 +98,7 @@ public class MonitoringServlet
      * @see javax.servlet.http.HttpServlet#service(javax.servlet.http.HttpServletRequest,
      * javax.servlet.http.HttpServletResponse)
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     @Override
     protected void service( HttpServletRequest request, HttpServletResponse response )
         throws ServletException, IOException
@@ -116,8 +108,8 @@ public class MonitoringServlet
         {
             String path = request.getPathInfo();
             Collection<Monitor> monitors = (Collection<Monitor>) new Selector( path ).select( repository );
-            Renderer.Filter filter = getFilter( request );
-            renderer.render( response.getWriter(), monitors, filter );
+            Renderer.Options options = getOptions( request );
+            renderer.render( response.getWriter(), monitors, options );
             return;
         }
     }
@@ -143,19 +135,31 @@ public class MonitoringServlet
      * @param request
      * @return
      */
-    protected Filter getFilter( final HttpServletRequest request )
+    protected Options getOptions( final HttpServletRequest request )
     {
-        return new Filter()
+        return new OptionsSupport()
         {
             private List<String> roles;
 
             private List<String> categories;
 
             private List<String> subsystems;
+
+            private Locale locale;
+
             {
-                roles = Arrays.asList( request.getParameterValues( "role" ) );
-                categories = Arrays.asList( request.getParameterValues( "category" ) );
-                subsystems = Arrays.asList( request.getParameterValues( "subsystem" ) );
+                String[] values = request.getParameterValues( "role" );
+                roles = values != null ? Arrays.asList( values ) : Collections.<String> emptyList();
+                values = request.getParameterValues( "category" );
+                categories = values != null ? Arrays.asList( values ) : Collections.<String> emptyList();
+                values = request.getParameterValues( "subsystem" );
+                subsystems = values != null ? Arrays.asList( values ) : Collections.<String> emptyList();
+                locale = request.getLocale();
+            }
+
+            public Locale getLocale()
+            {
+                return locale;
             }
 
             public boolean render( Object object )
@@ -173,11 +177,47 @@ public class MonitoringServlet
                 return true;
             }
 
+            public boolean render( StatValue value, String attribute )
+            {
+                String hide = request.getParameter( value.getRole() + "." + attribute );
+                if (hide != null)
+                {
+                    return Boolean.parseBoolean( hide );
+                }
+                return true;
+            }
+
+            public Unit unitFor( StatValue value )
+            {
+                String unitName = request.getParameter( value.getRole() + ".unit" );
+                if ( unitName != null )
+                {
+                    if ( value.getUnit() != null )
+                    {
+                        Unit unit = value.getUnit().getDerived( unitName );
+                        if ( unit != null )
+                        {
+                            return unit;
+                        }
+                    }
+                }
+                return value.getUnit();
+            }
+
         };
     }
 
     protected List<String> getAcceptedMimeTypes( HttpServletRequest request )
     {
+        String mime = request.getParameter( "format" );
+        if ( mime != null )
+        {
+            if ( mime.indexOf( '/' ) < 0 )
+            {
+                mime = "text/" + mime;
+            }
+            return Collections.singletonList( mime );
+        }
         List<String> mimeTypes = new ArrayList<String>();
         String accept = request.getHeader( "accept" );
         if ( accept.length() != 0 )
@@ -187,6 +227,11 @@ public class MonitoringServlet
             {
                 mimeTypes.add( tokenizer.nextToken() );
             }
+        }
+        if (accept.contains( "*/*" ) || accept.contains( "text/html" ))
+        {
+            // Let IE and FireFox get HTML !
+            mimeTypes.add( 0, "text/html" );
         }
         return mimeTypes;
     }

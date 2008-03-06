@@ -18,6 +18,7 @@
 package org.apache.commons.monitoring.impl.values;
 
 import org.apache.commons.monitoring.Counter;
+import org.apache.commons.monitoring.Unit;
 
 /**
  * Thread-safe implementation of <code>Counter</code>, based on
@@ -59,8 +60,9 @@ public class ThreadSafeCounter
     /**
      * {@inheritDoc}
      */
-    public void set( long l )
+    public void set( long l, Unit unit )
     {
+        l = normalize( l, unit );
         synchronized ( this )
         {
             value = l;
@@ -69,8 +71,9 @@ public class ThreadSafeCounter
         fireValueChanged( l );
     }
 
-    public void add( long delta )
+    public void add( long delta, Unit unit )
     {
+        delta = normalize( delta, unit );
         synchronized ( this )
         {
             value += delta;
@@ -104,5 +107,6 @@ public class ThreadSafeCounter
     {
         return sum;
     }
+
 
 }

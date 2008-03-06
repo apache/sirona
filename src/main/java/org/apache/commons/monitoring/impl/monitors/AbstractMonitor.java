@@ -26,6 +26,7 @@ import org.apache.commons.monitoring.Counter;
 import org.apache.commons.monitoring.Gauge;
 import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.StatValue;
+import org.apache.commons.monitoring.Unit;
 
 /**
  * Abstract {@link Monitor} implementation with implementation for base methods

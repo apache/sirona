@@ -18,13 +18,14 @@
 package org.apache.commons.monitoring.impl.values;
 
 import org.apache.commons.monitoring.Gauge;
+import org.apache.commons.monitoring.Unit;
 
 /**
- * Thread-safe implementation of <code>Gauge</code>, based on
- * synchronized methods.
+ * Thread-safe implementation of <code>Gauge</code>, based on synchronized
+ * methods.
  * <p>
- * Maintains a sum of (value * time) on each gauge increment/decrement operation to
- * compute the mean value.
+ * Maintains a sum of (value * time) on each gauge increment/decrement operation
+ * to compute the mean value.
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
@@ -57,50 +58,29 @@ public class ThreadSafeGauge
         firstUse = Double.NaN;
     }
 
-    public void increment()
+    public void increment( Unit unit )
     {
-        long l = threadSafeIncrement();
+        add( 1, unit );
+    }
+
+    public void decrement( Unit unit )
+    {
+        add( -1, unit );
+    }
+
+    public void add( long delta, Unit unit )
+    {
+        delta = normalize( delta, unit );
+        long l = threadSafeAdd( delta );
         fireValueChanged( l );
     }
 
-    protected synchronized long threadSafeIncrement()
+    protected synchronized long threadSafeAdd( long delta )
     {
-        long l;
-        computeSums();
-        l = ++value;
-        computeStats( l );
-        return l;
-    }
-
-    public void add( long delta )
-    {
-        long l = trheadSageAdd( delta );
-        fireValueChanged( l );
-    }
-
-    protected synchronized long trheadSageAdd( long delta )
-    {
-        long l;
         computeSums();
         value += delta;
-        l = value;
         computeStats( value );
-        return l;
-    }
-
-    public void decrement()
-    {
-        long l = threadSafeDecrement();
-        fireValueChanged( l );
-    }
-
-    protected synchronized long threadSafeDecrement()
-    {
-        long l;
-        computeSums();
-        l = --value;
-        computeStats( l );
-        return l;
+        return value;
     }
 
     protected void computeSums()
@@ -148,8 +128,9 @@ public class ThreadSafeGauge
         return value;
     }
 
-    public void set( long l )
+    public void set( long l, Unit unit )
     {
+        l = normalize( l, unit );
         threadSafeSet( l );
         fireValueChanged( l );
     }

@@ -19,6 +19,7 @@ package org.apache.commons.monitoring.impl.monitors;
 
 import org.apache.commons.monitoring.Counter;
 import org.apache.commons.monitoring.Gauge;
+import org.apache.commons.monitoring.Unit;
 import org.apache.commons.monitoring.impl.values.CompositeCounter;
 import org.apache.commons.monitoring.impl.values.CompositeGauge;
 

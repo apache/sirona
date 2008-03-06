@@ -22,15 +22,16 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.StatValue;
+import org.apache.commons.monitoring.Unit;
 
 /**
- * A simple implementation of {@link StatValue}. Only provide methods to compute stats from
- * sum provided by derived classes.
+ * A simple implementation of {@link StatValue}. Only provide methods to
+ * compute stats from sum provided by derived classes.
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public abstract class AbstractStatValue
-       implements StatValue
+    implements StatValue
 {
     private Monitor monitor;
 
@@ -42,7 +43,7 @@ public abstract class AbstractStatValue
 
     private long min;
 
-    private String unit;
+    private Unit unit;
 
     private List<Listener> listeners = new CopyOnWriteArrayList<Listener>();
 
@@ -60,6 +61,20 @@ public abstract class AbstractStatValue
     public void removeListener( Listener listener )
     {
         listeners.remove( listener );
+    }
+
+    protected long normalize( long value, Unit unit )
+    {
+        if ( this.unit == null )
+        {
+            // Affect the statValue unit on first use
+            this.unit = unit.getPrimary();
+        }
+        if ( !this.unit.isCompatible( unit ) )
+        {
+            throw new IllegalArgumentException( "role " + role + " is incompatible with unit " + unit );
+        }
+        return value * unit.getScale();
     }
 
     /**
@@ -125,13 +140,6 @@ public abstract class AbstractStatValue
 
     protected abstract long getSquares();
 
-
-
-    public String getUnit()
-    {
-        return unit;
-    }
-
     public abstract long getSum();
 
     public int getHits()
@@ -151,11 +159,15 @@ public abstract class AbstractStatValue
 
     public void setMonitor( Monitor monitor )
     {
+        if ( this.monitor != null && this.monitor != monitor )
+        {
+            throw new IllegalStateException( "value is allready attached to a monitor" );
+        }
         this.monitor = monitor;
     }
 
-    public void setRole( String role )
+    public Unit getUnit()
     {
-        this.role = role;
+        return unit;
     }
 }

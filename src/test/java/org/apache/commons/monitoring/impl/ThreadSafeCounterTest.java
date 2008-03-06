@@ -20,6 +20,7 @@ package org.apache.commons.monitoring.impl;
 import junit.framework.TestCase;
 
 import org.apache.commons.monitoring.Counter;
+import org.apache.commons.monitoring.Unit;
 import org.apache.commons.monitoring.impl.values.ThreadSafeCounter;
 
 public class ThreadSafeCounterTest
@@ -31,17 +32,17 @@ public class ThreadSafeCounterTest
     {
         Counter counter = new ThreadSafeCounter( "test" );
 
-        counter.set( 1 );
+        counter.set( 1, Unit.NONE );
         assertEquals( 1, counter.getMin() );
         assertEquals( 1, counter.getMax() );
         assertEquals( 1, counter.get() );
 
-        counter.add( 10 );
+        counter.add( 10, Unit.NONE );
         assertEquals( 1, counter.getMin() );
         assertEquals( 10, counter.getMax() );
         assertEquals( 11, counter.get() );
 
-        counter.add( -2 );
+        counter.add( -2, Unit.NONE );
         assertEquals( -2, counter.getMin() );
         assertEquals( 10, counter.getMax() );
         assertEquals( 9, counter.get() );
@@ -50,5 +51,28 @@ public class ThreadSafeCounterTest
         assertEquals( 3.0D, counter.getMean(), 0D );
     }
 
+
+    public void testUnits()
+        throws Exception
+    {
+        Counter counter = new ThreadSafeCounter( "test" );
+        assertNull( counter.getUnit() );
+        counter.set( 10, Unit.NANOS );
+        assertEquals( Unit.NANOS, counter.getUnit() );
+        assertEquals( 10, counter.get() );
+        counter.set( 10, Unit.SECOND );
+        assertEquals( Unit.NANOS, counter.getUnit() );
+        assertEquals( 10000000000L, counter.get() );
+
+        try
+        {
+            counter.add( 1, Unit.NONE );
+            fail( "incompatible unit not detected" );
+        }
+        catch (IllegalArgumentException e)
+        {
+            // Expected
+        }
+    }
 
 }

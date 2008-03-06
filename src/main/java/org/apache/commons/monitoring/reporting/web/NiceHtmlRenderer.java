@@ -19,9 +19,12 @@ package org.apache.commons.monitoring.reporting.web;
 
 import java.io.PrintWriter;
 
+import org.apache.commons.monitoring.Unit;
 import org.apache.commons.monitoring.reporting.HtmlRenderer;
 
 /**
+ * Extends the HtmlRenderer to support CSS and JS inclusion in the rendered HTML.
+ *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public class NiceHtmlRenderer
@@ -34,10 +37,11 @@ public class NiceHtmlRenderer
     private String contextPath;
 
     /** The CSS styleSheet to apply for a nicer look that brute HTML */
-    private String stylesheet = contextPath + "/resources/commons-monitoring.css";
+    private String stylesheet = "commons-monitoring.css";
 
     /** The JavaScripts to include to support user interaction */
-    private String[] scripts = new String[] { contextPath + "/resources/commons-monitoring.js" };
+    private String[] scripts =
+        new String[] { "jquery-1.2.3.pack.js", "jquery.tablesorter.pack.js", "commons-monitoring.js" };
 
     public NiceHtmlRenderer( String contextPath )
     {
@@ -53,43 +57,56 @@ public class NiceHtmlRenderer
     @Override
     protected void documentHead( PrintWriter writer )
     {
-        writer.append( "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" ");
-        writer.append( "  \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">" );
-        writer.append( "<html>" );
-        writer.append( "<head>" );
+        writer.println( "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" " );
+        writer.println( "  \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">" );
+        writer.println( "<html>" );
+        writer.println( "<head>" );
         if ( title != null )
         {
-            writer.append( "<title>" );
-            writer.append( title );
-            writer.append( "</title>" );
+            writer.print( "<title>" );
+            writer.print( title );
+            writer.println( "</title>" );
         }
         if ( stylesheet != null )
         {
-            writer.append( "<link rel='stylesheet' type='text/css' href='");
-            writer.append( stylesheet );
-            writer.append( "' />" );
+            writer.print( "<link rel='stylesheet' type='text/css' href='" );
+            writer.print( contextPath );
+            writer.print( "/resources/" );
+            writer.print( stylesheet );
+            writer.println( "' />" );
         }
         if ( scripts != null )
         {
             for ( int i = 0; i < scripts.length; i++ )
             {
-                writer.append( "<script src='");
-                writer.append( scripts[i] );
-                writer.append( "' ></script>" );
+                writer.print( "<script src='" );
+                writer.print( contextPath );
+                writer.print( "/resources/" );
+                writer.print( scripts[i] );
+                writer.println( "' ></script>" );
             }
         }
-        writer.append( "</head>" );
-        writer.append( "<body>" );
+        writer.println( "</head>" );
+        writer.println( "<body>" );
+    }
+
+    @Override
+    protected void renderUnit( PrintWriter writer, Unit unit )
+    {
+        writer.print( " <span class='unit'>(" );
+        writer.print( unit.getName() );
+        writer.print( ")</span>" );
     }
 
     /**
      * {@inheritDoc}
+     *
      * @see org.apache.commons.monitoring.reporting.HtmlRenderer#tableStartTag(java.io.PrintWriter)
      */
     @Override
     protected void tableStartTag( PrintWriter writer )
     {
-        writer.append( "<table id='monitoring' cellspacing='1'>" );
+        writer.println( "<table border='1' id='monitoring' cellspacing='1'>" );
     }
 
     public void setStylesheet( String stylesheet )

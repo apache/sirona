@@ -19,11 +19,13 @@ package org.apache.commons.monitoring.reporting;
 
 import java.io.PrintWriter;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.monitoring.Counter;
 import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.StatValue;
+import org.apache.commons.monitoring.Unit;
 import org.apache.commons.monitoring.Monitor.Key;
 
 /**
@@ -38,18 +40,24 @@ public class HtmlRenderer
      *
      * @see org.apache.commons.monitoring.reporting.AbstractRenderer#render(java.io.PrintWriter,
      * java.util.Collection,
-     * org.apache.commons.monitoring.reporting.Renderer.Filter)
+     * org.apache.commons.monitoring.reporting.Renderer.Options)
      */
     @Override
-    public void render( PrintWriter writer, Collection<Monitor> monitors, Filter filter )
+    public void render( PrintWriter writer, Collection<Monitor> monitors, Options options )
     {
         documentHead( writer );
         tableStartTag( writer );
-        tableHead( writer, monitors, filter );
-        super.render( writer, monitors, filter );
-        writer.append( "</tr></tbody>" );
+        tableHead( writer, monitors, options );
+        tabelBody( writer, monitors, options );
         tableEndTag( writer );
         documentFoot( writer );
+    }
+
+    protected void tabelBody( PrintWriter writer, Collection<Monitor> monitors, Options options )
+    {
+        writer.println( "<tbody><tr>" );
+        super.render( writer, monitors, options );
+        writer.println( "</tr></tbody>" );
     }
 
     /**
@@ -57,7 +65,7 @@ public class HtmlRenderer
      */
     protected void tableStartTag( PrintWriter writer )
     {
-        writer.append( "<table>" );
+        writer.print( "<table border='1'>" );
     }
 
     /**
@@ -65,7 +73,7 @@ public class HtmlRenderer
      */
     protected void tableEndTag( PrintWriter writer )
     {
-        writer.append( "</table>" );
+        writer.println( "</table>" );
     }
 
     /**
@@ -73,77 +81,92 @@ public class HtmlRenderer
      */
     protected void documentHead( PrintWriter writer )
     {
-        writer.append( "<html><body>" );
+        writer.println( "<html><body>" );
     }
 
-    protected void tableHead( PrintWriter writer, Collection<Monitor> monitors, Filter filter )
+    protected void tableHead( PrintWriter writer, Collection<Monitor> monitors, Options options )
     {
-        writer.append( "<thead><tr><th rowspan='2'>name</th><th rowspan='2'>category</th><th rowspan='2'>subsystem</th>" );
-        Monitor monitor = monitors.iterator().next();
-        List<StatValue> values = getOrderedStatValues( monitor, filter );
-        for ( StatValue value : values )
+        Iterator<Monitor> it = monitors.iterator();
+        if ( it.hasNext() )
         {
-            if ( value instanceof Counter )
+            Monitor monitor = it.next();
+            writer
+                .println( "<thead><tr><th rowspan='2'>name</th><th rowspan='2'>category</th><th rowspan='2'>subsystem</th>" );
+            List<StatValue> values = getOrderedStatValues( monitor, options );
+            for ( StatValue value : values )
             {
-                writer.append( "<th colspan='7'>" );
+                int span = 0;
+                if ( value instanceof Counter )
+                {
+                    span += options.render( value, "hits" ) ? 1 : 0;
+                    span += options.render( value, "sum" ) ? 1 : 0;
+                }
+                span += options.render( value, "min" ) ? 1 : 0;
+                span += options.render( value, "max" ) ? 1 : 0;
+                span += options.render( value, "mean" ) ? 1 : 0;
+                span += options.render( value, "deviation" ) ? 1 : 0;
+                span += options.render( value, "value" ) ? 1 : 0;
+
+                writer.print( "<td colspan='" );
+                writer.print( String.valueOf( span ) );
+                writer.print( "'>" );
+                writer.print( value.getRole() );
+                Unit unit = options.unitFor( value );
+                if ( unit != null && unit.getName().length() > 0 )
+                {
+                    renderUnit( writer, unit );
+                }
+                writer.print( "</td>" );
             }
-            else
+            writer.print( "</tr>" );
+            writer.print( "<tr>" );
+            for ( StatValue value : values )
             {
-                writer.append( "<th colspan='5'>" );
+                if ( value instanceof Counter )
+                {
+                    writeColumnHead( writer, options, value, "hits" );
+                    writeColumnHead( writer, options, value, "sum" );
+                }
+                writeColumnHead( writer, options, value, "min" );
+                writeColumnHead( writer, options, value, "max" );
+                writeColumnHead( writer, options, value, "mean" );
+                writeColumnHead( writer, options, value, "deviation" );
+                writeColumnHead( writer, options, value, "value" );
             }
-            writer.append( value.getRole() );
-            if ( value.getUnit() != null )
-            {
-                writer.append( " (" );
-                writer.append( value.getUnit() );
-                writer.append( ")" );
-            }
-            writer.append( "</th>" );
+            writer.println( "</tr></thead>" );
         }
-        writer.append( "</tr>" );
-        writer.append( "<tr>" );
-        for ( StatValue value : values )
+    }
+
+    private void writeColumnHead( PrintWriter writer, Options options, StatValue value, String attribute )
+    {
+        if ( options.render( value, attribute ) )
         {
-            writer.append( "<th>value</th><th>min</th><th>max</th><th>mean</th><th>dev.</th>" );
-            if ( value instanceof Counter )
-            {
-                writer.append( "<th>sum</th><th>hits</th>" );
-            }
+            writer.print( "<th>" );
+            writer.print( attribute );
+            writer.print( "</th>" );
         }
-        writer.append( "</tr></thead><tbody><tr>" );
+    }
+
+    protected void renderUnit( PrintWriter writer, Unit unit )
+    {
+        writer.print( " (" );
+        writer.print( unit.getName() );
+        writer.print( ")" );
     }
 
     /**
      * {@inheritDoc}
      *
      * @see org.apache.commons.monitoring.reporting.AbstractRenderer#render(java.io.PrintWriter,
-     * org.apache.commons.monitoring.StatValue)
+     * org.apache.commons.monitoring.StatValue, String, Number,
+     * org.apache.commons.monitoring.reporting.Renderer.Options)
      */
     @Override
-    protected void render( PrintWriter writer, StatValue value )
+    protected void render( PrintWriter writer, StatValue value, String attribute, Number number, Options options )
     {
-        writer.append( "<td title='" );
-        writer.append( value.getRole() );
-        writer.append( "'>" );
-        writer.append( String.valueOf( value.get() ) );
-        writer.append( "</td><td>" );
-        writer.append( String.valueOf( value.getMin() ) );
-        writer.append( "</td><td>" );
-        writer.append( String.valueOf( value.getMax() ) );
-        writer.append( "</td><td>" );
-        writer.append( String.valueOf( value.getMean() ) );
-        writer.append( "</td><td>" );
-        writer.append( String.valueOf( value.getStandardDeviation() ) );
-        if ( value instanceof Counter )
-        {
-            Counter counter = (Counter) value;
-            writer.append( "</td><td>" );
-            writer.append( String.valueOf( counter.getSum() ) );
-            writer.append( "</td><td>" );
-            writer.append( String.valueOf( counter.getHits() ) );
-        }
-        writer.append( "</td>" );
-
+        writer.print( "<td>" );
+        super.render( writer, value, attribute, number, options );
+        writer.print( "</td>" );
     }
 
     /**
@@ -155,19 +178,19 @@ public class HtmlRenderer
     @Override
     protected void render( PrintWriter writer, Key key )
     {
-        writer.append( "<td>" );
-        writer.append( key.getName() );
-        writer.append( "</td><td>" );
+        writer.print( "<td>" );
+        writer.print( key.getName() );
+        writer.print( "</td><td>" );
         if ( key.getCategory() != null )
         {
-            writer.append( key.getCategory() );
+            writer.print( key.getCategory() );
         }
-        writer.append( "</td><td>" );
+        writer.print( "</td><td>" );
         if ( key.getSubsystem() != null )
         {
-            writer.append( key.getSubsystem() );
+            writer.print( key.getSubsystem() );
         }
-        writer.append( "</td>" );
+        writer.print( "</td>" );
     }
 
     /**
@@ -177,11 +200,12 @@ public class HtmlRenderer
      * java.lang.Class)
      */
     @Override
-    protected void hasNext( PrintWriter writer, Class type )
+    protected void hasNext( PrintWriter writer, Class<?> type )
     {
         if ( type == Monitor.class )
         {
-            writer.append( "</tr><tr>" );
+            writer.println( "</tr>" );
+            writer.println( "<tr>" );
         }
     }
 
@@ -190,7 +214,7 @@ public class HtmlRenderer
      */
     protected void documentFoot( PrintWriter writer )
     {
-        writer.append( "</body></html>" );
+        writer.print( "</body></html>" );
     }
 
 }
