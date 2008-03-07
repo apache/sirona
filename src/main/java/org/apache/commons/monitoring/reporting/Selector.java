@@ -35,10 +35,15 @@ import java.util.StringTokenizer;
 public class Selector
 {
 
+    /**
+     * 
+     */
+    private static final String SEP = "/";
     private String path;
 
     /**
      * Constructor
+     *
      * @param path
      */
     public Selector( String path )
@@ -53,12 +58,25 @@ public class Selector
     public Object select( Object resource )
     {
         Stack<String> stack = new Stack<String>();
-        StringTokenizer tokenizer = new StringTokenizer( path, "/" );
-        while ( tokenizer.hasMoreTokens() )
+        StringTokenizer tokenizer = new StringTokenizer( path, SEP, true );
+        String previous = null;
+        while( tokenizer.hasMoreTokens() )
         {
-            stack.push( tokenizer.nextToken() );
+            String next = tokenizer.nextToken();
+            if ( SEP.equals( next ) )
+            {
+                if ( SEP.equals( previous ) )
+                {
+                    stack.push( "" );
+                }
+            }
+            else
+            {
+                stack.push( next );
+            }
+            previous = next;
         }
-        if ( path.endsWith( "/" ) )
+        if ( path.endsWith( SEP ) )
         {
             stack.push( "" );
         }
@@ -67,7 +85,7 @@ public class Selector
         return select( resource, stack );
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     protected Object select( Object resource, Stack<String> path )
         throws IllegalArgumentException
     {
@@ -92,7 +110,7 @@ public class Selector
             throw new IllegalArgumentException( "Failed to invoke " + accessor );
         }
 
-        if ( resource instanceof Collection && ! path.isEmpty() )
+        if ( resource instanceof Collection && !path.isEmpty() )
         {
             Collection input = (Collection) resource;
             Collection result = new ArrayList( input.size() );
@@ -115,13 +133,15 @@ public class Selector
     }
 
     /**
-     * Retrieve a getter method that only requires String parameters
+     * Retrieve a getter method that only requires String parameters. When multiple methods
+     * match, the on with the most parameters is returned, for example
+     * getMonitor( String, String, String ) in preference to getMonitor( String )
      *
      * @param resource
      * @param name
      * @return
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     protected Method getAccessor( Object resource, String name )
     {
         String accessor = "get";
@@ -130,6 +150,7 @@ public class Selector
             accessor += Character.toUpperCase( name.charAt( 0 ) ) + name.substring( 1 );
         }
         Method[] methods = resource.getClass().getMethods();
+        Method bestMatch = null;
         for ( int i = 0; i < methods.length; i++ )
         {
             Method method = methods[i];
@@ -147,10 +168,17 @@ public class Selector
                 }
                 if ( stringsOnly )
                 {
-                    return method;
+                    if ( bestMatch == null || bestMatch.getParameterTypes().length < method.getParameterTypes().length )
+                    {
+                        bestMatch = method;
+                    }
                 }
             }
         }
-        throw new IllegalArgumentException( "No accessor for " + name + " on resource " + resource );
+        if ( bestMatch == null )
+        {
+            throw new IllegalArgumentException( "No accessor for " + name + " on resource " + resource );
+        }
+        return bestMatch;
     }
 }

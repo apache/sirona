@@ -17,6 +17,7 @@
 
 package org.apache.commons.monitoring;
 
+import org.apache.commons.monitoring.Monitor.Key;
 import org.apache.commons.monitoring.impl.repositories.DefaultRepository;
 
 /**
@@ -45,22 +46,27 @@ public final class Monitoring
 
     public static Monitor getMonitor( String name )
     {
-        return getMonitor( name, null, null );
+        return getMonitor( name, Key.DEFAULT, Key.DEFAULT );
     }
 
     public static StopWatch start( String name )
     {
-        return start( name, null, null );
+        return start( name, Key.DEFAULT, Key.DEFAULT );
     }
 
     public static StopWatch start( String name, String category )
     {
-        return start( name, category, null );
+        return start( name, category, Key.DEFAULT );
     }
 
     public static StopWatch start( String name, String category, String subsystem )
     {
-        return repository.start( getMonitor( name, category, subsystem ) );
+        return start( getMonitor( name, category, subsystem ) );
+    }
+
+    public static StopWatch start( Monitor monitor )
+    {
+        return repository.start( monitor );
     }
 
     public static void setRepository( Repository repository )

@@ -110,6 +110,8 @@ public interface Monitor
      */
     public static class Key
     {
+        public final static String DEFAULT = "";
+
         private final String name;
 
         private final String category;
@@ -119,9 +121,13 @@ public interface Monitor
         public Key( String name, String category, String subsystem )
         {
             super();
+            if (name == null)
+            {
+                throw new IllegalArgumentException( "A name must be provided" );
+            }
             this.name = name;
-            this.category = category;
-            this.subsystem = subsystem;
+            this.category = category != null ? category : DEFAULT;
+            this.subsystem = subsystem != null ? subsystem : DEFAULT;;
         }
 
         @Override

@@ -18,6 +18,8 @@
 package org.apache.commons.monitoring.reporting;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 import org.apache.commons.monitoring.Repository;
 
@@ -40,14 +42,25 @@ public abstract class SelectorPeriodicLogger
      * @param repository the target monitoring repository
      * @param output the output file
      */
-    public SelectorPeriodicLogger( long period, Repository.Observable repository, String[] selectors )
+    public SelectorPeriodicLogger( long period, Repository.Observable repository, List<String> selectors )
     {
         super( period, repository );
-        this.selectors = new Selector[selectors.length];
-        for ( int i = 0; i < selectors.length; i++ )
+        this.selectors = new Selector[selectors.size()];
+        int i = 0;
+        for ( String path : selectors )
         {
-            this.selectors[i] = new Selector( selectors[i] );
+            this.selectors[i++] = new Selector( path );
         }
+    }
+
+    /**
+     * @param period the period (in ms) to log the monitoring state
+     * @param repository the target monitoring repository
+     * @param output the output file
+     */
+    public SelectorPeriodicLogger( long period, Repository.Observable repository, String[] selectors )
+    {
+        this( period, repository, Arrays.asList( selectors ) );
     }
 
     /**
@@ -60,7 +73,7 @@ public abstract class SelectorPeriodicLogger
     protected final void log( Repository period )
         throws IOException
     {
-        Object[] values = new Object[ selectors.length ];
+        Object[] values = new Object[selectors.length];
         for ( int i = 0; i < selectors.length; i++ )
         {
             values[i] = selectors[i].select( period );

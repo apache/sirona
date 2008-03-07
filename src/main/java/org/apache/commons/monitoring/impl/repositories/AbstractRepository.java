@@ -49,12 +49,12 @@ public abstract class AbstractRepository
 
     public Monitor getMonitor( String name )
     {
-        return getMonitor( name, null, null );
+        return getMonitor( name, Key.DEFAULT, Key.DEFAULT );
     }
 
     public Monitor getMonitor( String name, String category )
     {
-        return getMonitor( name, category, null );
+        return getMonitor( name, category, Key.DEFAULT );
     }
 
     public Monitor getMonitor( String name, String category, String subsystem )

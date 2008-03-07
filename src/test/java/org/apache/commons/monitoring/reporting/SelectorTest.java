@@ -37,7 +37,7 @@ public class SelectorTest
         throws Exception
     {
         Repository repository = new DefaultRepository();
-        Selector selector = new Selector( "monitor/test/counter/performances" );
+        Selector selector = new Selector( "monitor/test///counter/performances" );
 
         repository.getMonitor( "test" ).getCounter( Monitor.PERFORMANCES ).add( 1234, Unit.NANOS );
 
@@ -66,7 +66,7 @@ public class SelectorTest
         throws Exception
     {
         Repository repository = new DefaultRepository();
-        Selector selector = new Selector( "monitor/test/counter/performances/" );
+        Selector selector = new Selector( "monitor/test///counter/performances/" );
 
         repository.getMonitor( "test" ).getCounter( Monitor.PERFORMANCES ).add( 1234, Unit.NANOS );
 
