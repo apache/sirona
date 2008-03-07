@@ -17,7 +17,9 @@
 
 package org.apache.commons.monitoring.reporting;
 
-import java.util.Locale;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
 
 import org.apache.commons.monitoring.StatValue;
 import org.apache.commons.monitoring.Unit;
@@ -40,13 +42,23 @@ public class OptionsSupport
         return true;
     }
 
-    public Locale getLocale()
-    {
-        return Locale.US;
-    }
 
     public Unit unitFor( StatValue value )
     {
         return value.getUnit();
     }
+
+    public NumberFormat getDecimalFormat()
+    {
+        // Force JS compatible format
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+        symbols.setDecimalSeparator( '.' );
+        return new DecimalFormat( "0.00", symbols );
+    }
+
+    public NumberFormat getNumberFormat()
+    {
+        return new DecimalFormat( "0" );
+    }
+
 }

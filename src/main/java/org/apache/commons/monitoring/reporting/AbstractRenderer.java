@@ -18,8 +18,6 @@
 package org.apache.commons.monitoring.reporting;
 
 import java.io.PrintWriter;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -189,7 +187,8 @@ public abstract class AbstractRenderer
                 l = l / unit.getScale();
             }
         }
-        writer.append( NumberFormat.getInstance( options.getLocale() ).format( l ) );
+
+        writer.append( options.getNumberFormat().format( l ) );
     }
 
     private void renderInternal( PrintWriter writer, StatValue value, String attribute, double d, Options options,
@@ -208,6 +207,7 @@ public abstract class AbstractRenderer
                 d = d / unit.getScale();
             }
         }
-        writer.append( DecimalFormat.getNumberInstance( options.getLocale() ).format( d ) );
+
+        writer.append( options.getDecimalFormat().format( d ) );
     }
 }

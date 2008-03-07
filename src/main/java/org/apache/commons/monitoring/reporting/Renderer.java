@@ -18,9 +18,9 @@
 package org.apache.commons.monitoring.reporting;
 
 import java.io.PrintWriter;
+import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Locale;
 
 import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.StatValue;
@@ -47,6 +47,8 @@ public interface Renderer
 
         Unit unitFor( StatValue value );
 
-        Locale getLocale();
+        NumberFormat getNumberFormat();
+
+        NumberFormat getDecimalFormat();
     }
 }

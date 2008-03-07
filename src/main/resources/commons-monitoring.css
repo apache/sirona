@@ -76,3 +76,11 @@ thead th.headerSortDown {
     border: solid 1px #8dbdd8;
     font-size: 0.8em;
 }
+
+tbody tr td:first-child {
+    text-align: left;
+}
+
+tbody tr td {
+    text-align: right;
+}

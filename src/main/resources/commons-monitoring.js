@@ -15,15 +15,13 @@
  * limitations under the License.
  */
 
+var myTextExtraction = function(node)
+{
+    return node.childNodes[0].childNodes[0].innerHTML;
+}
+
+
 $(document).ready(function()
 {
-    $("#monitoring").tablesorter( { widgets: ['zebra'] } );
-    // TODO add a select unit feature, as ns are far too precise in many cases
-    /* $("#monitoring thead td .unit").each( function()
-    {
-    	if ($(this).text() === "ns")
-    	{
-    		$(this).html( "<select><option>ns</option><option>µs</option><option>ms</option><option>s</option></select>" );
-    	}
-    } ); */
+    $("#monitoring").tablesorter( { widgets: ['zebra'], sortForce: 1 } );
 } );

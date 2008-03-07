@@ -137,7 +137,7 @@ public class HtmlRenderer
         }
     }
 
-    private void writeColumnHead( PrintWriter writer, Options options, StatValue value, String attribute )
+    protected void writeColumnHead( PrintWriter writer, Options options, StatValue value, String attribute )
     {
         if ( options.render( value, attribute ) )
         {

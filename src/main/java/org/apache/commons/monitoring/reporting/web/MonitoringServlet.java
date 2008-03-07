@@ -23,7 +23,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.concurrent.ConcurrentHashMap;
@@ -136,74 +135,7 @@ public class MonitoringServlet
      */
     protected Options getOptions( final HttpServletRequest request )
     {
-        return new OptionsSupport()
-        {
-            private List<String> roles;
-
-            private List<String> categories;
-
-            private List<String> subsystems;
-
-            private Locale locale;
-
-            {
-                String[] values = request.getParameterValues( "role" );
-                roles = values != null ? Arrays.asList( values ) : Collections.<String> emptyList();
-                values = request.getParameterValues( "category" );
-                categories = values != null ? Arrays.asList( values ) : Collections.<String> emptyList();
-                values = request.getParameterValues( "subsystem" );
-                subsystems = values != null ? Arrays.asList( values ) : Collections.<String> emptyList();
-                locale = request.getLocale();
-            }
-
-            public Locale getLocale()
-            {
-                return locale;
-            }
-
-            public boolean render( Object object )
-            {
-                if ( object instanceof StatValue )
-                {
-                    return roles.isEmpty() || roles.contains( ( (StatValue) object ).getRole() );
-                }
-                if ( object instanceof Monitor )
-                {
-                    Key key = ( (Monitor) object ).getKey();
-                    return ( categories.isEmpty() || categories.contains( key.getCategory() ) )
-                        && ( subsystems.isEmpty() || subsystems.contains( key.getSubsystem() ) );
-                }
-                return true;
-            }
-
-            public boolean render( StatValue value, String attribute )
-            {
-                String hide = request.getParameter( value.getRole() + "." + attribute );
-                if (hide != null)
-                {
-                    return Boolean.parseBoolean( hide );
-                }
-                return true;
-            }
-
-            public Unit unitFor( StatValue value )
-            {
-                String unitName = request.getParameter( value.getRole() + ".unit" );
-                if ( unitName != null )
-                {
-                    if ( value.getUnit() != null )
-                    {
-                        Unit unit = value.getUnit().getDerived( unitName );
-                        if ( unit != null )
-                        {
-                            return unit;
-                        }
-                    }
-                }
-                return value.getUnit();
-            }
-
-        };
+        return new HttpSerlvetRequestOptions( request );
     }
 
     protected List<String> getAcceptedMimeTypes( HttpServletRequest request )
@@ -233,6 +165,74 @@ public class MonitoringServlet
             mimeTypes.add( 0, "text/html" );
         }
         return mimeTypes;
+    }
+
+    protected class HttpSerlvetRequestOptions
+        extends OptionsSupport
+    {
+        protected final HttpServletRequest request;
+
+        protected List<String> roles;
+
+        protected List<String> categories;
+
+        protected List<String> subsystems;
+
+        /**
+         * @param request
+         */
+        public HttpSerlvetRequestOptions( HttpServletRequest request )
+        {
+            this.request = request;
+            String[] values = request.getParameterValues( "role" );
+            roles = values != null ? Arrays.asList( values ) : Collections.<String> emptyList();
+            values = request.getParameterValues( "category" );
+            categories = values != null ? Arrays.asList( values ) : Collections.<String> emptyList();
+            values = request.getParameterValues( "subsystem" );
+            subsystems = values != null ? Arrays.asList( values ) : Collections.<String> emptyList();
+        }
+
+        public boolean render( Object object )
+        {
+            if ( object instanceof StatValue )
+            {
+                return roles.isEmpty() || roles.contains( ( (StatValue) object ).getRole() );
+            }
+            if ( object instanceof Monitor )
+            {
+                Key key = ( (Monitor) object ).getKey();
+                return ( categories.isEmpty() || categories.contains( key.getCategory() ) )
+                    && ( subsystems.isEmpty() || subsystems.contains( key.getSubsystem() ) );
+            }
+            return true;
+        }
+
+        public boolean render( StatValue value, String attribute )
+        {
+            String hide = request.getParameter( value.getRole() + "." + attribute );
+            if (hide != null)
+            {
+                return Boolean.parseBoolean( hide );
+            }
+            return true;
+        }
+
+        public Unit unitFor( StatValue value )
+        {
+            String unitName = request.getParameter( value.getRole() + ".unit" );
+            if ( unitName != null )
+            {
+                if ( value.getUnit() != null )
+                {
+                    Unit unit = value.getUnit().getDerived( unitName );
+                    if ( unit != null )
+                    {
+                        return unit;
+                    }
+                }
+            }
+            return value.getUnit();
+        }
     }
 
 }
