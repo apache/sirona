@@ -17,51 +17,55 @@
 
 package org.apache.commons.monitoring.aop;
 
-import org.aopalliance.intercept.MethodInterceptor;
-import org.aopalliance.intercept.MethodInvocation;
+import java.lang.reflect.Method;
+
 import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.Repository;
 import org.apache.commons.monitoring.StopWatch;
 import org.apache.commons.monitoring.Unit;
 
 /**
- * An aopalliance interceptor for method invocation to monitor performances and
- * failures.
+ * A method interceptor that compute method invocation performances.
+ * <p>
+ * Concrete implementation will adapt the method interception API to
+ * this class requirement.
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public class PerformanceInterceptor
-    implements MethodInterceptor
+public abstract class AbstractPerformanceInterceptor<T>
 {
+
     /** Role for the invocation failure counter */
     private static final String FAILURE = "failure";
 
-    private Repository repository;
+    protected Repository repository;
 
-    private String category;
+    protected String category;
 
-    private String subsystem;
+    protected String subsystem;
+
+    public AbstractPerformanceInterceptor()
+    {
+        super();
+    }
 
     /**
-     * {@inheritDoc}
-     *
-     * @see org.aopalliance.intercept.MethodInterceptor#invoke(org.aopalliance.intercept.MethodInvocation)
+     * API neutral method invocation
      */
-    public final Object invoke( MethodInvocation invocation )
+    protected Object doInvoke( T invocation )
         throws Throwable
     {
         String name = getMonitorName( invocation );
         if ( name == null )
         {
-            return invocation.proceed();
+            return proceed( invocation );
         }
         Monitor monitor = repository.getMonitor( name, category, subsystem );
         StopWatch stopwatch = repository.start( monitor );
-
         Throwable error = null;
         try
         {
-            return invocation.proceed();
+            return proceed( invocation );
         }
         catch ( Throwable t )
         {
@@ -76,27 +80,40 @@ public class PerformanceInterceptor
     }
 
     /**
+     * @param invocation
+     * @return
+     */
+    protected abstract Object proceed( T invocation )
+        throws Throwable;
+
+    /**
+     * @param invocation
+     * @return
+     */
+    protected abstract String getMonitorName( T invocation );
+
+    /**
+     * Compute the monitor name associated to this method invocation
+     *
+     * @param method method being invoked
+     * @return monitor name. If <code>null</code>, nothing will be monitored
+     */
+    protected String getMonitorName( Method method )
+    {
+        return method.getDeclaringClass().getSimpleName() + "." + method.getName();
+    }
+
+    /**
      * @param monitor the monitor associated to the method invocation
      * @param error Throwable thrown by the method invocation if any
      * @param duration the duration of the method invocation
      */
-    private void beforeReturning( Monitor monitor, Throwable error, long duration )
+    protected void beforeReturning( Monitor monitor, Throwable error, long duration )
     {
         if ( error != null )
         {
             monitor.getCounter( FAILURE ).add( duration, Unit.NANOS );
         }
-    }
-
-    /**
-     * Compute the monitor name associated to this method invocation
-     *
-     * @param invocation method being invoked
-     * @return monitor name. If <code>null</code>, nothing will be monitored
-     */
-    protected String getMonitorName( MethodInvocation invocation )
-    {
-        return invocation.getClass().getSimpleName() + "." + invocation.getMethod().getName();
     }
 
     /**
@@ -118,5 +135,4 @@ public class PerformanceInterceptor
     {
         this.subsystem = subsystem;
     }
-
 }
