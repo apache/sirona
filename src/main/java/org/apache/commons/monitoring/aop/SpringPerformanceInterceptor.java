@@ -59,6 +59,7 @@ public class SpringPerformanceInterceptor
      */
     @Override
     protected Object proceed( MethodInvocation invocation )
+    throws Throwable
     {
         return invocation.proceed();
     }
