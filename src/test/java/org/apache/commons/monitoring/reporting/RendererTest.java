@@ -96,7 +96,7 @@ public class RendererTest
         counter.add( 1, Unit.MICROS );
         StringWriter writer = new StringWriter();
         renderer.render( new PrintWriter( writer ), counter, "mean", counter.getMean(), options );
-        assertEquals( " mean=\"500.5\"", writer.toString() );
+        assertEquals( " mean=\"500.50\"", writer.toString() );
     }
 
     protected void assertExpectedRendering( Renderer renderer, String format )

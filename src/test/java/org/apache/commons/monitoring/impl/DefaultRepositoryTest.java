@@ -20,11 +20,12 @@ package org.apache.commons.monitoring.impl;
 import java.util.Collection;
 import java.util.Set;
 
+import junit.framework.TestCase;
+
 import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.Repository;
+import org.apache.commons.monitoring.Monitor.Key;
 import org.apache.commons.monitoring.impl.repositories.DefaultRepository;
-
-import junit.framework.TestCase;
 
 /**
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
@@ -44,7 +45,7 @@ public class DefaultRepositoryTest
         Set<String> categories = repository.getCategories();
         assertTrue( categories.contains( "test" ) );
         assertTrue( categories.contains( "junit" ) );
-        assertTrue( categories.contains( null ) );
+        assertTrue( categories.contains( Key.DEFAULT ) );
         assertEquals( 3, categories.size() );
 
         Collection<Monitor> monitors = repository.getMonitorsFromCategory( "test" );
@@ -63,7 +64,7 @@ public class DefaultRepositoryTest
         Set<String> subsystems = repository.getSubSystems();
         assertTrue( subsystems.contains( "test" ) );
         assertTrue( subsystems.contains( "fake" ) );
-        assertTrue( subsystems.contains( null ) );
+        assertTrue( subsystems.contains( Key.DEFAULT ) );
         assertEquals( 3, subsystems.size() );
 
         Collection<Monitor> monitors = repository.getMonitorsFromSubSystem( "test" );

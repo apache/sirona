@@ -89,6 +89,11 @@
     <url>http://svn.apache.org/viewvc/commons/sandbox/monitoring/trunk/</url>
   </scm>
   <build>
+  	<resources>
+  	  <resource>
+  	    <directory>${basedir}/src/main/resources</directory>
+  	  </resource>
+  	</resources>
     <plugins>
       <!-- TODO : investigate OSGi support
         <plugin>
