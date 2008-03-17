@@ -17,8 +17,8 @@
 
 package org.apache.commons.monitoring.reporting;
 
-import java.io.PrintWriter;
 import java.util.Collection;
+import java.util.List;
 
 import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.StatValue;
@@ -28,80 +28,86 @@ public class JsonRenderer
     extends AbstractRenderer
 {
     @Override
-    public void render( PrintWriter writer, Collection<Monitor> monitors, Options options )
+    public void render( Context ctx, Collection<Monitor> monitors, Options options )
     {
-        writer.print( "[" );
-        super.render( writer, monitors, options );
-        writer.print( "]" );
+        ctx.print( "[" );
+        super.render( ctx, monitors, options );
+        ctx.print( "]" );
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    protected void hasNext( PrintWriter writer, Class type )
+    protected void hasNext( Context ctx, Class type )
     {
-        writer.print( ',' );
+        ctx.print( "," );
     }
 
     @Override
-    public void render( PrintWriter writer, Monitor monitor, Options options )
+    public void render( Context ctx, Monitor monitor, Options options, List<String> roles )
     {
-        writer.print( "{" );
-        if ( renderStatValues( writer, monitor, options ) > 0 )
+        render( ctx, monitor, options );
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void render( Context ctx, Monitor monitor, Options options )
+    {
+        ctx.print( "{" );
+        renderStatValues( ctx, monitor, options );
+        Collection<String> roles = (Collection<String>) ctx.get( "roles" );
+        if ( roles.size() > 0 )
         {
-            writer.print( "," );
+            ctx.print( "," );
         }
-        render( writer, monitor.getKey() );
-        writer.print( "}" );
+        render( ctx, monitor.getKey() );
+        ctx.print( "}" );
     }
 
     @Override
-    public void render( PrintWriter writer, Key key )
+    public void render( Context ctx, Key key )
     {
-        writer.print( "key:{name:\"" );
-        writer.print( key.getName() );
+        ctx.print( "key:{name:\"" );
+        ctx.print( key.getName() );
         if ( key.getCategory() != null )
         {
-            writer.print( "\",category:\"" );
-            writer.print( key.getCategory() );
+            ctx.print( "\",category:\"" );
+            ctx.print( key.getCategory() );
         }
         if ( key.getSubsystem() != null )
         {
-            writer.print( "\",subsystem:\"" );
-            writer.print( key.getSubsystem() );
+            ctx.print( "\",subsystem:\"" );
+            ctx.print( key.getSubsystem() );
         }
-        writer.print( "\"}" );
+        ctx.print( "\"}" );
     }
 
     @Override
-    public void render( PrintWriter writer, StatValue value, Options options )
+    public void render( Context ctx, StatValue value, Options options )
     {
-        writer.print( value.getRole() );
-        writer.print( ":{" );
-        super.render( writer, value, options );
-        writer.print( "}" );
+        ctx.print( value.getRole() );
+        ctx.print( ":{" );
+        super.render( ctx, value, options );
+        ctx.print( "}" );
     }
 
-    /** Current rendering state */
-    private StatValue currentValue;
-    private boolean firstAttribute;
-
     @Override
-    protected void render( PrintWriter writer, StatValue value, String attribute, Number number, Options options, int ratio )
+    protected void render( Context ctx, StatValue value, String attribute, Number number, Options options, int ratio )
     {
+        StatValue currentValue = (StatValue) ctx.get( "currentValue" );
         if (currentValue != value)
         {
-            currentValue = value;
-            firstAttribute = true;
+            ctx.put( "currentValue", value );
+            ctx.put( "firstAttribute", Boolean.TRUE );
         }
-
-        if (!firstAttribute)
+        Boolean firstAttribute = (Boolean) ctx.get( "firstAttribute" );
+        if (!firstAttribute.booleanValue())
         {
-            writer.print( ',' );
+            ctx.print( "," );
         }
-        writer.print( attribute );
-        writer.print( ":\"" );
-        super.render( writer, value, attribute, number, options, ratio );
-        writer.print( '\"' );
-        firstAttribute = false;
+        ctx.print( attribute );
+        ctx.print( ":\"" );
+        super.render( ctx, value, attribute, number, options, ratio );
+        ctx.print( "\"" );
+        ctx.put( "firstAttribute", Boolean.FALSE );
     }
 }

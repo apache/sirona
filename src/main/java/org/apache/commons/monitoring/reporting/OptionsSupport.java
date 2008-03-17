@@ -21,6 +21,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 
+import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.StatValue;
 import org.apache.commons.monitoring.Unit;
 
@@ -32,12 +33,17 @@ import org.apache.commons.monitoring.Unit;
 public class OptionsSupport
     implements Renderer.Options
 {
-    public boolean render( Object object )
+    public boolean render( Monitor monitor )
     {
         return true;
     }
 
     public boolean render( StatValue value, String attribute )
+    {
+        return true;
+    }
+
+    public boolean renderRole( String role )
     {
         return true;
     }

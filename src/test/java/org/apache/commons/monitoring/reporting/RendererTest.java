@@ -95,7 +95,8 @@ public class RendererTest
         counter.add( 1, Unit.MILLIS );
         counter.add( 1, Unit.MICROS );
         StringWriter writer = new StringWriter();
-        renderer.render( new PrintWriter( writer ), counter, "mean", counter.getMean(), options );
+        Context ctx = new Context( new PrintWriter( writer ) );
+        renderer.render( ctx, counter, "mean", counter.getMean(), options );
         assertEquals( " mean=\"500.50\"", writer.toString() );
     }
 
@@ -103,7 +104,8 @@ public class RendererTest
         throws Exception
     {
         StringWriter out = new StringWriter();
-        renderer.render( new PrintWriter( out ), monitors );
+        Context ctx = new Context( new PrintWriter( out ) );
+        renderer.render( ctx, monitors );
         String actual = out.toString();
         actual = StringUtils.remove( StringUtils.remove( actual, "\n" ), "\r" );
 

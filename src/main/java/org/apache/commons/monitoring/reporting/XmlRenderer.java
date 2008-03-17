@@ -17,8 +17,8 @@
 
 package org.apache.commons.monitoring.reporting;
 
-import java.io.PrintWriter;
 import java.util.Collection;
+import java.util.List;
 
 import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.StatValue;
@@ -30,60 +30,66 @@ public class XmlRenderer
 
     /**
      * {@inheritDoc}
-     * @see org.apache.commons.monitoring.reporting.AbstractRenderer#render(java.io.PrintWriter, java.util.Collection, org.apache.commons.monitoring.reporting.Renderer.Options)
+     * @see org.apache.commons.monitoring.reporting.AbstractRenderer#render(java.io.Context, java.util.Collection, org.apache.commons.monitoring.reporting.Renderer.Options)
      */
     @Override
-    public void render( PrintWriter writer, Collection<Monitor> monitors, Options options )
+    public void render( Context ctx, Collection<Monitor> monitors, Options options )
     {
-        writer.print( "<monitors>" );
-        super.render( writer, monitors, options );
-        writer.print( "</monitors>" );
+        ctx.print( "<monitors>" );
+        super.render( ctx, monitors, options );
+        ctx.print( "</monitors>" );
     }
 
     @Override
-    public void render( PrintWriter writer, Monitor monitor, Options options )
+    public void render( Context ctx, Monitor monitor, Options options, List<String> roles )
     {
-        writer.print( "<monitor " );
-        super.render( writer, monitor, options );
-        writer.print( "</monitor>" );
+        render( ctx, monitor, options );
     }
 
     @Override
-    public void render( PrintWriter writer, Key key )
+    public void render( Context ctx, Monitor monitor, Options options )
     {
-        writer.print( "name=\"" );
-        writer.print( key.getName() );
+        ctx.print( "<monitor " );
+        super.render( ctx, monitor, options );
+        ctx.print( "</monitor>" );
+    }
+
+    @Override
+    public void render( Context ctx, Key key )
+    {
+        ctx.print( "name=\"" );
+        ctx.print( key.getName() );
         if ( key.getCategory() != null )
         {
-            writer.print( "\" category=\"" );
-            writer.print( key.getCategory() );
+            ctx.print( "\" category=\"" );
+            ctx.print( key.getCategory() );
         }
         if ( key.getSubsystem() != null )
         {
-            writer.print( "\" subsystem=\"" );
-            writer.print( key.getSubsystem() );
+            ctx.print( "\" subsystem=\"" );
+            ctx.print( key.getSubsystem() );
         }
-        writer.print( "\">" );
+        ctx.print( "\">" );
     }
 
 
     @Override
-    public void render( PrintWriter writer, StatValue value, Options options )
+    public void render( Context ctx, StatValue value, Options options )
     {
-        writer.print( "<" );
-        writer.print( value.getRole() );
-        super.render( writer, value, options );
-        writer.print( "/>" );
+        ctx.print( "<" );
+        ctx.print( value.getRole() );
+        super.render( ctx, value, options );
+        ctx.print( "/>" );
     }
 
     @Override
-    protected void render( PrintWriter writer, StatValue value, String attribute, Number number, Options options, int ratio )
+    protected void render( Context ctx, StatValue value, String attribute, Number number, Options options, int ratio )
     {
-        writer.print( ' ' );
-        writer.print( attribute );
-        writer.print( "=\"" );
-        super.render( writer, value, attribute, number, options, ratio );
-        writer.print( '\"' );
+        ctx.print( " " );
+        ctx.print( attribute );
+        ctx.print( "=\"" );
+        super.render( ctx, value, attribute, number, options, ratio );
+        ctx.print( "\"" );
     }
 
 }

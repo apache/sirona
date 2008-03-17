@@ -47,6 +47,7 @@ public class SelectorTest
         assertEquals( 1234L, counter.get() );
     }
 
+    @SuppressWarnings("unchecked")
     public void testCollectionPath()
         throws Exception
     {
@@ -74,6 +75,7 @@ public class SelectorTest
         assertEquals( "1234", value.toString() );
     }
 
+    @SuppressWarnings("unchecked")
     public void testMultiplePath()
     {
         Repository repository = new DefaultRepository();

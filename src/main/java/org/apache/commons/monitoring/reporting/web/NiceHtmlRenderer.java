@@ -17,9 +17,8 @@
 
 package org.apache.commons.monitoring.reporting.web;
 
-import java.io.PrintWriter;
-
 import org.apache.commons.monitoring.Unit;
+import org.apache.commons.monitoring.reporting.Context;
 import org.apache.commons.monitoring.reporting.HtmlRenderer;
 
 /**
@@ -53,10 +52,10 @@ public class NiceHtmlRenderer
     /**
      * {@inheritDoc}
      *
-     * @see org.apache.commons.monitoring.reporting.HtmlRenderer#documentHead(java.io.PrintWriter)
+     * @see org.apache.commons.monitoring.reporting.HtmlRenderer#documentHead(java.io.Context)
      */
     @Override
-    protected void documentHead( PrintWriter writer )
+    protected void documentHead( Context writer )
     {
         writer.println( "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" " );
         writer.println( "  \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">" );
@@ -92,7 +91,7 @@ public class NiceHtmlRenderer
     }
 
     @Override
-    protected void renderUnit( PrintWriter writer, Unit unit )
+    protected void renderUnit( Context writer, Unit unit )
     {
         writer.print( " <span class='unit'>(" );
         writer.print( unit.getName() );
@@ -102,10 +101,10 @@ public class NiceHtmlRenderer
     /**
      * {@inheritDoc}
      *
-     * @see org.apache.commons.monitoring.reporting.HtmlRenderer#tableStartTag(java.io.PrintWriter)
+     * @see org.apache.commons.monitoring.reporting.HtmlRenderer#tableStartTag(java.io.Context)
      */
     @Override
-    protected void tableStartTag( PrintWriter writer )
+    protected void tableStartTag( Context writer )
     {
         writer.println( "<table border='1' id='monitoring' cellspacing='1'>" );
     }

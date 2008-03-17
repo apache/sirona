@@ -37,6 +37,7 @@ import org.apache.commons.monitoring.Repository;
 import org.apache.commons.monitoring.StatValue;
 import org.apache.commons.monitoring.Unit;
 import org.apache.commons.monitoring.Monitor.Key;
+import org.apache.commons.monitoring.reporting.Context;
 import org.apache.commons.monitoring.reporting.HtmlRenderer;
 import org.apache.commons.monitoring.reporting.JsonRenderer;
 import org.apache.commons.monitoring.reporting.OptionsSupport;
@@ -107,7 +108,7 @@ public class MonitoringServlet
             String path = request.getPathInfo();
             Collection<Monitor> monitors = (Collection<Monitor>) new Selector( path ).select( repository );
             Renderer.Options options = getOptions( request );
-            renderer.render( response.getWriter(), monitors, options );
+            renderer.render( new Context( response.getWriter() ), monitors, options );
             return;
         }
     }
@@ -192,19 +193,11 @@ public class MonitoringServlet
             subsystems = values != null ? Arrays.asList( values ) : Collections.<String> emptyList();
         }
 
-        public boolean render( Object object )
+        public boolean render( Monitor monitor )
         {
-            if ( object instanceof StatValue )
-            {
-                return roles.isEmpty() || roles.contains( ( (StatValue) object ).getRole() );
-            }
-            if ( object instanceof Monitor )
-            {
-                Key key = ( (Monitor) object ).getKey();
-                return ( categories.isEmpty() || categories.contains( key.getCategory() ) )
-                    && ( subsystems.isEmpty() || subsystems.contains( key.getSubsystem() ) );
-            }
-            return true;
+            Key key = monitor.getKey();
+            return ( categories.isEmpty() || categories.contains( key.getCategory() ) )
+                && ( subsystems.isEmpty() || subsystems.contains( key.getSubsystem() ) );
         }
 
         public boolean render( StatValue value, String attribute )

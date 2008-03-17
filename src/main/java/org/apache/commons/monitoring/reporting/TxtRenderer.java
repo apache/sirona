@@ -17,8 +17,6 @@
 
 package org.apache.commons.monitoring.reporting;
 
-import java.io.PrintWriter;
-
 import org.apache.commons.monitoring.StatValue;
 import org.apache.commons.monitoring.Monitor.Key;
 
@@ -34,24 +32,24 @@ public class TxtRenderer
 
     /**
      * {@inheritDoc}
-     * @see org.apache.commons.monitoring.reporting.AbstractRenderer#render(org.apache.commons.monitoring.StatValue, java.lang.String)
+     * @see org.apache.commons.monitoring.reporting.AbstractRenderer#render(Context, java.lang.String)
      */
     @Override
-    public void render( PrintWriter writer, StatValue value, Options options )
+    public void render( Context ctx, StatValue value, Options options )
     {
-        writer.println( value.getRole() );
-        super.render( writer, value, options );
-        writer.println();
+        ctx.println( value.getRole() );
+        super.render( ctx, value, options );
+        ctx.println( "" );
     }
 
     @Override
-    protected void render( PrintWriter writer, StatValue value, String attribute, Number number, Options options, int ratio )
+    protected void render( Context ctx, StatValue value, String attribute, Number number, Options options, int ratio )
     {
-        writer.print( "    " );
-        writer.print( attribute );
-        writer.print( " : " );
-        super.render( writer, value, attribute, number, options, ratio );
-        writer.println();
+        ctx.print( "    " );
+        ctx.print( attribute );
+        ctx.print( " : " );
+        super.render( ctx, value, attribute, number, options, ratio );
+        ctx.println( "" );
     }
 
     /**
@@ -59,11 +57,11 @@ public class TxtRenderer
      * @see org.apache.commons.monitoring.reporting.AbstractRenderer#render(org.apache.commons.monitoring.Monitor.Key)
      */
     @Override
-    public void render( PrintWriter writer, Key key )
+    public void render( Context ctx, Key key )
     {
-        writer.println( HR );
-        writer.println( key.toString() );
-        writer.println( HR );
+        ctx.println( HR );
+        ctx.println( key.toString() );
+        ctx.println( HR );
     }
 
 }

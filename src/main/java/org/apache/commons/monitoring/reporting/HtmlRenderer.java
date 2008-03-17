@@ -17,10 +17,9 @@
 
 package org.apache.commons.monitoring.reporting;
 
-import java.io.PrintWriter;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.monitoring.Counter;
 import org.apache.commons.monitoring.Monitor;
@@ -38,170 +37,206 @@ public class HtmlRenderer
     /**
      * {@inheritDoc}
      *
-     * @see org.apache.commons.monitoring.reporting.AbstractRenderer#render(java.io.PrintWriter,
+     * @see org.apache.commons.monitoring.reporting.AbstractRenderer#render(java.io.Context,
      * java.util.Collection,
      * org.apache.commons.monitoring.reporting.Renderer.Options)
      */
     @Override
-    public void render( PrintWriter writer, Collection<Monitor> monitors, Options options )
+    public void render( Context ctx, Collection<Monitor> monitors, Options options )
     {
-        documentHead( writer );
-        tableStartTag( writer );
-        tableHead( writer, monitors, options );
-        tabelBody( writer, monitors, options );
-        tableEndTag( writer );
-        documentFoot( writer );
+        prepareRendering( ctx, monitors, options );
+        documentHead( ctx );
+        tableStartTag( ctx );
+        tableHead( ctx, monitors, options );
+        tabelBody( ctx, monitors, options );
+        tableEndTag( ctx );
+        documentFoot( ctx );
     }
 
-    protected void tabelBody( PrintWriter writer, Collection<Monitor> monitors, Options options )
+    protected void tabelBody( Context ctx, Collection<Monitor> monitors, Options options )
     {
-        writer.println( "<tbody><tr>" );
-        super.render( writer, monitors, options );
-        writer.println( "</tr></tbody>" );
-    }
-
-    /**
-     * @param writer
-     */
-    protected void tableStartTag( PrintWriter writer )
-    {
-        writer.print( "<table border='1'>" );
+        ctx.println( "<tbody><tr>" );
+        super.render( ctx, monitors, options );
+        ctx.println( "</tr></tbody>" );
     }
 
     /**
-     * @param writer
+     * @param ctx
      */
-    protected void tableEndTag( PrintWriter writer )
+    protected void tableStartTag( Context ctx )
     {
-        writer.println( "</table>" );
+        ctx.print( "<table border='1'>" );
     }
 
     /**
-     * @param writer
+     * @param ctx
      */
-    protected void documentHead( PrintWriter writer )
+    protected void tableEndTag( Context ctx )
     {
-        writer.println( "<html><body>" );
+        ctx.println( "</table>" );
     }
 
-    protected void tableHead( PrintWriter writer, Collection<Monitor> monitors, Options options )
+    /**
+     * @param ctx
+     */
+    protected void documentHead( Context ctx )
     {
-        Iterator<Monitor> it = monitors.iterator();
-        if ( it.hasNext() )
+        ctx.println( "<html><body>" );
+    }
+
+    @SuppressWarnings( "unchecked" )
+    protected void tableHead( Context ctx, Collection<Monitor> monitors, Options options )
+    {
+        Collection<String> roles = (Collection<String>) ctx.get( "roles" );
+        Map<String, Integer> columns = new HashMap<String, Integer>();
+
+        ctx.println( "<thead><tr><th rowspan='2'>name</th>" );
+        ctx.println( "<th rowspan='2'>category</th>" );
+        ctx.println( "<th rowspan='2'>subsystem</th>" );
+        for ( String role : roles )
         {
-            Monitor monitor = it.next();
-            writer
-                .println( "<thead><tr><th rowspan='2'>name</th><th rowspan='2'>category</th><th rowspan='2'>subsystem</th>" );
-            List<StatValue> values = getOrderedStatValues( monitor, options );
-            for ( StatValue value : values )
+            // Search the first monitor that has a StatValue for the role...
+            for ( Monitor monitor : monitors )
             {
-                int span = 0;
-                if ( value instanceof Counter )
+                StatValue value = monitor.getValue( role );
+                if ( value != null )
                 {
-                    span += options.render( value, "hits" ) ? 1 : 0;
-                    span += options.render( value, "sum" ) ? 1 : 0;
-                }
-                span += options.render( value, "min" ) ? 1 : 0;
-                span += options.render( value, "max" ) ? 1 : 0;
-                span += options.render( value, "mean" ) ? 1 : 0;
-                span += options.render( value, "deviation" ) ? 1 : 0;
-                span += options.render( value, "value" ) ? 1 : 0;
+                    int span = 0;
+                    if ( value instanceof Counter )
+                    {
+                        span += options.render( value, "hits" ) ? 1 : 0;
+                        span += options.render( value, "sum" ) ? 1 : 0;
+                    }
+                    span += options.render( value, "min" ) ? 1 : 0;
+                    span += options.render( value, "max" ) ? 1 : 0;
+                    span += options.render( value, "mean" ) ? 1 : 0;
+                    span += options.render( value, "deviation" ) ? 1 : 0;
+                    span += options.render( value, "value" ) ? 1 : 0;
 
-                writer.print( "<td colspan='" );
-                writer.print( String.valueOf( span ) );
-                writer.print( "'>" );
-                writer.print( value.getRole() );
-                Unit unit = options.unitFor( value );
-                if ( unit != null && unit.getName().length() > 0 )
-                {
-                    renderUnit( writer, unit );
+                    ctx.print( "<td colspan='" );
+                    ctx.print( String.valueOf( span ) );
+                    ctx.print( "'>" );
+                    ctx.print( value.getRole() );
+                    Unit unit = options.unitFor( value );
+                    if ( unit != null && unit.getName().length() > 0 )
+                    {
+                        renderUnit( ctx, unit );
+                    }
+                    ctx.print( "</td>" );
+                    columns.put( role, span );
+                    break;
                 }
-                writer.print( "</td>" );
             }
-            writer.print( "</tr>" );
-            writer.print( "<tr>" );
-            for ( StatValue value : values )
-            {
-                if ( value instanceof Counter )
-                {
-                    writeColumnHead( writer, options, value, "hits" );
-                    writeColumnHead( writer, options, value, "sum" );
-                }
-                writeColumnHead( writer, options, value, "min" );
-                writeColumnHead( writer, options, value, "max" );
-                writeColumnHead( writer, options, value, "mean" );
-                writeColumnHead( writer, options, value, "deviation" );
-                writeColumnHead( writer, options, value, "value" );
-            }
-            writer.println( "</tr></thead>" );
         }
+        ctx.print( "</tr>" );
+        ctx.print( "<tr>" );
+
+        for ( String role : roles )
+        {
+            for ( Monitor monitor : monitors )
+            {
+                StatValue value = monitor.getValue( role );
+                if ( value != null )
+                {
+                    if ( value instanceof Counter )
+                    {
+                        writeColumnHead( ctx, options, value, "hits" );
+                        writeColumnHead( ctx, options, value, "sum" );
+                    }
+                    writeColumnHead( ctx, options, value, "min" );
+                    writeColumnHead( ctx, options, value, "max" );
+                    writeColumnHead( ctx, options, value, "mean" );
+                    writeColumnHead( ctx, options, value, "deviation" );
+                    writeColumnHead( ctx, options, value, "value" );
+                    break;
+                }
+            }
+        }
+        ctx.println( "</tr></thead>" );
+        ctx.put( "columns", columns );
     }
 
-    protected void writeColumnHead( PrintWriter writer, Options options, StatValue value, String attribute )
+    protected void writeColumnHead( Context ctx, Options options, StatValue value, String attribute )
     {
         if ( options.render( value, attribute ) )
         {
-            writer.print( "<th>" );
-            writer.print( attribute );
-            writer.print( "</th>" );
+            ctx.print( "<th>" );
+            ctx.print( attribute );
+            ctx.print( "</th>" );
         }
     }
 
-    protected void renderUnit( PrintWriter writer, Unit unit )
+    protected void renderUnit( Context ctx, Unit unit )
     {
-        writer.print( " (" );
-        writer.print( unit.getName() );
-        writer.print( ")" );
+        ctx.print( " (" );
+        ctx.print( unit.getName() );
+        ctx.print( ")" );
     }
 
     @Override
-    protected void render( PrintWriter writer, StatValue value, String attribute, Number number, Options options, int ratio )
+    protected void render( Context ctx, StatValue value, String attribute, Number number, Options options, int ratio )
     {
-        writer.print( "<td>" );
-        super.render( writer, value, attribute, number, options, ratio );
-        writer.print( "</td>" );
+        ctx.print( "<td>" );
+        super.render( ctx, value, attribute, number, options, ratio );
+        ctx.print( "</td>" );
     }
 
     @Override
-    protected void render( PrintWriter writer, Key key )
+    protected void render( Context ctx, Key key )
     {
-        writer.print( "<td>" );
-        writer.print( key.getName() );
-        writer.print( "</td><td>" );
+        ctx.print( "<td>" );
+        ctx.print( key.getName() );
+        ctx.print( "</td><td>" );
         if ( key.getCategory() != null )
         {
-            writer.print( key.getCategory() );
+            ctx.print( key.getCategory() );
         }
-        writer.print( "</td><td>" );
+        ctx.print( "</td><td>" );
         if ( key.getSubsystem() != null )
         {
-            writer.print( key.getSubsystem() );
+            ctx.print( key.getSubsystem() );
         }
-        writer.print( "</td>" );
+        ctx.print( "</td>" );
     }
 
     /**
      * {@inheritDoc}
      *
-     * @see org.apache.commons.monitoring.reporting.AbstractRenderer#hasNext(java.io.PrintWriter,
+     * @see org.apache.commons.monitoring.reporting.AbstractRenderer#renderMissingValue(org.apache.commons.monitoring.reporting.Context,
+     * java.lang.String)
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    protected void renderMissingValue( Context ctx, String role )
+    {
+        Map<String, Integer> columns = (Map<String, Integer>) ctx.get( "columns" );
+        ctx.print( "<td colspan='" );
+        ctx.print( String.valueOf( columns.get( role ) ) );
+        ctx.print( "'>-</td>" );
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @see org.apache.commons.monitoring.reporting.AbstractRenderer#hasNext(java.io.Context,
      * java.lang.Class)
      */
     @Override
-    protected void hasNext( PrintWriter writer, Class<?> type )
+    protected void hasNext( Context ctx, Class<?> type )
     {
         if ( type == Monitor.class )
         {
-            writer.println( "</tr>" );
-            writer.println( "<tr>" );
+            ctx.println( "</tr>" );
+            ctx.println( "<tr>" );
         }
     }
 
     /**
-     * @param writer
+     * @param ctx
      */
-    protected void documentFoot( PrintWriter writer )
+    protected void documentFoot( Context ctx )
     {
-        writer.print( "</body></html>" );
+        ctx.print( "</body></html>" );
     }
 
 }

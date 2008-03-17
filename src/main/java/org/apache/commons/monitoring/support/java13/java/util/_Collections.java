@@ -26,6 +26,7 @@ import java.util.List;
  */
 public class _Collections
 {
+    @SuppressWarnings("unchecked")
     public static List emptyList()
     {
         return Collections.EMPTY_LIST;

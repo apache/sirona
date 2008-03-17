@@ -17,13 +17,15 @@
 
 package org.apache.commons.monitoring.reporting;
 
-import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.monitoring.Counter;
 import org.apache.commons.monitoring.Monitor;
@@ -39,54 +41,88 @@ import org.apache.commons.monitoring.Monitor.Key;
 public abstract class AbstractRenderer
     implements Renderer
 {
-    public final void render( PrintWriter writer, Collection<Monitor> monitors )
+    public final void render( Context ctx, Collection<Monitor> monitors )
     {
-        render( writer, monitors, new OptionsSupport() );
+        render( ctx, monitors, new OptionsSupport() );
     }
 
-    public void render( PrintWriter writer, Collection<Monitor> monitors, Options options )
+    public void render( Context ctx, Collection<Monitor> monitors, Options options )
     {
         int count = 0;
+        prepareRendering( ctx, monitors, options );
         for ( Monitor monitor : monitors )
         {
             if ( options.render( monitor ) )
             {
                 if ( count > 0 )
                 {
-                    hasNext( writer, Monitor.class );
+                    hasNext( ctx, Monitor.class );
                 }
-                render( writer, monitor, options );
+                render( ctx, monitor, options );
                 count++;
             }
         }
     }
 
-    protected void hasNext( PrintWriter writer, Class<?> type )
+    protected void prepareRendering( Context ctx, Collection<Monitor> monitors, Options options )
+    {
+        List<String> roles = getRoles( monitors, options );
+        ctx.put( "roles", roles );
+        ctx.put( "monitors", monitors );
+    }
+
+    protected void hasNext( Context ctx, Class<?> type )
     {
         // Nop
     }
 
-    protected void render( PrintWriter writer, Monitor monitor, Options options )
+    protected void render( Context ctx, Monitor monitor, Options options, List<String> roles )
     {
-        render( writer, monitor.getKey() );
-        renderStatValues( writer, monitor, options );
+        render( ctx, monitor, options );
     }
 
-    protected int renderStatValues( PrintWriter writer, Monitor monitor, Options options )
+    protected void render( Context ctx, Monitor monitor, Options options )
     {
+        render( ctx, monitor.getKey() );
+        renderStatValues( ctx, monitor, options );
+    }
 
-        // Sort values by role to ensure predictable result
-        List<StatValue> values = getOrderedStatValues( monitor, options );
-        for ( Iterator<StatValue> iterator = values.iterator(); iterator.hasNext(); )
+    protected void renderStatValues( Context ctx, Monitor monitor, Options options, List<String> roles )
+    {
+        renderStatValues( ctx, monitor, options );
+    }
+
+    @SuppressWarnings("unchecked")
+    protected void renderStatValues( Context ctx, Monitor monitor, Options options )
+    {
+        List<String> roles = (List<String>) ctx.get( "roles" );
+        for ( Iterator<String> iterator = roles.iterator(); iterator.hasNext(); )
         {
-            StatValue value = (StatValue) iterator.next();
-            render( writer, value, options );
+            String role = iterator.next();
+            StatValue value = monitor.getValue( role );
+            if (value != null)
+            {
+                render( ctx, value, options );
+            }
+            else
+            {
+                renderMissingValue( ctx, role );
+            }
             if ( iterator.hasNext() )
             {
-                hasNext( writer, StatValue.class );
+                hasNext( ctx, StatValue.class );
             }
         }
-        return values.size();
+    }
+
+    /**
+     * Render an expected value not supported by the current monitor
+     * @param ctx
+     * @param role
+     */
+    protected void renderMissingValue( Context ctx, String role )
+    {
+        // Nop
     }
 
     protected List<StatValue> getOrderedStatValues( Monitor monitor, Options options )
@@ -95,7 +131,7 @@ public abstract class AbstractRenderer
         for ( Iterator<StatValue> iterator = values.iterator(); iterator.hasNext(); )
         {
             StatValue value = (StatValue) iterator.next();
-            if ( !options.render( value ) )
+            if ( !options.renderRole( value.getRole() ) )
             {
                 iterator.remove();
             }
@@ -110,73 +146,73 @@ public abstract class AbstractRenderer
         return values;
     }
 
-    protected void render( PrintWriter writer, StatValue value, Options options )
+    protected void render( Context ctx, StatValue value, Options options )
     {
         if ( value instanceof Counter )
         {
             Counter counter = (Counter) value;
             if ( options.render( value, "hits" ) )
             {
-                render( writer, value, "hits", counter.getHits(), options, 0 );
+                render( ctx, value, "hits", counter.getHits(), options, 0 );
             }
             if ( options.render( value, "sum" ) )
             {
-                render( writer, value, "sum", counter.getSum(), options );
+                render( ctx, value, "sum", counter.getSum(), options );
             }
         }
         if ( options.render( value, "min" ) )
         {
-            render( writer, value, "min", value.getMin(), options );
+            render( ctx, value, "min", value.getMin(), options );
         }
         if ( options.render( value, "max" ) )
         {
-            render( writer, value, "max", value.getMax(), options );
+            render( ctx, value, "max", value.getMax(), options );
         }
         if ( options.render( value, "mean" ) )
         {
-            render( writer, value, "mean", value.getMean(), options );
+            render( ctx, value, "mean", value.getMean(), options );
         }
         if ( options.render( value, "deviation" ) )
         {
-            render( writer, value, "deviation", value.getStandardDeviation(), options, 1 );
+            render( ctx, value, "deviation", value.getStandardDeviation(), options, 1 );
         }
         if ( options.render( value, "value" ) )
         {
-            render( writer, value, "value", value.get(), options, 1 );
+            render( ctx, value, "value", value.get(), options, 1 );
         }
     }
 
-    protected abstract void render( PrintWriter writer, Key key );
+    protected abstract void render( Context ctx, Key key );
 
-    protected void render( PrintWriter writer, StatValue value, String attribute, Number number, Options options )
+    protected void render( Context ctx, StatValue value, String attribute, Number number, Options options )
     {
-        render( writer, value, attribute, number, options, 1 );
+        render( ctx, value, attribute, number, options, 1 );
     }
 
     /**
      * Render a StatValue attribute
      *
-     * @param writer output
+     * @param ctx output
      * @param value the StatValue that hold data to be rendered
      * @param attribute the StatValue attribute name to be rendered
      * @param number the the StatValue attribute value to be rendered
      * @param ratio the ratio between attribute unit and statValue unit (in power of 10)
      * @param options the rendering options
      */
-    protected void render( PrintWriter writer, StatValue value, String attribute, Number number, Options options,
+    protected void render( Context ctx, StatValue value, String attribute, Number number, Options options,
                            int ratio )
     {
         if ( number instanceof Double )
         {
-            renderInternal( writer, value, attribute, number.doubleValue(), options, ratio );
+            renderInternal( ctx, value, attribute, number.doubleValue(), options, ratio );
         }
         else
         {
-            renderInternal( writer, value, attribute, number.longValue(), options, ratio );
+            renderInternal( ctx, value, attribute, number.longValue(), options, ratio );
         }
     }
 
-    private void renderInternal( PrintWriter writer, StatValue value, String attribute, long l, Options options,
+    private void renderInternal( Context ctx, StatValue value, String attribute, long l, Options options,
                                  int ratio )
     {
         Unit unit = options.unitFor( value );
@@ -188,15 +224,15 @@ public abstract class AbstractRenderer
             }
         }
 
-        writer.append( options.getNumberFormat().format( l ) );
+        ctx.print( options.getNumberFormat().format( l ) );
     }
 
-    private void renderInternal( PrintWriter writer, StatValue value, String attribute, double d, Options options,
+    private void renderInternal( Context ctx, StatValue value, String attribute, double d, Options options,
                                  int ratio )
     {
         if ( Double.isNaN( d ) )
         {
-            writer.append( "-" );
+            ctx.print( "-" );
             return;
         }
         Unit unit = options.unitFor( value );
@@ -208,6 +244,31 @@ public abstract class AbstractRenderer
             }
         }
 
-        writer.append( options.getDecimalFormat().format( d ) );
+        ctx.print( options.getDecimalFormat().format( d ) );
+    }
+
+    /**
+     * @param monitors
+     * @return
+     */
+    protected List<String> getRoles( Collection<Monitor> monitors, Options options )
+    {
+        Set<String> roles = new HashSet<String>();
+        for ( Monitor monitor : monitors )
+        {
+            if (options.render( monitor ))
+            {
+                for ( String role : monitor.getRoles() )
+                {
+                    if (options.renderRole( role ))
+                    {
+                        roles.add( role );
+                    }
+                }
+            }
+        }
+        List<String> sorted = new ArrayList<String>( roles );
+        Collections.sort( sorted );
+        return sorted;
     }
 }

@@ -17,39 +17,35 @@
 
 package org.apache.commons.monitoring.reporting;
 
-import java.text.NumberFormat;
-import java.util.Arrays;
-import java.util.Collection;
-
-import org.apache.commons.monitoring.Monitor;
-import org.apache.commons.monitoring.StatValue;
-import org.apache.commons.monitoring.Unit;
+import java.io.PrintWriter;
+import java.util.HashMap;
 
 /**
- * Render a collection of monitor for reporting
+ * A context for rendering process. Allow appending data to output using
+ * <code>print</code> methods and to store/retrieve contextual data.
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public interface Renderer
+@SuppressWarnings( "serial" )
+public class Context
+    extends HashMap<String, Object>
 {
-    Collection<String> DEFAULT_ROLES = Arrays.asList( new String[] { Monitor.CONCURRENCY, Monitor.PERFORMANCES } );
+    private PrintWriter writer;
 
-    void render( Context ctx, Collection<Monitor> monitors );
-
-    void render( Context ctx, Collection<Monitor> monitors, Options options );
-
-    interface Options
+    public Context( PrintWriter writer )
     {
-        boolean render( Monitor object );
-
-        boolean render( StatValue value, String attribute );
-
-        boolean renderRole( String role );
-
-        Unit unitFor( StatValue value );
-
-        NumberFormat getNumberFormat();
-
-        NumberFormat getDecimalFormat();
+        super();
+        this.writer = writer;
     }
+
+    public void print( String s )
+    {
+        writer.print( s );
+    }
+
+    public void println( String s )
+    {
+        writer.println( s );
+    }
+
 }

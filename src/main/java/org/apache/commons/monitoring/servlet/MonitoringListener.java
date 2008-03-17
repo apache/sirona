@@ -46,6 +46,7 @@ public class MonitoringListener
         {
             try
             {
+                @SuppressWarnings("unchecked")
                 Class repositoryClass = Class.forName( name );
                 if ( !Repository.class.isAssignableFrom( repositoryClass ) )
                 {
