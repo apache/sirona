@@ -84,3 +84,8 @@ tbody tr td:first-child {
 tbody tr td {
     text-align: right;
 }
+
+td.not-applicable {
+    text-align: center;
+    background: #efefef;
+}
