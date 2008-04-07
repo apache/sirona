@@ -20,6 +20,7 @@ package org.apache.commons.monitoring.listeners;
 import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.Repository;
 import org.apache.commons.monitoring.StopWatch;
+import org.apache.commons.monitoring.Monitor.Key;
 import org.apache.commons.monitoring.impl.repositories.AbstractRepository;
 
 /**
@@ -73,6 +74,22 @@ public class SecondaryRepository
     }
 
     /**
+     * {@inheritDoc}
+     * @see org.apache.commons.monitoring.impl.repositories.AbstractRepository#getMonitor(org.apache.commons.monitoring.Monitor.Key)
+     */
+    @Override
+    protected Monitor getMonitor( Key key )
+    {
+        Monitor m = super.getMonitor( key );
+        if (detached && m == null)
+        {
+            // To avoid NullPointerExceptions
+            return new EmpyMonitor( key, attachedAt, detachedAt );
+        }
+        return m;
+    }
+
+    /**
      * @see org.apache.commons.monitoring.Repository.Listener#newMonitorInstance(org.apache.commons.monitoring.Monitor)
      */
     public void newMonitorInstance( Monitor monitor )
@@ -110,4 +127,14 @@ public class SecondaryRepository
     {
         return detachedAt;
     }
+
+    /**
+     * {@inheritDoc}
+     * @see org.apache.commons.monitoring.listeners.Detachable#isDetached()
+     */
+    public boolean isDetached()
+    {
+        return detached;
+    }
+
 }

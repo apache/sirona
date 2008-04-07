@@ -32,6 +32,8 @@ import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.StatValue;
 import org.apache.commons.monitoring.Unit;
 import org.apache.commons.monitoring.Monitor.Key;
+import org.apache.commons.monitoring.listeners.Detachable;
+import org.apache.commons.monitoring.listeners.SecondaryMonitor;
 
 /**
  * Render a collection of monitor for reporting
@@ -83,16 +85,27 @@ public abstract class AbstractRenderer
 
     protected void render( Context ctx, Monitor monitor, Options options )
     {
+        if ( isDetatched( monitor ) )
+        {
+            renderDetached( ctx, (Detachable) monitor, options );
+        }
         render( ctx, monitor.getKey() );
         renderStatValues( ctx, monitor, options );
     }
+
+    protected boolean isDetatched( Monitor monitor )
+    {
+        return monitor instanceof Detachable && ( (Detachable) monitor ).isDetached();
+    }
+
+    protected abstract void renderDetached( Context ctx, Detachable detached, Options options );
 
     protected void renderStatValues( Context ctx, Monitor monitor, Options options, List<String> roles )
     {
         renderStatValues( ctx, monitor, options );
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     protected void renderStatValues( Context ctx, Monitor monitor, Options options )
     {
         List<String> roles = (List<String>) ctx.get( "roles" );
@@ -100,7 +113,7 @@ public abstract class AbstractRenderer
         {
             String role = iterator.next();
             StatValue value = monitor.getValue( role );
-            if (value != null)
+            if ( value != null )
             {
                 render( ctx, value, options );
             }
@@ -117,6 +130,7 @@ public abstract class AbstractRenderer
 
     /**
      * Render an expected value not supported by the current monitor
+     *
      * @param ctx
      * @param role
      */
@@ -196,11 +210,11 @@ public abstract class AbstractRenderer
      * @param value the StatValue that hold data to be rendered
      * @param attribute the StatValue attribute name to be rendered
      * @param number the the StatValue attribute value to be rendered
-     * @param ratio the ratio between attribute unit and statValue unit (in power of 10)
+     * @param ratio the ratio between attribute unit and statValue unit (in
+     * power of 10)
      * @param options the rendering options
      */
-    protected void render( Context ctx, StatValue value, String attribute, Number number, Options options,
-                           int ratio )
+    protected void render( Context ctx, StatValue value, String attribute, Number number, Options options, int ratio )
     {
         if ( number instanceof Double )
         {
@@ -212,8 +226,7 @@ public abstract class AbstractRenderer
         }
     }
 
-    private void renderInternal( Context ctx, StatValue value, String attribute, long l, Options options,
-                                 int ratio )
+    private void renderInternal( Context ctx, StatValue value, String attribute, long l, Options options, int ratio )
     {
         Unit unit = options.unitFor( value );
         if ( unit != null )
@@ -227,8 +240,7 @@ public abstract class AbstractRenderer
         ctx.print( options.getNumberFormat().format( l ) );
     }
 
-    private void renderInternal( Context ctx, StatValue value, String attribute, double d, Options options,
-                                 int ratio )
+    private void renderInternal( Context ctx, StatValue value, String attribute, double d, Options options, int ratio )
     {
         if ( Double.isNaN( d ) )
         {
@@ -256,11 +268,11 @@ public abstract class AbstractRenderer
         Set<String> roles = new HashSet<String>();
         for ( Monitor monitor : monitors )
         {
-            if (options.render( monitor ))
+            if ( options.render( monitor ) )
             {
                 for ( String role : monitor.getRoles() )
                 {
-                    if (options.renderRole( role ))
+                    if ( options.renderRole( role ) )
                     {
                         roles.add( role );
                     }

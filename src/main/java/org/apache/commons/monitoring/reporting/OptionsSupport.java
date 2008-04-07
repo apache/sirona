@@ -17,9 +17,12 @@
 
 package org.apache.commons.monitoring.reporting;
 
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.StatValue;
@@ -65,6 +68,11 @@ public class OptionsSupport
     public NumberFormat getNumberFormat()
     {
         return new DecimalFormat( "0" );
+    }
+
+    public DateFormat getDateFormat()
+    {
+        return DateFormat.getDateTimeInstance( DateFormat.SHORT, DateFormat.SHORT );
     }
 
 }

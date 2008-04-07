@@ -58,6 +58,7 @@ public abstract class AbstractPeriodicLogger
         timer.scheduleAtFixedRate( this, period, period );
     }
 
+
     private SecondaryRepository observeRepositoryForPeriod()
     {
         SecondaryRepository previous = this.secondary;

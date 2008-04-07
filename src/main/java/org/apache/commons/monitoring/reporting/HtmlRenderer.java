@@ -18,6 +18,7 @@
 package org.apache.commons.monitoring.reporting;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,6 +27,8 @@ import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.StatValue;
 import org.apache.commons.monitoring.Unit;
 import org.apache.commons.monitoring.Monitor.Key;
+import org.apache.commons.monitoring.listeners.Detachable;
+import org.apache.commons.monitoring.listeners.SecondaryMonitor;
 
 /**
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
@@ -90,7 +93,14 @@ public class HtmlRenderer
         Collection<String> roles = (Collection<String>) ctx.get( "roles" );
         Map<String, Integer> columns = new HashMap<String, Integer>();
 
-        ctx.println( "<thead><tr><th rowspan='2'>name</th>" );
+        ctx.println( "<thead><tr>" );
+        boolean detached = ( monitors.size() > 0 && monitors.iterator().next()instanceof Detachable );
+
+        if ( detached )
+        {
+            ctx.println( "<td colspan='2'>period</td>" );
+        }
+        ctx.println( "<th rowspan='2'>name</th>" );
         ctx.println( "<th rowspan='2'>category</th>" );
         ctx.println( "<th rowspan='2'>subsystem</th>" );
         for ( String role : roles )
@@ -129,7 +139,13 @@ public class HtmlRenderer
             }
         }
         ctx.print( "</tr>" );
+
         ctx.print( "<tr>" );
+        if ( detached )
+        {
+            ctx.println( "<th>from</th>" );
+            ctx.println( "<th>to</th>" );
+        }
 
         for ( String role : roles )
         {
@@ -164,6 +180,20 @@ public class HtmlRenderer
             ctx.print( attribute );
             ctx.print( "</th>" );
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     * @see org.apache.commons.monitoring.reporting.AbstractRenderer#renderDetached(org.apache.commons.monitoring.reporting.Context, org.apache.commons.monitoring.listeners.SecondaryMonitor, org.apache.commons.monitoring.reporting.Renderer.Options)
+     */
+    @Override
+    protected void renderDetached( Context ctx, Detachable detached, Options options )
+    {
+        ctx.print( "<td>" );
+        ctx.print( options.getDateFormat().format( new Date( detached.getAttachedAt()) ) );
+        ctx.print( "</td><td>" );
+        ctx.print( options.getDateFormat().format( new Date( detached.getDetachedAt()) ) );
+        ctx.print( "</td>" );
     }
 
     protected void renderUnit( Context ctx, Unit unit )

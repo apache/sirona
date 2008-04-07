@@ -17,8 +17,11 @@
 
 package org.apache.commons.monitoring.reporting;
 
+import java.util.Date;
+
 import org.apache.commons.monitoring.StatValue;
 import org.apache.commons.monitoring.Monitor.Key;
+import org.apache.commons.monitoring.listeners.Detachable;
 
 /**
  * A simple TXT renderer, typically to dump monitoring status in a log file
@@ -29,6 +32,19 @@ public class TxtRenderer
     extends AbstractRenderer
 {
     private static final String HR = "--------------------------------------------------------------------------------";
+
+    /**
+     * {@inheritDoc}
+     * @see org.apache.commons.monitoring.reporting.AbstractRenderer#renderDetached(org.apache.commons.monitoring.reporting.Context, org.apache.commons.monitoring.listeners.SecondaryMonitor, org.apache.commons.monitoring.reporting.Renderer.Options)
+     */
+    @Override
+    protected void renderDetached( Context ctx, Detachable detached, Options options )
+    {
+        ctx.print( "from : " );
+        ctx.println ( options.getDateFormat().format( new Date( detached.getAttachedAt()) ) );
+        ctx.print( "to : " );
+        ctx.print( options.getDateFormat().format( new Date( detached.getDetachedAt()) ) );
+    }
 
     /**
      * {@inheritDoc}

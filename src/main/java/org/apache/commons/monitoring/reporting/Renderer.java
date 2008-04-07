@@ -17,6 +17,7 @@
 
 package org.apache.commons.monitoring.reporting;
 
+import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.Collection;
@@ -51,5 +52,7 @@ public interface Renderer
         NumberFormat getNumberFormat();
 
         NumberFormat getDecimalFormat();
+
+        DateFormat getDateFormat();
     }
 }

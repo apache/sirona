@@ -26,15 +26,14 @@ import java.util.Set;
 import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.Repository;
 import org.apache.commons.monitoring.StopWatch;
-import org.apache.commons.monitoring.Repository.Listener;
-import org.apache.commons.monitoring.Repository.Observable;
 import org.apache.commons.monitoring.reporting.AbstractPeriodicLogger;
 
 /**
- *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public class HistorizedRepositoryDecorator extends AbstractPeriodicLogger
+public class HistorizedRepositoryDecorator
+    extends AbstractPeriodicLogger
+    implements Repository.Observable
 {
     /** The decorated repository */
     private Repository.Observable repository;
@@ -43,7 +42,7 @@ public class HistorizedRepositoryDecorator extends AbstractPeriodicLogger
 
     private int size;
 
-    @SuppressWarnings("serial")
+    @SuppressWarnings( "serial" )
     public HistorizedRepositoryDecorator( long period, final int size, Observable repository )
     {
         super( period, repository );
@@ -53,9 +52,11 @@ public class HistorizedRepositoryDecorator extends AbstractPeriodicLogger
     }
 
     /**
-     * Store the period Repository into the history Map, using System.currentTimeMillis().
+     * Store the period Repository into the history Map, using
+     * System.currentTimeMillis().
      * <p>
      * {@inheritDoc}
+     *
      * @see org.apache.commons.monitoring.reporting.AbstractPeriodicLogger#log(SecondaryRepository)
      */
     @Override
@@ -63,7 +64,7 @@ public class HistorizedRepositoryDecorator extends AbstractPeriodicLogger
         throws IOException
     {
         history.add( period );
-        while (history.size() > size)
+        while ( history.size() > size )
         {
             history.remove( history.size() );
         }

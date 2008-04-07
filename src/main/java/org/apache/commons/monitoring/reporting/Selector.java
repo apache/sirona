@@ -25,6 +25,8 @@ import java.util.Iterator;
 import java.util.Stack;
 import java.util.StringTokenizer;
 
+import org.apache.commons.monitoring.Monitor.Key;
+
 /**
  * use a REST-style path to select a group of statValues. For example, to get
  * the mean performance for monitors in category "services"
@@ -36,7 +38,7 @@ public class Selector
 {
 
     /**
-     * 
+     *
      */
     private static final String SEP = "/";
     private String path;
@@ -67,7 +69,7 @@ public class Selector
             {
                 if ( SEP.equals( previous ) )
                 {
-                    stack.push( "" );
+                    stack.push( Key.DEFAULT );
                 }
             }
             else
@@ -78,7 +80,7 @@ public class Selector
         }
         if ( path.endsWith( SEP ) )
         {
-            stack.push( "" );
+            stack.push( Key.DEFAULT );
         }
         Collections.reverse( stack );
 

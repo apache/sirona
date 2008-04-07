@@ -36,16 +36,20 @@ public class SecondaryMonitor
     extends AbstractMonitor
     implements Monitor.Listener, Detachable
 {
-
     /** The primary monitor */
     private Monitor.Observable monitor;
 
     private boolean detached;
 
+    private long attachedAt;
+
+    private long detachedAt;
+
     public SecondaryMonitor( Monitor.Observable monitor )
     {
         super( monitor.getKey() );
         this.monitor = monitor;
+        this.attachedAt = System.currentTimeMillis();
         this.detached = false;
         for ( StatValue value : monitor.getValues() )
         {
@@ -65,6 +69,7 @@ public class SecondaryMonitor
                 ( (Composite<StatValue>) value ).removeSecondary( getValue( value.getRole() ) );
             }
         }
+        this.detachedAt = System.currentTimeMillis();
     }
 
     @SuppressWarnings("unchecked")
@@ -74,6 +79,21 @@ public class SecondaryMonitor
         {
             register( ( (Composite<StatValue>) value ).createSecondary() );
         }
+    }
+
+    public boolean isDetached()
+    {
+        return detached;
+    }
+
+    public long getAttachedAt()
+    {
+        return attachedAt;
+    }
+
+    public long getDetachedAt()
+    {
+        return detachedAt;
     }
 
 }

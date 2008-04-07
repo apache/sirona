@@ -18,11 +18,14 @@
 package org.apache.commons.monitoring.reporting;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.StatValue;
 import org.apache.commons.monitoring.Monitor.Key;
+import org.apache.commons.monitoring.listeners.Detachable;
+import org.apache.commons.monitoring.listeners.SecondaryMonitor;
 
 public class JsonRenderer
     extends AbstractRenderer
@@ -59,7 +62,27 @@ public class JsonRenderer
         {
             ctx.print( "," );
         }
+        if ( isDetatched( monitor ) )
+        {
+            renderDetached( ctx, (Detachable) monitor, options );
+            ctx.print( "," );
+        }
         render( ctx, monitor.getKey() );
+        ctx.print( "}" );
+    }
+
+    /**
+     * {@inheritDoc}
+     * @see org.apache.commons.monitoring.reporting.AbstractRenderer#renderDetached(org.apache.commons.monitoring.reporting.Context, org.apache.commons.monitoring.listeners.SecondaryMonitor, org.apache.commons.monitoring.reporting.Renderer.Options)
+     */
+    @Override
+    protected void renderDetached( Context ctx, Detachable detached, Options options )
+    {
+        ctx.print( "period:{from:" );
+        ctx.print( options.getDateFormat().format( new Date( detached.getAttachedAt()) ) );
+        ctx.print( "," );
+        ctx.print( "to:" );
+        ctx.print( options.getDateFormat().format( new Date( detached.getDetachedAt()) ) );
         ctx.print( "}" );
     }
 

@@ -108,7 +108,8 @@ public class MonitoringServlet
             String path = request.getPathInfo();
             Collection<Monitor> monitors = (Collection<Monitor>) new Selector( path ).select( repository );
             Renderer.Options options = getOptions( request );
-            renderer.render( new Context( response.getWriter() ), monitors, options );
+            Context ctx = new Context( response.getWriter() );
+            renderer.render( ctx, monitors, options );
             return;
         }
     }

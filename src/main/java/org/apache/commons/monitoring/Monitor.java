@@ -110,7 +110,7 @@ public interface Monitor
      */
     public static class Key
     {
-        public final static String DEFAULT = "";
+        public final static String DEFAULT = "default";
 
         private final String name;
 

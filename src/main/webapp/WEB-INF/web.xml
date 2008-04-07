@@ -20,6 +20,16 @@
 
 <web-app>
 
+    <context-param>
+        <description>enable monitoring history</description>
+        <param-name>org.apache.commons.monitoring.History</param-name>
+        <param-value>1min:10</param-value>
+    </context-param>
+
+    <listener>
+        <listener-class>org.apache.commons.monitoring.servlet.MonitoringListener</listener-class>
+    </listener>
+
     <filter>
         <filter-name>Monitoring</filter-name>
         <filter-class>org.apache.commons.monitoring.servlet.MonitoringFilter</filter-class>

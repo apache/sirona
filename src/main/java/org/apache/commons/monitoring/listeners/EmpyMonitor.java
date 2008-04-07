@@ -17,20 +17,51 @@
 
 package org.apache.commons.monitoring.listeners;
 
+import org.apache.commons.monitoring.impl.monitors.AbstractMonitor;
+
+
 /**
+ * A (detached) Monitor implementation used by SecondaryRepository to avoid
+ * returning <tt>null</tt> when a non-existing monitor is requested.
+ *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public interface Detachable
+public class EmpyMonitor
+    extends AbstractMonitor implements Detachable
 {
+    private long attachedAt;
+
+    private long detachedAt;
+
+    public EmpyMonitor( Key key, long attachedAt, long detachedAt )
+    {
+        super( key );
+        this.attachedAt = attachedAt;
+        this.detachedAt = detachedAt;
+    }
+
     /**
-     * Detach the instance from live monitoring beackbone. Any new monitoring
-     * event will not affect datas in this component.
+     * {@inheritDoc}
+     * @see org.apache.commons.monitoring.listeners.Detachable#detach()
      */
-    void detach();
+    public void detach()
+    {
+        // Nothing to do
+    }
 
-    long getDetachedAt();
+    public long getAttachedAt()
+    {
+        return attachedAt;
+    }
 
-    long getAttachedAt();
+    public long getDetachedAt()
+    {
+        return detachedAt;
+    }
 
-    boolean isDetached();
+    public boolean isDetached()
+    {
+        return true;
+    }
+
 }
