@@ -89,10 +89,15 @@ public abstract class AbstractPeriodicLogger
         {
             log( observeRepositoryForPeriod() );
         }
-        catch (Exception exception)
+        catch (Throwable t)
         {
             // catch any exception, as throwing it will stop the timer
         }
+    }
+
+    protected void handleError( Throwable t )
+    {
+        // ignored
     }
 
     /**
