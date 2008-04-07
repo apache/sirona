@@ -45,7 +45,6 @@ public abstract class AbstractPeriodicLogger
     /** The observed repository */
     private SecondaryRepository secondary;
 
-
     /**
      * @param period the period (in ms) to log the monitoring state
      * @param repository the target monitoring repository
@@ -53,9 +52,21 @@ public abstract class AbstractPeriodicLogger
     public AbstractPeriodicLogger( long period, Repository.Observable repository )
     {
         super();
-        this.secondary = new SecondaryRepository( repository );
+        this.repository = repository;
+        observeRepositoryForPeriod();
         timer = new Timer();
         timer.scheduleAtFixedRate( this, period, period );
+    }
+
+    private SecondaryRepository observeRepositoryForPeriod()
+    {
+        SecondaryRepository previous = this.secondary;
+        this.secondary = new SecondaryRepository( repository );
+        if (previous != null)
+        {
+            previous.detach();
+        }
+        return previous;
     }
 
     /**
@@ -76,15 +87,11 @@ public abstract class AbstractPeriodicLogger
     {
         try
         {
-            // Create a new observer for the next period
-            SecondaryRepository period = secondary;
-            period.detach();
-            secondary = new SecondaryRepository( repository );
-
-            log( period );
+            log( observeRepositoryForPeriod() );
         }
         catch (Exception exception)
         {
+            System.err.print( exception );
             // catch any exception, as throwing it will stop the timer
         }
     }
