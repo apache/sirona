@@ -41,10 +41,15 @@ public class SecondaryRepository
 
     private boolean detached;
 
+    private long attachedAt;
+
+    private long detachedAt;
+
     public SecondaryRepository( Repository.Observable repository )
     {
         super();
         this.repository = repository;
+        this.attachedAt = System.currentTimeMillis();
         this.detached = false;
         for ( Monitor monitor : repository.getMonitors() )
         {
@@ -64,6 +69,7 @@ public class SecondaryRepository
         {
             ( (Detachable) monitor ).detach();
         }
+        this.detachedAt = System.currentTimeMillis();
     }
 
     /**
@@ -79,10 +85,29 @@ public class SecondaryRepository
 
     /**
      * {@inheritDoc}
+     *
      * @see org.apache.commons.monitoring.Repository#start(org.apache.commons.monitoring.Monitor)
      */
     public StopWatch start( Monitor monitor )
     {
         throw new UnsupportedOperationException( "Not available on a secondary repository" );
+    }
+
+    /**
+     * @return When (as a System.currentTimeMillis() time) the
+     * SecondaryRepository started to observe the repository
+     */
+    public long getAttachedAt()
+    {
+        return attachedAt;
+    }
+
+    /**
+     * @return When (as a System.currentTimeMillis() time) the
+     * SecondaryRepository stopped observing the repository
+     */
+    public long getDetachedAt()
+    {
+        return detachedAt;
     }
 }

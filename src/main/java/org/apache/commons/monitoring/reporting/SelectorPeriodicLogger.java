@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.monitoring.Repository;
+import org.apache.commons.monitoring.listeners.SecondaryRepository;
 
 /**
  * A periodic logger implementation that uses a set of selector to extract
@@ -70,7 +71,7 @@ public abstract class SelectorPeriodicLogger
      * during the last active period
      */
     @Override
-    protected final void log( Repository period )
+    protected final void log( SecondaryRepository period )
         throws IOException
     {
         Object[] values = new Object[selectors.length];

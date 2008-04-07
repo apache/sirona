@@ -105,5 +105,5 @@ public abstract class AbstractPeriodicLogger
      * Log the data from the (secondary) repository generated during the period
      * @param period secondary repository that observed the monitored state during the last active period
      */
-    protected abstract void log( Repository period ) throws IOException;
+    protected abstract void log( SecondaryRepository period ) throws IOException;
 }
