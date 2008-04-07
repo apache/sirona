@@ -91,7 +91,6 @@ public abstract class AbstractPeriodicLogger
         }
         catch (Exception exception)
         {
-            System.err.print( exception );
             // catch any exception, as throwing it will stop the timer
         }
     }
