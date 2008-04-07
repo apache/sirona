@@ -92,6 +92,7 @@ public abstract class AbstractPeriodicLogger
         catch (Throwable t)
         {
             // catch any exception, as throwing it will stop the timer
+            handleError( t );
         }
     }
 
