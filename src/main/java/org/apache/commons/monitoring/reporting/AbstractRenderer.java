@@ -33,7 +33,6 @@ import org.apache.commons.monitoring.StatValue;
 import org.apache.commons.monitoring.Unit;
 import org.apache.commons.monitoring.Monitor.Key;
 import org.apache.commons.monitoring.listeners.Detachable;
-import org.apache.commons.monitoring.listeners.SecondaryMonitor;
 
 /**
  * Render a collection of monitor for reporting
@@ -100,15 +99,15 @@ public abstract class AbstractRenderer
 
     protected abstract void renderDetached( Context ctx, Detachable detached, Options options );
 
-    protected void renderStatValues( Context ctx, Monitor monitor, Options options, List<String> roles )
-    {
-        renderStatValues( ctx, monitor, options );
-    }
-
     @SuppressWarnings( "unchecked" )
     protected void renderStatValues( Context ctx, Monitor monitor, Options options )
     {
         List<String> roles = (List<String>) ctx.get( "roles" );
+        renderStatValues( ctx, monitor, options, roles );
+    }
+
+    protected void renderStatValues( Context ctx, Monitor monitor, Options options, List<String> roles )
+    {
         for ( Iterator<String> iterator = roles.iterator(); iterator.hasNext(); )
         {
             String role = iterator.next();

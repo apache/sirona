@@ -25,7 +25,6 @@ import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.StatValue;
 import org.apache.commons.monitoring.Monitor.Key;
 import org.apache.commons.monitoring.listeners.Detachable;
-import org.apache.commons.monitoring.listeners.SecondaryMonitor;
 
 public class JsonRenderer
     extends AbstractRenderer
@@ -39,7 +38,7 @@ public class JsonRenderer
     }
 
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     protected void hasNext( Context ctx, Class type )
     {
         ctx.print( "," );
@@ -51,39 +50,31 @@ public class JsonRenderer
         render( ctx, monitor, options );
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     @Override
     public void render( Context ctx, Monitor monitor, Options options )
     {
         ctx.print( "{" );
-        renderStatValues( ctx, monitor, options );
-        Collection<String> roles = (Collection<String>) ctx.get( "roles" );
-        if ( roles.size() > 0 )
-        {
-            ctx.print( "," );
-        }
-        if ( isDetatched( monitor ) )
-        {
-            renderDetached( ctx, (Detachable) monitor, options );
-            ctx.print( "," );
-        }
-        render( ctx, monitor.getKey() );
+        super.render( ctx, monitor, options );
         ctx.print( "}" );
     }
 
     /**
      * {@inheritDoc}
-     * @see org.apache.commons.monitoring.reporting.AbstractRenderer#renderDetached(org.apache.commons.monitoring.reporting.Context, org.apache.commons.monitoring.listeners.SecondaryMonitor, org.apache.commons.monitoring.reporting.Renderer.Options)
+     *
+     * @see org.apache.commons.monitoring.reporting.AbstractRenderer#renderDetached(org.apache.commons.monitoring.reporting.Context,
+     * org.apache.commons.monitoring.listeners.SecondaryMonitor,
+     * org.apache.commons.monitoring.reporting.Renderer.Options)
      */
     @Override
     protected void renderDetached( Context ctx, Detachable detached, Options options )
     {
         ctx.print( "period:{from:" );
-        ctx.print( options.getDateFormat().format( new Date( detached.getAttachedAt()) ) );
+        ctx.print( options.getDateFormat().format( new Date( detached.getAttachedAt() ) ) );
         ctx.print( "," );
         ctx.print( "to:" );
-        ctx.print( options.getDateFormat().format( new Date( detached.getDetachedAt()) ) );
-        ctx.print( "}" );
+        ctx.print( options.getDateFormat().format( new Date( detached.getDetachedAt() ) ) );
+        ctx.print( "}," );
     }
 
     @Override
@@ -104,6 +95,23 @@ public class JsonRenderer
         ctx.print( "\"}" );
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @see org.apache.commons.monitoring.reporting.AbstractRenderer#renderStatValues(org.apache.commons.monitoring.reporting.Context,
+     * org.apache.commons.monitoring.Monitor,
+     * org.apache.commons.monitoring.reporting.Renderer.Options)
+     */
+    @Override
+    protected void renderStatValues( Context ctx, Monitor monitor, Options options, List<String> roles  )
+    {
+        if ( roles.size() > 0 )
+        {
+            ctx.print( "," );
+        }
+        super.renderStatValues( ctx, monitor, options, roles );
+    }
+
     @Override
     public void render( Context ctx, StatValue value, Options options )
     {
@@ -117,13 +125,13 @@ public class JsonRenderer
     protected void render( Context ctx, StatValue value, String attribute, Number number, Options options, int ratio )
     {
         StatValue currentValue = (StatValue) ctx.get( "currentValue" );
-        if (currentValue != value)
+        if ( currentValue != value )
         {
             ctx.put( "currentValue", value );
             ctx.put( "firstAttribute", Boolean.TRUE );
         }
         Boolean firstAttribute = (Boolean) ctx.get( "firstAttribute" );
-        if (!firstAttribute.booleanValue())
+        if ( !firstAttribute.booleanValue() )
         {
             ctx.print( "," );
         }

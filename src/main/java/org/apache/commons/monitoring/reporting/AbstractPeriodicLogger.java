@@ -97,9 +97,17 @@ public abstract class AbstractPeriodicLogger
         }
     }
 
+    /**
+     * Warn when logging the repository failed.
+     * <p>
+     * This method is expected to be override by user to avoid System.err outputs
+     * and use the application logging strategy.
+     *
+     * @param t error during logging
+     */
     protected void handleError( Throwable t )
     {
-        // ignored
+        System.err.println( "Failure to log observed repository : " + t.getMessage() );
     }
 
     /**
