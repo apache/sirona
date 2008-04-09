@@ -80,7 +80,8 @@ public class Selector
         }
         if ( path.endsWith( SEP ) )
         {
-            stack.push( Key.DEFAULT );
+            // get()
+            stack.push( "" );
         }
         Collections.reverse( stack );
 

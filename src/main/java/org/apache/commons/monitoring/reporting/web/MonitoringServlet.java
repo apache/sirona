@@ -161,7 +161,7 @@ public class MonitoringServlet
                 mimeTypes.add( tokenizer.nextToken() );
             }
         }
-        if (accept.contains( "*/*" ) || accept.contains( "text/html" ))
+        if ( accept.contains( "*/*" ) || accept.contains( "text/html" ) )
         {
             // Let IE and FireFox get HTML !
             mimeTypes.add( 0, "text/html" );
@@ -203,12 +203,12 @@ public class MonitoringServlet
 
         public boolean render( StatValue value, String attribute )
         {
-            String hide = request.getParameter( value.getRole() + "." + attribute );
-            if (hide != null)
+            String columns = request.getParameter( value.getRole() + ".columns" );
+            if ( columns != null )
             {
-                return Boolean.parseBoolean( hide );
+                return true;
             }
-            return true;
+            return columns.indexOf( attribute ) >= 0;
         }
 
         public Unit unitFor( StatValue value )

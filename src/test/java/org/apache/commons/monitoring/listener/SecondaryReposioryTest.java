@@ -17,12 +17,13 @@
 
 package org.apache.commons.monitoring.listener;
 
+import junit.framework.TestCase;
+
 import org.apache.commons.monitoring.Repository;
 import org.apache.commons.monitoring.Unit;
 import org.apache.commons.monitoring.impl.repositories.DefaultRepository;
+import org.apache.commons.monitoring.listeners.EmpyMonitor;
 import org.apache.commons.monitoring.listeners.SecondaryRepository;
-
-import junit.framework.TestCase;
 
 /**
  *
@@ -58,7 +59,7 @@ public class SecondaryReposioryTest
         primary.getMonitor( "anotherone" ).getCounter( "COUNTER" ).add( 10, Unit.NONE );
         primary.getMonitor( "test" ).getCounter( "COUNTER" ).add( 10, Unit.NONE );
         primary.getMonitor( "test" ).getGauge( "GAUGE" ).increment(Unit.NONE);
-        assertNull( secondary.getMonitor( "anotherone" ) );
+        assertTrue( secondary.getMonitor( "anotherone" ) instanceof EmpyMonitor );
         assertEquals( 30, primary.getMonitor( "test" ).getCounter( "COUNTER" ).get() );
         assertEquals( 10, secondary.getMonitor( "test" ).getCounter( "COUNTER" ).get() );
         assertEquals( 7, primary.getMonitor( "test" ).getGauge( "GAUGE" ).get() );
