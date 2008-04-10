@@ -1,0 +1,32 @@
+$.plot($('#placeholder'), [
+
+{ color: 0, label: "concurrency.hits",
+ data: []},
+{ color: 1, label: "concurrency.sum",
+ data: []},
+{ color: 2, label: "concurrency.min",
+ data: [[1,0][2,1]]},
+{ color: 3, label: "concurrency.max",
+ data: [[1,0][2,1]]},
+{ color: 4, label: "concurrency.mean",
+ data: [[1,NaN][2,0.00]]},
+{ color: 5, label: "concurrency.deviation",
+ data: [[1,NaN][2,NaN]]},
+{ color: 6, label: "concurrency.value",
+ data: [[1,0][2,1]]},
+{ color: 7, label: "performances.hits",
+ data: [[1,1][2,0]]},
+{ color: 8, label: "performances.sum",
+ data: [[1,10][2,0]]},
+{ color: 9, label: "performances.min",
+ data: [[1,10][2,0]]},
+{ color: 10, label: "performances.max",
+ data: [[1,10][2,0]]},
+{ color: 11, label: "performances.mean",
+ data: [[1,10.00][2,NaN]]},
+{ color: 12, label: "performances.deviation",
+ data: [[1,NaN][2,NaN]]},
+{ color: 13, label: "performances.value",
+ data: [[1,10][2,0]]}
+
+] );

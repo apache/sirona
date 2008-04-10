@@ -58,7 +58,7 @@ public class RendererTest
     public void testRenderToJson()
         throws Exception
     {
-        assertExpectedRendering( new JsonRenderer(), "js" );
+        assertExpectedRendering( new JsonRenderer( "text/javascript" ), "js" );
     }
 
     public void testRenderToXml()
@@ -77,6 +77,12 @@ public class RendererTest
         throws Exception
     {
         assertExpectedRendering( new HtmlRenderer(), "html" );
+    }
+
+    public void testRenderToFlot()
+        throws Exception
+    {
+        assertExpectedRendering( new FlotRenderer(), "flot" );
     }
 
     public void testOptions()
@@ -105,7 +111,7 @@ public class RendererTest
     {
         StringWriter out = new StringWriter();
         Context ctx = new Context( new PrintWriter( out ) );
-        renderer.render( ctx, monitors );
+        renderer.render( ctx, monitors, new OptionsSupport() );
         String actual = out.toString();
         actual = StringUtils.remove( StringUtils.remove( actual, "\n" ), "\r" );
 

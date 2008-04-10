@@ -25,11 +25,15 @@ import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.StatValue;
 import org.apache.commons.monitoring.Monitor.Key;
 import org.apache.commons.monitoring.listeners.Detachable;
-import org.apache.commons.monitoring.reporting.Renderer.Options;
 
 public class XmlRenderer
     extends AbstractRenderer
 {
+
+    public XmlRenderer()
+    {
+        super( "text/xml" );
+    }
 
     /**
      * {@inheritDoc}

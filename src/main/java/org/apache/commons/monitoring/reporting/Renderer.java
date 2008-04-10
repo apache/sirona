@@ -35,7 +35,7 @@ public interface Renderer
 {
     Collection<String> DEFAULT_ROLES = Arrays.asList( new String[] { Monitor.CONCURRENCY, Monitor.PERFORMANCES } );
 
-    void render( Context ctx, Collection<Monitor> monitors );
+    String getContentType();
 
     void render( Context ctx, Collection<Monitor> monitors, Options options );
 
@@ -43,7 +43,7 @@ public interface Renderer
     {
         boolean render( Monitor object );
 
-        boolean render( StatValue value, String attribute );
+        boolean render( String role, String attribute );
 
         boolean renderRole( String role );
 

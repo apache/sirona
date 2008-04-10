@@ -33,6 +33,11 @@ public class TxtRenderer
 {
     private static final String HR = "--------------------------------------------------------------------------------";
 
+    public TxtRenderer()
+    {
+        super( "text/txt" );
+    }
+
     /**
      * {@inheritDoc}
      * @see org.apache.commons.monitoring.reporting.AbstractRenderer#renderDetached(org.apache.commons.monitoring.reporting.Context, org.apache.commons.monitoring.listeners.SecondaryMonitor, org.apache.commons.monitoring.reporting.Renderer.Options)

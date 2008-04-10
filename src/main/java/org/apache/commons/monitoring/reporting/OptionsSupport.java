@@ -41,7 +41,7 @@ public class OptionsSupport
         return true;
     }
 
-    public boolean render( StatValue value, String attribute )
+    public boolean render( String role, String attribute )
     {
         return true;
     }

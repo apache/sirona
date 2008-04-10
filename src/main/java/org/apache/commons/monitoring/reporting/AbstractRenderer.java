@@ -42,9 +42,17 @@ import org.apache.commons.monitoring.listeners.Detachable;
 public abstract class AbstractRenderer
     implements Renderer
 {
-    public final void render( Context ctx, Collection<Monitor> monitors )
+    private String contentType;
+
+
+    protected static final String MONITORS = "monitors";
+
+    protected static final String ROLES = "roles";
+
+    public AbstractRenderer( String contentType )
     {
-        render( ctx, monitors, new OptionsSupport() );
+        super();
+        this.contentType = contentType;
     }
 
     public void render( Context ctx, Collection<Monitor> monitors, Options options )
@@ -68,8 +76,8 @@ public abstract class AbstractRenderer
     protected void prepareRendering( Context ctx, Collection<Monitor> monitors, Options options )
     {
         List<String> roles = getRoles( monitors, options );
-        ctx.put( "roles", roles );
-        ctx.put( "monitors", monitors );
+        ctx.put( ROLES, roles );
+        ctx.put( MONITORS, monitors );
     }
 
     protected void hasNext( Context ctx, Class<?> type )
@@ -102,7 +110,7 @@ public abstract class AbstractRenderer
     @SuppressWarnings( "unchecked" )
     protected void renderStatValues( Context ctx, Monitor monitor, Options options )
     {
-        List<String> roles = (List<String>) ctx.get( "roles" );
+        List<String> roles = (List<String>) ctx.get( ROLES );
         renderStatValues( ctx, monitor, options, roles );
     }
 
@@ -161,35 +169,36 @@ public abstract class AbstractRenderer
 
     protected void render( Context ctx, StatValue value, Options options )
     {
+        String role = value.getRole();
         if ( value instanceof Counter )
         {
             Counter counter = (Counter) value;
-            if ( options.render( value, "hits" ) )
+            if ( options.render( role, "hits" ) )
             {
                 render( ctx, value, "hits", counter.getHits(), options, 0 );
             }
-            if ( options.render( value, "sum" ) )
+            if ( options.render( role, "sum" ) )
             {
                 render( ctx, value, "sum", counter.getSum(), options );
             }
         }
-        if ( options.render( value, "min" ) )
+        if ( options.render( role, "min" ) )
         {
             render( ctx, value, "min", value.getMin(), options );
         }
-        if ( options.render( value, "max" ) )
+        if ( options.render( role, "max" ) )
         {
             render( ctx, value, "max", value.getMax(), options );
         }
-        if ( options.render( value, "mean" ) )
+        if ( options.render( role, "mean" ) )
         {
             render( ctx, value, "mean", value.getMean(), options );
         }
-        if ( options.render( value, "deviation" ) )
+        if ( options.render( role, "deviation" ) )
         {
             render( ctx, value, "deviation", value.getStandardDeviation(), options, 1 );
         }
-        if ( options.render( value, "value" ) )
+        if ( options.render( role, "value" ) )
         {
             render( ctx, value, "value", value.get(), options, 1 );
         }
@@ -243,7 +252,7 @@ public abstract class AbstractRenderer
     {
         if ( Double.isNaN( d ) )
         {
-            ctx.print( "-" );
+            renderNaN( ctx );
             return;
         }
         Unit unit = options.unitFor( value );
@@ -256,6 +265,11 @@ public abstract class AbstractRenderer
         }
 
         ctx.print( options.getDecimalFormat().format( d ) );
+    }
+
+    protected void renderNaN( Context ctx )
+    {
+        ctx.print( "-" );
     }
 
     /**
@@ -281,5 +295,10 @@ public abstract class AbstractRenderer
         List<String> sorted = new ArrayList<String>( roles );
         Collections.sort( sorted );
         return sorted;
+    }
+
+    public String getContentType()
+    {
+        return contentType;
     }
 }

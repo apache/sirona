@@ -57,39 +57,39 @@ public class NiceHtmlRenderer
      * @see org.apache.commons.monitoring.reporting.HtmlRenderer#documentHead(java.io.Context)
      */
     @Override
-    protected void documentHead( Context writer )
+    protected void documentHead( Context ctx )
     {
-        writer.println( "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" " );
-        writer.println( "  \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">" );
-        writer.println( "<html>" );
-        writer.println( "<head>" );
+        ctx.println( "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" " );
+        ctx.println( "  \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">" );
+        ctx.println( "<html>" );
+        ctx.println( "<head>" );
         if ( title != null )
         {
-            writer.print( "<title>" );
-            writer.print( title );
-            writer.println( "</title>" );
+            ctx.print( "<title>" );
+            ctx.print( title );
+            ctx.println( "</title>" );
         }
         if ( stylesheet != null )
         {
-            writer.print( "<link rel='stylesheet' type='text/css' href='" );
-            writer.print( contextPath );
-            writer.print( "/resources/" );
-            writer.print( stylesheet );
-            writer.println( "' />" );
+            ctx.print( "<link rel='stylesheet' type='text/css' href='" );
+            ctx.print( contextPath );
+            ctx.print( "/resources/" );
+            ctx.print( stylesheet );
+            ctx.println( "' />" );
         }
         if ( scripts != null )
         {
             for ( int i = 0; i < scripts.length; i++ )
             {
-                writer.print( "<script src='" );
-                writer.print( contextPath );
-                writer.print( "/resources/" );
-                writer.print( scripts[i] );
-                writer.println( "' ></script>" );
+                ctx.print( "<script src='" );
+                ctx.print( contextPath );
+                ctx.print( "/resources/" );
+                ctx.print( scripts[i] );
+                ctx.println( "' ></script>" );
             }
         }
-        writer.println( "</head>" );
-        writer.println( "<body>" );
+        ctx.println( "</head>" );
+        ctx.println( "<body>" );
     }
 
     @SuppressWarnings("unchecked")

@@ -29,6 +29,12 @@ import org.apache.commons.monitoring.listeners.Detachable;
 public class JsonRenderer
     extends AbstractRenderer
 {
+
+    public JsonRenderer( String contentType )
+    {
+        super( contentType );
+    }
+
     @Override
     public void render( Context ctx, Collection<Monitor> monitors, Options options )
     {

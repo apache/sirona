@@ -38,6 +38,7 @@ import org.apache.commons.monitoring.StatValue;
 import org.apache.commons.monitoring.Unit;
 import org.apache.commons.monitoring.Monitor.Key;
 import org.apache.commons.monitoring.reporting.Context;
+import org.apache.commons.monitoring.reporting.FlotRenderer;
 import org.apache.commons.monitoring.reporting.HtmlRenderer;
 import org.apache.commons.monitoring.reporting.JsonRenderer;
 import org.apache.commons.monitoring.reporting.OptionsSupport;
@@ -78,8 +79,9 @@ public class MonitoringServlet
     public void init()
         throws ServletException
     {
-        renderers.put( "text/javascript", new JsonRenderer() );
-        renderers.put( "application/json", new JsonRenderer() );
+        renderers.put( "text/javascript", new JsonRenderer( "text/javascript" ) );
+        renderers.put( "text/flot", new FlotRenderer() );
+        renderers.put( "application/json", new JsonRenderer( "application/json" ) );
         renderers.put( "text/xml", new XmlRenderer() );
         renderers.put( "text/html", new HtmlRenderer() );
 
@@ -201,10 +203,10 @@ public class MonitoringServlet
                 && ( subsystems.isEmpty() || subsystems.contains( key.getSubsystem() ) );
         }
 
-        public boolean render( StatValue value, String attribute )
+        public boolean render( String role, String attribute )
         {
-            String columns = request.getParameter( value.getRole() + ".columns" );
-            if ( columns != null )
+            String columns = request.getParameter( role + ".columns" );
+            if ( columns == null )
             {
                 return true;
             }

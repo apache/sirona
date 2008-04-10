@@ -28,7 +28,6 @@ import org.apache.commons.monitoring.StatValue;
 import org.apache.commons.monitoring.Unit;
 import org.apache.commons.monitoring.Monitor.Key;
 import org.apache.commons.monitoring.listeners.Detachable;
-import org.apache.commons.monitoring.listeners.SecondaryMonitor;
 
 /**
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
@@ -36,6 +35,11 @@ import org.apache.commons.monitoring.listeners.SecondaryMonitor;
 public class HtmlRenderer
     extends AbstractRenderer
 {
+
+    public HtmlRenderer()
+    {
+        super( "text/html" );
+    }
 
     /**
      * {@inheritDoc}
@@ -114,14 +118,14 @@ public class HtmlRenderer
                     int span = 0;
                     if ( value instanceof Counter )
                     {
-                        span += options.render( value, "hits" ) ? 1 : 0;
-                        span += options.render( value, "sum" ) ? 1 : 0;
+                        span += options.render( role, "hits" ) ? 1 : 0;
+                        span += options.render( role, "sum" ) ? 1 : 0;
                     }
-                    span += options.render( value, "min" ) ? 1 : 0;
-                    span += options.render( value, "max" ) ? 1 : 0;
-                    span += options.render( value, "mean" ) ? 1 : 0;
-                    span += options.render( value, "deviation" ) ? 1 : 0;
-                    span += options.render( value, "value" ) ? 1 : 0;
+                    span += options.render( role, "min" ) ? 1 : 0;
+                    span += options.render( role, "max" ) ? 1 : 0;
+                    span += options.render( role, "mean" ) ? 1 : 0;
+                    span += options.render( role, "deviation" ) ? 1 : 0;
+                    span += options.render( role, "value" ) ? 1 : 0;
 
                     ctx.print( "<td colspan='" );
                     ctx.print( String.valueOf( span ) );
@@ -174,7 +178,7 @@ public class HtmlRenderer
 
     protected void writeColumnHead( Context ctx, Options options, StatValue value, String attribute )
     {
-        if ( options.render( value, attribute ) )
+        if ( options.render( value.getRole(), attribute ) )
         {
             ctx.print( "<th>" );
             ctx.print( attribute );

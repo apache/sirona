@@ -24,8 +24,10 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.monitoring.Monitor;
+import org.apache.commons.monitoring.Monitoring;
 import org.apache.commons.monitoring.Repository;
 import org.apache.commons.monitoring.StopWatch;
+import org.apache.commons.monitoring.Unit;
 import org.apache.commons.monitoring.reporting.AbstractPeriodicLogger;
 
 /**
@@ -42,7 +44,6 @@ public class HistorizedRepositoryDecorator
 
     private int size;
 
-    @SuppressWarnings( "serial" )
     public HistorizedRepositoryDecorator( long period, final int size, Observable repository )
     {
         super( period, repository );
@@ -68,6 +69,8 @@ public class HistorizedRepositoryDecorator
         {
             history.remove( history.size() );
         }
+
+        Monitoring.getMonitor( "test" ).getCounter( Monitor.PERFORMANCES ).add( (long) (Math.random() * 10), Unit.MILLIS );
     }
 
     public void addListener( Listener listener )
