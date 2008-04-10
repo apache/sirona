@@ -41,10 +41,8 @@ import org.apache.commons.monitoring.listeners.Detachable;
  * </pre>
  *
  * </li>
- * <li>
- * a &lt;div& id="placeholder"gt; to draw the graph into, having <tt>width</tt> and <tt>height</tt>
- * style set.
- * </li>
+ * <li> a &lt;div& id="placeholder"gt; to draw the graph into, having
+ * <tt>width</tt> and <tt>height</tt> style set. </li>
  * </ul>
  *
  * @see http://code.google.com/p/flot/
@@ -68,7 +66,7 @@ public class FlotRenderer
      * org.apache.commons.monitoring.reporting.Renderer.Options)
      */
     @Override
-    public void render( Context ctx, Collection<Monitor> monitors, Options options )
+    public void render( final Context ctx, Collection<Monitor> monitors, Options options )
     {
         prepareRendering( ctx, monitors, options );
         ctx.print( "$.plot($('#placeholder'), [" );
@@ -96,7 +94,8 @@ public class FlotRenderer
                 ctx.print( "\", data: " );
                 ctx.print( "[" );
                 int x = 0;
-                for ( Iterator<Monitor> iterator = monitors.iterator(); iterator.hasNext(); )
+                int rendered = 0;
+                for ( final Iterator<Monitor> iterator = monitors.iterator(); iterator.hasNext(); )
                 {
                     Monitor monitor = iterator.next();
                     x++;
@@ -106,17 +105,27 @@ public class FlotRenderer
                         continue;
                     }
                     ctx.put( "x", x );
+                    if ( rendered > 0 )
+                    {
+                        ctx.print( "," );
+                    }
+                    ctx.put( "rendered", false );
                     render( ctx, value, new OptionsSupport()
                     {
                         @Override
                         public boolean render( String role, String string )
                         {
-                            return string.equals( attribute );
+                            boolean render = string.equals( attribute );
+                            if ( render )
+                            {
+                                ctx.put( "rendered", true );
+                            }
+                            return render;
                         }
-                    });
-                    if ( iterator.hasNext() )
+                    } );
+                    if ( ( (Boolean) ctx.get( "rendered" ) ).booleanValue() )
                     {
-                        ctx.print( "," );
+                        rendered++;
                     }
                 }
                 ctx.print( "]" );
@@ -151,7 +160,9 @@ public class FlotRenderer
 
     /**
      * {@inheritDoc}
-     * @see org.apache.commons.monitoring.reporting.AbstractRenderer#render(org.apache.commons.monitoring.reporting.Context, org.apache.commons.monitoring.Monitor.Key)
+     *
+     * @see org.apache.commons.monitoring.reporting.AbstractRenderer#render(org.apache.commons.monitoring.reporting.Context,
+     * org.apache.commons.monitoring.Monitor.Key)
      */
     @Override
     protected void render( Context ctx, Key key )
@@ -161,7 +172,10 @@ public class FlotRenderer
 
     /**
      * {@inheritDoc}
-     * @see org.apache.commons.monitoring.reporting.AbstractRenderer#renderDetached(org.apache.commons.monitoring.reporting.Context, org.apache.commons.monitoring.listeners.Detachable, org.apache.commons.monitoring.reporting.Renderer.Options)
+     *
+     * @see org.apache.commons.monitoring.reporting.AbstractRenderer#renderDetached(org.apache.commons.monitoring.reporting.Context,
+     * org.apache.commons.monitoring.listeners.Detachable,
+     * org.apache.commons.monitoring.reporting.Renderer.Options)
      */
     @Override
     protected void renderDetached( Context ctx, Detachable detached, Options options )
