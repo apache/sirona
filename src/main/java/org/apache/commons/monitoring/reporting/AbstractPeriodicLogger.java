@@ -115,4 +115,12 @@ public abstract class AbstractPeriodicLogger
      * @param period secondary repository that observed the monitored state during the last active period
      */
     protected abstract void log( SecondaryRepository period ) throws IOException;
+	
+    /**
+     * @return the SecondaryRepository active for the current period.
+     */
+	protected SecondaryRepository getRepositoryForActivePeriod()
+	{
+	    return this.secondary;
+	}
 }
