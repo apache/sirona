@@ -21,6 +21,7 @@ import junit.framework.TestCase;
 
 import org.apache.commons.monitoring.Counter;
 import org.apache.commons.monitoring.Monitor;
+import org.apache.commons.monitoring.MonitoringTest;
 import org.apache.commons.monitoring.StatValue;
 import org.apache.commons.monitoring.Unit;
 import org.apache.commons.monitoring.impl.monitors.CreateValuesOnDemandMonitor;
@@ -37,18 +38,18 @@ public class ThresholdListenerTest
     {
         final Monitor monitor = new CreateValuesOnDemandMonitor(
             new Monitor.Key( "MonitoringTest.testMonitoring", "test", "utils" ) );
-        Counter counter = monitor.getCounter( Monitor.PERFORMANCES );
+        Counter counter = monitor.getCounter( MonitoringTest.COUNTER );
 
         TestListener listener = new TestListener( monitor );
         counter.addListener( listener );
 
-        counter.add( 1, Unit.NONE );
+        counter.add( 1, Unit.UNARY );
         assertEquals( "unexpected listener notification", 0, listener.count );
-        counter.add( 10, Unit.NONE );
+        counter.add( 10, Unit.UNARY );
         assertEquals( "listener didn't get notified", 1, listener.count );
 
         counter.removeListener( listener );
-        counter.add( 10, Unit.NONE );
+        counter.add( 10, Unit.UNARY );
         assertEquals( "removed listener was notified", 1, listener.count );
     }
 
@@ -68,7 +69,7 @@ public class ThresholdListenerTest
         {
             count++;
             assertEquals( 10, l );
-            assertEquals( Monitor.PERFORMANCES, value.getRole() );
+            assertEquals( MonitoringTest.COUNTER, value.getRole() );
             assertEquals( monitor, value.getMonitor() );
         }
 

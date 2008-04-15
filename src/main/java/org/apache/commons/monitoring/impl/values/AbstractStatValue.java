@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.monitoring.Monitor;
+import org.apache.commons.monitoring.Role;
 import org.apache.commons.monitoring.StatValue;
 import org.apache.commons.monitoring.Unit;
 
@@ -30,12 +31,12 @@ import org.apache.commons.monitoring.Unit;
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public abstract class AbstractStatValue
+public abstract class AbstractStatValue<T extends StatValue>
     implements StatValue
 {
     private Monitor monitor;
 
-    private String role;
+    private Role<T> role;
 
     private int hits;
 
@@ -47,10 +48,11 @@ public abstract class AbstractStatValue
 
     private List<Listener> listeners = new CopyOnWriteArrayList<Listener>();
 
-    public AbstractStatValue( String role )
+    public AbstractStatValue( Role<T> role )
     {
         super();
         this.role = role;
+        this.unit = role.getUnit();
     }
 
     public void addListener( Listener listener )
@@ -65,11 +67,6 @@ public abstract class AbstractStatValue
 
     protected long normalize( long value, Unit unit )
     {
-        if ( this.unit == null )
-        {
-            // Affect the statValue unit on first use
-            this.unit = unit.getPrimary();
-        }
         if ( !this.unit.isCompatible( unit ) )
         {
             throw new IllegalArgumentException( "role " + role + " is incompatible with unit " + unit );
@@ -152,7 +149,7 @@ public abstract class AbstractStatValue
         return monitor;
     }
 
-    public String getRole()
+    public Role<T> getRole()
     {
         return role;
     }

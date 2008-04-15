@@ -20,6 +20,8 @@ package org.apache.commons.monitoring.impl;
 import junit.framework.TestCase;
 
 import org.apache.commons.monitoring.Gauge;
+import org.apache.commons.monitoring.MonitoringTest;
+import org.apache.commons.monitoring.Role;
 import org.apache.commons.monitoring.Unit;
 import org.apache.commons.monitoring.impl.values.ThreadSafeGauge;
 
@@ -31,20 +33,20 @@ public class ThreadSafeGaugeTest
     public void testValue()
         throws Exception
     {
-        Gauge gauge = new ThreadSafeGauge( "test" );
+        Gauge gauge = new ThreadSafeGauge( MonitoringTest.GAUGE );
 
-        gauge.set( 1, Unit.NONE );
+        gauge.set( 1, Unit.UNARY );
         assertEquals( 1, gauge.getMin() );
         assertEquals( 1, gauge.getMax() );
         assertEquals( 1, gauge.get() );
 
-        gauge.increment(Unit.NONE);
+        gauge.increment(Unit.UNARY);
         assertEquals( 1, gauge.getMin() );
         assertEquals( 2, gauge.getMax() );
         assertEquals( 2, gauge.get() );
 
-        gauge.decrement(Unit.NONE);
-        gauge.decrement(Unit.NONE);
+        gauge.decrement(Unit.UNARY);
+        gauge.decrement(Unit.UNARY);
         assertEquals( 0, gauge.getMin() );
         assertEquals( 2, gauge.getMax() );
         assertEquals( 0, gauge.get() );
@@ -70,17 +72,17 @@ public class ThreadSafeGaugeTest
     public void testCompteMean()
         throws Exception
     {
-        Gauge gauge = new MockTimeGauge( "test" );
+        Gauge gauge = new MockTimeGauge( MonitoringTest.GAUGE );
 
         time = 0;
-        gauge.increment(Unit.NONE);
+        gauge.increment(Unit.UNARY);
         time++;
-        gauge.increment(Unit.NONE);
+        gauge.increment(Unit.UNARY);
         time++;
         time++;
-        gauge.decrement(Unit.NONE);
+        gauge.decrement(Unit.UNARY);
         time++;
-        gauge.decrement(Unit.NONE);
+        gauge.decrement(Unit.UNARY);
 
         assertEquals( 0, gauge.get() );
         assertEquals( 1.5D, gauge.getMean(), 0D );
@@ -96,7 +98,7 @@ public class ThreadSafeGaugeTest
         extends ThreadSafeGauge
     {
 
-        public MockTimeGauge( String role )
+        public MockTimeGauge( Role<Gauge> role )
         {
             super( role );
         }

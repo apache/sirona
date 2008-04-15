@@ -18,6 +18,7 @@
 package org.apache.commons.monitoring.impl.values;
 
 import org.apache.commons.monitoring.Counter;
+import org.apache.commons.monitoring.Role;
 import org.apache.commons.monitoring.Unit;
 
 /**
@@ -27,7 +28,7 @@ import org.apache.commons.monitoring.Unit;
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public class ThreadSafeCounter
-    extends AbstractStatValue
+    extends AbstractStatValue<Counter>
     implements Counter
 {
 
@@ -37,7 +38,7 @@ public class ThreadSafeCounter
 
     private long sumOfSquares;
 
-    public ThreadSafeCounter( String role )
+    public ThreadSafeCounter( Role<Counter> role )
     {
         super( role );
     }

@@ -28,6 +28,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.monitoring.Counter;
 import org.apache.commons.monitoring.Monitor;
+import org.apache.commons.monitoring.MonitoringTest;
 import org.apache.commons.monitoring.StatValue;
 import org.apache.commons.monitoring.Unit;
 import org.apache.commons.monitoring.impl.monitors.CreateValuesOnDemandMonitor;
@@ -51,7 +52,7 @@ public class RendererTest
 
         Monitor m2 = new CreateValuesOnDemandMonitor( new Monitor.Key( "TestCase", "test", "junit" ) );
         m2.getCounter( Monitor.PERFORMANCES );
-        m2.getGauge( Monitor.CONCURRENCY ).increment(Unit.NONE);
+        m2.getGauge( Monitor.CONCURRENCY ).increment(Unit.UNARY);
         monitors.add( m2 );
     }
 
@@ -97,9 +98,9 @@ public class RendererTest
         };
 
         AbstractRenderer renderer = new XmlRenderer();
-        Counter counter = new ThreadSafeCounter( "test" );
-        counter.add( 1, Unit.MILLIS );
-        counter.add( 1, Unit.MICROS );
+        Counter counter = new ThreadSafeCounter( MonitoringTest.COUNTER );
+        counter.add( 1, Unit.MEGA );
+        counter.add( 1, Unit.KILO );
         StringWriter writer = new StringWriter();
         Context ctx = new Context( new PrintWriter( writer ) );
         renderer.render( ctx, counter, "mean", counter.getMean(), options );

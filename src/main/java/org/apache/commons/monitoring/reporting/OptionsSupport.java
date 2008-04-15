@@ -25,6 +25,7 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 import org.apache.commons.monitoring.Monitor;
+import org.apache.commons.monitoring.Role;
 import org.apache.commons.monitoring.StatValue;
 import org.apache.commons.monitoring.Unit;
 
@@ -41,12 +42,12 @@ public class OptionsSupport
         return true;
     }
 
-    public boolean render( String role, String attribute )
+    public boolean render( Role role, String attribute )
     {
         return true;
     }
 
-    public boolean renderRole( String role )
+    public boolean renderRole( Role role )
     {
         return true;
     }

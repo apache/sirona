@@ -23,6 +23,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.monitoring.Composite;
 import org.apache.commons.monitoring.Counter;
+import org.apache.commons.monitoring.Gauge;
+import org.apache.commons.monitoring.Role;
 import org.apache.commons.monitoring.Unit;
 
 /**
@@ -44,7 +46,7 @@ public class CompositeCounter extends ThreadSafeCounter implements Composite<Cou
         return Collections.unmodifiableCollection( secondary );
     }
 
-    public CompositeCounter( String role )
+    public CompositeCounter( Role<Counter> role )
     {
         super( role );
         this.secondary = new CopyOnWriteArrayList<Counter>();

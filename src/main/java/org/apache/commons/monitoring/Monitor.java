@@ -53,10 +53,13 @@ import java.util.Collection;
 public interface Monitor
 {
     /** default role key for code performances */
-    String PERFORMANCES = "performances";
+    Role<Counter> PERFORMANCES = new Role<Counter>( "performances", Unit.NANOS );
 
     /** default role for multi-thread concurrency */
-    String CONCURRENCY = "concurrency";
+    Role<Gauge> CONCURRENCY = new Role<Gauge>( "concurrency", Unit.UNARY );
+
+    /** default Role for the invocation failure counter */
+    Role<Counter> FAILURES = new Role<Counter>( "failures", Unit.UNARY );
 
     /**
      * @return the monitor key
@@ -64,7 +67,7 @@ public interface Monitor
     Key getKey();
 
     /**
-     * Get a Counter
+     * Retrieve a Counter
      *
      * @param role a unique identifier for a Counter in the monitor
      * @param unit the data unit to count
@@ -73,12 +76,28 @@ public interface Monitor
     Counter getCounter( String role );
 
     /**
-     * Get a Gauge
+     * Retrieve or create a Counter in the monitor
+     *
+     * @param role the Counter role in the monitor
+     * @return the Counter
+     */
+    Counter getCounter( Role<Counter> role );
+
+    /**
+     * Retrieve a Gauge in the monitor
      *
      * @param role a unique identifier for a Gauge in the monitor
      * @return the Gauge
      */
     Gauge getGauge( String role );
+
+    /**
+     * Retrieve or create a Gauge in the monitor
+     *
+     * @param role the gauge role in the monitor
+     * @return the Gauge
+     */
+    Gauge getGauge( Role<Gauge> role );
 
     /**
      * Retrieve a StatValue.
@@ -89,10 +108,18 @@ public interface Monitor
     StatValue getValue( String role );
 
     /**
+     * Retrieve a StatValue in the monitor
+     *
+     * @param role the StatValue role in the monitor
+     * @return the StatValue
+     */
+    <T extends StatValue> T getValue( Role<T> role );
+
+    /**
      *
      * @return an unmodifiable collection of registered statValues roles
      */
-    Collection<String> getRoles();
+    Collection<Role> getRoles();
 
     /**
      *

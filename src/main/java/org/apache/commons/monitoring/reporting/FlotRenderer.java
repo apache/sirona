@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.monitoring.Monitor;
+import org.apache.commons.monitoring.Role;
 import org.apache.commons.monitoring.StatValue;
 import org.apache.commons.monitoring.Monitor.Key;
 import org.apache.commons.monitoring.listeners.Detachable;
@@ -72,9 +73,9 @@ public class FlotRenderer
         ctx.print( "$.plot($('#placeholder'), [" );
 
         int color = 0;
-        for ( Iterator<String> it = ( (Collection) ctx.get( ROLES ) ).iterator(); it.hasNext(); )
+        for ( Iterator<Role> it = ( (Collection<Role>) ctx.get( ROLES ) ).iterator(); it.hasNext(); )
         {
-            String role = it.next();
+            Role role = it.next();
             List<String> attribues = new ArrayList<String>();
             for ( String attribute : ATTRIBUTES )
             {
@@ -90,7 +91,7 @@ public class FlotRenderer
                 final String attribute = attr.next();
                 ctx.print( "{ color: " + color );
                 ctx.print( ", label: \"" );
-                ctx.print( role + "." + attribute );
+                ctx.print( role.getName() + "." + attribute );
                 ctx.print( "\", data: " );
                 ctx.print( "[" );
                 int x = 0;
@@ -113,7 +114,7 @@ public class FlotRenderer
                     render( ctx, value, new OptionsSupport()
                     {
                         @Override
-                        public boolean render( String role, String string )
+                        public boolean render( Role role, String string )
                         {
                             boolean render = string.equals( attribute );
                             if ( render )

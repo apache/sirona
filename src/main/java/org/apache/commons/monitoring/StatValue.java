@@ -79,7 +79,7 @@ public interface StatValue
     /**
      * @return the role for this value in the monitor
      */
-    String getRole();
+    Role<? extends StatValue> getRole();
 
     /**
      * @return the (primary) data unit

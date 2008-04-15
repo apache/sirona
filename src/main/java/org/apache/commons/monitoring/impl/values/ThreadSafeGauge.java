@@ -18,6 +18,7 @@
 package org.apache.commons.monitoring.impl.values;
 
 import org.apache.commons.monitoring.Gauge;
+import org.apache.commons.monitoring.Role;
 import org.apache.commons.monitoring.Unit;
 
 /**
@@ -30,7 +31,7 @@ import org.apache.commons.monitoring.Unit;
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public class ThreadSafeGauge
-    extends AbstractStatValue
+    extends AbstractStatValue<Gauge>
     implements Gauge
 {
     private long value;
@@ -44,7 +45,7 @@ public class ThreadSafeGauge
     // Use a double so that unset can be detected as "Not a Number"
     private double firstUse = Double.NaN;
 
-    public ThreadSafeGauge( String role )
+    public ThreadSafeGauge( Role<Gauge> role )
     {
         super( role );
     }

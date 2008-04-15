@@ -99,7 +99,7 @@ public class XmlRenderer
     public void render( Context ctx, StatValue value, Options options )
     {
         ctx.print( "<" );
-        ctx.print( value.getRole() );
+        ctx.print( value.getRole().getName() );
         super.render( ctx, value, options );
         ctx.print( "/>" );
     }

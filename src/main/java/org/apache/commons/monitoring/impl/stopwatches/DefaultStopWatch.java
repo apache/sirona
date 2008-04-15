@@ -27,7 +27,8 @@ import org.apache.commons.monitoring.Unit;
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public class DefaultStopWatch implements StopWatch
+public class DefaultStopWatch
+    implements StopWatch
 {
     /** Time the probe was started */
     private final long startedAt;
@@ -62,12 +63,13 @@ public class DefaultStopWatch implements StopWatch
         startedAt = nanotime();
         if ( monitor != null )
         {
-            monitor.getGauge( Monitor.CONCURRENCY ).increment(Unit.NONE);
+            monitor.getGauge( Monitor.CONCURRENCY ).increment( Unit.UNARY );
         }
     }
 
     /**
      * {@inheritDoc}
+     *
      * @see org.apache.commons.monitoring.StopWatch#getElapsedTime()
      */
     public long getElapsedTime()
@@ -85,6 +87,7 @@ public class DefaultStopWatch implements StopWatch
 
     /**
      * {@inheritDoc}
+     *
      * @see org.apache.commons.monitoring.StopWatch#pause()
      */
     public void pause()
@@ -98,6 +101,7 @@ public class DefaultStopWatch implements StopWatch
 
     /**
      * {@inheritDoc}
+     *
      * @see org.apache.commons.monitoring.StopWatch#resume()
      */
     public void resume()
@@ -112,6 +116,7 @@ public class DefaultStopWatch implements StopWatch
 
     /**
      * {@inheritDoc}
+     *
      * @see org.apache.commons.monitoring.StopWatch#stop()
      */
     public void stop()
@@ -127,7 +132,7 @@ public class DefaultStopWatch implements StopWatch
             stoped = true;
             if ( monitor != null )
             {
-                monitor.getGauge( Monitor.CONCURRENCY ).decrement(Unit.NONE);
+                monitor.getGauge( Monitor.CONCURRENCY ).decrement( Unit.UNARY );
                 monitor.getCounter( Monitor.PERFORMANCES ).add( getElapsedTime(), Unit.NANOS );
             }
         }
@@ -135,6 +140,7 @@ public class DefaultStopWatch implements StopWatch
 
     /**
      * {@inheritDoc}
+     *
      * @see org.apache.commons.monitoring.StopWatch#stop(boolean)
      */
     public void stop( boolean canceled )
@@ -151,6 +157,7 @@ public class DefaultStopWatch implements StopWatch
 
     /**
      * {@inheritDoc}
+     *
      * @see org.apache.commons.monitoring.StopWatch#cancel()
      */
     public void cancel()
@@ -160,7 +167,7 @@ public class DefaultStopWatch implements StopWatch
             stoped = true;
             if ( monitor != null )
             {
-                monitor.getGauge( Monitor.CONCURRENCY ).decrement(Unit.NONE);
+                monitor.getGauge( Monitor.CONCURRENCY ).decrement( Unit.UNARY );
             }
         }
     }
@@ -203,6 +210,7 @@ public class DefaultStopWatch implements StopWatch
 
     /**
      * {@inheritDoc}
+     *
      * @see org.apache.commons.monitoring.StopWatch#isStoped()
      */
     public boolean isStoped()
@@ -212,6 +220,7 @@ public class DefaultStopWatch implements StopWatch
 
     /**
      * {@inheritDoc}
+     *
      * @see org.apache.commons.monitoring.StopWatch#isPaused()
      */
     public boolean isPaused()
@@ -245,6 +254,7 @@ public class DefaultStopWatch implements StopWatch
 
     /**
      * {@inheritDoc}
+     *
      * @see org.apache.commons.monitoring.StopWatch#getMonitor()
      */
     public Monitor getMonitor()

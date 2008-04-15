@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.apache.commons.monitoring.Monitor;
+import org.apache.commons.monitoring.Role;
 import org.apache.commons.monitoring.StatValue;
 import org.apache.commons.monitoring.Unit;
 
@@ -33,7 +34,7 @@ import org.apache.commons.monitoring.Unit;
  */
 public interface Renderer
 {
-    Collection<String> DEFAULT_ROLES = Arrays.asList( new String[] { Monitor.CONCURRENCY, Monitor.PERFORMANCES } );
+    Collection<Role> DEFAULT_ROLES = Arrays.asList( new Role[] { Monitor.CONCURRENCY, Monitor.PERFORMANCES } );
 
     String getContentType();
 
@@ -43,9 +44,9 @@ public interface Renderer
     {
         boolean render( Monitor object );
 
-        boolean render( String role, String attribute );
+        boolean render( Role role, String attribute );
 
-        boolean renderRole( String role );
+        boolean renderRole( Role role );
 
         Unit unitFor( StatValue value );
 

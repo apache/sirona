@@ -25,6 +25,7 @@ import java.util.concurrent.ConcurrentMap;
 import org.apache.commons.monitoring.Counter;
 import org.apache.commons.monitoring.Gauge;
 import org.apache.commons.monitoring.Monitor;
+import org.apache.commons.monitoring.Role;
 import org.apache.commons.monitoring.StatValue;
 
 /**
@@ -35,14 +36,14 @@ import org.apache.commons.monitoring.StatValue;
 public abstract class AbstractMonitor implements Monitor
 {
 
-    private final ConcurrentMap<String, StatValue> values;
+    private final ConcurrentMap<Role, StatValue> values;
     private final Key key;
 
     public AbstractMonitor( Key key )
     {
         super();
         this.key = key;
-        this.values = new ConcurrentHashMap<String, StatValue>();
+        this.values = new ConcurrentHashMap<Role, StatValue>();
     }
 
     /**
@@ -61,7 +62,12 @@ public abstract class AbstractMonitor implements Monitor
         return values.get( role );
     }
 
-    public final Collection<String> getRoles()
+    public final <T extends StatValue> T getValue( Role<T> role )
+    {
+        return (T) values.get( role );
+    }
+
+    public final Collection<Role> getRoles()
     {
         return Collections.unmodifiableCollection( values.keySet() );
     }
@@ -96,14 +102,24 @@ public abstract class AbstractMonitor implements Monitor
         }
     }
 
+    public Counter getCounter( Role<Counter> role )
+    {
+        return getValue( role );
+    }
+
     public Counter getCounter( String role )
     {
-        return (Counter) getValue( role );
+        return getCounter( (Role<Counter>) Role.getRole( role ) );
+    }
+
+    public Gauge getGauge( Role<Gauge> role )
+    {
+        return getValue( role );
     }
 
     public Gauge getGauge( String role )
     {
-        return (Gauge) getValue( role );
+        return getGauge( (Role<Gauge>) Role.getRole( role ) );
     }
 
 }

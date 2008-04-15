@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.apache.commons.monitoring.Counter;
 import org.apache.commons.monitoring.Monitor;
+import org.apache.commons.monitoring.Role;
 import org.apache.commons.monitoring.StatValue;
 import org.apache.commons.monitoring.Unit;
 import org.apache.commons.monitoring.Monitor.Key;
@@ -35,6 +36,7 @@ import org.apache.commons.monitoring.listeners.Detachable;
 public class HtmlRenderer
     extends AbstractRenderer
 {
+    protected static final String COLUMNS = "columns";
 
     public HtmlRenderer()
     {
@@ -94,7 +96,7 @@ public class HtmlRenderer
     @SuppressWarnings( "unchecked" )
     protected void tableHead( Context ctx, Collection<Monitor> monitors, Options options )
     {
-        Collection<String> roles = (Collection<String>) ctx.get( "roles" );
+        Collection<Role> roles = (Collection<Role>) ctx.get( ROLES );
         Map<String, Integer> columns = new HashMap<String, Integer>();
 
         ctx.println( "<thead><tr>" );
@@ -107,7 +109,7 @@ public class HtmlRenderer
         ctx.println( "<th rowspan='2'>name</th>" );
         ctx.println( "<th rowspan='2'>category</th>" );
         ctx.println( "<th rowspan='2'>subsystem</th>" );
-        for ( String role : roles )
+        for ( Role role : roles )
         {
             // Search the first monitor that has a StatValue for the role...
             for ( Monitor monitor : monitors )
@@ -130,14 +132,14 @@ public class HtmlRenderer
                     ctx.print( "<td colspan='" );
                     ctx.print( String.valueOf( span ) );
                     ctx.print( "'>" );
-                    ctx.print( value.getRole() );
+                    ctx.print( value.getRole().getName() );
                     Unit unit = options.unitFor( value );
                     if ( unit != null && unit.getName().length() > 0 )
                     {
                         renderUnit( ctx, unit );
                     }
                     ctx.print( "</td>" );
-                    columns.put( role, span );
+                    columns.put( role.getName(), span );
                     break;
                 }
             }
@@ -151,7 +153,7 @@ public class HtmlRenderer
             ctx.println( "<th>to</th>" );
         }
 
-        for ( String role : roles )
+        for ( Role role : roles )
         {
             for ( Monitor monitor : monitors )
             {
@@ -173,7 +175,7 @@ public class HtmlRenderer
             }
         }
         ctx.println( "</tr></thead>" );
-        ctx.put( "columns", columns );
+        ctx.put( COLUMNS, columns );
     }
 
     protected void writeColumnHead( Context ctx, Options options, StatValue value, String attribute )
@@ -241,9 +243,9 @@ public class HtmlRenderer
      */
     @SuppressWarnings("unchecked")
     @Override
-    protected void renderMissingValue( Context ctx, String role )
+    protected void renderMissingValue( Context ctx, Role role )
     {
-        Map<String, Integer> columns = (Map<String, Integer>) ctx.get( "columns" );
+        Map<String, Integer> columns = (Map<String, Integer>) ctx.get( COLUMNS );
         ctx.print( "<td colspan='" );
         ctx.print( String.valueOf( columns.get( role ) ) );
         ctx.print( "'>-</td>" );

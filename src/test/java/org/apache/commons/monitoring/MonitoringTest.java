@@ -31,6 +31,10 @@ import org.apache.commons.monitoring.impl.repositories.DefaultRepository;
 public class MonitoringTest
     extends TestCase
 {
+    public final static Role<Counter> COUNTER = new Role<Counter>( "COUNTER", Unit.UNARY );
+
+    public final static Role<Gauge> GAUGE = new Role<Gauge>( "GAUGE", Unit.UNARY );
+
 
     public void testStopWatchConcurrencyMonitoring()
         throws Exception
@@ -69,8 +73,8 @@ public class MonitoringTest
                     for ( int j = 0; j < loops; j++ )
                     {
                         Monitor monitor = Monitoring.getMonitor( "MonitoringTest.testMultiThreading", "test", "utils" );
-                        monitor.getCounter( "COUNTER" ).add( 1, Unit.NONE );
-                        monitor.getGauge( "GAUGE" ).increment(Unit.NONE);
+                        monitor.getCounter( COUNTER ).add( 1, Unit.UNARY );
+                        monitor.getGauge( GAUGE ).increment(Unit.UNARY);
                     }
                     try
                     {
@@ -90,11 +94,11 @@ public class MonitoringTest
 
         Monitor monitor = Monitoring.getMonitor( "MonitoringTest.testMultiThreading", "test", "utils" );
 
-        Counter counter = monitor.getCounter( "COUNTER" );
+        Counter counter = monitor.getCounter( COUNTER );
         assertEquals( counter.getClass() + " is not thread safe", threads * loops, counter.getHits() );
         assertEquals( counter.getClass() + " is not thread safe", threads * loops, counter.get() );
 
-        Gauge gauge = monitor.getGauge( "GAUGE" );
+        Gauge gauge = monitor.getGauge( GAUGE );
         assertEquals( gauge.getClass() + " is not thread safe", threads * loops, gauge.get() );
     }
 

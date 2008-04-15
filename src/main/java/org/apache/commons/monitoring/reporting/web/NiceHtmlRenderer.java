@@ -19,6 +19,7 @@ package org.apache.commons.monitoring.reporting.web;
 
 import java.util.Map;
 
+import org.apache.commons.monitoring.Role;
 import org.apache.commons.monitoring.Unit;
 import org.apache.commons.monitoring.reporting.Context;
 import org.apache.commons.monitoring.reporting.HtmlRenderer;
@@ -94,9 +95,9 @@ public class NiceHtmlRenderer
 
     @SuppressWarnings("unchecked")
     @Override
-    protected void renderMissingValue( Context ctx, String role )
+    protected void renderMissingValue( Context ctx, Role role )
     {
-        Map<String, Integer> columns = (Map<String, Integer>) ctx.get( "columns" );
+        Map<String, Integer> columns = (Map<String, Integer>) ctx.get( COLUMNS );
         ctx.print( "<td class='not-applicable' colspan='" );
         ctx.print( String.valueOf( columns.get( role ) ) );
         ctx.print( "'>-</td>" );

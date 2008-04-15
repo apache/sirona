@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.monitoring.Monitor;
+import org.apache.commons.monitoring.Role;
 import org.apache.commons.monitoring.StatValue;
 import org.apache.commons.monitoring.Monitor.Key;
 import org.apache.commons.monitoring.listeners.Detachable;
@@ -109,7 +110,7 @@ public class JsonRenderer
      * org.apache.commons.monitoring.reporting.Renderer.Options)
      */
     @Override
-    protected void renderStatValues( Context ctx, Monitor monitor, Options options, List<String> roles  )
+    protected void renderStatValues( Context ctx, Monitor monitor, Options options, List<Role> roles  )
     {
         if ( roles.size() > 0 )
         {
@@ -121,7 +122,7 @@ public class JsonRenderer
     @Override
     public void render( Context ctx, StatValue value, Options options )
     {
-        ctx.print( value.getRole() );
+        ctx.print( value.getRole().getName() );
         ctx.print( ":{" );
         super.render( ctx, value, options );
         ctx.print( "}" );

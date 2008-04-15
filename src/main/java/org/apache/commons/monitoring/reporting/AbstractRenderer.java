@@ -29,6 +29,7 @@ import java.util.Set;
 
 import org.apache.commons.monitoring.Counter;
 import org.apache.commons.monitoring.Monitor;
+import org.apache.commons.monitoring.Role;
 import org.apache.commons.monitoring.StatValue;
 import org.apache.commons.monitoring.Unit;
 import org.apache.commons.monitoring.Monitor.Key;
@@ -75,8 +76,7 @@ public abstract class AbstractRenderer
 
     protected void prepareRendering( Context ctx, Collection<Monitor> monitors, Options options )
     {
-        List<String> roles = getRoles( monitors, options );
-        ctx.put( ROLES, roles );
+        ctx.put( ROLES, getRoles( monitors, options ) );
         ctx.put( MONITORS, monitors );
     }
 
@@ -110,15 +110,15 @@ public abstract class AbstractRenderer
     @SuppressWarnings( "unchecked" )
     protected void renderStatValues( Context ctx, Monitor monitor, Options options )
     {
-        List<String> roles = (List<String>) ctx.get( ROLES );
+        List<Role> roles = (List<Role>) ctx.get( ROLES );
         renderStatValues( ctx, monitor, options, roles );
     }
 
-    protected void renderStatValues( Context ctx, Monitor monitor, Options options, List<String> roles )
+    protected void renderStatValues( Context ctx, Monitor monitor, Options options, List<Role> roles )
     {
-        for ( Iterator<String> iterator = roles.iterator(); iterator.hasNext(); )
+        for ( Iterator<Role> iterator = roles.iterator(); iterator.hasNext(); )
         {
-            String role = iterator.next();
+            Role role = iterator.next();
             StatValue value = monitor.getValue( role );
             if ( value != null )
             {
@@ -141,7 +141,7 @@ public abstract class AbstractRenderer
      * @param ctx
      * @param role
      */
-    protected void renderMissingValue( Context ctx, String role )
+    protected void renderMissingValue( Context ctx, Role role )
     {
         // Nop
     }
@@ -169,7 +169,7 @@ public abstract class AbstractRenderer
 
     protected void render( Context ctx, StatValue value, Options options )
     {
-        String role = value.getRole();
+        Role role = value.getRole();
         if ( value instanceof Counter )
         {
             Counter counter = (Counter) value;
@@ -276,14 +276,14 @@ public abstract class AbstractRenderer
      * @param monitors
      * @return
      */
-    protected List<String> getRoles( Collection<Monitor> monitors, Options options )
+    protected List<Role> getRoles( Collection<Monitor> monitors, Options options )
     {
-        Set<String> roles = new HashSet<String>();
+        Set<Role> roles = new HashSet<Role>();
         for ( Monitor monitor : monitors )
         {
             if ( options.render( monitor ) )
             {
-                for ( String role : monitor.getRoles() )
+                for ( Role role : monitor.getRoles() )
                 {
                     if ( options.renderRole( role ) )
                     {
@@ -292,8 +292,8 @@ public abstract class AbstractRenderer
                 }
             }
         }
-        List<String> sorted = new ArrayList<String>( roles );
-        Collections.sort( sorted );
+        List<Role> sorted = new ArrayList<Role>( roles );
+        Collections.<Role>sort( sorted );
         return sorted;
     }
 

@@ -19,6 +19,7 @@ package org.apache.commons.monitoring.impl.monitors;
 
 import org.apache.commons.monitoring.Counter;
 import org.apache.commons.monitoring.Gauge;
+import org.apache.commons.monitoring.Role;
 import org.apache.commons.monitoring.impl.values.ThreadSafeCounter;
 import org.apache.commons.monitoring.impl.values.ThreadSafeGauge;
 
@@ -42,9 +43,9 @@ public class CreateValuesOnDemandMonitor
      * Retrieve a Counter or create a new one for the role
      */
     @Override
-    public Counter getCounter( String role )
+    public Counter getCounter( Role<Counter> role )
     {
-        Counter counter = (Counter) getValue( role );
+        Counter counter = getValue( role );
         if ( counter != null )
         {
             return counter;
@@ -57,7 +58,7 @@ public class CreateValuesOnDemandMonitor
     /**
      * Create a new Counter instance
      */
-    protected Counter newCounterInstance( String role )
+    protected Counter newCounterInstance( Role<Counter> role )
     {
         return new ThreadSafeCounter( role );
     }
@@ -66,9 +67,9 @@ public class CreateValuesOnDemandMonitor
      * Retrieve a Gauge or create a new one for the role
      */
     @Override
-    public Gauge getGauge( String role )
+    public Gauge getGauge( Role<Gauge> role )
     {
-        Gauge gauge = (Gauge) getValue( role );
+        Gauge gauge = getValue( role );
         if ( gauge != null )
         {
             return gauge;
@@ -81,7 +82,7 @@ public class CreateValuesOnDemandMonitor
     /**
      * Create a new Gauge instance
      */
-    protected Gauge newGaugeInstance( String role )
+    protected Gauge newGaugeInstance( Role<Gauge> role )
     {
         return  new ThreadSafeGauge( role );
     }

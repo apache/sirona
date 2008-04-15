@@ -35,9 +35,6 @@ import org.apache.commons.monitoring.Unit;
 public abstract class AbstractPerformanceInterceptor<T>
 {
 
-    /** Role for the invocation failure counter */
-    private static final String FAILURE = "failure";
-
     protected Repository repository;
 
     protected String category;
@@ -112,7 +109,7 @@ public abstract class AbstractPerformanceInterceptor<T>
     {
         if ( error != null )
         {
-            monitor.getCounter( FAILURE ).add( duration, Unit.NANOS );
+            monitor.getCounter( Monitor.FAILURES ).add( duration, Unit.NANOS );
         }
     }
 

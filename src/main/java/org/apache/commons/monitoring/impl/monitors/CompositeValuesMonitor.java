@@ -19,6 +19,7 @@ package org.apache.commons.monitoring.impl.monitors;
 
 import org.apache.commons.monitoring.Counter;
 import org.apache.commons.monitoring.Gauge;
+import org.apache.commons.monitoring.Role;
 import org.apache.commons.monitoring.impl.values.CompositeCounter;
 import org.apache.commons.monitoring.impl.values.CompositeGauge;
 
@@ -38,13 +39,13 @@ public class CompositeValuesMonitor
     }
 
     @Override
-    protected Counter newCounterInstance( String role )
+    protected Counter newCounterInstance( Role<Counter> role )
     {
         return new CompositeCounter( role );
     }
 
     @Override
-    protected Gauge newGaugeInstance( String role )
+    protected Gauge newGaugeInstance( Role<Gauge> role )
     {
         return new CompositeGauge( role );
     }

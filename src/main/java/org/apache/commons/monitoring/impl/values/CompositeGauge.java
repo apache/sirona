@@ -23,6 +23,7 @@ import java.util.LinkedList;
 
 import org.apache.commons.monitoring.Composite;
 import org.apache.commons.monitoring.Gauge;
+import org.apache.commons.monitoring.Role;
 
 /**
  * A composite implementation of {@link Gauge} that delegates to a primary
@@ -45,7 +46,7 @@ public class CompositeGauge
         return Collections.unmodifiableCollection( secondary );
     }
 
-    public CompositeGauge( String role )
+    public CompositeGauge( Role<Gauge> role )
     {
         super( role );
         this.secondary = new LinkedList<Gauge>();

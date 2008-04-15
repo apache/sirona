@@ -23,6 +23,7 @@ import org.apache.commons.monitoring.Composite;
 import org.apache.commons.monitoring.Counter;
 import org.apache.commons.monitoring.Gauge;
 import org.apache.commons.monitoring.Monitor;
+import org.apache.commons.monitoring.MonitoringTest;
 import org.apache.commons.monitoring.Unit;
 import org.apache.commons.monitoring.impl.monitors.CompositeValuesMonitor;
 
@@ -53,25 +54,25 @@ public class CompositeValuesMonitorTest
         throws Exception
     {
         Monitor monitor = new CompositeValuesMonitor( new Monitor.Key( "MonitorTest.testComposite", "test", "utils" ) );
-        Counter counter = monitor.getCounter( "COUNTER" );
+        Counter counter = monitor.getCounter( MonitoringTest.COUNTER );
         Composite<Counter> composite = (Composite<Counter>) counter;
 
-        counter.add( 1, Unit.NANOS );
+        counter.add( 1, Unit.UNARY );
         assertEquals( 1, counter.get() );
 
         Counter secondary = composite.createSecondary();
         assertEquals( 0, secondary.get() );
 
-        counter.add( 1, Unit.NANOS );
+        counter.add( 1, Unit.UNARY );
         assertEquals( 2, counter.get() );
         assertEquals( 1, secondary.get() );
 
-        counter.set( 3, Unit.NANOS );
+        counter.set( 3, Unit.UNARY );
         assertEquals( 3, counter.get() );
         assertEquals( 3, secondary.get() );
 
         composite.removeSecondary( secondary );
-        counter.add( 1, Unit.NANOS );
+        counter.add( 1, Unit.UNARY );
         assertEquals( 4, counter.get() );
         assertEquals( 3, secondary.get() );
     }
@@ -81,36 +82,36 @@ public class CompositeValuesMonitorTest
         throws Exception
     {
         Monitor monitor = new CompositeValuesMonitor( new Monitor.Key( "MonitorTest.testComposite", "test", "utils" ) );
-        Gauge gauge = monitor.getGauge( "GAUGE" );
+        Gauge gauge = monitor.getGauge( MonitoringTest.GAUGE );
         Composite<Gauge> composite = (Composite<Gauge>) gauge;
 
-        gauge.increment(Unit.NONE);
+        gauge.increment(Unit.UNARY);
         assertEquals( 1, gauge.get() );
         Gauge secondary = composite.createSecondary();
         assertEquals( 1, secondary.get() );
 
-        gauge.increment(Unit.NONE);
+        gauge.increment(Unit.UNARY);
         assertEquals( 2, gauge.get() );
         assertEquals( 2, secondary.get() );
 
-        gauge.set( 3, Unit.NONE );
+        gauge.set( 3, Unit.UNARY );
         assertEquals( 3, gauge.get() );
         assertEquals( 3, secondary.get() );
 
-        gauge.add( 2, Unit.NONE );
+        gauge.add( 2, Unit.UNARY );
         assertEquals( 5, gauge.get() );
         assertEquals( 5, secondary.get() );
 
-        gauge.increment(Unit.NONE);
+        gauge.increment(Unit.UNARY);
         assertEquals( 6, gauge.get() );
         assertEquals( 6, secondary.get() );
 
-        gauge.decrement(Unit.NONE);
+        gauge.decrement(Unit.UNARY);
         assertEquals( 5, gauge.get() );
         assertEquals( 5, secondary.get() );
 
         composite.removeSecondary( secondary );
-        gauge.decrement(Unit.NONE);
+        gauge.decrement(Unit.UNARY);
         assertEquals( 4, gauge.get() );
         assertEquals( 5, secondary.get() );
     }

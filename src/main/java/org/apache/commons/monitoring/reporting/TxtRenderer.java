@@ -58,7 +58,7 @@ public class TxtRenderer
     @Override
     public void render( Context ctx, StatValue value, Options options )
     {
-        ctx.println( value.getRole() );
+        ctx.println( value.getRole().getName() );
         super.render( ctx, value, options );
         ctx.println( "" );
     }
