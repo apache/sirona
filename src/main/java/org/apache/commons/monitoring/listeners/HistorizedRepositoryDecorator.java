@@ -44,7 +44,7 @@ public class HistorizedRepositoryDecorator
 
     private int size;
 
-    public HistorizedRepositoryDecorator( long period, final int size, Observable repository )
+    public HistorizedRepositoryDecorator( int period, final int size, Observable repository )
     {
         super( period, repository );
         this.repository = repository;

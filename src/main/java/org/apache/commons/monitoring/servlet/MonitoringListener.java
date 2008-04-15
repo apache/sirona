@@ -137,12 +137,12 @@ public class MonitoringListener
         Repository.Observable observable = (Repository.Observable) repository;
         int idx = history.indexOf( ':' );
         char[] ch = history.toCharArray();
-        long period = 0;
+        int period = 0;
         for ( int i = 0; i < idx; i++ )
         {
             if ( Character.isDigit( ch[i] ) )
                 continue;
-            period = Long.parseLong( history.substring( 0, i ) );
+            period = Integer.parseInt( history.substring( 0, i ) );
             String unit = history.substring( i, idx );
             if ( unit != null )
             {

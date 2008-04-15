@@ -18,6 +18,8 @@
 package org.apache.commons.monitoring.reporting;
 
 import java.io.IOException;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -47,15 +49,35 @@ public abstract class AbstractPeriodicLogger
 
     /**
      * @param period the period (in ms) to log the monitoring state
-     * @param repository the target monitoring repository
+     * @param repository the observed repository
      */
-    public AbstractPeriodicLogger( long period, Repository.Observable repository )
+    public AbstractPeriodicLogger( int period, Repository.Observable repository )
+    {
+        this( period, null, repository );
+    }
+
+    /**
+     * Create and start a PeriodicLogger to observe and log the repository datas.
+     * If <tt>firstTime</tt> is null, the first time to log will be computed to
+     * log first at current date + period.
+     *
+     * @param period the period (in ms) to log the monitoring state
+     * @param firstTime the first time to log the observed repository (may be null)
+     * @param repository the observed repository
+     */
+    public AbstractPeriodicLogger( int period, Date firstTime, Repository.Observable repository )
     {
         super();
         this.repository = repository;
         observeRepositoryForPeriod();
         timer = new Timer();
-        timer.scheduleAtFixedRate( this, period, period );
+        if (firstTime == null)
+        {
+            Calendar c = Calendar.getInstance();
+            c.add( Calendar.MILLISECOND, period );
+            firstTime = c.getTime();
+        }
+        timer.scheduleAtFixedRate( this, firstTime, period );
     }
 
 
@@ -115,7 +137,7 @@ public abstract class AbstractPeriodicLogger
      * @param period secondary repository that observed the monitored state during the last active period
      */
     protected abstract void log( SecondaryRepository period ) throws IOException;
-	
+
     /**
      * @return the SecondaryRepository active for the current period.
      */

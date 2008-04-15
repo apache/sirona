@@ -19,6 +19,7 @@ package org.apache.commons.monitoring.reporting;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.monitoring.Repository;
@@ -40,12 +41,13 @@ public abstract class SelectorPeriodicLogger
 
     /**
      * @param period the period (in ms) to log the monitoring state
-     * @param repository the target monitoring repository
+     * @param firstTime the first time to log (may be null)
+     * @param repository the observed repository
      * @param output the output file
      */
-    public SelectorPeriodicLogger( long period, Repository.Observable repository, List<String> selectors )
+    public SelectorPeriodicLogger( int period, Date firstTime, Repository.Observable repository, List<String> selectors )
     {
-        super( period, repository );
+        super( period, firstTime, repository );
         this.selectors = new Selector[selectors.size()];
         int i = 0;
         for ( String path : selectors )
@@ -54,14 +56,16 @@ public abstract class SelectorPeriodicLogger
         }
     }
 
+
+
     /**
      * @param period the period (in ms) to log the monitoring state
      * @param repository the target monitoring repository
      * @param output the output file
      */
-    public SelectorPeriodicLogger( long period, Repository.Observable repository, String[] selectors )
+    public SelectorPeriodicLogger( int period, Date firstTime, Repository.Observable repository, String[] selectors )
     {
-        this( period, repository, Arrays.asList( selectors ) );
+        this( period, firstTime, repository, Arrays.asList( selectors ) );
     }
 
     /**
