@@ -110,11 +110,11 @@ public class MonitoringListener
             }
             catch ( InstantiationException e )
             {
-                throw new IllegalStateException( "Failed to create repository instance from class " + name, e );
+                throw new IllegalStateException( "Failed to create repository instance from class " + name );
             }
             catch ( IllegalAccessException e )
             {
-                throw new IllegalStateException( "Failed to create repository instance from class " + name, e );
+                throw new IllegalStateException( "Failed to create repository instance from class " + name );
             }
         }
         else

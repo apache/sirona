@@ -54,7 +54,7 @@ public class ConfigurableImplementationsRepository
         }
         catch ( Exception e )
         {
-            throw new IllegalStateException( "Invalid StopWatch implemenation. Constructor <init>(Monitor) required", e );
+            throw new IllegalStateException( "Invalid StopWatch implemenation. Constructor <init>(Monitor) required" );
         }
     }
 
@@ -67,7 +67,7 @@ public class ConfigurableImplementationsRepository
         catch ( Exception e )
         {
             throw new IllegalStateException(
-                "Invalid StopWatch implemenation. Constructor <init>(Monitor.Key) required", e );
+                "Invalid StopWatch implemenation. Constructor <init>(Monitor.Key) required" );
         }
     }
 

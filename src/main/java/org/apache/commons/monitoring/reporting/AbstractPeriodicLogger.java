@@ -57,7 +57,7 @@ public abstract class AbstractPeriodicLogger
     }
 
     /**
-     * Create and start a PeriodicLogger to observe and log the repository datas.
+     * Create and start a PeriodicLogger to observe and log the repository data.
      * If <tt>firstTime</tt> is null, the first time to log will be computed to
      * log first at current date + period.
      *
