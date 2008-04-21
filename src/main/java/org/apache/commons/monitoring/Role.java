@@ -116,4 +116,10 @@ public class Role<T extends StatValue> implements Comparable<Role>
         return name.compareTo( o.name );
     }
 
+    @Override
+    public String toString()
+    {
+        return name;
+    }
+
 }

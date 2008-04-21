@@ -34,6 +34,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.Repository;
+import org.apache.commons.monitoring.Role;
 import org.apache.commons.monitoring.StatValue;
 import org.apache.commons.monitoring.Unit;
 import org.apache.commons.monitoring.Monitor.Key;
@@ -189,13 +190,23 @@ public class MonitoringServlet
         {
             this.request = request;
             String[] values = request.getParameterValues( "role" );
-            roles = values != null ? Arrays.asList( values ) : Collections.<String> emptyList();
+            if (values != null)
+            {
+                roles = Arrays.asList( values );
+            }
             values = request.getParameterValues( "category" );
             categories = values != null ? Arrays.asList( values ) : Collections.<String> emptyList();
             values = request.getParameterValues( "subsystem" );
             subsystems = values != null ? Arrays.asList( values ) : Collections.<String> emptyList();
         }
 
+        @Override
+        public boolean renderRole( Role role )
+        {
+            return roles != null ? roles.contains( role.getName() ) : true;
+        }
+
+        @Override
         public boolean render( Monitor monitor )
         {
             Key key = monitor.getKey();
@@ -203,9 +214,10 @@ public class MonitoringServlet
                 && ( subsystems.isEmpty() || subsystems.contains( key.getSubsystem() ) );
         }
 
-        public boolean render( String role, String attribute )
+        @Override
+        public boolean render( Role role, String attribute )
         {
-            String columns = request.getParameter( role + ".columns" );
+            String columns = request.getParameter( role.getName() + ".columns" );
             if ( columns == null )
             {
                 return true;
@@ -213,9 +225,10 @@ public class MonitoringServlet
             return columns.indexOf( attribute ) >= 0;
         }
 
+        @Override
         public Unit unitFor( StatValue value )
         {
-            String unitName = request.getParameter( value.getRole() + ".unit" );
+            String unitName = request.getParameter( value.getRole().getName() + ".unit" );
             if ( unitName != null )
             {
                 if ( value.getUnit() != null )
