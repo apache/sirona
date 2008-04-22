@@ -132,7 +132,7 @@ public abstract class AbstractStatValue<T extends StatValue>
             return Double.NaN;
         }
         double variance = ( getSquares() - getSum() * getMean() ) / ( n - 1 );
-        return Math.sqrt( variance );
+        return Math.sqrt( Math.abs( variance ) );
     }
 
     protected abstract long getSquares();
