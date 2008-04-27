@@ -35,7 +35,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.Repository;
 import org.apache.commons.monitoring.Role;
-import org.apache.commons.monitoring.StatValue;
 import org.apache.commons.monitoring.Unit;
 import org.apache.commons.monitoring.Monitor.Key;
 import org.apache.commons.monitoring.reporting.Context;
@@ -226,21 +225,21 @@ public class MonitoringServlet
         }
 
         @Override
-        public Unit unitFor( StatValue value )
+        public Unit unitFor( Role role )
         {
-            String unitName = request.getParameter( value.getRole().getName() + ".unit" );
+            String unitName = request.getParameter( role.getName() + ".unit" );
             if ( unitName != null )
             {
-                if ( value.getUnit() != null )
+                if ( role.getUnit() != null )
                 {
-                    Unit unit = value.getUnit().getDerived( unitName );
+                    Unit unit = role.getUnit().getDerived( unitName );
                     if ( unit != null )
                     {
                         return unit;
                     }
                 }
             }
-            return value.getUnit();
+            return role.getUnit();
         }
     }
 

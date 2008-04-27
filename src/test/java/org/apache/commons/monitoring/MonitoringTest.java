@@ -31,9 +31,9 @@ import org.apache.commons.monitoring.impl.repositories.DefaultRepository;
 public class MonitoringTest
     extends TestCase
 {
-    public final static Role<Counter> COUNTER = new Role<Counter>( "COUNTER", Unit.UNARY );
+    public final static Role<Counter> COUNTER = new Role<Counter>( "COUNTER", Unit.UNARY, Counter.class );
 
-    public final static Role<Gauge> GAUGE = new Role<Gauge>( "GAUGE", Unit.UNARY );
+    public final static Role<Gauge> GAUGE = new Role<Gauge>( "GAUGE", Unit.UNARY, Gauge.class );
 
 
     public void testStopWatchConcurrencyMonitoring()

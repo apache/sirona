@@ -29,7 +29,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.monitoring.Counter;
 import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.MonitoringTest;
-import org.apache.commons.monitoring.StatValue;
+import org.apache.commons.monitoring.Role;
 import org.apache.commons.monitoring.Unit;
 import org.apache.commons.monitoring.impl.monitors.CreateValuesOnDemandMonitor;
 import org.apache.commons.monitoring.impl.values.ThreadSafeCounter;
@@ -91,7 +91,7 @@ public class RendererTest
     {
         Options options = new OptionsSupport()
         {
-            public Unit unitFor( StatValue value )
+            public Unit unitFor( Role role )
             {
                 return Unit.MICROS;
             }

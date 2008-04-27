@@ -17,6 +17,8 @@
 
 package org.apache.commons.monitoring;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -25,15 +27,22 @@ public class Role<T extends StatValue> implements Comparable<Role>
     private String name;
 
     private Unit unit;
+    
+    private Class<T> type;
 
     private static final Map<String, Role> ROLES = new ConcurrentHashMap<String, Role>();
 
-    public static Role<? extends StatValue> getRole( String name )
+    public static Role getRole( String name )
     {
         return ROLES.get( name );
     }
+    
+    public static Collection<Role> getRoles()
+    {
+        return Collections.unmodifiableCollection( ROLES.values() );
+    }    
 
-    public Role( String name, Unit unit )
+    public Role( String name, Unit unit, Class<T> type )
     {
         super();
         if (name == null)
@@ -44,8 +53,13 @@ public class Role<T extends StatValue> implements Comparable<Role>
         {
             throw new IllegalArgumentException( "A role unit is required" );
         }
+        if (type == null)
+        {
+            throw new IllegalArgumentException( "A role type is required" );
+        }
         this.name = name;
         this.unit = unit;
+        this.type = type;
         ROLES.put( name, this );
     }
 
@@ -120,6 +134,11 @@ public class Role<T extends StatValue> implements Comparable<Role>
     public String toString()
     {
         return name;
+    }
+
+    public Class<T> getType()
+    {
+        return type;
     }
 
 }

@@ -24,7 +24,6 @@ import java.util.Collection;
 
 import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.Role;
-import org.apache.commons.monitoring.StatValue;
 import org.apache.commons.monitoring.Unit;
 
 /**
@@ -48,7 +47,7 @@ public interface Renderer
 
         boolean renderRole( Role role );
 
-        Unit unitFor( StatValue value );
+        Unit unitFor( Role role );
 
         NumberFormat getNumberFormat();
 

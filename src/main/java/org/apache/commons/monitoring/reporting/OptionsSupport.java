@@ -26,7 +26,6 @@ import java.util.Locale;
 
 import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.Role;
-import org.apache.commons.monitoring.StatValue;
 import org.apache.commons.monitoring.Unit;
 
 /**
@@ -53,9 +52,9 @@ public class OptionsSupport
     }
 
 
-    public Unit unitFor( StatValue value )
+    public Unit unitFor( Role role )
     {
-        return value.getUnit();
+        return role.getUnit();
     }
 
     public NumberFormat getDecimalFormat()

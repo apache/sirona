@@ -236,7 +236,7 @@ public abstract class AbstractRenderer
 
     private void renderInternal( Context ctx, StatValue value, String attribute, long l, Options options, int ratio )
     {
-        Unit unit = options.unitFor( value );
+        Unit unit = options.unitFor( value.getRole() );
         if ( unit != null )
         {
             while ( ratio-- > 0 )
@@ -255,7 +255,7 @@ public abstract class AbstractRenderer
             renderNaN( ctx );
             return;
         }
-        Unit unit = options.unitFor( value );
+        Unit unit = options.unitFor( value.getRole() );
         if ( unit != null )
         {
             while ( ratio-- > 0 )

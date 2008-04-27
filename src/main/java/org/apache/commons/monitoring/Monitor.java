@@ -53,13 +53,13 @@ import java.util.Collection;
 public interface Monitor
 {
     /** default role key for code performances */
-    Role<Counter> PERFORMANCES = new Role<Counter>( "performances", Unit.NANOS );
+    Role<Counter> PERFORMANCES = new Role<Counter>( "performances", Unit.NANOS, Counter.class );
 
     /** default role for multi-thread concurrency */
-    Role<Gauge> CONCURRENCY = new Role<Gauge>( "concurrency", Unit.UNARY );
+    Role<Gauge> CONCURRENCY = new Role<Gauge>( "concurrency", Unit.UNARY, Gauge.class );
 
     /** default Role for the invocation failure counter */
-    Role<Counter> FAILURES = new Role<Counter>( "failures", Unit.UNARY );
+    Role<Counter> FAILURES = new Role<Counter>( "failures", Unit.UNARY, Counter.class );
 
     /**
      * @return the monitor key

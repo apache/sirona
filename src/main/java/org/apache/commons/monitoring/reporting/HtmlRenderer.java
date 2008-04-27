@@ -45,10 +45,9 @@ public class HtmlRenderer
 
     /**
      * {@inheritDoc}
-     *
-     * @see org.apache.commons.monitoring.reporting.AbstractRenderer#render(java.io.Context,
-     * java.util.Collection,
-     * org.apache.commons.monitoring.reporting.Renderer.Options)
+     * 
+     * @see org.apache.commons.monitoring.reporting.AbstractRenderer#render(java.io.Context, java.util.Collection,
+     *      org.apache.commons.monitoring.reporting.Renderer.Options)
      */
     @Override
     public void render( Context ctx, Collection<Monitor> monitors, Options options )
@@ -100,7 +99,7 @@ public class HtmlRenderer
         Map<String, Integer> columns = new HashMap<String, Integer>();
 
         ctx.println( "<thead><tr>" );
-        boolean detached = ( monitors.size() > 0 && monitors.iterator().next()instanceof Detachable );
+        boolean detached = ( monitors.size() > 0 && monitors.iterator().next() instanceof Detachable );
 
         if ( detached )
         {
@@ -111,38 +110,16 @@ public class HtmlRenderer
         ctx.println( "<th rowspan='2'>subsystem</th>" );
         for ( Role role : roles )
         {
-            // Search the first monitor that has a StatValue for the role...
-            for ( Monitor monitor : monitors )
+            ctx.print( "<td colspan='" );
+            ctx.print( role.getType() == Counter.class ? "7" : "5" );
+            ctx.print( "'>" );
+            ctx.print( role.getName() );
+            Unit unit = options.unitFor( role );
+            if ( unit != null && unit.getName().length() > 0 )
             {
-                StatValue value = monitor.getValue( role );
-                if ( value != null )
-                {
-                    int span = 0;
-                    if ( value instanceof Counter )
-                    {
-                        span += options.render( role, "hits" ) ? 1 : 0;
-                        span += options.render( role, "sum" ) ? 1 : 0;
-                    }
-                    span += options.render( role, "min" ) ? 1 : 0;
-                    span += options.render( role, "max" ) ? 1 : 0;
-                    span += options.render( role, "mean" ) ? 1 : 0;
-                    span += options.render( role, "deviation" ) ? 1 : 0;
-                    span += options.render( role, "value" ) ? 1 : 0;
-
-                    ctx.print( "<td colspan='" );
-                    ctx.print( String.valueOf( span ) );
-                    ctx.print( "'>" );
-                    ctx.print( value.getRole().getName() );
-                    Unit unit = options.unitFor( value );
-                    if ( unit != null && unit.getName().length() > 0 )
-                    {
-                        renderUnit( ctx, unit );
-                    }
-                    ctx.print( "</td>" );
-                    columns.put( role.getName(), span );
-                    break;
-                }
+                renderUnit( ctx, unit );
             }
+            ctx.print( "</td>" );
         }
         ctx.print( "</tr>" );
 
@@ -155,32 +132,24 @@ public class HtmlRenderer
 
         for ( Role role : roles )
         {
-            for ( Monitor monitor : monitors )
+            if ( role.getType() == Counter.class )
             {
-                StatValue value = monitor.getValue( role );
-                if ( value != null )
-                {
-                    if ( value instanceof Counter )
-                    {
-                        writeColumnHead( ctx, options, value, "hits" );
-                        writeColumnHead( ctx, options, value, "sum" );
-                    }
-                    writeColumnHead( ctx, options, value, "min" );
-                    writeColumnHead( ctx, options, value, "max" );
-                    writeColumnHead( ctx, options, value, "mean" );
-                    writeColumnHead( ctx, options, value, "deviation" );
-                    writeColumnHead( ctx, options, value, "value" );
-                    break;
-                }
+                writeColumnHead( ctx, options, role, "hits" );
+                writeColumnHead( ctx, options, role, "sum" );
             }
+            writeColumnHead( ctx, options, role, "min" );
+            writeColumnHead( ctx, options, role, "max" );
+            writeColumnHead( ctx, options, role, "mean" );
+            writeColumnHead( ctx, options, role, "deviation" );
+            writeColumnHead( ctx, options, role, "value" );
         }
         ctx.println( "</tr></thead>" );
         ctx.put( COLUMNS, columns );
     }
 
-    protected void writeColumnHead( Context ctx, Options options, StatValue value, String attribute )
+    protected void writeColumnHead( Context ctx, Options options, Role role, String attribute )
     {
-        if ( options.render( value.getRole(), attribute ) )
+        if ( options.render( role, attribute ) )
         {
             ctx.print( "<th>" );
             ctx.print( attribute );
@@ -190,15 +159,18 @@ public class HtmlRenderer
 
     /**
      * {@inheritDoc}
-     * @see org.apache.commons.monitoring.reporting.AbstractRenderer#renderDetached(org.apache.commons.monitoring.reporting.Context, org.apache.commons.monitoring.listeners.SecondaryMonitor, org.apache.commons.monitoring.reporting.Renderer.Options)
+     * 
+     * @see org.apache.commons.monitoring.reporting.AbstractRenderer#renderDetached(org.apache.commons.monitoring.reporting.Context,
+     *      org.apache.commons.monitoring.listeners.SecondaryMonitor,
+     *      org.apache.commons.monitoring.reporting.Renderer.Options)
      */
     @Override
     protected void renderDetached( Context ctx, Detachable detached, Options options )
     {
         ctx.print( "<td>" );
-        ctx.print( options.getDateFormat().format( new Date( detached.getAttachedAt()) ) );
+        ctx.print( options.getDateFormat().format( new Date( detached.getAttachedAt() ) ) );
         ctx.print( "</td><td>" );
-        ctx.print( options.getDateFormat().format( new Date( detached.getDetachedAt()) ) );
+        ctx.print( options.getDateFormat().format( new Date( detached.getDetachedAt() ) ) );
         ctx.print( "</td>" );
     }
 
@@ -237,11 +209,11 @@ public class HtmlRenderer
 
     /**
      * {@inheritDoc}
-     *
+     * 
      * @see org.apache.commons.monitoring.reporting.AbstractRenderer#renderMissingValue(org.apache.commons.monitoring.reporting.Context,
-     * java.lang.String)
+     *      java.lang.String)
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     @Override
     protected void renderMissingValue( Context ctx, Role role )
     {
@@ -253,9 +225,8 @@ public class HtmlRenderer
 
     /**
      * {@inheritDoc}
-     *
-     * @see org.apache.commons.monitoring.reporting.AbstractRenderer#hasNext(java.io.Context,
-     * java.lang.Class)
+     * 
+     * @see org.apache.commons.monitoring.reporting.AbstractRenderer#hasNext(java.io.Context, java.lang.Class)
      */
     @Override
     protected void hasNext( Context ctx, Class<?> type )
