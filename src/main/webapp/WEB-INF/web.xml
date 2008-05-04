@@ -21,14 +21,10 @@
 <web-app>
 
     <context-param>
-        <description>enable monitoring history</description>
         <param-name>org.apache.commons.monitoring.History</param-name>
         <param-value>1min:10</param-value>
+        <description>enable monitoring history</description>
     </context-param>
-
-    <listener>
-        <listener-class>org.apache.commons.monitoring.servlet.MonitoringListener</listener-class>
-    </listener>
 
     <filter>
         <filter-name>Monitoring</filter-name>
@@ -45,6 +41,10 @@
         <url-pattern>*.action</url-pattern>
     </filter-mapping>
 
+    <listener>
+        <listener-class>org.apache.commons.monitoring.servlet.MonitoringListener</listener-class>
+    </listener>
+
     <servlet>
         <servlet-name>monitoring</servlet-name>
         <servlet-class>org.apache.commons.monitoring.reporting.web.WebUIServlet</servlet-class>
@@ -54,5 +54,5 @@
         <servlet-name>monitoring</servlet-name>
         <url-pattern>/monitoring/*</url-pattern>
     </servlet-mapping>
-
+  
 </web-app>
