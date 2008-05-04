@@ -27,8 +27,6 @@ import org.apache.commons.monitoring.MonitoringTest;
 import org.apache.commons.monitoring.Unit;
 import org.apache.commons.monitoring.impl.monitors.CompositeValuesMonitor;
 
-;
-
 /**
  * Test for basic Monitor behaviour
  *
