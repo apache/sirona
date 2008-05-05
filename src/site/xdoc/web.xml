@@ -65,9 +65,11 @@
           user-agent <tt>accept</tt> header is used to find a valid renderer, but this may produce</li>
           <li>Adding <tt>?role=performances</tt> will select the "performances" counter to get included in
           the output. By default all roles are displayed. If some <tt>role</tt> parameter is set in the
-          URI, only those roles are displayed</li>
+          URI, only those roles are displayed. You can specify many <tt>role=*</tt> parameter or use
+          the shortcut <tt>roles=x,y,z</tt>.</li>
           <li>Addind <tt>?performances.value=false</tt> will remove the "current value" column from the
-          output.</li>
+          output. You can specify many <tt>[role].[attribute]=[true|false]</tt> parameter or use
+          the shortcut <tt>[role].columns=x,y,z</tt>.</li>
           <li>Adding <tt>?performances.unit=ms</tt> will format the "performances" counter values to use
           milliseconds as data unit. The parameter value must be a valid derived unit from the counter unit.
           For time based counters, this includes <tt>ns</tt> (nanoseconds), <tt>µs</tt> (microseconds),
