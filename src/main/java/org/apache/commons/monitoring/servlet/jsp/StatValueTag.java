@@ -20,16 +20,16 @@ public class StatValueTag
 
         String name = role.getName();
         StringBuffer stb = new StringBuffer();
-        checkbox( name, "value", stb );
-        checkbox( name, "min", stb );
-        checkbox( name, "max", stb );
-        checkbox( name, "mean", stb );
-        checkbox( name, "deviation", stb );
         if ( role.getType() == Counter.class )
         {
             checkbox( name, "hits", stb );
             checkbox( name, "total", stb );
         }
+        checkbox( name, "value", stb );
+        checkbox( name, "min", stb );
+        checkbox( name, "max", stb );
+        checkbox( name, "mean", stb );
+        checkbox( name, "deviation", stb );
 
         return EVAL_PAGE;
     }

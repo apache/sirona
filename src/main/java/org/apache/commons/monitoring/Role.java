@@ -22,12 +22,14 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class Role<T extends StatValue> implements Comparable<Role>
+@SuppressWarnings("unchecked")
+public class Role<T extends StatValue>
+    implements Comparable<Role>
 {
     private String name;
 
     private Unit unit;
-    
+
     private Class<T> type;
 
     private static final Map<String, Role> ROLES = new ConcurrentHashMap<String, Role>();
@@ -36,26 +38,30 @@ public class Role<T extends StatValue> implements Comparable<Role>
     {
         return ROLES.get( name );
     }
-    
+
     public static Collection<Role> getRoles()
     {
         return Collections.unmodifiableCollection( ROLES.values() );
-    }    
+    }
 
     public Role( String name, Unit unit, Class<T> type )
     {
         super();
-        if (name == null)
+        if ( name == null )
         {
             throw new IllegalArgumentException( "A role name is required" );
         }
-        if (unit == null)
+        if ( unit == null )
         {
             throw new IllegalArgumentException( "A role unit is required" );
         }
-        if (type == null)
+        if ( type == null )
         {
-            throw new IllegalArgumentException( "A role type is required" );
+            throw new IllegalArgumentException( "A type is required" );
+        }
+        if ( !StatValue.class.isAssignableFrom( type ) )
+        {
+            throw new IllegalArgumentException( "The type must extend StatValue" );
         }
         this.name = name;
         this.unit = unit;

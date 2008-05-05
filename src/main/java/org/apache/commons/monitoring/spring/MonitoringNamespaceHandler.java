@@ -15,20 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.commons.monitoring.support.java13.java.lang;
+package org.apache.commons.monitoring.spring;
+
+import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**
- * @author <a href="mailto:nicolas.deloof@gmail.com">Nicolas De Loof</a>
+ *
+ * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public class _Boolean
+public class MonitoringNamespaceHandler
+    extends NamespaceHandlerSupport
 {
-    public static Boolean valueOf( boolean b )
+
+    /**
+     * {@inheritDoc}
+     * @see org.springframework.beans.factory.xml.NamespaceHandler#init()
+     */
+    public void init()
     {
-        return new Boolean( b );
+//        registerBeanDefinitionParser( "auto-proxy", new AutoProxyDefinitionParser());
     }
 
-    public static boolean parseBoolean( String s )
-    {
-        return ( s != null ) && s.equalsIgnoreCase( "true" );
-    }
 }

@@ -20,7 +20,10 @@ package org.apache.commons.monitoring;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
@@ -38,6 +41,8 @@ import java.util.concurrent.CopyOnWriteArraySet;
  */
 public class Unit implements Comparable<Unit>
 {
+    private static final Map<String, Unit> UNITS = new ConcurrentHashMap<String,Unit>();
+
     /** Time based units */
     public static final Unit NANOS = new Unit( "ns" );
     public static final Unit MICROS = new Unit( "µs", NANOS, 1000 );
@@ -59,12 +64,12 @@ public class Unit implements Comparable<Unit>
     // we use International system of unit names to avoid confusion
     // @see http://en.wikipedia.org/wiki/SI
     public static final Unit UNARY = new Unit( "" );
-    public static final Unit DECA = new Unit( "da", UNARY, 10 );
-    public static final Unit HECTO = new Unit( "h", DECA, 10 );
-    public static final Unit KILO = new Unit( "k", HECTO, 10 );
-    public static final Unit MEGA = new Unit( "M", KILO, 1000 );
-    public static final Unit GIGA = new Unit( "G", MEGA, 1000 );
-    public static final Unit TERA = new Unit( "T", GIGA, 1000 );
+    public static final Unit DECA = new Unit( "*10", UNARY, 10 );
+    public static final Unit HECTO = new Unit( "*100", DECA, 10 );
+    public static final Unit KILO = new Unit( "*1000", HECTO, 10 );
+    public static final Unit MEGA = new Unit( "*10^6", KILO, 1000 );
+    public static final Unit GIGA = new Unit( "*10^9", MEGA, 1000 );
+    public static final Unit TERA = new Unit( "*10^12", GIGA, 1000 );
 
     private final String name;
 
@@ -73,8 +78,45 @@ public class Unit implements Comparable<Unit>
     private Unit primary;
 
     private List<Unit> derived;
-    
+
     public Set<Unit> primaryUnits = new CopyOnWriteArraySet<Unit>();
+
+
+    public static Unit get( String name )
+    {
+        return UNITS.get( name );
+    }
+
+    /**
+     * Constructor for a primary unit
+     * @param name
+     */
+    public Unit( String name )
+    {
+        this.name = name;
+        this.primary = this;
+        this.scale = 1;
+        this.derived = new ArrayList<Unit>();
+        this.derived.add( this );
+        primaryUnits.add( this );
+        UNITS.put( name, this );
+    }
+
+    /**
+     * Constructor for a derived unit
+     * @param name
+     * @param derived the unit this unit is derived from
+     * @param scale the scale factor to convert to derived unit
+     */
+    public Unit( String name, Unit derived, long scale )
+    {
+        this.name = name;
+        this.primary = derived.isPrimary() ? derived : derived.getPrimary();
+        this.scale = scale * derived.getScale();
+        primary.derived.add( this );
+        Collections.sort( primary.derived );
+        UNITS.put( name, this );
+    }
 
     public Unit getDerived( String name )
     {
@@ -93,34 +135,6 @@ public class Unit implements Comparable<Unit>
         return Collections.unmodifiableList( derived );
     }
 
-    /**
-     * Constructor for a primary unit
-     * @param name
-     */
-    public Unit( String name )
-    {
-        this.name = name;
-        this.primary = this;
-        this.scale = 1;
-        this.derived = new ArrayList<Unit>();
-        this.derived.add( this );
-        primaryUnits.add( this );
-    }
-
-    /**
-     * Constructor for a derived unit
-     * @param name
-     * @param derived the unit this unit is derived from
-     * @param scale the scale factor to convert to derived unit
-     */
-    public Unit( String name, Unit derived, long scale )
-    {
-        this.name = name;
-        this.primary = derived.isPrimary() ? derived : derived.getPrimary();
-        this.scale = scale * derived.getScale();
-        primary.derived.add( this );
-        Collections.sort( primary.derived );
-    }
 
     public String getName()
     {

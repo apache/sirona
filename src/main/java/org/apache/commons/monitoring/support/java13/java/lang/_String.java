@@ -17,6 +17,10 @@
 
 package org.apache.commons.monitoring.support.java13.java.lang;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
+
 /**
  * @author <a href="mailto:nicolas.deloof@gmail.com">Nicolas De Loof</a>
  */
@@ -25,5 +29,16 @@ public class _String
     public static boolean contains( String string, CharSequence_ s )
     {
         return string.indexOf( s.toString() ) > -1;
+    }
+
+    public static String[] split( String string, String separator )
+    {
+        List<String> tokens = new ArrayList<String>();
+        StringTokenizer tokenizer = new StringTokenizer( string, "," );
+        while ( tokenizer.hasMoreTokens() )
+        {
+            tokens.add( tokenizer.nextToken() );
+        }
+        return tokens.toArray( new String[tokens.size()] );
     }
 }

@@ -9,72 +9,68 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import org.apache.commons.monitoring.Monitoring;
 import org.apache.commons.monitoring.Repository;
 import org.apache.commons.monitoring.servlet.ServletContextUtil;
 
 public abstract class AbstractSelectTag
     extends TagSupport
 {
-    protected Repository repository;
-    
     private String id;
-    
+
     private String name;
+
+    String repository;
 
     public AbstractSelectTag()
     {
         super();
     }
 
+    protected Repository getRepository()
+        throws JspException
+    {
+        return TagUtils.getRepository( pageContext, repository );
+    }
+
     @Override
     public int doEndTag()
         throws JspException
     {
-        if (repository == null)
-        {
-            repository = (Repository) pageContext.getAttribute( ServletContextUtil.REPOSITORY_KEY );
-        }
-        
-        StringBuffer stb = new StringBuffer( "<select" );
-        if ( id != null )
-        {
-            stb.append( " id='" ).append( id ).append( "'" );
-        }
-        if ( name != null )
-        {
-            stb.append( " name='" ).append( name ).append( "'" );
-        }
-        stb.append( ">" );
+        StringBuffer out = new StringBuffer( "<select" );
+        TagUtils.setAttribute( out, "name", name );
+        TagUtils.setAttribute( out, "id", id );
+        out.append( ">" );
         List<String> categories = new LinkedList<String>( getElements() );
         Collections.sort( categories );
         for ( String category : categories )
         {
-            stb.append( "<option value='" );
-            stb.append( category );
-            stb.append( "'>" );
-            stb.append( category );
-            stb.append( "</option>" );
+            out.append( "<option value='" );
+            out.append( category );
+            out.append( "'>" );
+            out.append( category );
+            out.append( "</option>" );
         }
-        
-        stb.append( "</select>" );
+
+        out.append( "</select>" );
         try
         {
-            pageContext.getOut().print( stb.toString() );
+            pageContext.getOut().print( out.toString() );
         }
         catch ( Exception e )
         {
             throw new JspTagException( "CategoriesTag : " + e.getMessage() );
         }
-    
+
         return EVAL_PAGE;
     }
 
     /**
      * The set of elements to display as a select list
+     *
      * @return
      */
-    protected abstract  Collection<? extends String> getElements();
+    protected abstract Collection<? extends String> getElements()
+        throws JspException;
 
     public void setId( String id )
     {
@@ -86,9 +82,12 @@ public abstract class AbstractSelectTag
         this.name = name;
     }
 
+    /**
+     * @param repository the repository to set
+     */
     public void setRepository( String repository )
     {
-        this.repository = (Repository) pageContext.getAttribute( repository );
+        this.repository = repository;
     }
 
 }

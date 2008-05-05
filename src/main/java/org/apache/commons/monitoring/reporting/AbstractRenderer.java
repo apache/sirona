@@ -114,6 +114,7 @@ public abstract class AbstractRenderer
         renderStatValues( ctx, monitor, options, roles );
     }
 
+    @SuppressWarnings("unchecked")
     protected void renderStatValues( Context ctx, Monitor monitor, Options options, List<Role> roles )
     {
         for ( Iterator<Role> iterator = roles.iterator(); iterator.hasNext(); )
@@ -141,6 +142,7 @@ public abstract class AbstractRenderer
      * @param ctx
      * @param role
      */
+    @SuppressWarnings("unchecked")
     protected void renderMissingValue( Context ctx, Role role )
     {
         // Nop
@@ -167,6 +169,7 @@ public abstract class AbstractRenderer
         return values;
     }
 
+    @SuppressWarnings("unchecked")
     protected void render( Context ctx, StatValue value, Options options )
     {
         Role role = value.getRole();
@@ -276,6 +279,7 @@ public abstract class AbstractRenderer
      * @param monitors
      * @return
      */
+    @SuppressWarnings("unchecked")
     protected List<Role> getRoles( Collection<Monitor> monitors, Options options )
     {
         Set<Role> roles = new HashSet<Role>();

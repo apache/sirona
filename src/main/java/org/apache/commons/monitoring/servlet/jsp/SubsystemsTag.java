@@ -19,18 +19,21 @@ package org.apache.commons.monitoring.servlet.jsp;
 
 import java.util.Set;
 
+import javax.servlet.jsp.JspException;
+
 
 
 /**
- * A JSP tag to output a select box for repositoy categories
- * 
+ * A JSP tag to output a select box for repositoy subsystems
+ *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public class SubsystemsTag
     extends AbstractSelectTag
 {
     protected Set<String> getElements()
+        throws JspException
     {
-        return repository.getSubSystems();
+        return getRepository().getSubSystems();
     }
 }

@@ -1,0 +1,81 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.commons.monitoring.servlet.jsp;
+
+import static org.apache.commons.monitoring.servlet.jsp.TagUtils.*;
+
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.tagext.TagSupport;
+
+import org.apache.commons.monitoring.Monitoring;
+import org.apache.commons.monitoring.StopWatch;
+
+/**
+ * A JSP tag to monitor JSP rendering performances
+ *
+ * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
+ */
+public class StopTag
+    extends TagSupport
+{
+    private String id;
+
+    private String scope;
+
+    /**
+     * @param id the id to set
+     */
+    public void setId( String id )
+    {
+        this.id = id;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @see javax.servlet.jsp.tagext.TagSupport#doStartTag()
+     */
+    @Override
+    public int doStartTag()
+        throws JspException
+    {
+        StopWatch stopWatch;
+        if (scope != null)
+        {
+            stopWatch = (StopWatch) pageContext.getAttribute( id, getScope( scope ) );
+        }
+        else
+        {
+            stopWatch = (StopWatch) pageContext.getAttribute( id );
+        }
+        if (stopWatch == null)
+        {
+            throw new JspException( "No StopWatch under ID " + id + " and scope " + scope );
+        }
+        stopWatch.stop();
+        return EVAL_PAGE;
+    }
+
+    /**
+     * @param scope the scope to set
+     */
+    public void setScope( String scope )
+    {
+        this.scope = scope;
+    }
+}

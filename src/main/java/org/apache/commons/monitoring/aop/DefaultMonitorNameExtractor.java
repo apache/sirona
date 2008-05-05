@@ -15,20 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.commons.monitoring.support.java13.java.lang;
+package org.apache.commons.monitoring.aop;
+
+import java.lang.reflect.Method;
 
 /**
- * @author <a href="mailto:nicolas.deloof@gmail.com">Nicolas De Loof</a>
+ *
+ * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public class _Boolean
+public class DefaultMonitorNameExtractor
+    implements MonitorNameExtractor
 {
-    public static Boolean valueOf( boolean b )
+
+    /**
+     * {@inheritDoc}
+     * @see org.apache.commons.monitoring.aop.MonitorNameExtractor#getMonitorName(java.lang.reflect.Method)
+     */
+    public String getMonitorName( Method method )
     {
-        return new Boolean( b );
+        return method.getDeclaringClass().getSimpleName() + "." + method.getName();
     }
 
-    public static boolean parseBoolean( String s )
-    {
-        return ( s != null ) && s.equalsIgnoreCase( "true" );
-    }
 }

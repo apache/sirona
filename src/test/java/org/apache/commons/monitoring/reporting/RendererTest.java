@@ -91,6 +91,7 @@ public class RendererTest
     {
         Options options = new OptionsSupport()
         {
+            @SuppressWarnings("unchecked")
             public Unit unitFor( Role role )
             {
                 return Unit.MICROS;

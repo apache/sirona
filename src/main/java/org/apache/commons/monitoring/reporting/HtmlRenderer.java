@@ -45,9 +45,10 @@ public class HtmlRenderer
 
     /**
      * {@inheritDoc}
-     * 
-     * @see org.apache.commons.monitoring.reporting.AbstractRenderer#render(java.io.Context, java.util.Collection,
-     *      org.apache.commons.monitoring.reporting.Renderer.Options)
+     *
+     * @see org.apache.commons.monitoring.reporting.AbstractRenderer#render(java.io.Context,
+     * java.util.Collection,
+     * org.apache.commons.monitoring.reporting.Renderer.Options)
      */
     @Override
     public void render( Context ctx, Collection<Monitor> monitors, Options options )
@@ -110,8 +111,20 @@ public class HtmlRenderer
         ctx.println( "<th rowspan='2'>subsystem</th>" );
         for ( Role role : roles )
         {
+            int span = 0;
+            if ( role.getType() == Counter.class )
+            {
+                span += options.render( role, "hits" ) ? 1 : 0;
+                span += options.render( role, "sum" ) ? 1 : 0;
+            }
+            span += options.render( role, "min" ) ? 1 : 0;
+            span += options.render( role, "max" ) ? 1 : 0;
+            span += options.render( role, "mean" ) ? 1 : 0;
+            span += options.render( role, "deviation" ) ? 1 : 0;
+            span += options.render( role, "value" ) ? 1 : 0;
+
             ctx.print( "<td colspan='" );
-            ctx.print( role.getType() == Counter.class ? "7" : "5" );
+            ctx.print( String.valueOf( span ) );
             ctx.print( "'>" );
             ctx.print( role.getName() );
             Unit unit = options.unitFor( role );
@@ -120,6 +133,7 @@ public class HtmlRenderer
                 renderUnit( ctx, unit );
             }
             ctx.print( "</td>" );
+            columns.put( role.getName(), span );
         }
         ctx.print( "</tr>" );
 
@@ -147,6 +161,7 @@ public class HtmlRenderer
         ctx.put( COLUMNS, columns );
     }
 
+    @SuppressWarnings("unchecked")
     protected void writeColumnHead( Context ctx, Options options, Role role, String attribute )
     {
         if ( options.render( role, attribute ) )
@@ -159,10 +174,10 @@ public class HtmlRenderer
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.apache.commons.monitoring.reporting.AbstractRenderer#renderDetached(org.apache.commons.monitoring.reporting.Context,
-     *      org.apache.commons.monitoring.listeners.SecondaryMonitor,
-     *      org.apache.commons.monitoring.reporting.Renderer.Options)
+     * org.apache.commons.monitoring.listeners.SecondaryMonitor,
+     * org.apache.commons.monitoring.reporting.Renderer.Options)
      */
     @Override
     protected void renderDetached( Context ctx, Detachable detached, Options options )
@@ -209,9 +224,9 @@ public class HtmlRenderer
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.apache.commons.monitoring.reporting.AbstractRenderer#renderMissingValue(org.apache.commons.monitoring.reporting.Context,
-     *      java.lang.String)
+     * java.lang.String)
      */
     @SuppressWarnings( "unchecked" )
     @Override
@@ -225,8 +240,9 @@ public class HtmlRenderer
 
     /**
      * {@inheritDoc}
-     * 
-     * @see org.apache.commons.monitoring.reporting.AbstractRenderer#hasNext(java.io.Context, java.lang.Class)
+     *
+     * @see org.apache.commons.monitoring.reporting.AbstractRenderer#hasNext(java.io.Context,
+     * java.lang.Class)
      */
     @Override
     protected void hasNext( Context ctx, Class<?> type )

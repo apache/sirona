@@ -22,6 +22,7 @@ package org.apache.commons.monitoring.support.java13.java.lang;
  */
 public class _Class
 {
+    @SuppressWarnings("unchecked")
     public static String getSimpleName( Class c )
     {
         String name = c.getName();

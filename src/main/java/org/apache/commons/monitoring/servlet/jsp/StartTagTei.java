@@ -15,20 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.commons.monitoring.support.java13.java.lang;
+package org.apache.commons.monitoring.servlet.jsp;
+
+import javax.servlet.jsp.tagext.TagData;
+import javax.servlet.jsp.tagext.TagExtraInfo;
+import javax.servlet.jsp.tagext.VariableInfo;
+
+import org.apache.commons.monitoring.StopWatch;
 
 /**
- * @author <a href="mailto:nicolas.deloof@gmail.com">Nicolas De Loof</a>
+ * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public class _Boolean
+public class StartTagTei
+    extends TagExtraInfo
 {
-    public static Boolean valueOf( boolean b )
+    /**
+     * {@inheritDoc}
+     *
+     * @see javax.servlet.jsp.tagext.TagExtraInfo#getVariableInfo(javax.servlet.jsp.tagext.TagData)
+     */
+    @Override
+    public VariableInfo[] getVariableInfo( TagData data )
     {
-        return new Boolean( b );
-    }
-
-    public static boolean parseBoolean( String s )
-    {
-        return ( s != null ) && s.equalsIgnoreCase( "true" );
+        VariableInfo info =
+            new VariableInfo( data.getAttributeString( "id" ), StopWatch.class.getName(), true, VariableInfo.AT_END );
+        return new VariableInfo[] { info };
     }
 }

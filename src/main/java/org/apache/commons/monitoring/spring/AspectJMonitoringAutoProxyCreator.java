@@ -15,20 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.commons.monitoring.support.java13.java.lang;
+package org.apache.commons.monitoring.spring;
+
+import org.springframework.aop.aspectj.AspectJExpressionPointcut;
 
 /**
- * @author <a href="mailto:nicolas.deloof@gmail.com">Nicolas De Loof</a>
+ * Creates monitored proxies for beans that match an aspectJ expression.
+ *
+ * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public class _Boolean
+public class AspectJMonitoringAutoProxyCreator
+    extends PointcutMonitoringAutoProxyCreator
 {
-    public static Boolean valueOf( boolean b )
+    /**
+     * Set the AspectJ expression to be used to select beans / methods to get monitored
+     */
+    public void setExpression( String expression )
     {
-        return new Boolean( b );
-    }
-
-    public static boolean parseBoolean( String s )
-    {
-        return ( s != null ) && s.equalsIgnoreCase( "true" );
+        AspectJExpressionPointcut pointcut = new AspectJExpressionPointcut();
+        pointcut.setExpression( expression );
+        setPointcut( pointcut );
     }
 }

@@ -119,6 +119,7 @@ public interface Monitor
      *
      * @return an unmodifiable collection of registered statValues roles
      */
+    @SuppressWarnings("unchecked")
     Collection<Role> getRoles();
 
     /**

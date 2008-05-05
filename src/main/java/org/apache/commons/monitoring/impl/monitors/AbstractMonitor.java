@@ -36,9 +36,11 @@ import org.apache.commons.monitoring.StatValue;
 public abstract class AbstractMonitor implements Monitor
 {
 
+    @SuppressWarnings("unchecked")
     private final ConcurrentMap<Role, StatValue> values;
     private final Key key;
 
+    @SuppressWarnings("unchecked")
     public AbstractMonitor( Key key )
     {
         super();
@@ -62,11 +64,13 @@ public abstract class AbstractMonitor implements Monitor
         return values.get( role );
     }
 
+    @SuppressWarnings("unchecked")
     public final <T extends StatValue> T getValue( Role<T> role )
     {
         return (T) values.get( role );
     }
 
+    @SuppressWarnings("unchecked")
     public final Collection<Role> getRoles()
     {
         return Collections.unmodifiableCollection( values.keySet() );
@@ -107,6 +111,7 @@ public abstract class AbstractMonitor implements Monitor
         return getValue( role );
     }
 
+    @SuppressWarnings("unchecked")
     public Counter getCounter( String role )
     {
         return getCounter( (Role<Counter>) Role.getRole( role ) );
@@ -117,6 +122,7 @@ public abstract class AbstractMonitor implements Monitor
         return getValue( role );
     }
 
+    @SuppressWarnings("unchecked")
     public Gauge getGauge( String role )
     {
         return getGauge( (Role<Gauge>) Role.getRole( role ) );

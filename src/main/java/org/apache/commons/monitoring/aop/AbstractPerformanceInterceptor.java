@@ -41,6 +41,8 @@ public abstract class AbstractPerformanceInterceptor<T>
 
     protected String subsystem;
 
+    protected MonitorNameExtractor monitorNameExtractor;
+
     public AbstractPerformanceInterceptor()
     {
         super();
@@ -97,7 +99,7 @@ public abstract class AbstractPerformanceInterceptor<T>
      */
     protected String getMonitorName( Method method )
     {
-        return method.getDeclaringClass().getSimpleName() + "." + method.getName();
+        return monitorNameExtractor.getMonitorName( method );
     }
 
     /**
@@ -131,5 +133,13 @@ public abstract class AbstractPerformanceInterceptor<T>
     public void setSubsystem( String subsystem )
     {
         this.subsystem = subsystem;
+    }
+
+    /**
+     * @param monitorNameExtractor the monitorNameExtractor to set
+     */
+    public void setMonitorNameExtractor( MonitorNameExtractor monitorNameExtractor )
+    {
+        this.monitorNameExtractor = monitorNameExtractor;
     }
 }

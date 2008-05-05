@@ -19,7 +19,6 @@ package org.apache.commons.monitoring.reporting.web;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -34,14 +33,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.Repository;
-import org.apache.commons.monitoring.Role;
-import org.apache.commons.monitoring.Unit;
-import org.apache.commons.monitoring.Monitor.Key;
 import org.apache.commons.monitoring.reporting.Context;
 import org.apache.commons.monitoring.reporting.FlotRenderer;
 import org.apache.commons.monitoring.reporting.HtmlRenderer;
 import org.apache.commons.monitoring.reporting.JsonRenderer;
-import org.apache.commons.monitoring.reporting.OptionsSupport;
 import org.apache.commons.monitoring.reporting.Renderer;
 import org.apache.commons.monitoring.reporting.Selector;
 import org.apache.commons.monitoring.reporting.XmlRenderer;
@@ -169,78 +164,6 @@ public class MonitoringServlet
             mimeTypes.add( 0, "text/html" );
         }
         return mimeTypes;
-    }
-
-    protected class HttpSerlvetRequestOptions
-        extends OptionsSupport
-    {
-        protected final HttpServletRequest request;
-
-        protected List<String> roles;
-
-        protected List<String> categories;
-
-        protected List<String> subsystems;
-
-        /**
-         * @param request
-         */
-        public HttpSerlvetRequestOptions( HttpServletRequest request )
-        {
-            this.request = request;
-            String[] values = request.getParameterValues( "role" );
-            if (values != null)
-            {
-                roles = Arrays.asList( values );
-            }
-            values = request.getParameterValues( "category" );
-            categories = values != null ? Arrays.asList( values ) : Collections.<String> emptyList();
-            values = request.getParameterValues( "subsystem" );
-            subsystems = values != null ? Arrays.asList( values ) : Collections.<String> emptyList();
-        }
-
-        @Override
-        public boolean renderRole( Role role )
-        {
-            return roles != null ? roles.contains( role.getName() ) : true;
-        }
-
-        @Override
-        public boolean render( Monitor monitor )
-        {
-            Key key = monitor.getKey();
-            return ( categories.isEmpty() || categories.contains( key.getCategory() ) )
-                && ( subsystems.isEmpty() || subsystems.contains( key.getSubsystem() ) );
-        }
-
-        @Override
-        public boolean render( Role role, String attribute )
-        {
-            String columns = request.getParameter( role.getName() + ".columns" );
-            if ( columns == null )
-            {
-                return true;
-            }
-            return columns.indexOf( attribute ) >= 0;
-        }
-
-        @Override
-        public Unit unitFor( Role role )
-        {
-            String unitName = request.getParameter( role.getName() + ".unit" );
-            if ( unitName != null )
-            {
-                if ( role.getUnit() != null )
-                {
-                    Unit unit = role.getUnit().getDerived( unitName );
-                    if ( unit != null )
-                    {
-                        return unit;
-                    }
-                }
-            }
-            return role.getUnit();
-        }
     }
 
 }

@@ -17,6 +17,7 @@
 
 package org.apache.commons.monitoring.impl.repositories;
 
+import org.apache.commons.monitoring.StopWatch;
 import org.apache.commons.monitoring.impl.monitors.CompositeValuesMonitor;
 import org.apache.commons.monitoring.impl.stopwatches.DefaultStopWatch;
 
@@ -30,5 +31,10 @@ public class DefaultRepository extends ConfigurableImplementationsRepository
     public DefaultRepository()
     {
         super( DefaultStopWatch.class, CompositeValuesMonitor.class );
+    }
+
+    public DefaultRepository( Class<? extends StopWatch> stopwatchClass )
+    {
+        super( stopwatchClass, CompositeValuesMonitor.class );
     }
 }
