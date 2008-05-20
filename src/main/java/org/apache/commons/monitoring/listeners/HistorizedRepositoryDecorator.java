@@ -69,8 +69,6 @@ public class HistorizedRepositoryDecorator
         {
             history.remove( history.size() );
         }
-
-        Monitoring.getMonitor( "test" ).getCounter( Monitor.PERFORMANCES ).add( (long) (Math.random() * 10), Unit.MILLIS );
     }
 
     public void addListener( Listener listener )
