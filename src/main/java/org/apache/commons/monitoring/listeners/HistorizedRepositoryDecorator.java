@@ -67,7 +67,7 @@ public class HistorizedRepositoryDecorator
         history.add( period );
         while ( history.size() > size )
         {
-            history.remove( history.size() );
+            history.remove( history.size() - 1 );
         }
     }
 
