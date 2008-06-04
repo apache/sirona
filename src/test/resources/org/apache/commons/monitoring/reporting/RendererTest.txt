@@ -13,6 +13,7 @@ concurrency
 performances
     hits : 1
     sum : 10
+    squares : 100
     min : 10
     max : 10
     mean : 10.00
@@ -34,6 +35,7 @@ concurrency
 performances
     hits : 0
     sum : 0
+    squares : 0
     min : 0
     max : 0
     mean : -

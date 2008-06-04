@@ -19,6 +19,7 @@ package org.apache.commons.monitoring.reporting;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.management.ManagementFactory;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -54,6 +55,8 @@ public class RendererTest
         m2.getCounter( Monitor.PERFORMANCES );
         m2.getGauge( Monitor.CONCURRENCY ).increment(Unit.UNARY);
         monitors.add( m2 );
+
+        ManagementFactory.getThreadMXBean().setThreadCpuTimeEnabled( false );
     }
 
     public void testRenderToJson()

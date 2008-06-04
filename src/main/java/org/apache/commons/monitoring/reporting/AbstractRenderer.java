@@ -184,6 +184,10 @@ public abstract class AbstractRenderer
             {
                 render( ctx, value, "sum", counter.getSum(), options );
             }
+            if ( options.render( role, "squares" ) )
+            {
+                render( ctx, value, "squares", counter.getSumOfSquares(), options );
+            }
         }
         if ( options.render( role, "min" ) )
         {

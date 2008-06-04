@@ -52,7 +52,7 @@ import org.apache.commons.monitoring.listeners.Detachable;
 public class FlotRenderer
     extends AbstractRenderer
 {
-    private static final String[] ATTRIBUTES = { "hits", "sum", "min", "max", "mean", "deviation", "value" };
+    private static final String[] ATTRIBUTES = { "hits", "sum", "squares", "min", "max", "mean", "deviation", "value" };
 
     public FlotRenderer()
     {

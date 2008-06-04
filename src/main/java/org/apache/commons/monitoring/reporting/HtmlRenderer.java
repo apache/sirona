@@ -116,6 +116,7 @@ public class HtmlRenderer
             {
                 span += options.render( role, "hits" ) ? 1 : 0;
                 span += options.render( role, "sum" ) ? 1 : 0;
+                span += options.render( role, "squares" ) ? 1 : 0;
             }
             span += options.render( role, "min" ) ? 1 : 0;
             span += options.render( role, "max" ) ? 1 : 0;
@@ -150,6 +151,7 @@ public class HtmlRenderer
             {
                 writeColumnHead( ctx, options, role, "hits" );
                 writeColumnHead( ctx, options, role, "sum" );
+                writeColumnHead( ctx, options, role, "squares" );
             }
             writeColumnHead( ctx, options, role, "min" );
             writeColumnHead( ctx, options, role, "max" );

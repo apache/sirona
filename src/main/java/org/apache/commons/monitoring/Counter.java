@@ -43,5 +43,10 @@ public interface Counter
      */
     int getHits();
 
+    /**
+     * @return the sum of squares for individual events, usefull to compute some statistics
+     */
+    long getSumOfSquares();
+
 }
 
