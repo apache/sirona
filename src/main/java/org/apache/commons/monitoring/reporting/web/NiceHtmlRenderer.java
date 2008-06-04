@@ -43,7 +43,7 @@ public class NiceHtmlRenderer
 
     /** The JavaScripts to include to support user interaction */
     private String[] scripts =
-        new String[] { "jquery-1.2.3.pack.js",
+        new String[] { "jquery-1.2.6.pack.js",
                        "jquery.tablesorter.pack.js", "commons-monitoring.js" };
 
     public NiceHtmlRenderer( String contextPath )
