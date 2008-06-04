@@ -109,5 +109,13 @@ public class ThreadSafeCounter
         return sum;
     }
 
+    /**
+     * @return the sumOfSquares
+     */
+    public long getSumOfSquares()
+    {
+        return sumOfSquares;
+    }
+
 
 }
