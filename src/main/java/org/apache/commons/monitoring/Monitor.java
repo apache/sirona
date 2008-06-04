@@ -55,6 +55,9 @@ public interface Monitor
     /** default role key for code performances */
     Role<Counter> PERFORMANCES = new Role<Counter>( "performances", Unit.NANOS, Counter.class );
 
+    /** default role key for cpu time */
+    Role<Counter> CPU = new Role<Counter>( "cpu", Unit.NANOS, Counter.class );
+
     /** default role for multi-thread concurrency */
     Role<Gauge> CONCURRENCY = new Role<Gauge>( "concurrency", Unit.UNARY, Gauge.class );
 

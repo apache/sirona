@@ -17,6 +17,9 @@
 
 package org.apache.commons.monitoring.impl.stopwatches;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadMXBean;
+
 import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.StopWatch;
 import org.apache.commons.monitoring.Unit;
@@ -32,9 +35,11 @@ public class DefaultStopWatch
 {
     /** Time the probe was started */
     private final long startedAt;
+    private long cpuStartedAt;
 
     /** Time the probe was stopped */
     private long stopedAt;
+    private long cpuStopedAt;
 
     /** Time the probe was paused */
     private long pauseDelay;
@@ -64,6 +69,11 @@ public class DefaultStopWatch
         if ( monitor != null )
         {
             monitor.getGauge( Monitor.CONCURRENCY ).increment( Unit.UNARY );
+            ThreadMXBean mx = ManagementFactory.getThreadMXBean();
+            if ( mx.isCurrentThreadCpuTimeSupported() )
+            {
+                cpuStartedAt = mx.getCurrentThreadCpuTime();
+            }
         }
     }
 
@@ -134,6 +144,12 @@ public class DefaultStopWatch
             {
                 monitor.getGauge( Monitor.CONCURRENCY ).decrement( Unit.UNARY );
                 monitor.getCounter( Monitor.PERFORMANCES ).add( getElapsedTime(), Unit.NANOS );
+                ThreadMXBean mx = ManagementFactory.getThreadMXBean();
+                if ( mx.isCurrentThreadCpuTimeSupported() )
+                {
+                    long cpu = mx.getCurrentThreadCpuTime() - cpuStartedAt;
+                    monitor.getCounter( Monitor.CPU ).add( cpu, Unit.NANOS );
+                }
             }
         }
     }
