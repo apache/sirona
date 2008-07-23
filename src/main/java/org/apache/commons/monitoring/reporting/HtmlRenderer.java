@@ -23,9 +23,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.monitoring.Counter;
+import org.apache.commons.monitoring.Metric;
 import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.Role;
-import org.apache.commons.monitoring.StatValue;
 import org.apache.commons.monitoring.Unit;
 import org.apache.commons.monitoring.Monitor.Key;
 import org.apache.commons.monitoring.listeners.Detachable;
@@ -199,10 +199,10 @@ public class HtmlRenderer
     }
 
     @Override
-    protected void render( Context ctx, StatValue value, String attribute, Number number, Options options, int ratio )
+    protected void render( Context ctx, Metric metric, String attribute, Number number, Options options, int ratio )
     {
         ctx.print( "<td>" );
-        super.render( ctx, value, attribute, number, options, ratio );
+        super.render( ctx, metric, attribute, number, options, ratio );
         ctx.print( "</td>" );
     }
 
@@ -227,12 +227,12 @@ public class HtmlRenderer
     /**
      * {@inheritDoc}
      *
-     * @see org.apache.commons.monitoring.reporting.AbstractRenderer#renderMissingValue(org.apache.commons.monitoring.reporting.Context,
+     * @see org.apache.commons.monitoring.reporting.AbstractRenderer#renderMissingMetric(org.apache.commons.monitoring.reporting.Context,
      * java.lang.String)
      */
     @SuppressWarnings( "unchecked" )
     @Override
-    protected void renderMissingValue( Context ctx, Role role )
+    protected void renderMissingMetric( Context ctx, Role role )
     {
         Map<String, Integer> columns = (Map<String, Integer>) ctx.get( COLUMNS );
         ctx.print( "<td colspan='" );

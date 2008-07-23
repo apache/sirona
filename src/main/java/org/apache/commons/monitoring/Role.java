@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @SuppressWarnings("unchecked")
-public class Role<T extends StatValue>
+public class Role<T extends Metric>
     implements Comparable<Role>
 {
     private String name;
@@ -59,9 +59,9 @@ public class Role<T extends StatValue>
         {
             throw new IllegalArgumentException( "A type is required" );
         }
-        if ( !StatValue.class.isAssignableFrom( type ) )
+        if ( !Metric.class.isAssignableFrom( type ) )
         {
-            throw new IllegalArgumentException( "The type must extend StatValue" );
+            throw new IllegalArgumentException( "The type must extend Metric" );
         }
         this.name = name;
         this.unit = unit;

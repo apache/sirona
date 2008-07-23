@@ -23,7 +23,7 @@ import org.apache.commons.monitoring.Gauge;
 import org.apache.commons.monitoring.MonitoringTest;
 import org.apache.commons.monitoring.Role;
 import org.apache.commons.monitoring.Unit;
-import org.apache.commons.monitoring.impl.values.ThreadSafeGauge;
+import org.apache.commons.monitoring.impl.metrics.ThreadSafeGauge;
 
 public class ThreadSafeGaugeTest
     extends TestCase

@@ -19,16 +19,22 @@ package org.apache.commons.monitoring;
 
 
 /**
- * A <code>StatValue</code> is a numerical indicator of some monitored
+ * A <code>Metric</code> is a numerical indicator of some monitored
  * application state with support for simple statistics.
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public interface StatValue
+public interface Metric
 {
+    public enum type
+    {
+        COUNTER, GAUGE
+    };
+
+    type getType();
 
     /**
-     * @return the value
+     * @return the current value
      */
     long get();
 
@@ -38,7 +44,7 @@ public interface StatValue
     void set( long l, Unit unit );
 
     /**
-     * reset the statValue
+     * reset the Metric
      */
     void reset();
 
@@ -58,28 +64,28 @@ public interface StatValue
     double getMean();
 
     /**
-     * Compute the standard deviation : measures the dispersion of values around
-     * the average value = sqrt( variance ).
-     *
-     * @return the value standard deviation
+     * Compute the standard deviation : measures the dispersion of values around the average value = sqrt( variance ).
+     * 
+     * @return the Metric standard deviation
      */
     double getStandardDeviation();
 
     /**
-     * Set the monitor this value is attached to
+     * Set the monitor this Metric is attached to
+     * 
      * @param monitor
      */
     void setMonitor( Monitor monitor );
 
     /**
-     * @return the monitor this value is attached to
+     * @return the monitor this Metric is attached to
      */
     Monitor getMonitor();
 
     /**
-     * @return the role for this value in the monitor
+     * @return the role for this Metric in the monitor
      */
-    Role<? extends StatValue> getRole();
+    Role<? extends Metric> getRole();
 
     /**
      * @return the (primary) data unit
@@ -91,10 +97,11 @@ public interface StatValue
     void removeListener( Listener listener );
 
     /**
-     * Listener for StatValue events
+     * Listener for Metric events
      */
     public static interface Listener
     {
-        void onValueChanged( StatValue value, long l );
+        void onValueChanged( Metric value, long l );
     }
+
 }

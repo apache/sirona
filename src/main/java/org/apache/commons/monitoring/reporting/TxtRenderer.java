@@ -19,7 +19,7 @@ package org.apache.commons.monitoring.reporting;
 
 import java.util.Date;
 
-import org.apache.commons.monitoring.StatValue;
+import org.apache.commons.monitoring.Metric;
 import org.apache.commons.monitoring.Monitor.Key;
 import org.apache.commons.monitoring.listeners.Detachable;
 
@@ -56,20 +56,20 @@ public class TxtRenderer
      * @see org.apache.commons.monitoring.reporting.AbstractRenderer#render(Context, java.lang.String)
      */
     @Override
-    public void render( Context ctx, StatValue value, Options options )
+    public void render( Context ctx, Metric metric, Options options )
     {
-        ctx.println( value.getRole().getName() );
-        super.render( ctx, value, options );
+        ctx.println( metric.getRole().getName() );
+        super.render( ctx, metric, options );
         ctx.println( "" );
     }
 
     @Override
-    protected void render( Context ctx, StatValue value, String attribute, Number number, Options options, int ratio )
+    protected void render( Context ctx, Metric metric, String attribute, Number number, Options options, int ratio )
     {
         ctx.print( "    " );
         ctx.print( attribute );
         ctx.print( " : " );
-        super.render( ctx, value, attribute, number, options, ratio );
+        super.render( ctx, metric, attribute, number, options, ratio );
         ctx.println( "" );
     }
 

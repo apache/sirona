@@ -18,11 +18,11 @@
 package org.apache.commons.monitoring;
 
 /**
- * A StatValue to expose application state, or resource consumption (open connections, active threads, ...)
+ * A Metric to expose application state, or resource consumption (open connections, active threads, ...)
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public interface Gauge extends StatValue
+public interface Gauge extends Metric
 {
     void increment(Unit unit);
 

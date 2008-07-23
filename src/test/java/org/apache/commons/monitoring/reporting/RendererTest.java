@@ -32,8 +32,8 @@ import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.MonitoringTest;
 import org.apache.commons.monitoring.Role;
 import org.apache.commons.monitoring.Unit;
-import org.apache.commons.monitoring.impl.monitors.CreateValuesOnDemandMonitor;
-import org.apache.commons.monitoring.impl.values.ThreadSafeCounter;
+import org.apache.commons.monitoring.impl.metrics.ThreadSafeCounter;
+import org.apache.commons.monitoring.impl.monitors.CreateMetricsOnDemandMonitor;
 import org.apache.commons.monitoring.reporting.Renderer.Options;
 
 public class RendererTest
@@ -46,12 +46,12 @@ public class RendererTest
         throws Exception
     {
         monitors = new LinkedList<Monitor>();
-        Monitor m1 = new CreateValuesOnDemandMonitor( new Monitor.Key( "JsonRendererTest.setUp", "test", "reporting" ) );
+        Monitor m1 = new CreateMetricsOnDemandMonitor( new Monitor.Key( "JsonRendererTest.setUp", "test", "reporting" ) );
         m1.getCounter( Monitor.PERFORMANCES ).add( 10, Unit.NANOS );
         m1.getGauge( Monitor.CONCURRENCY );
         monitors.add( m1 );
 
-        Monitor m2 = new CreateValuesOnDemandMonitor( new Monitor.Key( "TestCase", "test", "junit" ) );
+        Monitor m2 = new CreateMetricsOnDemandMonitor( new Monitor.Key( "TestCase", "test", "junit" ) );
         m2.getCounter( Monitor.PERFORMANCES );
         m2.getGauge( Monitor.CONCURRENCY ).increment(Unit.UNARY);
         monitors.add( m2 );

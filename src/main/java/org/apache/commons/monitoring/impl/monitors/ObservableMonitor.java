@@ -20,8 +20,8 @@ package org.apache.commons.monitoring.impl.monitors;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.apache.commons.monitoring.Metric;
 import org.apache.commons.monitoring.Monitor;
-import org.apache.commons.monitoring.StatValue;
 
 /**
  * <code>Monitor</code> implementation with support for listeners
@@ -47,23 +47,23 @@ public abstract class ObservableMonitor
     }
 
     /**
-     * Register the StatValue for the role, if none was registered before
-     *
-     * @param value
+     * Register the Metric for the role, if none was registered before
+     * 
+     * @param metric
      * @param role
-     * @return the value registered, or a previously existing one
+     * @return the registered metric, or a previously existing one for the role
      */
     @Override
-    protected <T extends StatValue> T register( T value )
+    protected <T extends Metric> T register( T metric )
     {
-        T previous = (T) super.register( value );
+        T previous = (T) super.register( metric );
         if ( previous != null )
         {
             return previous;
         }
         for ( Listener listener : listeners )
         {
-            listener.onStatValueRegistered( value );
+            listener.onMetricRegistered( metric );
         }
         return null;
     }

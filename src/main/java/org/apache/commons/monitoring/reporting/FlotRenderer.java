@@ -22,9 +22,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.monitoring.Metric;
 import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.Role;
-import org.apache.commons.monitoring.StatValue;
 import org.apache.commons.monitoring.Monitor.Key;
 import org.apache.commons.monitoring.listeners.Detachable;
 
@@ -100,8 +100,8 @@ public class FlotRenderer
                 {
                     Monitor monitor = iterator.next();
                     x++;
-                    StatValue value = monitor.getValue( role );
-                    if ( value == null )
+                    Metric metric = monitor.getMetric( role );
+                    if ( metric == null )
                     {
                         continue;
                     }
@@ -111,7 +111,7 @@ public class FlotRenderer
                         ctx.print( "," );
                     }
                     ctx.put( "rendered", false );
-                    render( ctx, value, new OptionsSupport()
+                    render( ctx, metric, new OptionsSupport()
                     {
                         @Override
                         public boolean render( Role role, String string )
@@ -146,10 +146,10 @@ public class FlotRenderer
         ctx.print( "] );" );
     }
 
-    protected void render( Context ctx, StatValue value, String attribute, Number number, Options options, int ratio )
+    protected void render( Context ctx, Metric metric, String attribute, Number number, Options options, int ratio )
     {
         ctx.print( "[" + ctx.get( "x" ) + "," );
-        super.render( ctx, value, attribute, number, options, ratio );
+        super.render( ctx, metric, attribute, number, options, ratio );
         ctx.print( "]" );
     }
 

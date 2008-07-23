@@ -22,9 +22,9 @@ import junit.framework.TestCase;
 import org.apache.commons.monitoring.Counter;
 import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.MonitoringTest;
-import org.apache.commons.monitoring.StatValue;
+import org.apache.commons.monitoring.Metric;
 import org.apache.commons.monitoring.Unit;
-import org.apache.commons.monitoring.impl.monitors.CreateValuesOnDemandMonitor;
+import org.apache.commons.monitoring.impl.monitors.CreateMetricsOnDemandMonitor;
 import org.apache.commons.monitoring.listeners.ThresholdListener;
 
 /**
@@ -36,7 +36,7 @@ public class ThresholdListenerTest
     public void testThresholdListener()
         throws Exception
     {
-        final Monitor monitor = new CreateValuesOnDemandMonitor(
+        final Monitor monitor = new CreateMetricsOnDemandMonitor(
             new Monitor.Key( "MonitoringTest.testMonitoring", "test", "utils" ) );
         Counter counter = monitor.getCounter( MonitoringTest.COUNTER );
 
@@ -65,7 +65,7 @@ public class ThresholdListenerTest
             this.monitor = monitor;
         }
 
-        public void exceed( StatValue value, long l )
+        public void exceed( Metric value, long l )
         {
             count++;
             assertEquals( 10, l );

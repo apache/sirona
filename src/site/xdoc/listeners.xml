@@ -36,13 +36,13 @@
         implementation to use. A more elegant way is to attach a Listener to the Gauge that monitors the load.
       </p>
       <p>
-        Repository, Monitors and StatValues support listeners. The <code>StatValue.Listener</code> interface
+        Repository, Monitors and Metrics support listeners. The <code>Metric.Listener</code> interface
         allows custom code to get notified when a value is updated. This is a nice way to detect some
         value to increase abnormally and to adapt application behavior. The main advantage is that such
         listener can be reused and don't require code intrusive changes in the monitored components.
       </p>
       <p>
-        <code>Monitor.Listener</code> allows the application to get evolved when a new StatValue is registered
+        <code>Monitor.Listener</code> allows the application to get evolved when a new Metric is registered
         to the monitor. The application can register new statValues (or <em>automagically</em> creates new ones
         when requested) at any moment, and this listener can be used to get notified and pre-configure the
         statValue before it gets used.

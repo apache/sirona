@@ -17,8 +17,8 @@
 
 package org.apache.commons.monitoring.listeners;
 
-import org.apache.commons.monitoring.StatValue;
-import org.apache.commons.monitoring.StatValue.Listener;
+import org.apache.commons.monitoring.Metric;
+import org.apache.commons.monitoring.Metric.Listener;
 
 /**
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
@@ -28,13 +28,13 @@ public abstract class ThresholdListener
 {
     public abstract long getThreshold();
 
-    public final void onValueChanged( StatValue value, long l )
+    public final void onValueChanged( Metric metric, long l )
     {
         if ( l > getThreshold() )
         {
-            exceed( value, l );
+            exceed( metric, l );
         }
     }
 
-    public abstract void  exceed( StatValue value, long l );
+    public abstract void exceed( Metric metric, long l );
 }

@@ -78,21 +78,21 @@ public abstract class SelectorPeriodicLogger
     protected final void log( SecondaryRepository period )
         throws IOException
     {
-        Object[] values = new Object[selectors.length];
+        Object[] metrics = new Object[selectors.length];
         for ( int i = 0; i < selectors.length; i++ )
         {
-            values[i] = selectors[i].select( period );
+            metrics[i] = selectors[i].select( period );
         }
-        log( values );
+        log( metrics );
     }
 
     /**
      * Log the data extracted by selectors
      *
-     * @param values the data to log
+     * @param metrics the data to log
      * @throws IOException any I/O error during log
      */
-    protected abstract void log( Object[] values )
+    protected abstract void log( Object[] metrics )
         throws IOException;
 
 }

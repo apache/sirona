@@ -24,7 +24,7 @@ package org.apache.commons.monitoring;
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public interface Counter
-    extends StatValue
+    extends Metric
 {
 
     /**
@@ -39,7 +39,7 @@ public interface Counter
     long getSum();
 
     /**
-     * @return how many time the value has been set
+     * @return how many time the Metric has been set
      */
     int getHits();
 

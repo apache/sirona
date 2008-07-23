@@ -56,13 +56,13 @@
         convenient and powerfull way to group and sort monitors and associated statistics.
       </p>
       <p>
-        The monitor maintains a set of StatValues, that can be either <b>Counters</b> or <b>Gauges</b>.
+        The monitor maintains a set of Metrics, that can be either <b>Counters</b> or <b>Gauges</b>.
         <ul>
           <li>A Counter will get incremented any time the application does its work and expose the result to
           the monitoring backbone : byte received, lines processed...</li>
           <li>A Gauge allows the application to expose how a resource is used : active connections...</li>
         </ul>
-        Each StatValue is identified by a ROLE in the monitor. Default roles are defined for PERFORMANCES and
+        Each Metric is identified by a ROLE in the monitor. Default roles are defined for PERFORMANCES and
         CONCURRENCY (threads running same code), and you can register Counters/Gauges for custom roles to monitor
         anything that is relevant for your application (bytes processed, message payload, account balance ...)  :
         <pre>
@@ -80,7 +80,7 @@
     </section>
     <section name="Repporting">
       <p>
-        You can retrieve statistical datas from your monitors and StatValues to build reports. You can
+        You can retrieve statistical datas from your monitors and Metrics to build reports. You can
         programatically acces the repository and iterate on monitors to build a custom output, or rely
         on Commons Monitoring provided <b>Renderers</b> that support common output formats (XML, TXT, JSON).
       </p>

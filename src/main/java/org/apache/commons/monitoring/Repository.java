@@ -79,8 +79,8 @@ public interface Repository
     public static interface Listener
     {
         /**
-         * A monitor has just been created. Can be used to add custom StatValues or
-         * to register StatValue.Listener for all monitors that declare the same category or
+         * A monitor has just been created. Can be used to add custom Metrics or
+         * to register Metric.Listener for all monitors that declare the same category or
          * subsystem.
          *
          * @param monitor

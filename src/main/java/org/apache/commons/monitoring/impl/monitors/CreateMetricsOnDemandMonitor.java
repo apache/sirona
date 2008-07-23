@@ -20,21 +20,21 @@ package org.apache.commons.monitoring.impl.monitors;
 import org.apache.commons.monitoring.Counter;
 import org.apache.commons.monitoring.Gauge;
 import org.apache.commons.monitoring.Role;
-import org.apache.commons.monitoring.impl.values.ThreadSafeCounter;
-import org.apache.commons.monitoring.impl.values.ThreadSafeGauge;
+import org.apache.commons.monitoring.impl.metrics.ThreadSafeCounter;
+import org.apache.commons.monitoring.impl.metrics.ThreadSafeGauge;
 
 /**
- * implementation of the <code>Monitor</code> interface that creates StatValues on
+ * implementation of the <code>Monitor</code> interface that creates Metrics on
  * demand. The application can request for Counters/Gauges without having to
- * handle instantiation of monitors with all required StatValues pre-registered.
+ * handle instantiation of monitors with all required Metrics pre-registered.
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public class CreateValuesOnDemandMonitor
+public class CreateMetricsOnDemandMonitor
     extends ObservableMonitor
 {
 
-    public CreateValuesOnDemandMonitor( Key key )
+    public CreateMetricsOnDemandMonitor( Key key )
     {
         super( key );
     }
@@ -45,7 +45,7 @@ public class CreateValuesOnDemandMonitor
     @Override
     public Counter getCounter( Role<Counter> role )
     {
-        Counter counter = getValue( role );
+        Counter counter = getMetric( role );
         if ( counter != null )
         {
             return counter;
@@ -69,7 +69,7 @@ public class CreateValuesOnDemandMonitor
     @Override
     public Gauge getGauge( Role<Gauge> role )
     {
-        Gauge gauge = getValue( role );
+        Gauge gauge = getMetric( role );
         if ( gauge != null )
         {
             return gauge;

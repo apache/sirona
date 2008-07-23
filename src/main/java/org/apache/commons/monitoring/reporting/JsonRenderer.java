@@ -21,9 +21,9 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.monitoring.Metric;
 import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.Role;
-import org.apache.commons.monitoring.StatValue;
 import org.apache.commons.monitoring.Monitor.Key;
 import org.apache.commons.monitoring.listeners.Detachable;
 
@@ -105,36 +105,36 @@ public class JsonRenderer
     /**
      * {@inheritDoc}
      *
-     * @see org.apache.commons.monitoring.reporting.AbstractRenderer#renderStatValues(org.apache.commons.monitoring.reporting.Context,
+     * @see org.apache.commons.monitoring.reporting.AbstractRenderer#renderMetrics(org.apache.commons.monitoring.reporting.Context,
      * org.apache.commons.monitoring.Monitor,
      * org.apache.commons.monitoring.reporting.Renderer.Options)
      */
     @Override
-    protected void renderStatValues( Context ctx, Monitor monitor, Options options, List<Role> roles  )
+    protected void renderMetrics( Context ctx, Monitor monitor, Options options, List<Role> roles  )
     {
         if ( roles.size() > 0 )
         {
             ctx.print( "," );
         }
-        super.renderStatValues( ctx, monitor, options, roles );
+        super.renderMetrics( ctx, monitor, options, roles );
     }
 
     @Override
-    public void render( Context ctx, StatValue value, Options options )
+    public void render( Context ctx, Metric metric, Options options )
     {
-        ctx.print( value.getRole().getName() );
+        ctx.print( metric.getRole().getName() );
         ctx.print( ":{" );
-        super.render( ctx, value, options );
+        super.render( ctx, metric, options );
         ctx.print( "}" );
     }
 
     @Override
-    protected void render( Context ctx, StatValue value, String attribute, Number number, Options options, int ratio )
+    protected void render( Context ctx, Metric metric, String attribute, Number number, Options options, int ratio )
     {
-        StatValue currentValue = (StatValue) ctx.get( "currentValue" );
-        if ( currentValue != value )
+        Metric currentValue = (Metric) ctx.get( "currentValue" );
+        if ( currentValue != metric )
         {
-            ctx.put( "currentValue", value );
+            ctx.put( "currentValue", metric );
             ctx.put( "firstAttribute", Boolean.TRUE );
         }
         Boolean firstAttribute = (Boolean) ctx.get( "firstAttribute" );
@@ -144,7 +144,7 @@ public class JsonRenderer
         }
         ctx.print( attribute );
         ctx.print( ":\"" );
-        super.render( ctx, value, attribute, number, options, ratio );
+        super.render( ctx, metric, attribute, number, options, ratio );
         ctx.print( "\"" );
         ctx.put( "firstAttribute", Boolean.FALSE );
     }

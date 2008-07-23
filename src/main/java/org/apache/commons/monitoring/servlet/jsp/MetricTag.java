@@ -7,7 +7,7 @@ import javax.servlet.jsp.tagext.TagSupport;
 import org.apache.commons.monitoring.Counter;
 import org.apache.commons.monitoring.Role;
 
-public class StatValueTag
+public class MetricTag
     extends TagSupport
 {
     private String roleAttrName;

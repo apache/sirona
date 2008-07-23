@@ -19,35 +19,29 @@ package org.apache.commons.monitoring;
 
 import java.util.Collection;
 
-
 /**
- * A <code>Monitor</code> is an abstraction of some application resource that
- * is instrumented with a set of indicators (Gauges or Counters).
+ * A <code>Monitor</code> is an abstraction of some application resource that is instrumented with a set of indicators
+ * (Gauges or Counters).
  * <p>
- * A Monitor is identified by its Key, that MUST be unique in the application.
- * To ensure this, the Key class defines the monitor identifier as a combination
- * of name, subsystem and category.
+ * A Monitor is identified by its Key, that MUST be unique in the application. To ensure this, the Key class defines the
+ * monitor identifier as a combination of name, subsystem and category.
  * <p>
- * The <tt>name</tt> is the human-readable representation of the "resource"
- * beeing monitored. A typical use is the fully qualified class name + method
- * signature, or the HTTP request path.
+ * The <tt>name</tt> is the human-readable representation of the "resource" beeing monitored. A typical use is the fully
+ * qualified class name + method signature, or the HTTP request path.
  * <p>
- * The <tt>category</tt> is a grouping attribute to reflect the application
- * layering. Typically for JEE application, you will set category to the N-tier
- * layer beeing monitored ("servlet", "service", "persistence").
+ * The <tt>category</tt> is a grouping attribute to reflect the application layering. Typically for JEE application, you
+ * will set category to the N-tier layer beeing monitored ("servlet", "service", "persistence").
  * <p>
- * The <tt>subsystem</tt> is a logical grouping, by use-cases. "account", and
- * "user" can be used as subsystem for the application account and user
- * management dedicated components.
+ * The <tt>subsystem</tt> is a logical grouping, by use-cases. "account", and "user" can be used as subsystem for the
+ * application account and user management dedicated components.
  * <p>
- * You are free to use more complex Key types, by simple subclassing the Key
- * class and providing the adequate equals()/hasCode() methods.
+ * You are free to use more complex Key types, by simple subclassing the Key class and providing the adequate
+ * equals()/hasCode() methods.
  * <p>
- * The Counters / Gauges used to store monitored application state are retrieved
- * based on a "role" String. The monitor can handle as many values as needed,
- * until any of them has a dedicated role. This allows to easily extend the
- * monitor by registering custom values.
- *
+ * The Counters / Gauges used to store monitored application state are retrieved based on a "role" String. The monitor
+ * can handle as many Metrics as needed, until any of them has a dedicated role. This allows to easily extend the
+ * monitor by registering custom Metrics.
+ * 
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public interface Monitor
@@ -103,36 +97,34 @@ public interface Monitor
     Gauge getGauge( Role<Gauge> role );
 
     /**
-     * Retrieve a StatValue.
+     * Retrieve a Metric.
      *
-     * @param role a unique identifier for a StatValue in the monitor
-     * @return the StatValue
+     * @param role a unique identifier for a Metric in the monitor
+     * @return the Metric
      */
-    StatValue getValue( String role );
+    Metric getMetric( String role );
 
     /**
-     * Retrieve a StatValue in the monitor
+     * Retrieve a Metric in the monitor
      *
-     * @param role the StatValue role in the monitor
-     * @return the StatValue
+     * @param role the Metric role in the monitor
+     * @return the Metric
      */
-    <T extends StatValue> T getValue( Role<T> role );
+    <T extends Metric> T getMetric( Role<T> role );
 
     /**
-     *
-     * @return an unmodifiable collection of registered statValues roles
+     * @return an unmodifiable collection of registered Metrics roles
      */
     @SuppressWarnings("unchecked")
     Collection<Role> getRoles();
 
     /**
-     *
-     * @return an unmodifiable collection of registered statValues
+     * @return an unmodifiable collection of registered Metrics
      */
-    Collection<StatValue> getValues();
+    Collection<Metric> getMetrics();
 
     /**
-     * Reset all StatValues (don't remove them)
+     * Reset all Metrics (don't remove them)
      */
     void reset();
 
@@ -266,7 +258,7 @@ public interface Monitor
      */
     public static interface Listener
     {
-        void onStatValueRegistered( StatValue value );
+        void onMetricRegistered( Metric metric );
     }
 
     /**

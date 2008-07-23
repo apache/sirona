@@ -25,20 +25,20 @@ import org.apache.commons.monitoring.Gauge;
 import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.MonitoringTest;
 import org.apache.commons.monitoring.Unit;
-import org.apache.commons.monitoring.impl.monitors.CompositeValuesMonitor;
+import org.apache.commons.monitoring.impl.monitors.CompositeMetricsMonitor;
 
 /**
  * Test for basic Monitor behaviour
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public class CompositeValuesMonitorTest
+public class CompositeMetricsMonitorTest
     extends TestCase
 {
     public void testReset()
         throws Exception
     {
-        Monitor monitor = new CompositeValuesMonitor( new Monitor.Key( "MonitorTest.testReset", "test", "utils" ) );
+        Monitor monitor = new CompositeMetricsMonitor( new Monitor.Key( "MonitorTest.testReset", "test", "utils" ) );
         Counter counter = monitor.getCounter( Monitor.PERFORMANCES );
         counter.add( 1, Unit.NANOS );
         assertEquals( 1, counter.get() );
@@ -51,7 +51,7 @@ public class CompositeValuesMonitorTest
     public void testCompositeCounter()
         throws Exception
     {
-        Monitor monitor = new CompositeValuesMonitor( new Monitor.Key( "MonitorTest.testComposite", "test", "utils" ) );
+        Monitor monitor = new CompositeMetricsMonitor( new Monitor.Key( "MonitorTest.testComposite", "test", "utils" ) );
         Counter counter = monitor.getCounter( MonitoringTest.COUNTER );
         Composite<Counter> composite = (Composite<Counter>) counter;
 
@@ -79,7 +79,7 @@ public class CompositeValuesMonitorTest
     public void testCompositeGauge()
         throws Exception
     {
-        Monitor monitor = new CompositeValuesMonitor( new Monitor.Key( "MonitorTest.testComposite", "test", "utils" ) );
+        Monitor monitor = new CompositeMetricsMonitor( new Monitor.Key( "MonitorTest.testComposite", "test", "utils" ) );
         Gauge gauge = monitor.getGauge( MonitoringTest.GAUGE );
         Composite<Gauge> composite = (Composite<Gauge>) gauge;
 

@@ -135,7 +135,7 @@
 
     <tag>
         <name>statvalue</name>
-        <tagclass>org.apache.commons.monitoring.servlet.jsp.StatValueTag</tagclass>
+        <tagclass>org.apache.commons.monitoring.servlet.jsp.MetricTag</tagclass>
         <bodycontent>empty</bodycontent>
         <attribute>
             <name>role</name>

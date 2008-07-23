@@ -24,9 +24,9 @@ import java.util.concurrent.ConcurrentMap;
 
 import org.apache.commons.monitoring.Counter;
 import org.apache.commons.monitoring.Gauge;
+import org.apache.commons.monitoring.Metric;
 import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.Role;
-import org.apache.commons.monitoring.StatValue;
 
 /**
  * Abstract {@link Monitor} implementation with implementation for base methods
@@ -37,7 +37,7 @@ public abstract class AbstractMonitor implements Monitor
 {
 
     @SuppressWarnings("unchecked")
-    private final ConcurrentMap<Role, StatValue> values;
+    private final ConcurrentMap<Role, Metric> metrics;
     private final Key key;
 
     @SuppressWarnings("unchecked")
@@ -45,7 +45,7 @@ public abstract class AbstractMonitor implements Monitor
     {
         super();
         this.key = key;
-        this.values = new ConcurrentHashMap<Role, StatValue>();
+        this.metrics = new ConcurrentHashMap<Role, Metric>();
     }
 
     /**
@@ -59,40 +59,40 @@ public abstract class AbstractMonitor implements Monitor
     /**
      * {@inheritDoc}
      */
-    public final StatValue getValue( String role )
+    public final Metric getMetric( String role )
     {
-        return values.get( role );
+        return metrics.get( role );
     }
 
     @SuppressWarnings("unchecked")
-    public final <T extends StatValue> T getValue( Role<T> role )
+    public final <T extends Metric> T getMetric( Role<T> role )
     {
-        return (T) values.get( role );
+        return (T) metrics.get( role );
     }
 
     @SuppressWarnings("unchecked")
     public final Collection<Role> getRoles()
     {
-        return Collections.unmodifiableCollection( values.keySet() );
+        return Collections.unmodifiableCollection( metrics.keySet() );
     }
 
-    public final Collection<StatValue> getValues()
+    public final Collection<Metric> getMetrics()
     {
-        return Collections.unmodifiableCollection( values.values() );
+        return Collections.unmodifiableCollection( metrics.values() );
     }
 
     /**
-     * Register a new StatValue in the monitor
-     *
-     * @param value StatValue instance to get registered
-     * @return a previously registered StatValue if existed, or <code>null</code>
-     * if value has been successfully registered
+     * Register a new Metric in the monitor
+     * 
+     * @param metric Metric instance to get registered
+     * @return a previously registered Metric if existed, or <code>null</code> if the metric has been successfully
+     * registered
      */
     @SuppressWarnings("unchecked")
-    protected <T extends StatValue> T register( T value )
+    protected <T extends Metric> T register( T metric )
     {
-        value.setMonitor( this );
-        return (T) values.putIfAbsent( value.getRole(), value );
+        metric.setMonitor( this );
+        return (T) metrics.putIfAbsent( metric.getRole(), metric );
     }
 
     /**
@@ -100,15 +100,15 @@ public abstract class AbstractMonitor implements Monitor
      */
     public void reset()
     {
-        for ( StatValue value : values.values() )
+        for ( Metric metric : metrics.values() )
         {
-            value.reset();
+            metric.reset();
         }
     }
 
     public Counter getCounter( Role<Counter> role )
     {
-        return getValue( role );
+        return getMetric( role );
     }
 
     @SuppressWarnings("unchecked")
@@ -119,7 +119,7 @@ public abstract class AbstractMonitor implements Monitor
 
     public Gauge getGauge( Role<Gauge> role )
     {
-        return getValue( role );
+        return getMetric( role );
     }
 
     @SuppressWarnings("unchecked")

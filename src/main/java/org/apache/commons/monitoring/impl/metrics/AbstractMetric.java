@@ -15,24 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.commons.monitoring.impl.values;
+package org.apache.commons.monitoring.impl.metrics;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.apache.commons.monitoring.Metric;
 import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.Role;
-import org.apache.commons.monitoring.StatValue;
 import org.apache.commons.monitoring.Unit;
 
 /**
- * A simple implementation of {@link StatValue}. Only provide methods to
+ * A simple implementation of {@link Metric}. Only provide methods to
  * compute stats from sum provided by derived classes.
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public abstract class AbstractStatValue<T extends StatValue>
-    implements StatValue
+public abstract class AbstractMetric<T extends Metric>
+    implements Metric
 {
     private Monitor monitor;
 
@@ -48,7 +48,7 @@ public abstract class AbstractStatValue<T extends StatValue>
 
     private List<Listener> listeners = new CopyOnWriteArrayList<Listener>();
 
-    public AbstractStatValue( Role<T> role )
+    public AbstractMetric( Role<T> role )
     {
         super();
         this.role = role;
@@ -131,13 +131,13 @@ public abstract class AbstractStatValue<T extends StatValue>
         {
             return Double.NaN;
         }
-        double variance = ( getSquares() - getSum() * getMean() ) / ( n - 1 );
+        double variance = ( getSumOfSquares() - getSum() * getMean() ) / ( n - 1 );
         return Math.sqrt( Math.abs( variance ) );
     }
 
-    protected abstract long getSquares();
-
     public abstract long getSum();
+
+    protected abstract long getSumOfSquares();
 
     public int getHits()
     {

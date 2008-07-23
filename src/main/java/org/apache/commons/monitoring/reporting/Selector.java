@@ -28,10 +28,9 @@ import java.util.StringTokenizer;
 import org.apache.commons.monitoring.Monitor.Key;
 
 /**
- * use a REST-style path to select a group of statValues. For example, to get
- * the mean performance for monitors in category "services"
- * <tt>/monitorsFromCategory/services/counter/performances/mean</tt>
- *
+ * use a REST-style path to select a group of Metrics. For example, to get the mean performance for monitors in category
+ * "services" <tt>/monitorsFromCategory/services/counter/performances/mean</tt>
+ * 
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public class Selector

@@ -18,17 +18,17 @@
 package org.apache.commons.monitoring.listeners;
 
 import org.apache.commons.monitoring.Composite;
+import org.apache.commons.monitoring.Metric;
 import org.apache.commons.monitoring.Monitor;
-import org.apache.commons.monitoring.StatValue;
 import org.apache.commons.monitoring.impl.monitors.AbstractMonitor;
 
 /**
- * A Monitor implementation that maintains a set of secondary StatValues in sync
+ * A Monitor implementation that maintains a set of secondary Metrics in sync
  * with the primary monitor. Register itself as a monitor listener to get notified
- * on new StatValues and automatically create the required secondary.
+ * on new Metrics and automatically create the required secondary.
  * <p>
  * When detached, deregister itself as Monitor.Listener and detaches all secondary
- * from the primary StatValues.
+ * from the primary Metrics.
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
@@ -51,9 +51,9 @@ public class SecondaryMonitor
         this.monitor = monitor;
         this.attachedAt = System.currentTimeMillis();
         this.detached = false;
-        for ( StatValue value : monitor.getValues() )
+        for ( Metric metric : monitor.getMetrics() )
         {
-            onStatValueRegistered(  value );
+            onMetricRegistered( metric );
         }
         monitor.addListener( this );
     }
@@ -62,22 +62,22 @@ public class SecondaryMonitor
     public void detach()
     {
         this.detached = true;
-        for ( StatValue value : monitor.getValues() )
+        for ( Metric metric : monitor.getMetrics() )
         {
-            if ( value instanceof Composite )
+            if ( metric instanceof Composite )
             {
-                ( (Composite<StatValue>) value ).removeSecondary( getValue( value.getRole() ) );
+                ( (Composite<Metric>) metric ).removeSecondary( getMetric( metric.getRole() ) );
             }
         }
         this.detachedAt = System.currentTimeMillis();
     }
 
     @SuppressWarnings("unchecked")
-    public void onStatValueRegistered( StatValue value )
+    public void onMetricRegistered( Metric metric )
     {
-        if ( !detached && value instanceof Composite )
+        if ( !detached && metric instanceof Composite )
         {
-            register( ( (Composite<StatValue>) value ).createSecondary() );
+            register( ( (Composite<Metric>) metric ).createSecondary() );
         }
     }
 

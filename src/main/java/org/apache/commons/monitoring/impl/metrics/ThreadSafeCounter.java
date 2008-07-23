@@ -15,20 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.commons.monitoring.impl.values;
+package org.apache.commons.monitoring.impl.metrics;
 
 import org.apache.commons.monitoring.Counter;
 import org.apache.commons.monitoring.Role;
 import org.apache.commons.monitoring.Unit;
 
 /**
- * Thread-safe implementation of <code>Counter</code>, based on
- * synchronized methods.
- *
+ * Thread-safe implementation of <code>Counter</code>, based on synchronized methods.
+ * <p>
+ * To reduce impact of synchronization, only the internal counter update is synchronized. Events dispatching is not and
+ * listeners must handle concurrency.
+ * 
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public class ThreadSafeCounter
-    extends AbstractStatValue<Counter>
+    extends AbstractMetric<Counter>
     implements Counter
 {
 
@@ -41,6 +43,16 @@ public class ThreadSafeCounter
     public ThreadSafeCounter( Role<Counter> role )
     {
         super( role );
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.apache.commons.monitoring.Metric#getType()
+     */
+    public type getType()
+    {
+        return type.COUNTER;
     }
 
     /**
@@ -75,12 +87,14 @@ public class ThreadSafeCounter
     public void add( long delta, Unit unit )
     {
         delta = normalize( delta, unit );
-        synchronized ( this )
-        {
-            value += delta;
-            computeStats( delta );
-        }
+        threadSafeAdd( delta );
         fireValueChanged( delta );
+    }
+
+    protected synchronized void threadSafeAdd( long delta )
+    {
+        value += delta;
+        computeStats( delta );
     }
 
     @Override
@@ -97,8 +111,7 @@ public class ThreadSafeCounter
         return ( (double) sum ) / getHits();
     }
 
-    @Override
-    protected long getSquares()
+    public long getSumOfSquares()
     {
         return sumOfSquares;
     }
@@ -107,14 +120,6 @@ public class ThreadSafeCounter
     public long getSum()
     {
         return sum;
-    }
-
-    /**
-     * @return the sumOfSquares
-     */
-    public long getSumOfSquares()
-    {
-        return sumOfSquares;
     }
 
 

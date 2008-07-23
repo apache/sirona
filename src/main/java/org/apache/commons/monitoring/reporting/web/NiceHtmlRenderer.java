@@ -95,7 +95,7 @@ public class NiceHtmlRenderer
 
     @SuppressWarnings("unchecked")
     @Override
-    protected void renderMissingValue( Context ctx, Role role )
+    protected void renderMissingMetric( Context ctx, Role role )
     {
         Map<String, Integer> columns = (Map<String, Integer>) ctx.get( COLUMNS );
         ctx.print( "<td class='not-applicable' colspan='" );

@@ -22,7 +22,7 @@ import junit.framework.TestCase;
 import org.apache.commons.monitoring.Counter;
 import org.apache.commons.monitoring.MonitoringTest;
 import org.apache.commons.monitoring.Unit;
-import org.apache.commons.monitoring.impl.values.ThreadSafeCounter;
+import org.apache.commons.monitoring.impl.metrics.ThreadSafeCounter;
 
 public class ThreadSafeCounterTest
     extends TestCase

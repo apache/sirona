@@ -20,8 +20,8 @@ package org.apache.commons.monitoring.impl.monitors;
 import org.apache.commons.monitoring.Counter;
 import org.apache.commons.monitoring.Gauge;
 import org.apache.commons.monitoring.Role;
-import org.apache.commons.monitoring.impl.values.CompositeCounter;
-import org.apache.commons.monitoring.impl.values.CompositeGauge;
+import org.apache.commons.monitoring.impl.metrics.CompositeCounter;
+import org.apache.commons.monitoring.impl.metrics.CompositeGauge;
 
 /**
  * A Monitor implementation that creates
@@ -29,11 +29,11 @@ import org.apache.commons.monitoring.impl.values.CompositeGauge;
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public class CompositeValuesMonitor
-    extends CreateValuesOnDemandMonitor
+public class CompositeMetricsMonitor
+    extends CreateMetricsOnDemandMonitor
 {
 
-    public CompositeValuesMonitor( Key key )
+    public CompositeMetricsMonitor( Key key )
     {
         super( key );
     }

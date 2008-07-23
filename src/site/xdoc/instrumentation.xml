@@ -71,7 +71,7 @@
       </subsection>
       <subsection name="Counters and Gauges">
       <p>
-        Monitors manage a set of <code>StatValues</code> that the application uses to expose state. The
+        Monitors manage a set of <code>Metrics</code> that the application uses to expose state. The
         monitor only identifies where the data comes from, and the statValues handle the monitored data.
         There is two types of values that application can use, depending on the data to be exposed :
         <ul>
@@ -97,7 +97,7 @@
       <p>
         In both cases, the statValues compute statistical information from what the application exposes, like
         min / max / mean and standard deviation, that in many case is more informative than the current value.
-        Available statistical indicators are limited as a StatValue does not maintain all the individual
+        Available statistical indicators are limited as a Metric does not maintain all the individual
         elements as a serie but only aggregates, to avoid memory over-consumption.
       </p>
       <p>The <a href="xref/org/apache/commons/monitoring/impl/monitors/CreateValuesOnDemandMonitor">
@@ -107,7 +107,7 @@
       </subsection>
       <subsection name="Role">
       <p>
-        A monitor can handle many statValues. StatValues are identified in a monitor by a role, that
+        A monitor can handle many statValues. Metrics are identified in a monitor by a role, that
         describes the data beeing computed. There is predefined roles for performances, concurrency
         monitoring and failures count, but any other relevant counter/gauge can be registered to a monitor.
         <pre>

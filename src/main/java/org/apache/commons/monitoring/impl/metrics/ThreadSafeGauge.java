@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.commons.monitoring.impl.values;
+package org.apache.commons.monitoring.impl.metrics;
 
 import org.apache.commons.monitoring.Gauge;
 import org.apache.commons.monitoring.Role;
@@ -31,7 +31,7 @@ import org.apache.commons.monitoring.Unit;
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public class ThreadSafeGauge
-    extends AbstractStatValue<Gauge>
+    extends AbstractMetric<Gauge>
     implements Gauge
 {
     private long value;
@@ -48,6 +48,16 @@ public class ThreadSafeGauge
     public ThreadSafeGauge( Role<Gauge> role )
     {
         super( role );
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.apache.commons.monitoring.Metric#getType()
+     */
+    public type getType()
+    {
+        return type.GAUGE;
     }
 
     public synchronized void reset()
@@ -112,8 +122,7 @@ public class ThreadSafeGauge
         return ( (double) sum ) / ( nanotime() - firstUse );
     }
 
-    @Override
-    protected long getSquares()
+    protected long getSumOfSquares()
     {
         return sumOfSquares;
     }
