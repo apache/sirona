@@ -18,6 +18,7 @@
 package org.apache.commons.monitoring.impl.repositories;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.StopWatch;
@@ -83,6 +84,10 @@ public class ConfigurableImplementationsRepository
         {
             return monitorConstructor.newInstance( key );
         }
+        catch ( InvocationTargetException e )
+        {
+            throw new IllegalStateException( "Failed to user configured stopWatchConstructor ", e.getTargetException() );
+        }
         catch ( Exception e )
         {
             throw new IllegalStateException( "Invalid stopWatchConstructor configured in repository "
@@ -101,10 +106,14 @@ public class ConfigurableImplementationsRepository
         {
             return stopWatchConstructor.newInstance( monitor );
         }
+        catch ( InvocationTargetException e )
+        {
+            throw new IllegalStateException( "Failed to user configured stopWatchConstructor ", e.getTargetException() );
+        }
         catch ( Exception e )
         {
             throw new IllegalStateException( "Invalid stopWatchConstructor configured in repository "
-                + stopWatchConstructor );
+                + stopWatchConstructor, e );
         }
     }
 }

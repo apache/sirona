@@ -18,6 +18,7 @@
 package org.apache.commons.monitoring;
 
 import java.util.Collection;
+import java.util.EventListener;
 
 /**
  * A <code>Monitor</code> is an abstraction of some application resource that is instrumented with a set of indicators
@@ -257,6 +258,7 @@ public interface Monitor
      * Listener interface to get notified on montor events
      */
     public static interface Listener
+    extends EventListener
     {
         void onMetricRegistered( Metric metric );
     }

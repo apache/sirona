@@ -21,12 +21,7 @@ package org.apache.commons.monitoring.support.java13.java.lang.management;
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public class ThreadMXBean_
+public interface ThreadMXBean_
 {
-    static ThreadMXBean_ instance = new ThreadMXBean_();
-
-    public static boolean isCurrentThreadCpuTimeSupported( ThreadMXBean_ mx )
-    {
-        return false;
-    }
+    boolean isCurrentThreadCpuTimeSupported();
 }

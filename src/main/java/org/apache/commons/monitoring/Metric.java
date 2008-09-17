@@ -17,6 +17,8 @@
 
 package org.apache.commons.monitoring;
 
+import java.util.EventListener;
+
 
 /**
  * A <code>Metric</code> is a numerical indicator of some monitored
@@ -100,6 +102,7 @@ public interface Metric
      * Listener for Metric events
      */
     public static interface Listener
+        extends EventListener
     {
         void onValueChanged( Metric value, long l );
     }

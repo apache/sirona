@@ -25,6 +25,14 @@ public class ManagementFactory_
 {
     public static ThreadMXBean_ getThreadMXBean()
     {
-        return ThreadMXBean_.instance;
+        return instance;
     }
+
+    private static ThreadMXBean_ instance = new ThreadMXBean_()
+    {
+        public boolean isCurrentThreadCpuTimeSupported()
+        {
+            return false;
+        }
+    };
 }

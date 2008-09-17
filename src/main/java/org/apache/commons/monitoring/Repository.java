@@ -18,6 +18,7 @@
 package org.apache.commons.monitoring;
 
 import java.util.Collection;
+import java.util.EventListener;
 import java.util.Set;
 
 /**
@@ -77,6 +78,7 @@ public interface Repository
      * Listener interface to get notified on repository events
      */
     public static interface Listener
+        extends EventListener
     {
         /**
          * A monitor has just been created. Can be used to add custom Metrics or
