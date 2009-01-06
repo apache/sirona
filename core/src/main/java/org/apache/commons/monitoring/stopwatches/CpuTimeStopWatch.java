@@ -46,9 +46,9 @@ public class CpuTimeStopWatch
     }
 
     @Override
-    protected void doStart( Monitor monitor )
+    protected void doStart()
     {
-        super.doStart( monitor );
+        super.doStart();
         ThreadMXBean mx = ManagementFactory.getThreadMXBean();
         if ( mx.isCurrentThreadCpuTimeSupported() )
         {
