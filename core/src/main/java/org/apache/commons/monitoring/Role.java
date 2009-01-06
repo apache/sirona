@@ -30,20 +30,21 @@ import java.util.concurrent.ConcurrentHashMap;
  * @param <M> The metric this role relates to
  */
 @SuppressWarnings("unchecked")
-public class Role<M extends Metric>
+public class Role
     implements Comparable<Role>
 {
     private String name;
 
     private Unit unit;
 
-    private Class<M> type;
+    private Metric.Type type;
 
     private static final Map<String, Role> ROLES = new ConcurrentHashMap<String, Role>();
 
     public static Role getRole( String name )
     {
         return ROLES.get( name );
+
     }
 
     public static Collection<Role> getRoles()
@@ -51,7 +52,7 @@ public class Role<M extends Metric>
         return Collections.unmodifiableCollection( ROLES.values() );
     }
 
-    public Role( String name, Unit unit, Class<M> type )
+    public Role( String name, Unit unit, Metric.Type type )
     {
         super();
         if ( name == null )
@@ -65,10 +66,6 @@ public class Role<M extends Metric>
         if ( type == null )
         {
             throw new IllegalArgumentException( "A type is required" );
-        }
-        if ( !Metric.class.isAssignableFrom( type ) )
-        {
-            throw new IllegalArgumentException( "The type must extend Metric" );
         }
         this.name = name;
         this.unit = unit;
@@ -149,7 +146,7 @@ public class Role<M extends Metric>
         return name;
     }
 
-    public Class<M> getType()
+    public Metric.Type getType()
     {
         return type;
     }

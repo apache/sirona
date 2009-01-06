@@ -39,7 +39,7 @@ public class SynchronizedCounter
 
     ReentrantLock lock = new ReentrantLock();
 
-    public SynchronizedCounter( Role<Counter> role )
+    public SynchronizedCounter( Role role )
     {
         super( role );
     }

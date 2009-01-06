@@ -24,7 +24,7 @@ package org.apache.commons.monitoring;
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public interface Counter
-    extends Metric<Counter>
+    extends Metric
 {
 
     /**
@@ -35,7 +35,7 @@ public interface Counter
     void add( double delta, Unit unit );
 
     public interface Observable
-        extends Metric.Observable<Counter>, Counter
+        extends Metric.Observable, Counter
     {
 
     }

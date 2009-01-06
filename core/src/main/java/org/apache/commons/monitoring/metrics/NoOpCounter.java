@@ -6,10 +6,10 @@ import org.apache.commons.monitoring.Role;
 import org.apache.commons.monitoring.Unit;
 
 public class NoOpCounter
-    extends AbstractMetric<Counter>
+    extends AbstractMetric
     implements Counter
 {
-    public NoOpCounter( Role<Counter> role )
+    public NoOpCounter( Role role )
     {
         super( role );
     }

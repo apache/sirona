@@ -26,7 +26,7 @@ import java.util.EventListener;
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public interface Metric<M extends Metric<?>>
+public interface Metric
 {
     public enum Type
     {
@@ -56,7 +56,7 @@ public interface Metric<M extends Metric<?>>
     /**
      * @return the role for this Metric in the monitor
      */
-    Role<M> getRole();
+    Role getRole();
 
     /**
      * @return the data unit
@@ -66,7 +66,7 @@ public interface Metric<M extends Metric<?>>
     /**
      * Listener for Metric events
      */
-    public static interface Listener<M extends Metric<?>>
+    public static interface Listener
         extends EventListener
     {
         /**
@@ -78,23 +78,24 @@ public interface Metric<M extends Metric<?>>
          * @param metric
          * @param value
          */
-        void onValueChanged( Observable<M> metric, double value );
+        void onValueChanged( Observable metric, double value );
     }
 
     /**
      * A metric that support the Observer pattern.
      */
-    public interface Observable<M extends Metric<?>> extends Metric<M>
+    public interface Observable
+        extends Metric
     {
         /**
          * @param listener listener to get registered
          */
-        void addListener( Listener<M> listener );
+        void addListener( Listener listener );
 
         /**
          * @param listener listener to get removed
          */
-        void removeListener( Listener<M> listener );
+        void removeListener( Listener listener );
     }
 
     // --- Statistical indicators --------------------------------------------

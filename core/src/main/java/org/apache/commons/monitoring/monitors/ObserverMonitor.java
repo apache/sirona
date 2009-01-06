@@ -30,7 +30,7 @@ public class ObserverMonitor
         this.attachedAt = System.currentTimeMillis();
         this.detached = false;
         this.observable.addListener( this );
-        for ( Metric<?> metric : observable.getMetrics() )
+        for ( Metric metric : observable.getMetrics() )
         {
             onMetricRegistered( observable, metric );
         }
@@ -53,11 +53,11 @@ public class ObserverMonitor
     public void detach()
     {
         detached = true;
-        for ( Metric<?> metric : observable.getMetrics() )
+        for ( Metric metric : observable.getMetrics() )
         {
-            if ( metric instanceof Metric.Observable<?> )
+            if ( metric instanceof Metric.Observable )
             {
-                Metric.Observable<?> observableMetric = (Metric.Observable<?>) metric;
+                Metric.Observable observableMetric = (Metric.Observable) metric;
                 Metric.Listener observer = (Metric.Listener) getMetric( metric.getRole() );
                 observableMetric.removeListener( observer );
             }

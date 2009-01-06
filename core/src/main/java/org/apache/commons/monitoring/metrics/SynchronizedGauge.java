@@ -33,7 +33,7 @@ public class SynchronizedGauge
     extends ThreadSafeGauge
     implements Gauge
 {
-    public SynchronizedGauge( Role<Gauge> role )
+    public SynchronizedGauge( Role role )
     {
         super( role );
     }

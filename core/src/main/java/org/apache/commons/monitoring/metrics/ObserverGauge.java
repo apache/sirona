@@ -11,7 +11,7 @@ import org.apache.commons.monitoring.Unit;
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public class ObserverGauge
-    extends ObserverMetric<Gauge>
+    extends ObserverMetric
     implements Gauge
 {
     private Gauge.Observable observable;
@@ -34,12 +34,12 @@ public class ObserverGauge
     }
 
     @Override
-    protected Metric.Observable<Gauge> getObservable()
+    protected Metric.Observable getObservable()
     {
         return observable;
     }
 
-    public void onValueChanged( Metric.Observable<Gauge> metric, double value )
+    public void onValueChanged( Metric.Observable metric, double value )
     {
         delegate.threadSafeSet( value );
     }

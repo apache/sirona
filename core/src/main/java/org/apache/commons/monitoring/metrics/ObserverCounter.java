@@ -11,7 +11,7 @@ import org.apache.commons.monitoring.Unit;
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public class ObserverCounter
-extends ObserverMetric<Counter>
+    extends ObserverMetric
 implements Counter
 {
     private Counter.Observable observable;
@@ -33,12 +33,12 @@ implements Counter
     }
 
     @Override
-    protected Metric.Observable<Counter> getObservable()
+    protected Metric.Observable getObservable()
     {
         return observable;
     }
 
-    public void onValueChanged( Metric.Observable<Counter> metric, double value )
+    public void onValueChanged( Metric.Observable metric, double value )
     {
         delegate.threadSafeAdd( value );
     }

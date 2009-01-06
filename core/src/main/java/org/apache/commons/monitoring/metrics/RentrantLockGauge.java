@@ -32,7 +32,7 @@ public class RentrantLockGauge
 {
     private ReentrantLock lock = new ReentrantLock();
 
-    public RentrantLockGauge( Role<Gauge> role )
+    public RentrantLockGauge( Role role )
     {
         super( role );
     }

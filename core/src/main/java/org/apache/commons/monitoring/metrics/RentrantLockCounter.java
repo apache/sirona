@@ -21,7 +21,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.monitoring.Counter;
 import org.apache.commons.monitoring.Role;
-import org.apache.commons.monitoring.metrics.CounterBench;
 
 /**
  * Thread-safe implementation of <code>Counter</code>.
@@ -42,7 +41,7 @@ public class RentrantLockCounter
 
     ReentrantLock lock = new ReentrantLock();
 
-    public RentrantLockCounter( Role<Counter> role )
+    public RentrantLockCounter( Role role )
     {
         super( role );
     }

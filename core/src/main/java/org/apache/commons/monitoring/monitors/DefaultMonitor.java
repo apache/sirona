@@ -39,13 +39,13 @@ public class DefaultMonitor
     }
 
     @Override
-    protected Counter newCounterInstance( Role<Counter> role )
+    protected Counter newCounterInstance( Role role )
     {
         return new RentrantLockCounter( role );
     }
 
     @Override
-    protected Gauge newGaugeInstance( Role<Gauge> role )
+    protected Gauge newGaugeInstance( Role role )
     {
         return new RentrantLockGauge( role );
     }

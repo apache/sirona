@@ -50,16 +50,16 @@ public interface Monitor
     // --- Predefined roles -------------------------------------------------------------------
 
     /** Predefined role key for code performances */
-    Role<Counter> PERFORMANCES = new Role<Counter>( "performances", Unit.MILLIS, Counter.class );
+    Role PERFORMANCES = new Role( "performances", Unit.MILLIS, Metric.Type.COUNTER );
 
     /** Predefined role key for cpu time */
-    Role<Counter> CPU = new Role<Counter>( "cpu", Unit.MILLIS, Counter.class );
+    Role CPU = new Role( "cpu", Unit.MILLIS, Metric.Type.COUNTER );
 
     /** Predefined role for multi-thread concurrency */
-    Role<Gauge> CONCURRENCY = new Role<Gauge>( "concurrency", Unit.UNARY, Gauge.class );
+    Role CONCURRENCY = new Role( "concurrency", Unit.UNARY, Metric.Type.GAUGE );
 
     /** Predefined Role for the invocation failure counter */
-    Role<Counter> FAILURES = new Role<Counter>( "failures", Unit.UNARY, Counter.class );
+    Role FAILURES = new Role( "failures", Unit.UNARY, Metric.Type.COUNTER );
 
 
     /**
@@ -82,7 +82,7 @@ public interface Monitor
      * @param role the Counter role in the monitor
      * @return the Counter
      */
-    Counter getCounter( Role<Counter> role );
+    Counter getCounter( Role role );
 
     /**
      * Retrieve a Gauge in the monitor
@@ -98,7 +98,7 @@ public interface Monitor
      * @param role the gauge role in the monitor
      * @return the Gauge
      */
-    Gauge getGauge( Role<Gauge> role );
+    Gauge getGauge( Role role );
 
     /**
      * Retrieve a Metric.
@@ -106,7 +106,7 @@ public interface Monitor
      * @param role a unique identifier for a Metric in the monitor
      * @return the Metric
      */
-    Metric<?> getMetric( String role );
+    Metric getMetric( String role );
 
     /**
      * Retrieve a Metric in the monitor
@@ -114,18 +114,17 @@ public interface Monitor
      * @param role the Metric role in the monitor
      * @return the Metric
      */
-    <M extends Metric<?>> M getMetric( Role<M> role );
+    Metric getMetric( Role role );
 
     /**
      * @return an unmodifiable collection of registered Metrics roles
      */
-    @SuppressWarnings("unchecked")
     Collection<Role> getRoles();
 
     /**
      * @return an unmodifiable collection of registered Metrics
      */
-    Collection<Metric<?>> getMetrics();
+    Collection<Metric> getMetrics();
 
     /**
      * Reset all Metrics (don't remove them)
@@ -271,7 +270,7 @@ public interface Monitor
     public interface Listener
     extends EventListener
     {
-        void onMetricRegistered( Monitor.Observable monitor, Metric<?> metric );
+        void onMetricRegistered( Monitor.Observable monitor, Metric metric );
     }
 
     /**

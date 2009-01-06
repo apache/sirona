@@ -37,7 +37,7 @@ public abstract class AbstractMonitor implements Monitor
 {
 
     @SuppressWarnings("unchecked")
-    private final ConcurrentMap<Role, Metric<?>> metrics;
+    private final ConcurrentMap<Role, Metric> metrics;
     private final Key key;
 
     public AbstractMonitor( Key key )
@@ -54,9 +54,9 @@ public abstract class AbstractMonitor implements Monitor
      * @return the ConcurrentMap implementation to use for storing metrics
      */
     @SuppressWarnings("unchecked")
-    protected ConcurrentHashMap<Role, Metric<?>> createConcurrentMap()
+    protected ConcurrentHashMap<Role, Metric> createConcurrentMap()
     {
-        return new ConcurrentHashMap<Role, Metric<?>>();
+        return new ConcurrentHashMap<Role, Metric>();
     }
 
     /**
@@ -70,15 +70,14 @@ public abstract class AbstractMonitor implements Monitor
     /**
      * {@inheritDoc}
      */
-    public final Metric<?> getMetric( String role )
+    public final Metric getMetric( String role )
     {
         return metrics.get( role );
     }
 
-    @SuppressWarnings("unchecked")
-    public <T extends Metric<?>> T getMetric( Role<T> role )
+    public final Metric getMetric( Role role )
     {
-        return (T) metrics.get( role );
+        return metrics.get( role );
     }
 
     @SuppressWarnings("unchecked")
@@ -87,7 +86,7 @@ public abstract class AbstractMonitor implements Monitor
         return Collections.unmodifiableCollection( metrics.keySet() );
     }
 
-    public Collection<Metric<?>> getMetrics()
+    public Collection<Metric> getMetrics()
     {
         return Collections.unmodifiableCollection( metrics.values() );
     }
@@ -99,11 +98,10 @@ public abstract class AbstractMonitor implements Monitor
      * @return a previously registered Metric if existed, or <code>null</code> if the metric has been successfully
      * registered
      */
-    @SuppressWarnings("unchecked")
-    protected <M extends Metric<?>> M register( M metric )
+    protected Metric register( Metric metric )
     {
         metric.setMonitor( this );
-        return (M) metrics.putIfAbsent( metric.getRole(), metric );
+        return metrics.putIfAbsent( metric.getRole(), metric );
     }
 
     /**
@@ -111,7 +109,7 @@ public abstract class AbstractMonitor implements Monitor
      */
     public void reset()
     {
-        for ( Metric<?> metric : metrics.values() )
+        for ( Metric metric : metrics.values() )
         {
             metric.reset();
         }
@@ -120,21 +118,21 @@ public abstract class AbstractMonitor implements Monitor
     @SuppressWarnings("unchecked")
     public Counter getCounter( String role )
     {
-        return getCounter( (Role<Counter>) Role.getRole( role ) );
+        return getCounter( Role.getRole( role ) );
     }
 
     @SuppressWarnings("unchecked")
     public Gauge getGauge( String role )
     {
-        return getGauge( (Role<Gauge>) Role.getRole( role ) );
+        return getGauge( Role.getRole( role ) );
     }
 
-    public Counter getCounter( Role<Counter> role )
+    public Counter getCounter( Role role )
     {
         return (Counter) getMetric( role );
     }
 
-    public Gauge getGauge( Role<Gauge> role )
+    public Gauge getGauge( Role role )
     {
         return (Gauge) getMetric( role );
     }

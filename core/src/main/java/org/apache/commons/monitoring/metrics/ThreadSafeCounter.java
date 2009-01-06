@@ -5,10 +5,10 @@ import org.apache.commons.monitoring.Role;
 import org.apache.commons.monitoring.Unit;
 
 public abstract class ThreadSafeCounter
-    extends ObservableMetric<Counter>
+    extends ObservableMetric
     implements Counter, Counter.Observable
 {
-    public ThreadSafeCounter( Role<Counter> role )
+    public ThreadSafeCounter( Role role )
     {
         super( role );
     }

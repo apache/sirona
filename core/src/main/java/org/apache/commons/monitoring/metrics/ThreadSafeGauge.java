@@ -14,7 +14,7 @@ import org.apache.commons.monitoring.Unit;
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public abstract class ThreadSafeGauge
-    extends ObservableMetric<Gauge>
+    extends ObservableMetric
     implements Gauge, Gauge.Observable
 {
     protected double value;
@@ -27,7 +27,7 @@ public abstract class ThreadSafeGauge
 
     protected Max max = new Max();
 
-    public ThreadSafeGauge( Role<Gauge> role )
+    public ThreadSafeGauge( Role role )
     {
         super( role );
     }

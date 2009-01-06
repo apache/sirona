@@ -31,20 +31,24 @@ import org.apache.commons.monitoring.Unit;
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public abstract class AbstractMetric<M extends Metric<?>>
-    implements Metric<M>
+public abstract class AbstractMetric
+    implements Metric
 {
     private Monitor monitor;
 
     private SummaryStatistics statistics;
 
-    private Role<M> role;
+    private Role role;
 
     private Unit unit;
 
-    public AbstractMetric( Role<M> role )
+    public AbstractMetric( Role role )
     {
         super();
+        if ( role.getType() != this.getType() )
+        {
+            throw new IllegalArgumentException( "Invalid Role type for " + getClass().getName() );
+        }
         this.role = role;
         this.unit = role.getUnit();
         this.statistics = new SummaryStatistics();
@@ -70,7 +74,7 @@ public abstract class AbstractMetric<M extends Metric<?>>
         return monitor;
     }
 
-    public Role<M> getRole()
+    public Role getRole()
     {
         return role;
     }

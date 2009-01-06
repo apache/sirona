@@ -56,9 +56,9 @@ public abstract class ObservableMonitor
      * @return the registered metric, or a previously existing one for the role
      */
     @Override
-    protected <T extends Metric<?>> T register( T metric )
+    protected Metric register( Metric metric )
     {
-        T previous = (T) super.register( metric );
+        Metric previous = super.register( metric );
         if ( previous != null )
         {
             return previous;

@@ -23,20 +23,20 @@ import org.apache.commons.monitoring.metrics.NoOpGauge;
 public class NullMonitor
     implements Monitor
 {
-    private static Role NOOP = new Role( "NoOp", Unit.UNARY, Metric.class );
+    private static Role NOOP = new Role( "NoOp", Unit.UNARY, Metric.Type.COUNTER );
 
     private static NoOpCounter counter = new NoOpCounter( NOOP );
 
     private static NoOpGauge gauge = new NoOpGauge( NOOP );
 
-    private Collection<Metric<?>> metrics = Arrays.asList( new Metric<?>[] { counter, gauge } );
+    private Collection<Metric> metrics = Arrays.asList( new Metric[] { counter, gauge } );
 
     public Counter getCounter( String role )
     {
         return counter;
     }
 
-    public Counter getCounter( Role<Counter> role )
+    public Counter getCounter( Role role )
     {
         return counter;
     }
@@ -46,7 +46,7 @@ public class NullMonitor
         return gauge;
     }
 
-    public Gauge getGauge( Role<Gauge> role )
+    public Gauge getGauge( Role role )
     {
         return gauge;
     }
@@ -61,12 +61,12 @@ public class NullMonitor
         return counter;
     }
 
-    public <M extends Metric<?>> M getMetric( Role<M> role )
+    public Metric getMetric( Role role )
     {
-        return (M) counter;
+        return counter;
     }
 
-    public Collection<Metric<?>> getMetrics()
+    public Collection<Metric> getMetrics()
     {
         return metrics;
     }

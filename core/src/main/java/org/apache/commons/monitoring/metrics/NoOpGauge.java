@@ -6,10 +6,10 @@ import org.apache.commons.monitoring.Role;
 import org.apache.commons.monitoring.Unit;
 
 public class NoOpGauge
-    extends AbstractMetric<Gauge>
+    extends AbstractMetric
     implements Gauge
 {
-    public NoOpGauge( Role<Gauge> role )
+    public NoOpGauge( Role role )
     {
         super( role );
     }

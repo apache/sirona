@@ -37,27 +37,27 @@ public abstract class CreateMetricsOnDemandMonitor
         super( key );
     }
 
-    public Counter getCounter( Role<Counter> role )
+    public Counter getCounter( Role role )
     {
-        Counter counter = getMetric( role );
+        Counter counter = (Counter) getMetric( role );
         if ( counter != null )
         {
             return counter;
         }
         counter = newCounterInstance( role );
-        Counter previous = register( counter );
+        Counter previous = (Counter) register( counter );
         return previous != null ? previous : counter;
     }
 
-    public Gauge getGauge( Role<Gauge> role )
+    public Gauge getGauge( Role role )
     {
-        Gauge gauge = getMetric( role );
+        Gauge gauge = (Gauge) getMetric( role );
         if ( gauge != null )
         {
             return gauge;
         }
         gauge = newGaugeInstance( role );
-        Gauge previous = register( gauge );
+        Gauge previous = (Gauge) register( gauge );
         return previous != null ? previous : gauge;
     }
 
@@ -68,7 +68,7 @@ public abstract class CreateMetricsOnDemandMonitor
      * executed to create more than one instance for the same role, so DON'T
      * assume unicity here.
      */
-    protected abstract Counter newCounterInstance( Role<Counter> role );
+    protected abstract Counter newCounterInstance( Role role );
 
     /**
      * Create a new Gauge instance
@@ -77,5 +77,5 @@ public abstract class CreateMetricsOnDemandMonitor
      * executed to create more than one instance for the same role, so DON'T
      * assume unicity here.
      */
-    protected abstract Gauge newGaugeInstance( Role<Gauge> role );
+    protected abstract Gauge newGaugeInstance( Role role );
 }

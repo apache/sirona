@@ -23,7 +23,7 @@ package org.apache.commons.monitoring;
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public interface Gauge
-    extends Metric<Gauge>
+    extends Metric
 {
     /**
      * @return the current Gauge value
@@ -37,7 +37,7 @@ public interface Gauge
     void decrement( Unit unit );
 
     public interface Observable
-        extends Metric.Observable<Gauge>, Gauge
+        extends Metric.Observable, Gauge
     {
 
     }

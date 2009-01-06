@@ -14,28 +14,28 @@ import org.apache.commons.monitoring.Role;
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 @SuppressWarnings("unchecked")
-public abstract class ObservableMetric<M extends Metric>
-    extends AbstractMetric<M>
-    implements Metric.Observable<M>
+public abstract class ObservableMetric
+    extends AbstractMetric
+    implements Metric.Observable
 {
 
-    private List<Listener<M>> listeners;
+    private List<Listener> listeners;
 
     /**
      * Constructor
      */
-    public ObservableMetric( Role<M> role )
+    public ObservableMetric( Role role )
     {
         super( role );
-        this.listeners = new CopyOnWriteArrayList<Listener<M>>();
+        this.listeners = new CopyOnWriteArrayList<Listener>();
     }
 
-    public void addListener( Listener<M> listener )
+    public void addListener( Listener listener )
     {
         listeners.add( listener );
     }
 
-    public void removeListener( Listener<M> listener )
+    public void removeListener( Listener listener )
     {
         listeners.remove( listener );
     }
@@ -43,7 +43,7 @@ public abstract class ObservableMetric<M extends Metric>
     protected void fireValueChanged( double d )
     {
         // Notify listeners
-        for ( Listener<M> listener : listeners )
+        for ( Listener listener : listeners )
         {
             listener.onValueChanged( this, d );
         }

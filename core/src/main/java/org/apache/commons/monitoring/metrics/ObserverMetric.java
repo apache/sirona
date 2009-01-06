@@ -4,11 +4,11 @@ import org.apache.commons.monitoring.Detachable;
 import org.apache.commons.monitoring.Metric;
 import org.apache.commons.monitoring.Role;
 
-public abstract class ObserverMetric<M extends Metric<?>>
-    extends AbstractMetric<M>
-    implements Detachable, Metric.Listener<M>
+public abstract class ObserverMetric
+    extends AbstractMetric
+    implements Detachable, Metric.Listener
 {
-    protected abstract Metric.Observable<M> getObservable();
+    protected abstract Metric.Observable getObservable();
 
     private boolean detached;
 
@@ -16,7 +16,7 @@ public abstract class ObserverMetric<M extends Metric<?>>
 
     private long detachedAt;
 
-    public ObserverMetric( Role<M> role )
+    public ObserverMetric( Role role )
     {
         super( role );
         attachedAt = System.currentTimeMillis();
