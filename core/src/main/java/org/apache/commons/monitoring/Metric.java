@@ -78,7 +78,7 @@ public interface Metric<M extends Metric<?>>
          * @param metric
          * @param value
          */
-        void onValueChanged( Observable<M> metric, long value );
+        void onValueChanged( Observable<M> metric, double value );
     }
 
     /**

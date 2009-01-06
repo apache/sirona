@@ -56,7 +56,7 @@ public abstract class AbstractMetric<M extends Metric<?>>
         return statistics;
     }
 
-    protected long normalize( long value, Unit unit )
+    protected double normalize( double value, Unit unit )
     {
         if ( !this.unit.isCompatible( unit ) )
         {

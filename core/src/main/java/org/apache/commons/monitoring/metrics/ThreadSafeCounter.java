@@ -23,7 +23,7 @@ public abstract class ThreadSafeCounter
         return Type.COUNTER;
     }
 
-    public void add( long delta, Unit unit )
+    public void add( double delta, Unit unit )
     {
         delta = normalize( delta, unit );
         threadSafeAdd( delta );
@@ -35,9 +35,9 @@ public abstract class ThreadSafeCounter
      * expected to delegate computing to {@ #doThreadSafeAdd(long)}
      * @param delta
      */
-    protected abstract void threadSafeAdd( long delta );
+    protected abstract void threadSafeAdd( double delta );
 
-    protected void doThreadSafeAdd( long delta )
+    protected void doThreadSafeAdd( double delta )
     {
         getSummary().addValue( delta );
     }

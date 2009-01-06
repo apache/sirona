@@ -24,7 +24,7 @@ public class NoOpCounter
         // NoOp
     }
 
-    public void add( long delta, Unit unit )
+    public void add( double delta, Unit unit )
     {
         // NoOp
     }

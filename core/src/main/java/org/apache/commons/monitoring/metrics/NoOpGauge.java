@@ -29,7 +29,7 @@ public class NoOpGauge
         // NoOp
     }
 
-    public long getValue()
+    public double getValue()
     {
         return 0;
     }
@@ -39,7 +39,7 @@ public class NoOpGauge
         // NoOp
     }
 
-    public void set( long value, Unit unit )
+    public void set( double value, Unit unit )
     {
         // NoOp
     }

@@ -17,7 +17,7 @@ public abstract class ThreadSafeGauge
     extends ObservableMetric<Gauge>
     implements Gauge, Gauge.Observable
 {
-    protected long value;
+    protected double value;
 
     protected long lastUse;
 
@@ -32,7 +32,7 @@ public abstract class ThreadSafeGauge
         super( role );
     }
 
-    public long getValue()
+    public double getValue()
     {
         return value;
     }
@@ -47,14 +47,14 @@ public abstract class ThreadSafeGauge
         add( -1, unit );
     }
 
-    protected void add( long delta, Unit unit )
+    protected void add( double delta, Unit unit )
     {
         delta = normalize( delta, unit );
-        long l = threadSafeAdd( delta );
-        fireValueChanged( l );
+        double d = threadSafeAdd( delta );
+        fireValueChanged( d );
     }
 
-    protected long threadSafeAdd( long delta )
+    protected double threadSafeAdd( double delta )
     {
         threadSafeSet( value + delta );
         return value;
@@ -65,19 +65,19 @@ public abstract class ThreadSafeGauge
         return System.nanoTime();
     }
 
-    public long get()
+    public double get()
     {
         return value;
     }
 
-    public void set( long l, Unit unit )
+    public void set( double d, Unit unit )
     {
-        l = normalize( l, unit );
-        threadSafeSet( l );
-        fireValueChanged( l );
+        d = normalize( d, unit );
+        threadSafeSet( d );
+        fireValueChanged( d );
     }
 
-    protected abstract void threadSafeSet( long l );
+    protected abstract void threadSafeSet( double d );
 
     protected void doReset()
     {
@@ -87,9 +87,9 @@ public abstract class ThreadSafeGauge
         firstUse = Double.NaN;
     }
 
-    protected void doThreadSafeSet( long l )
+    protected void doThreadSafeSet( double d )
     {
-        value = l;
+        value = d;
         long now = nanotime();
         if ( Double.isNaN( firstUse ) )
         {
@@ -98,12 +98,12 @@ public abstract class ThreadSafeGauge
         else
         {
             long delta = now - lastUse;
-            long s = l * delta;
+            double s = d * delta;
             getSummary().addValue( s );
         }
         lastUse = now;
-        min.increment( l );
-        max.increment( l );
+        min.increment( d );
+        max.increment( d );
     }
 
     @Override

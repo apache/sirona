@@ -18,9 +18,9 @@
 package org.apache.commons.monitoring;
 
 /**
- * A counter to collect application processed items (bytes received, lines processed by a batch,
- * time elapsed by some processing ...).
- *
+ * A counter to collect application processed items (bytes received, lines processed by a batch, time elapsed by some
+ * processing ...).
+ * 
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public interface Counter
@@ -29,13 +29,14 @@ public interface Counter
 
     /**
      * Add value to the counter. Delta should not be negative (in such case a Gauge should be used).
+     * 
      * @param delta
      */
-    void add( long delta, Unit unit );
+    void add( double delta, Unit unit );
 
-    public interface Observable extends Metric.Observable<Counter>, Counter
+    public interface Observable
+        extends Metric.Observable<Counter>, Counter
     {
 
     }
 }
-

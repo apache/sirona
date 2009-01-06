@@ -38,12 +38,12 @@ implements Counter
         return observable;
     }
 
-    public void onValueChanged( Metric.Observable<Counter> metric, long value )
+    public void onValueChanged( Metric.Observable<Counter> metric, double value )
     {
         delegate.threadSafeAdd( value );
     }
 
-    public void add( long delta, Unit unit )
+    public void add( double delta, Unit unit )
     {
         throw new UnsupportedOperationException( "Observer cannot be updated directly" );
     }

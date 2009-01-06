@@ -22,20 +22,22 @@ package org.apache.commons.monitoring;
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public interface Gauge extends Metric<Gauge>
+public interface Gauge
+    extends Metric<Gauge>
 {
     /**
      * @return the current Gauge value
      */
-    long getValue();
+    double getValue();
 
-    void increment(Unit unit);
+    void increment( Unit unit );
 
-    void set( long value, Unit unit );
+    void set( double value, Unit unit );
 
-    void decrement(Unit unit);
+    void decrement( Unit unit );
 
-    public interface Observable extends Metric.Observable<Gauge>, Gauge
+    public interface Observable
+        extends Metric.Observable<Gauge>, Gauge
     {
 
     }

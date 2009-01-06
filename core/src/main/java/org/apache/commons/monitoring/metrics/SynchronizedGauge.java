@@ -53,8 +53,8 @@ public class SynchronizedGauge
         doReset();
     }
 
-    protected synchronized void threadSafeSet( long l )
+    protected synchronized void threadSafeSet( double d )
     {
-        doThreadSafeSet( l );
+        doThreadSafeSet( d );
     }
 }

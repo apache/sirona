@@ -40,12 +40,12 @@ public abstract class ObservableMetric<M extends Metric>
         listeners.remove( listener );
     }
 
-    protected void fireValueChanged( long l )
+    protected void fireValueChanged( double d )
     {
         // Notify listeners
         for ( Listener<M> listener : listeners )
         {
-            listener.onValueChanged( this, l );
+            listener.onValueChanged( this, d );
         }
     }
 }

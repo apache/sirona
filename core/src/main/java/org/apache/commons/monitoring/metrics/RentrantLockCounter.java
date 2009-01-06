@@ -47,7 +47,7 @@ public class RentrantLockCounter
         super( role );
     }
 
-    protected void threadSafeAdd( long delta )
+    protected void threadSafeAdd( double delta )
     {
         lock.lock();
         try

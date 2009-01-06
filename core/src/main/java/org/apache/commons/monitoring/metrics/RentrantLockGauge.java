@@ -50,12 +50,12 @@ public class RentrantLockGauge
         }
     }
 
-    protected void threadSafeSet( long l )
+    protected void threadSafeSet( double d )
     {
         lock.lock();
         try
         {
-            doThreadSafeSet( l );
+            doThreadSafeSet( d );
         }
         finally
         {

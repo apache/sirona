@@ -39,12 +39,12 @@ public class ObserverGauge
         return observable;
     }
 
-    public void onValueChanged( Metric.Observable<Gauge> metric, long value )
+    public void onValueChanged( Metric.Observable<Gauge> metric, double value )
     {
         delegate.threadSafeSet( value );
     }
 
-    public long getValue()
+    public double getValue()
     {
         return delegate.getValue();
     }
@@ -54,7 +54,7 @@ public class ObserverGauge
         throw new UnsupportedOperationException( "Observer cannot be updated directly" );
     }
 
-    public void set( long value, Unit unit )
+    public void set( double value, Unit unit )
     {
         throw new UnsupportedOperationException( "Observer cannot be updated directly" );
     }

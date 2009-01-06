@@ -44,7 +44,7 @@ public class SynchronizedCounter
         super( role );
     }
 
-    protected synchronized void threadSafeAdd( long delta )
+    protected synchronized void threadSafeAdd( double delta )
     {
         doThreadSafeAdd( delta );
     }
