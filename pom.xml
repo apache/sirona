@@ -39,6 +39,7 @@
     <module>core</module>
     <module>instrumentation</module>
     <module>spring</module>
+    <module>reporting</module>
   </modules>
 
   <developers>
