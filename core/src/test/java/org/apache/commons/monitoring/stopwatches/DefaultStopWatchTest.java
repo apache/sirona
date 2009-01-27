@@ -20,10 +20,8 @@ package org.apache.commons.monitoring.stopwatches;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
-import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.StopWatch;
 import org.apache.commons.monitoring.monitors.NullMonitor;
-import org.apache.commons.monitoring.stopwatches.DefaultStopWatch;
 import org.junit.Test;
 
 /**

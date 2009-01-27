@@ -2,7 +2,6 @@ package org.apache.commons.monitoring.monitors;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 
 import org.apache.commons.monitoring.Counter;
 import org.apache.commons.monitoring.Gauge;
@@ -23,11 +22,13 @@ import org.apache.commons.monitoring.metrics.NoOpGauge;
 public class NullMonitor
     implements Monitor
 {
-    private static Role NOOP = new Role( "NoOp", Unit.UNARY, Metric.Type.COUNTER );
+    private static Role NOP_COUNTER = new Role( "Nop", Unit.UNARY, Metric.Type.COUNTER );
 
-    private static NoOpCounter counter = new NoOpCounter( NOOP );
+    private static Role NOP_GAUGE = new Role( "Nop", Unit.UNARY, Metric.Type.GAUGE );
 
-    private static NoOpGauge gauge = new NoOpGauge( NOOP );
+    private static NoOpCounter counter = new NoOpCounter( NOP_COUNTER );
+
+    private static NoOpGauge gauge = new NoOpGauge( NOP_GAUGE );
 
     private Collection<Metric> metrics = Arrays.asList( new Metric[] { counter, gauge } );
 
@@ -73,7 +74,7 @@ public class NullMonitor
 
     public Collection<Role> getRoles()
     {
-        return Collections.singletonList( NOOP );
+        return Arrays.asList( new Role[] { NOP_COUNTER, NOP_GAUGE } );
     }
 
     public void reset()
