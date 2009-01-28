@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.monitoring.Monitor;
+import org.apache.commons.monitoring.Repository;
 
 /**
  * Implements <tt>Observale</tt> pattern on the repository
@@ -31,6 +32,7 @@ import org.apache.commons.monitoring.Monitor;
  */
 public abstract class ObservableRepository
     extends AbstractRepository
+    implements Repository.Observable
 {
 
     protected List<Listener> listeners;

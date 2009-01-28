@@ -17,8 +17,9 @@
 
 package org.apache.commons.monitoring.reporting;
 
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.monitoring.Repository;
 import org.apache.commons.monitoring.repositories.ObserverRepository;
@@ -29,10 +30,9 @@ import org.apache.commons.monitoring.repositories.ObserverRepository;
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public abstract class AbstractPeriodicLogger
-    extends TimerTask
 {
     /** The timer that handles the period */
-    private Timer timer;
+    private ScheduledExecutorService scheduler;
 
     /** The observed repository */
     private Repository.Observable repository;
@@ -50,14 +50,21 @@ public abstract class AbstractPeriodicLogger
     public AbstractPeriodicLogger( int period, Repository.Observable repository )
     {
         this.repository = repository;
-        this.timer = new Timer();
         this.period = period;
+        this.scheduler = Executors.newSingleThreadScheduledExecutor();
     }
 
     public void init()
     {
         observeRepositoryForPeriod();
-        timer.scheduleAtFixedRate( this, period, period );
+        scheduler.scheduleAtFixedRate( new Runnable()
+        {
+            public void run()
+            {
+                Repository observed = observeRepositoryForPeriod();
+                log( observed );
+            }
+        }, period, period, TimeUnit.MILLISECONDS );
     }
 
     private Repository observeRepositoryForPeriod()
@@ -73,26 +80,14 @@ public abstract class AbstractPeriodicLogger
 
     public void stop()
     {
-        timer.cancel();
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @see java.util.TimerTask#run()
-     */
-    @Override
-    public void run()
-    {
+        scheduler.shutdown();
         try
         {
-            Repository observedPeriod = observeRepositoryForPeriod();
-            log( observedPeriod );
+            scheduler.awaitTermination( 100, TimeUnit.MILLISECONDS );
         }
-        catch ( Throwable t )
+        catch ( InterruptedException e )
         {
-            // catch any exception, as throwing it will stop the timer
-            handleError( t );
+            // Can be ignored, we are stopping anyway;
         }
     }
 
@@ -102,25 +97,4 @@ public abstract class AbstractPeriodicLogger
      * @param observeRepositoryForPeriod
      */
     protected abstract void log( Repository repositoryForPeriod );
-
-    /**
-     * Warn when logging the repository failed.
-     * <p>
-     * This method is expected to be override by user to avoid System.err outputs and use the application logging
-     * strategy.
-     *
-     * @param t error during logging
-     */
-    protected void handleError( Throwable t )
-    {
-        System.err.println( "Failure to log observed repository : " + t.getMessage() );
-    }
-
-    /**
-     * @return the SecondaryRepository active for the current period.
-     */
-    protected Repository getRepositoryForActivePeriod()
-    {
-        return this.secondary;
-    }
 }
