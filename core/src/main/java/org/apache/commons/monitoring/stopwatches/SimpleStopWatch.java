@@ -1,6 +1,7 @@
 package org.apache.commons.monitoring.stopwatches;
 
 import org.apache.commons.monitoring.Monitor;
+import org.apache.commons.monitoring.StopWatch;
 import org.apache.commons.monitoring.Unit;
 
 /**
@@ -9,6 +10,7 @@ import org.apache.commons.monitoring.Unit;
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public class SimpleStopWatch
+    implements StopWatch
 {
     /** Monitor that is notified of process execution state */
     public final Monitor monitor;
@@ -87,13 +89,14 @@ public class SimpleStopWatch
      * 
      * @see org.apache.commons.monitoring.StopWatch#pause()
      */
-    public void pause()
+    public StopWatch pause()
     {
         if ( !paused && !stoped )
         {
             stopedAt = nanotime();
             paused = true;
         }
+        return this;
     }
 
     /**
@@ -101,7 +104,7 @@ public class SimpleStopWatch
      * 
      * @see org.apache.commons.monitoring.StopWatch#resume()
      */
-    public void resume()
+    public StopWatch resume()
     {
         if ( paused && !stoped )
         {
@@ -109,14 +112,16 @@ public class SimpleStopWatch
             paused = false;
             stopedAt = 0;
         }
+        return this;
     }
 
     /**
      * {@inheritDoc}
      * 
+     * @return TODO
      * @see org.apache.commons.monitoring.StopWatch#stop()
      */
-    public void stop()
+    public StopWatch stop()
     {
         if ( !stoped )
         {
@@ -129,6 +134,7 @@ public class SimpleStopWatch
             stoped = true;
             doStop();
         }
+        return this;
     }
 
     protected void doStop()
@@ -141,7 +147,7 @@ public class SimpleStopWatch
      * 
      * @see org.apache.commons.monitoring.StopWatch#stop(boolean)
      */
-    public void stop( boolean canceled )
+    public StopWatch stop( boolean canceled )
     {
         if ( canceled )
         {
@@ -151,6 +157,7 @@ public class SimpleStopWatch
         {
             stop();
         }
+        return this;
     }
 
     /**
@@ -158,13 +165,14 @@ public class SimpleStopWatch
      * 
      * @see org.apache.commons.monitoring.StopWatch#cancel()
      */
-    public void cancel()
+    public StopWatch cancel()
     {
         if ( !stoped )
         {
             stoped = true;
             doCancel();
         }
+        return this;
     }
 
     protected void doCancel()

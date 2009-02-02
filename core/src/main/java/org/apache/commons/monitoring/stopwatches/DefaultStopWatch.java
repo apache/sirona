@@ -1,7 +1,6 @@
 package org.apache.commons.monitoring.stopwatches;
 
 import org.apache.commons.monitoring.Monitor;
-import org.apache.commons.monitoring.StopWatch;
 import org.apache.commons.monitoring.Unit;
 
 /**
@@ -10,7 +9,6 @@ import org.apache.commons.monitoring.Unit;
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public class DefaultStopWatch extends SimpleStopWatch
-    implements StopWatch
 {
 
     /**

@@ -37,18 +37,19 @@ public interface StopWatch
      * Temporary stop the StopWatch. Elapsed time calculation will not include
      * time spent in paused mode.
      */
-    public abstract void pause();
+    public abstract StopWatch pause();
 
     /**
      * Resume the StopWatch after a pause.
      */
-    public abstract void resume();
+    public abstract StopWatch resume();
 
     /**
      * Stop monitoring the process. A StopWatch created with
      * {@link #start(Monitor)} cannot be re-used after stopped has been called.
+     * @return TODO
      */
-    public abstract void stop();
+    public abstract StopWatch stop();
 
     /**
      * Convenience method to stop or cancel a Stopwatch depending on success of
@@ -57,7 +58,7 @@ public interface StopWatch
      * @param canceled
      * @return time elapsed since the probe has been started
      */
-    public abstract void stop( boolean canceled );
+    public abstract StopWatch stop( boolean canceled );
 
     /**
      * Cancel monitoring. Elapsed time will not be computed and will not be
@@ -72,7 +73,7 @@ public interface StopWatch
      * In any way, the probe will still report thread concurrency even if
      * canceled.
      */
-    public abstract void cancel();
+    public abstract StopWatch cancel();
 
     /**
      * @return <code>true</code> if the StopWatch has been stopped

@@ -49,13 +49,26 @@ public abstract class AbstractPeriodicLogger
      */
     public AbstractPeriodicLogger( int period, Repository.Observable repository )
     {
+        this();
         this.repository = repository;
         this.period = period;
+    }
+
+    public AbstractPeriodicLogger()
+    {
         this.scheduler = Executors.newSingleThreadScheduledExecutor();
     }
 
     public void init()
     {
+        if ( period <= 0 )
+        {
+            throw new IllegalStateException( "A positive period must be set" );
+        }
+        if ( repository == null )
+        {
+            throw new IllegalStateException( "A Repository must be set" );
+        }
         observeRepositoryForPeriod();
         scheduler.scheduleAtFixedRate( new Runnable()
         {
@@ -97,4 +110,14 @@ public abstract class AbstractPeriodicLogger
      * @param observeRepositoryForPeriod
      */
     protected abstract void log( Repository repositoryForPeriod );
+
+    public void setRepository( Repository.Observable repository )
+    {
+        this.repository = repository;
+    }
+
+    public void setPeriod( int period )
+    {
+        this.period = period;
+    }
 }

@@ -1,0 +1,71 @@
+package org.apache.commons.monitoring.spring.config;
+
+import org.apache.commons.monitoring.Repository;
+import org.apache.commons.monitoring.repositories.DefaultRepository;
+import org.springframework.beans.factory.FactoryBean;
+import org.springframework.beans.factory.InitializingBean;
+
+/**
+ * @author ndeloof
+ *
+ */
+public class RepositoryFactoryBean
+    implements FactoryBean, InitializingBean
+{
+    /** The object build by this factoryBean */
+    private Repository repository;
+
+    /** The configured implementation class */
+    private Class<? extends Repository> clazz = DefaultRepository.class;
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.springframework.beans.factory.FactoryBean#getObject()
+     */
+    public Object getObject()
+        throws Exception
+    {
+        return repository;
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.springframework.beans.factory.FactoryBean#getObjectType()
+     */
+    public Class<? extends Repository> getObjectType()
+    {
+        return clazz;
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.springframework.beans.factory.FactoryBean#isSingleton()
+     */
+    public boolean isSingleton()
+    {
+        return true;
+    }
+
+    /**
+     * @param clazz Repository implementation to use
+     */
+    public void setImplementation( Class<? extends Repository> clazz )
+    {
+        this.clazz = clazz;
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+     */
+    public void afterPropertiesSet()
+        throws Exception
+    {
+        this.repository = clazz.newInstance();
+    }
+
+}
