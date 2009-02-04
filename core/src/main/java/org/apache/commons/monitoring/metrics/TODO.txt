@@ -1,0 +1,1 @@
+experiment with AtomicReference for better concurrency/perfs
