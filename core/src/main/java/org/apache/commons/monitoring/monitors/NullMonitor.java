@@ -22,13 +22,22 @@ import org.apache.commons.monitoring.metrics.NoOpGauge;
 public class NullMonitor
     implements Monitor
 {
-    private static Role NOP_COUNTER = new Role( "Nop", Unit.UNARY, Metric.Type.COUNTER );
+    private static final Unit NULL = new Unit( "null" )
+    {
+        @Override
+        public boolean isCompatible( Unit unit )
+        {
+            return true;
+        }
+    };
 
-    private static Role NOP_GAUGE = new Role( "Nop", Unit.UNARY, Metric.Type.GAUGE );
+    private static final Role NOP_COUNTER = new Role( "Nop", NULL, Metric.Type.COUNTER );
 
-    private static NoOpCounter counter = new NoOpCounter( NOP_COUNTER );
+    private static final Role NOP_GAUGE = new Role( "Nop", NULL, Metric.Type.GAUGE );
 
-    private static NoOpGauge gauge = new NoOpGauge( NOP_GAUGE );
+    private static final NoOpCounter counter = new NoOpCounter( NOP_COUNTER );
+
+    private static final NoOpGauge gauge = new NoOpGauge( NOP_GAUGE );
 
     private Collection<Metric> metrics = Arrays.asList( new Metric[] { counter, gauge } );
 
@@ -82,4 +91,17 @@ public class NullMonitor
         // NoOp
     }
 
+    private static class NullUnit extends Unit
+    {
+        public NullUnit()
+        {
+            super( "null" );
+        }
+
+        @Override
+        public boolean isCompatible( Unit unit )
+        {
+            return true;
+        }
+    }
 }
