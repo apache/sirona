@@ -47,9 +47,8 @@ public abstract class ThreadSafeGauge
         add( -1, unit );
     }
 
-    protected void add( double delta, Unit unit )
+    public void add( double delta )
     {
-        delta = normalize( delta, unit );
         double d = threadSafeAdd( delta );
         fireValueChanged( d );
     }
@@ -77,6 +76,11 @@ public abstract class ThreadSafeGauge
         fireValueChanged( d );
     }
 
+    /**
+     * Set the Gauge value in a thread-safe way
+     * 
+     * @param d value to set
+     */
     protected abstract void threadSafeSet( double d );
 
     protected void doReset()

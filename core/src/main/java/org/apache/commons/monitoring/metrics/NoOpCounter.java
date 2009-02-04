@@ -3,7 +3,6 @@ package org.apache.commons.monitoring.metrics;
 import org.apache.commons.monitoring.Counter;
 import org.apache.commons.monitoring.Metric;
 import org.apache.commons.monitoring.Role;
-import org.apache.commons.monitoring.Unit;
 
 public class NoOpCounter
     extends AbstractMetric
@@ -24,7 +23,7 @@ public class NoOpCounter
         // NoOp
     }
 
-    public void add( double delta, Unit unit )
+    public void add( double delta )
     {
         // NoOp
     }

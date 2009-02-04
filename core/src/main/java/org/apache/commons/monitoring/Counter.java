@@ -27,13 +27,6 @@ public interface Counter
     extends Metric
 {
 
-    /**
-     * Add value to the counter. Delta should not be negative (in such case a Gauge should be used).
-     * 
-     * @param delta
-     */
-    void add( double delta, Unit unit );
-
     public interface Observable
         extends Metric.Observable, Counter
     {

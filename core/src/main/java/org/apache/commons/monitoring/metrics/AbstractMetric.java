@@ -60,6 +60,17 @@ public abstract class AbstractMetric
         return statistics;
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.apache.commons.monitoring.Metric#add(double, org.apache.commons.monitoring.Unit)
+     */
+    public final void add( double delta, Unit unit )
+    {
+        delta = normalize( delta, unit );
+        add( delta );
+    }
+
     protected double normalize( double value, Unit unit )
     {
         if ( !this.unit.isCompatible( unit ) )

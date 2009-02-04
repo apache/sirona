@@ -19,6 +19,11 @@ public class NoOpGauge
         return Metric.Type.GAUGE;
     }
 
+    public void add( double delta )
+    {
+        // NoOp
+    }
+
     public void reset()
     {
         // NoOp

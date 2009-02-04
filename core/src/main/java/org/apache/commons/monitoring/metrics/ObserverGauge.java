@@ -49,6 +49,11 @@ public class ObserverGauge
         return delegate.getValue();
     }
 
+    public void add( double delta )
+    {
+        throw new UnsupportedOperationException( "Observer cannot be updated directly" );
+    }
+
     public void increment( Unit unit )
     {
         throw new UnsupportedOperationException( "Observer cannot be updated directly" );

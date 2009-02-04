@@ -2,7 +2,6 @@ package org.apache.commons.monitoring.metrics;
 
 import org.apache.commons.monitoring.Counter;
 import org.apache.commons.monitoring.Role;
-import org.apache.commons.monitoring.Unit;
 
 public abstract class ThreadSafeCounter
     extends ObservableMetric
@@ -23,9 +22,8 @@ public abstract class ThreadSafeCounter
         return Type.COUNTER;
     }
 
-    public void add( double delta, Unit unit )
+    public void add( double delta )
     {
-        delta = normalize( delta, unit );
         threadSafeAdd( delta );
         fireValueChanged( delta );
     }

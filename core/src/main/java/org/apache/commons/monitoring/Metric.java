@@ -19,11 +19,10 @@ package org.apache.commons.monitoring;
 
 import java.util.EventListener;
 
-
 /**
- * A <code>Metric</code> is a numerical indicator of some monitored
- * application state with support for simple statistics.
- *
+ * A <code>Metric</code> is a numerical indicator of some monitored application state with support for simple
+ * statistics.
+ * 
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public interface Metric
@@ -41,12 +40,30 @@ public interface Metric
     void reset();
 
     /**
+     * Add value to the metric. For Counters, the value is expected to be always positive.
+     * <p>
+     * The delta MUST use the metric unit ({@link #getUnit()})
+     * 
+     * @param delta value to be added
+     */
+    void add( double delta );
+
+    /**
+     * Add value to the metric with the specified Unit. For Counters, the value is expected to be always positive.
+     * 
+     * @param delta value to be added
+     * @param unit the unit used for delta, MUST be compatible with the metric unit ({@link #getUnit()})
+     */
+    void add( double delta, Unit unit );
+
+    /**
      * Set the monitor this Metric is attached to
-     *
+     * 
      * @param monitor
      * @throws IllegalStateException if the Metric is allready attached to a monitor
      */
-    void setMonitor( Monitor monitor ) throws IllegalStateException;
+    void setMonitor( Monitor monitor )
+        throws IllegalStateException;
 
     /**
      * @return the monitor this Metric is attached to
@@ -72,9 +89,9 @@ public interface Metric
         /**
          * Value has changed on Metric.
          * <p>
-         * Note that the value parameter has not the same content depending
-         * on Metric variant: for a {@ Counter} it is the delta added to the counter
-         * for a {@ Gauge} it is the new value of the gauge after beeing updated.
+         * Note that the value parameter has not the same content depending on Metric variant: for a @ Counter} it is
+         * the delta added to the counter for a @ Gauge} it is the new value of the gauge after beeing updated.
+         * 
          * @param metric
          * @param value
          */

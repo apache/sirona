@@ -3,7 +3,6 @@ package org.apache.commons.monitoring.metrics;
 import org.apache.commons.math.stat.descriptive.SummaryStatistics;
 import org.apache.commons.monitoring.Counter;
 import org.apache.commons.monitoring.Metric;
-import org.apache.commons.monitoring.Unit;
 
 /**
  * A Counter that observe another Counter and computes stats until it gets detached
@@ -43,7 +42,7 @@ implements Counter
         delegate.threadSafeAdd( value );
     }
 
-    public void add( double delta, Unit unit )
+    public void add( double delta )
     {
         throw new UnsupportedOperationException( "Observer cannot be updated directly" );
     }
