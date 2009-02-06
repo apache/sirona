@@ -41,10 +41,10 @@ public abstract class AbstractPeriodicLogger
     private ObserverRepository secondary;
 
     /** The interval for periodic logging of monitored state */
-    private int period;
+    private long period;
 
     /** The initial delay */
-    private int delay;
+    private long delay;
 
     /**
      * @param period the period (in ms) to log the monitoring state
@@ -120,13 +120,40 @@ public abstract class AbstractPeriodicLogger
         this.repository = repository;
     }
 
-    public void setPeriod( int period )
+    /**
+     * @param period in MILLISECONDS
+     * @see #setPeriod(long, TimeUnit)
+     */
+    public void setPeriod( long period )
     {
         this.period = period;
     }
 
-    public void setDelay( int delay )
+    /**
+     * @param period The period to wait between logging processes
+     * @param unit time unit
+     */
+    public void setPeriod( long period, TimeUnit unit )
+    {
+        this.period = TimeUnit.MILLISECONDS.convert( period, unit );
+    }
+
+    /**
+     * @param delay in MILLISECONDS
+     * @see #setDelay(long, TimeUnit)
+     */
+    public void setDelay( long delay )
     {
         this.delay = delay;
     }
+
+    /**
+     * @param delay The delay to wait before first logging process
+     * @param unit time unit
+     */
+    public void setDelay( long delay, TimeUnit unit )
+    {
+        this.delay = TimeUnit.MILLISECONDS.convert( delay, unit );
+    }
+
 }
