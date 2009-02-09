@@ -37,7 +37,7 @@ import org.apache.cxf.phase.Phase;
 /**
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public class MonitoringInterceptorInMode
+public class MonitoringInInterceptor
     extends AbstractSoapInterceptor
 {
     private Repository repository;
@@ -46,7 +46,7 @@ public class MonitoringInterceptorInMode
 
     private String domain;
 
-    public MonitoringInterceptorInMode()
+    public MonitoringInInterceptor()
     {
         super( Phase.READ );
     }

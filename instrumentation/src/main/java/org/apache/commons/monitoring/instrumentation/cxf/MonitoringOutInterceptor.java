@@ -26,11 +26,11 @@ import org.apache.cxf.phase.Phase;
 /**
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public class MonitoringInterceptorOutMode
+public class MonitoringOutInterceptor
     extends AbstractSoapInterceptor
 {
 
-    public MonitoringInterceptorOutMode()
+    public MonitoringOutInterceptor()
     {
         super( Phase.SEND );
     }
