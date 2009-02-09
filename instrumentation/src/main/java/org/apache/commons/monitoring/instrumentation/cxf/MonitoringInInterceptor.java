@@ -35,6 +35,10 @@ import org.apache.cxf.message.Message;
 import org.apache.cxf.phase.Phase;
 
 /**
+ * A CXF Interceptor to apply monitoring on incoming messages.
+ * <p>
+ * The monitor name is set based on message SOAPAction header (if set).
+ * 
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public class MonitoringInInterceptor
@@ -51,25 +55,58 @@ public class MonitoringInInterceptor
         super( Phase.READ );
     }
 
+    public MonitoringInInterceptor( String phase )
+    {
+        super( phase );
+    }
+
     public void handleMessage( SoapMessage message )
         throws Fault
     {
-        Monitor monitor = getMonitor( message );
+        Monitor monitor =
+            repository.getMonitor( getMonitorName( message ), getMonitorCategory( message ), getMonitorDomain( message ) );
         StopWatch stopWatch = repository.start( monitor );
         message.getExchange().put( StopWatch.class, stopWatch );
     }
 
     /**
-     * Select a Monitor for the incoming message.
+     * Detect the monitor name from incoming message
      * <p>
      * May be overriden to use another Strategy to attach a Monitor to a SoapMessage
      * 
-     * @param message Soap IN message
-     * @return Monitor
+     * @param message
+     * @return
      */
-    protected Monitor getMonitor( SoapMessage message )
+    protected String getMonitorName( SoapMessage message )
     {
-        return repository.getMonitor( getSoapAction( message ), category, domain );
+        String soapAction = getSoapAction( message );
+        return soapAction != null ? soapAction : "unknown";
+    }
+
+    /**
+     * Detect the monitor domain from incoming message
+     * <p>
+     * May be overriden to use another Strategy to attach a Monitor to a SoapMessage
+     * 
+     * @param message
+     * @return
+     */
+    protected String getMonitorDomain( SoapMessage message )
+    {
+        return domain;
+    }
+
+    /**
+     * Detect the monitor category from incoming message
+     * <p>
+     * May be overriden to use another Strategy to attach a Monitor to a SoapMessage
+     * 
+     * @param message
+     * @return
+     */
+    protected String getMonitorCategory( SoapMessage message )
+    {
+        return category;
     }
 
     /**
@@ -126,7 +163,7 @@ public class MonitoringInInterceptor
                 }
             }
         }
-        return "unknown";
+        return null;
     }
 
     public void handleFault( SoapMessage message )

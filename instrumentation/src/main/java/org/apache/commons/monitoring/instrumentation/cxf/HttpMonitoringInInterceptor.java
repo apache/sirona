@@ -17,49 +17,46 @@
 
 package org.apache.commons.monitoring.instrumentation.cxf;
 
-import org.apache.commons.monitoring.StopWatch;
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.cxf.binding.soap.SoapMessage;
-import org.apache.cxf.binding.soap.interceptor.AbstractSoapInterceptor;
-import org.apache.cxf.interceptor.Fault;
-import org.apache.cxf.phase.Phase;
+import org.apache.cxf.transport.http.AbstractHTTPDestination;
 
 /**
+ * A variant of MonitoringInInterceptor dedicated to web service endpoint based on HttpServlet - most commonly used, but
+ * not required.
+ * <p>
+ * When no SOAPAction Header is set, the monitor name is extracted from servlet PathInfo
+ * 
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public class MonitoringOutInterceptor
-    extends AbstractSoapInterceptor
+public class HttpMonitoringInInterceptor
+    extends MonitoringInInterceptor
 {
-
-    public MonitoringOutInterceptor()
+    public HttpMonitoringInInterceptor()
     {
-        super( Phase.SEND );
+        super();
     }
 
-
-    public MonitoringOutInterceptor( String phase )
+    public HttpMonitoringInInterceptor( String phase )
     {
         super( phase );
     }
 
-    public void handleMessage( SoapMessage message )
-        throws Fault
-    {
-        stop( message );
-    }
-
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.apache.commons.monitoring.instrumentation.cxf.MonitoringInInterceptor#getMonitorName(org.apache.cxf.binding.soap.SoapMessage)
+     */
     @Override
-    public void handleFault( SoapMessage message )
+    protected String getMonitorName( SoapMessage message )
     {
-        stop( message );
-    }
-
-    protected final long stop( SoapMessage message )
-    {
-        StopWatch stopWatch = message.getExchange().get( StopWatch.class );
-        if ( stopWatch != null )
+        String soapAction = getSoapAction( message );
+        if ( soapAction != null )
         {
-            stopWatch.stop();
+            return soapAction;
         }
-        return stopWatch.getElapsedTime();
+        HttpServletRequest request = (HttpServletRequest) message.get( AbstractHTTPDestination.HTTP_REQUEST );
+        return request.getPathInfo();
     }
 }
