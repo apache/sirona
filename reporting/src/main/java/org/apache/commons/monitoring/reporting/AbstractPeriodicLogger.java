@@ -78,10 +78,28 @@ public abstract class AbstractPeriodicLogger
         {
             public void run()
             {
-                Repository observed = observeRepositoryForPeriod();
-                log( observed );
+                try
+                {
+                    Repository observed = observeRepositoryForPeriod();
+                    log( observed );
+                }
+                catch ( Throwable t )
+                {
+                    handleLogError( t );
+                }
             }
         }, delay, period, TimeUnit.MILLISECONDS );
+    }
+
+    /**
+     * An error occured during logging. To avoid the scheduler to stop we catch any throwable. By default we just log to
+     * System.err, this method is expected to be overriden.
+     * 
+     * @param t error
+     */
+    protected void handleLogError( Throwable t )
+    {
+        t.printStackTrace( System.err );
     }
 
     private Repository observeRepositoryForPeriod()
