@@ -145,14 +145,17 @@ public class Unit implements Comparable<Unit>
         return scale;
     }
 
-//    public long getScale( Unit other )
-//    {
-//        if ( !isCompatible( other ) )
-//        {
-//            throw new IllegalArgumentException( other + " is incompatible with " + this );
-//        }
-//        return scale;
-//    }
+    /**
+     * Convert value from unit to this unit (if conpatible)
+     * 
+     * @param value value to convert
+     * @param unit unit of value
+     * @return value converted to this unit
+     */
+    public double convert( double value, Unit unit )
+    {
+        return value * unit.getScale() / this.getScale();
+    }
 
     public boolean isPrimary()
     {
