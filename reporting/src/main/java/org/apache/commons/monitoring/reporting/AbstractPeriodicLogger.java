@@ -37,7 +37,7 @@ public abstract class AbstractPeriodicLogger
     /** The observed repository */
     private Repository.Observable repository;
 
-    /** The observed repository */
+    /** The observer repository during the active period */
     private ObserverRepository secondary;
 
     /** The interval for periodic logging of monitored state */
@@ -154,6 +154,11 @@ public abstract class AbstractPeriodicLogger
     public void setDelay( long delay, TimeUnit unit )
     {
         this.delay = TimeUnit.MILLISECONDS.convert( delay, unit );
+    }
+
+    public long getPeriod()
+    {
+        return period;
     }
 
 }
