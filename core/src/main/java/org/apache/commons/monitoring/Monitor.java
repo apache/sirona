@@ -17,6 +17,8 @@
 
 package org.apache.commons.monitoring;
 
+import static org.apache.commons.monitoring.Unit.Time.MILLISECOND;
+
 import java.util.Collection;
 import java.util.EventListener;
 
@@ -50,10 +52,10 @@ public interface Monitor
     // --- Predefined roles -------------------------------------------------------------------
 
     /** Predefined role key for code performances */
-    Role PERFORMANCES = new Role( "performances", Unit.MILLIS, Metric.Type.COUNTER );
+    Role PERFORMANCES = new Role( "performances", MILLISECOND, Metric.Type.COUNTER );
 
     /** Predefined role key for cpu time */
-    Role CPU = new Role( "cpu", Unit.MILLIS, Metric.Type.COUNTER );
+    Role CPU = new Role( "cpu", MILLISECOND, Metric.Type.COUNTER );
 
     /** Predefined role for multi-thread concurrency */
     Role CONCURRENCY = new Role( "concurrency", Unit.UNARY, Metric.Type.GAUGE );

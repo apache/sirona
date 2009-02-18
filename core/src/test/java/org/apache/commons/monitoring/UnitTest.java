@@ -18,6 +18,11 @@
 package org.apache.commons.monitoring;
 
 import static junit.framework.Assert.assertEquals;
+import static org.apache.commons.monitoring.Unit.Time.HOUR;
+import static org.apache.commons.monitoring.Unit.Time.MICROSECOND;
+import static org.apache.commons.monitoring.Unit.Time.MILLISECOND;
+import static org.apache.commons.monitoring.Unit.Time.NANOSECOND;
+import static org.apache.commons.monitoring.Unit.Time.SECOND;
 
 import org.junit.Test;
 
@@ -30,19 +35,19 @@ public class UnitTest
     @Test
     public void derived()
     {
-        assertEquals( Unit.NANOS, Unit.HOUR.getPrimary() );
-        assertEquals( Unit.NANOS, Unit.NANOS.getDerived( "ns" ) );
-        assertEquals( Unit.MICROS, Unit.NANOS.getDerived( "µs" ) );
-        assertEquals( Unit.MILLIS, Unit.NANOS.getDerived( "ms" ) );
-        assertEquals( Unit.SECOND, Unit.NANOS.getDerived( "s" ) );
+        assertEquals( NANOSECOND, HOUR.getPrimary() );
+        assertEquals( NANOSECOND, NANOSECOND.getDerived( "ns" ) );
+        assertEquals( MICROSECOND, NANOSECOND.getDerived( "µs" ) );
+        assertEquals( MILLISECOND, NANOSECOND.getDerived( "ms" ) );
+        assertEquals( SECOND, NANOSECOND.getDerived( "s" ) );
     }
 
     @Test
     public void scales()
     {
-        assertEquals( 1L, Unit.NANOS.getScale() );
-        assertEquals( 1000L, Unit.MICROS.getScale() );
-        assertEquals( 1000000L, Unit.MILLIS.getScale() );
-        assertEquals( 1000000000L, Unit.SECOND.getScale() );
+        assertEquals( 1L, NANOSECOND.getScale() );
+        assertEquals( 1000L, MICROSECOND.getScale() );
+        assertEquals( 1000000L, MILLISECOND.getScale() );
+        assertEquals( 1000000000L, SECOND.getScale() );
     }
 }

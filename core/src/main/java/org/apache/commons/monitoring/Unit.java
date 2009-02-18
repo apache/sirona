@@ -43,21 +43,54 @@ public class Unit implements Comparable<Unit>
     private static final Map<String, Unit> UNITS = new ConcurrentHashMap<String,Unit>();
 
     /** Time based units */
-    public static final Unit NANOS = new Unit( "ns" );
-    public static final Unit MICROS = new Unit( "µs", NANOS, 1000 );
-    public static final Unit MILLIS = new Unit( "ms", MICROS, 1000 );
-    public static final Unit SECOND = new Unit( "s", MILLIS, 1000 );
-    public static final Unit MINUTE = new Unit( "min", SECOND, 60 );
-    public static final Unit HOUR = new Unit( "h", MINUTE, 60 );
-    public static final Unit DAY = new Unit( "day", HOUR, 24 );
+    public static class Time
+        extends Unit
+    {
+        public static final Unit NANOSECOND = new Unit( "ns" );
+        public static final Unit MICROSECOND = new Unit( "µs", NANOSECOND, 1000 );
+        public static final Unit MILLISECOND = new Unit( "ms", MICROSECOND, 1000 );
+        public static final Unit SECOND = new Unit( "s", MILLISECOND, 1000 );
+        public static final Unit MINUTE = new Unit( "min", SECOND, 60 );
+        public static final Unit HOUR = new Unit( "h", MINUTE, 60 );
+        public static final Unit DAY = new Unit( "day", HOUR, 24 );
+
+        public Time( String name )
+        {
+            super( name );
+        }
+
+        public Time( String name, Unit derived, long scale )
+        {
+            super( name, derived, scale );
+        }
+
+    }
 
     /** Binary data units */
-    public static final Unit BYTE = new Unit( "b" );
-    public static final Unit KBYTE = new Unit( "Kb", BYTE, 1024 );
-    public static final Unit MBYTE = new Unit( "Mb", KBYTE, 1024 );
-    public static final Unit GBYTE = new Unit( "Gb", MBYTE, 1024 );
+    public static class Binary
+        extends Unit
+    {
+
+        public static final Unit BYTE = new Unit( "b" );
+
+        public static final Unit KBYTE = new Unit( "Kb", BYTE, 1024 );
+
+        public static final Unit MBYTE = new Unit( "Mb", KBYTE, 1024 );
+
+        public static final Unit GBYTE = new Unit( "Gb", MBYTE, 1024 );
+
+        public Binary( String name )
+        {
+            super( name );
+        }
+
+        public Binary( String name, Unit derived, long scale )
+        {
+            super( name, derived, scale );
+        }
 
 
+    }
     /** unit for basic item counters & gauges */
     // "BILLION" does not have same signification depending on country (10^12 or 10^9).
     // We use International system of unit names to avoid confusion

@@ -64,7 +64,7 @@ public class CpuTimeStopWatch
         if ( mx.isCurrentThreadCpuTimeSupported() )
         {
             long cpu = mx.getCurrentThreadCpuTime() - cpuStartedAt;
-            monitor.getCounter( Monitor.CPU ).add( cpu, Unit.NANOS );
+            monitor.getCounter( Monitor.CPU ).add( cpu, Unit.Time.NANOSECOND );
         }
     }
 }

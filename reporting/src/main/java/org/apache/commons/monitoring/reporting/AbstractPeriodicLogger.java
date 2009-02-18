@@ -17,16 +17,19 @@
 
 package org.apache.commons.monitoring.reporting;
 
+import static org.apache.commons.monitoring.Unit.Time.MILLISECOND;
+
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.monitoring.Repository;
+import org.apache.commons.monitoring.Unit;
 import org.apache.commons.monitoring.repositories.ObserverRepository;
 
 /**
  * Base class to periodically log a fixed set of monitored data.
- * 
+ *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public abstract class AbstractPeriodicLogger
@@ -94,7 +97,7 @@ public abstract class AbstractPeriodicLogger
     /**
      * An error occured during logging. To avoid the scheduler to stop we catch any throwable. By default we just log to
      * System.err, this method is expected to be overriden.
-     * 
+     *
      * @param t error
      */
     protected void handleLogError( Throwable t )
@@ -157,6 +160,15 @@ public abstract class AbstractPeriodicLogger
     }
 
     /**
+     * @param period The period to wait between logging processes
+     * @param unit time unit
+     */
+    public void setPeriod( long period, Unit.Time unit )
+    {
+        this.period = (long) MILLISECOND.convert( period, unit );
+    }
+
+    /**
      * @param delay in MILLISECONDS
      * @see #setDelay(long, TimeUnit)
      */
@@ -172,6 +184,15 @@ public abstract class AbstractPeriodicLogger
     public void setDelay( long delay, TimeUnit unit )
     {
         this.delay = TimeUnit.MILLISECONDS.convert( delay, unit );
+    }
+
+    /**
+     * @param delay The delay to wait before first logging process
+     * @param unit time unit
+     */
+    public void setDelay( long period, Unit.Time unit )
+    {
+        this.delay = (long) MILLISECOND.convert( period, unit );
     }
 
     public long getPeriod()

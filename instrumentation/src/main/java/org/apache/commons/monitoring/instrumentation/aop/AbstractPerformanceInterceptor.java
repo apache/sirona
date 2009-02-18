@@ -17,12 +17,13 @@
 
 package org.apache.commons.monitoring.instrumentation.aop;
 
+import static org.apache.commons.monitoring.Unit.Time.NANOSECOND;
+
 import java.lang.reflect.Method;
 
 import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.Repository;
 import org.apache.commons.monitoring.StopWatch;
-import org.apache.commons.monitoring.Unit;
 
 /**
  * A method interceptor that compute method invocation performances.
@@ -111,7 +112,7 @@ public abstract class AbstractPerformanceInterceptor<T>
     {
         if ( error != null )
         {
-            monitor.getCounter( Monitor.FAILURES ).add( duration, Unit.NANOS );
+            monitor.getCounter( Monitor.FAILURES ).add( duration, NANOSECOND );
         }
     }
 

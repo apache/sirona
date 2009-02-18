@@ -1,12 +1,13 @@
 package org.apache.commons.monitoring.stopwatches;
 
+import static org.apache.commons.monitoring.Unit.Time.NANOSECOND;
+
 import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.StopWatch;
-import org.apache.commons.monitoring.Unit;
 
 /**
  * Simple implementation of StopWatch that estimate monitored element execution time.
- * 
+ *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public class SimpleStopWatch
@@ -34,7 +35,7 @@ public class SimpleStopWatch
      * Constructor.
      * <p>
      * The monitor can be set to null to use the StopWatch without the monitoring infrastructure.
-     * 
+     *
      * @param monitor the monitor associated with the process to be monitored
      */
     public SimpleStopWatch( Monitor monitor )
@@ -57,7 +58,7 @@ public class SimpleStopWatch
      * Returns the current value of the most precise available system timer, in nanoseconds. The real precision depends
      * on the JVM and the underlying system. On JRE before java5, <tt>backport-util-concurrent</tt> provides some
      * limited support for equivalent timer.
-     * 
+     *
      * @see System#nanoTime()
      * @return time in nanosecond
      */
@@ -68,7 +69,7 @@ public class SimpleStopWatch
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.apache.commons.monitoring.StopWatch#getElapsedTime()
      */
     public long getElapsedTime()
@@ -86,7 +87,7 @@ public class SimpleStopWatch
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.apache.commons.monitoring.StopWatch#pause()
      */
     public StopWatch pause()
@@ -101,7 +102,7 @@ public class SimpleStopWatch
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.apache.commons.monitoring.StopWatch#resume()
      */
     public StopWatch resume()
@@ -117,7 +118,7 @@ public class SimpleStopWatch
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @return TODO
      * @see org.apache.commons.monitoring.StopWatch#stop()
      */
@@ -139,12 +140,12 @@ public class SimpleStopWatch
 
     protected void doStop()
     {
-        monitor.getCounter( Monitor.PERFORMANCES ).add( getElapsedTime(), Unit.NANOS );
+        monitor.getCounter( Monitor.PERFORMANCES ).add( getElapsedTime(), NANOSECOND );
     }
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.apache.commons.monitoring.StopWatch#stop(boolean)
      */
     public StopWatch stop( boolean canceled )
@@ -162,7 +163,7 @@ public class SimpleStopWatch
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.apache.commons.monitoring.StopWatch#cancel()
      */
     public StopWatch cancel()
@@ -187,7 +188,7 @@ public class SimpleStopWatch
      * {@link #cancel()} method is invoked, even when an exception occurs. To avoid StopWatches to keep running if the
      * application didn't follow this recommendation, the finalizer is used to cancel the StopWatch and will log a
      * educational warning.
-     * 
+     *
      * @see java.lang.Object#finalize()
      */
     protected void finalize()
@@ -203,7 +204,7 @@ public class SimpleStopWatch
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.apache.commons.monitoring.StopWatch#isStoped()
      */
     public boolean isStoped()
@@ -213,7 +214,7 @@ public class SimpleStopWatch
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.apache.commons.monitoring.StopWatch#isPaused()
      */
     public boolean isPaused()
@@ -247,7 +248,7 @@ public class SimpleStopWatch
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.apache.commons.monitoring.StopWatch#getMonitor()
      */
     public Monitor getMonitor()
