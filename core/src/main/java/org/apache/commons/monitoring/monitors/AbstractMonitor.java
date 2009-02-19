@@ -33,10 +33,12 @@ import org.apache.commons.monitoring.Role;
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public abstract class AbstractMonitor implements Monitor
+public abstract class AbstractMonitor
+    implements Monitor
 {
 
     private final ConcurrentMap<Role, Metric> metrics;
+
     private final Key key;
 
     public AbstractMonitor( Key key )
@@ -70,11 +72,15 @@ public abstract class AbstractMonitor implements Monitor
      */
     public final Metric getMetric( String role )
     {
-        return metrics.get( Role.getRole( role ) );
+        return getMetric( Role.getRole( role ) );
     }
 
     public final Metric getMetric( Role role )
     {
+        if ( role == null )
+        {
+            return null;
+        }
         return metrics.get( role );
     }
 
@@ -93,7 +99,7 @@ public abstract class AbstractMonitor implements Monitor
      *
      * @param metric Metric instance to get registered
      * @return a previously registered Metric if existed, or <code>null</code> if the metric has been successfully
-     * registered
+     *         registered
      */
     protected Metric register( Metric metric )
     {
