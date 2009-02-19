@@ -36,7 +36,6 @@ import org.apache.commons.monitoring.Role;
 public abstract class AbstractMonitor implements Monitor
 {
 
-    @SuppressWarnings("unchecked")
     private final ConcurrentMap<Role, Metric> metrics;
     private final Key key;
 
@@ -53,7 +52,6 @@ public abstract class AbstractMonitor implements Monitor
      *
      * @return the ConcurrentMap implementation to use for storing metrics
      */
-    @SuppressWarnings("unchecked")
     protected ConcurrentHashMap<Role, Metric> createConcurrentMap()
     {
         return new ConcurrentHashMap<Role, Metric>();
@@ -72,7 +70,7 @@ public abstract class AbstractMonitor implements Monitor
      */
     public final Metric getMetric( String role )
     {
-        return metrics.get( role );
+        return metrics.get( Role.getRole( role ) );
     }
 
     public final Metric getMetric( Role role )
@@ -80,7 +78,6 @@ public abstract class AbstractMonitor implements Monitor
         return metrics.get( role );
     }
 
-    @SuppressWarnings("unchecked")
     public final Collection<Role> getRoles()
     {
         return Collections.unmodifiableCollection( metrics.keySet() );
@@ -115,13 +112,11 @@ public abstract class AbstractMonitor implements Monitor
         }
     }
 
-    @SuppressWarnings("unchecked")
     public Counter getCounter( String role )
     {
         return getCounter( Role.getRole( role ) );
     }
 
-    @SuppressWarnings("unchecked")
     public Gauge getGauge( String role )
     {
         return getGauge( Role.getRole( role ) );
