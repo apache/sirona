@@ -95,11 +95,7 @@ public class Role
     @Override
     public int hashCode()
     {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ( ( name == null ) ? 0 : name.hashCode() );
-        result = prime * result + ( ( unit == null ) ? 0 : unit.hashCode() );
-        return result;
+        return name.hashCode();
     }
 
     /**
@@ -121,14 +117,9 @@ public class Role
                 return false;
         }
         else if ( !name.equals( other.name ) )
-            return false;
-        if ( unit == null )
         {
-            if ( other.unit != null )
-                return false;
-        }
-        else if ( !unit.equals( other.unit ) )
             return false;
+        }
         return true;
     }
 
