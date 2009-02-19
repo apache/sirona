@@ -78,6 +78,10 @@ public class Selector
     public double getValue( Repository repository )
     {
         Metric metric = repository.getMonitor( name, category, subsystem ).getMetric( role );
+        if ( metric == null )
+        {
+            return Double.NaN;
+        }
         double d = value.value( metric );
         return d;
     }
