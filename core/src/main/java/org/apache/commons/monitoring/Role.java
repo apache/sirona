@@ -19,8 +19,8 @@ package org.apache.commons.monitoring;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * As a monitored resource may have multipe Metrics, each one has a dedicated 'role' that
@@ -29,7 +29,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  * @param <M> The metric this role relates to
  */
-@SuppressWarnings("unchecked")
 public class Role
     implements Comparable<Role>
 {
@@ -39,7 +38,7 @@ public class Role
 
     private Metric.Type type;
 
-    private static final Map<String, Role> ROLES = new ConcurrentHashMap<String, Role>();
+    private static final ConcurrentMap<String, Role> ROLES = new ConcurrentHashMap<String, Role>();
 
     public static Role getRole( String name )
     {
@@ -70,7 +69,18 @@ public class Role
         this.name = name;
         this.unit = unit;
         this.type = type;
-        ROLES.put( name, this );
+        Role old = ROLES.putIfAbsent( name, this );
+        if ( old != null )
+        {
+            if ( !type.equals( old.type ) )
+            {
+                throw new IllegalStateException( "A role already exists with this name but distinct type" );
+            }
+            if ( !unit.equals( old.unit ) )
+            {
+                throw new IllegalStateException( "A role already exists with this name but distinct unit" );
+            }
+        }
     }
 
     /**
