@@ -31,9 +31,9 @@ public class NullMonitor
         }
     };
 
-    private static final Role NOP_COUNTER = new Role( "Nop", NULL, Metric.Type.COUNTER );
+    private static final Role NOP_COUNTER = new Role( "NopCounter", NULL, Metric.Type.COUNTER );
 
-    private static final Role NOP_GAUGE = new Role( "Nop", NULL, Metric.Type.GAUGE );
+    private static final Role NOP_GAUGE = new Role( "NopGauge", NULL, Metric.Type.GAUGE );
 
     private static final NoOpCounter counter = new NoOpCounter( NOP_COUNTER );
 
