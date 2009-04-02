@@ -6,6 +6,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>commons-monitoring-reporting</artifactId>
+  <name>Commons Monitoring (Sandbox) reporting</name>
   <dependencies>
     <dependency>
       <groupId>org.apache.commons.monitoring</groupId>

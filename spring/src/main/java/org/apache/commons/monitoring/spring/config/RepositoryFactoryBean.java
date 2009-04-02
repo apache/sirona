@@ -1,7 +1,11 @@
 package org.apache.commons.monitoring.spring.config;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import org.apache.commons.monitoring.Repository;
 import org.apache.commons.monitoring.repositories.DefaultRepository;
+import org.apache.commons.monitoring.repositories.RepositoryDecorator;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -17,6 +21,8 @@ public class RepositoryFactoryBean
 
     /** The configured implementation class */
     private Class<? extends Repository> clazz = DefaultRepository.class;
+
+    private List<RepositoryDecorator> decorators = new LinkedList<RepositoryDecorator>();
 
     /**
      * {@inheritDoc}
@@ -65,7 +71,16 @@ public class RepositoryFactoryBean
     public void afterPropertiesSet()
         throws Exception
     {
-        this.repository = clazz.newInstance();
+        repository = clazz.newInstance();
+        for ( RepositoryDecorator decorator : decorators )
+        {
+            repository = decorator.decorate( repository );
+        }
+    }
+
+    public void setDecorators( List<RepositoryDecorator> decorators )
+    {
+        this.decorators.addAll( decorators );
     }
 
 }
