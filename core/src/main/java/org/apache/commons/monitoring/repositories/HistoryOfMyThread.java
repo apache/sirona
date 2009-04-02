@@ -18,7 +18,6 @@
 package org.apache.commons.monitoring.repositories;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -85,9 +84,9 @@ public class HistoryOfMyThread
         }
     }
 
-    public Iterator<StopWatch> history()
+    public List<StopWatch> history()
     {
-        return history.iterator();
+        return history;
     }
 
     public interface Listener
