@@ -23,10 +23,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.Repository;
 import org.apache.commons.monitoring.StopWatch;
+import org.apache.commons.monitoring.stopwatches.HistoryOfMyThread;
 
 
 /**
- * @author ndeloof
+ * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  *
  */
 public class HOMTRepositoryDecorator
@@ -56,12 +57,18 @@ public class HOMTRepositoryDecorator
     public StopWatch start( Monitor monitor )
     {
         StopWatch stopWatch = super.start( monitor );
+        HistoryOfMyThread myThread = getThreadHistory();
+        return myThread.add( stopWatch );
+    }
+
+    public HistoryOfMyThread getThreadHistory()
+    {
         HistoryOfMyThread myThread = history.get();
         if ( myThread == null )
         {
             myThread = new HistoryOfMyThread( listeners );
             history.set( myThread );
         }
-        return myThread.add( stopWatch );
+        return myThread;
     }
 }

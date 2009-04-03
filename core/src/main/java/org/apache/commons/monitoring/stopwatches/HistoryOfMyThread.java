@@ -15,19 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.commons.monitoring.repositories;
+package org.apache.commons.monitoring.stopwatches;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.monitoring.StopWatch;
-import org.apache.commons.monitoring.stopwatches.StopWatchDecorator;
-
 
 /**
- * @author ndeloof
- *
+ * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public class HistoryOfMyThread
 {
@@ -44,7 +41,7 @@ public class HistoryOfMyThread
         this.listeners = listeners;
     }
 
-    protected StopWatch add( StopWatch stopWatch )
+    public StopWatch add( StopWatch stopWatch )
     {
         if ( history.size() == 0 )
         {
@@ -52,35 +49,30 @@ public class HistoryOfMyThread
             {
                 public StopWatch stop()
                 {
-                    super.stop();
-                    historyEnd();
-                    return getDecorated();
+                    return stop( false );
                 }
 
                 public StopWatch stop( boolean canceled )
                 {
                     super.stop( canceled );
-                    historyEnd();
+                    if ( !canceled )
+                    {
+                        historyEnd( super.getElapsedTime() );
+                    }
                     return getDecorated();
                 }
 
-                public StopWatch cancel()
-                {
-                    super.cancel();
-                    historyEnd();
-                    return getDecorated();
-                }
             };
         }
         history.add( stopWatch );
         return stopWatch;
     }
 
-    private void historyEnd()
+    private void historyEnd( long elapsedTime )
     {
         for ( Listener listener : listeners )
         {
-            listener.onHistoryEnd( this );
+            listener.onHistoryEnd( this, elapsedTime );
         }
     }
 
@@ -91,6 +83,6 @@ public class HistoryOfMyThread
 
     public interface Listener
     {
-        void onHistoryEnd( HistoryOfMyThread history );
+        void onHistoryEnd( HistoryOfMyThread history, long elapsedTime );
     }
 }

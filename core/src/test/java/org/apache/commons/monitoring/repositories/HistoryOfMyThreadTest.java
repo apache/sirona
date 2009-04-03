@@ -1,10 +1,11 @@
 package org.apache.commons.monitoring.repositories;
 
-import java.util.Iterator;
+import java.util.List;
 
 import junit.framework.TestCase;
 
 import org.apache.commons.monitoring.StopWatch;
+import org.apache.commons.monitoring.stopwatches.HistoryOfMyThread;
 
 /**
  * @author ndeloof
@@ -31,19 +32,20 @@ public class HistoryOfMyThreadTest
         s1.stop();
 
         assertNotNull( historyOfMyThread );
-        Iterator<StopWatch> history = historyOfMyThread.history();
-        assertEquals( s1, history.next() );
-        assertEquals( s2, history.next() );
-        assertEquals( s3, history.next() );
-        assertFalse( history.hasNext() );
+        List<StopWatch> history = historyOfMyThread.history();
+        assertEquals( 3, history.size() );
+        assertEquals( s1, history.get( 0 ) );
+        assertEquals( s2, history.get( 1 ) );
+        assertEquals( s3, history.get( 2 ) );
     }
 
     /**
      * {@inheritDoc}
      * 
-     * @see org.apache.commons.monitoring.repositories.HistoryOfMyThread.Listener#onHistoryEnd(org.apache.commons.monitoring.repositories.HistoryOfMyThread)
+     * @see org.apache.commons.monitoring.stopwatches.HistoryOfMyThread.Listener#onHistoryEnd(org.apache.commons.monitoring.stopwatches.HistoryOfMyThread,
+     *      long)
      */
-    public void onHistoryEnd( HistoryOfMyThread history )
+    public void onHistoryEnd( HistoryOfMyThread history, long elapsedTime )
     {
         historyOfMyThread = history;
     }

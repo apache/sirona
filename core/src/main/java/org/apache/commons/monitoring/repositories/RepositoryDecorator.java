@@ -26,7 +26,7 @@ import org.apache.commons.monitoring.StopWatch;
 import org.apache.commons.monitoring.Monitor.Key;
 
 /**
- * @author ndeloof
+ * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  *
  */
 public abstract class RepositoryDecorator

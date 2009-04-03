@@ -18,44 +18,59 @@
 package org.apache.commons.monitoring.stopwatches;
 
 import org.apache.commons.monitoring.Monitor;
+import org.apache.commons.monitoring.Role;
 import org.apache.commons.monitoring.Unit;
 
 /**
  * Implementation of StopWatch that maintains a Gauge of concurrent threads accessing the monitored resource.
- * 
+ *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public class DefaultStopWatch extends SimpleStopWatch
 {
+    private Role concurrency;
 
     /**
      * Constructor.
      * <p>
      * The monitor can be set to null to use the StopWatch without the monitoring infrastructure.
-     * 
+     *
      * @param monitor the monitor associated with the process to be monitored
      */
     public DefaultStopWatch( Monitor monitor )
     {
+        this( monitor, Monitor.CONCURRENCY );
+    }
+
+    public DefaultStopWatch( Monitor monitor, Role concurrency )
+    {
         super( monitor );
+        this.concurrency = concurrency;
+        doStart();
+    }
+
+    public DefaultStopWatch( Monitor monitor, Role concurrency, Role role )
+    {
+        super( monitor, role );
+        this.concurrency = concurrency;
         doStart();
     }
 
     protected void doStart()
     {
-        monitor.getGauge( Monitor.CONCURRENCY ).increment( Unit.UNARY );
+        monitor.getGauge( concurrency ).increment( Unit.UNARY );
     }
 
     protected void doStop()
     {
         super.doStop();
-        monitor.getGauge( Monitor.CONCURRENCY ).decrement( Unit.UNARY );
+        monitor.getGauge( concurrency ).decrement( Unit.UNARY );
     }
 
 
     protected void doCancel()
     {
-        monitor.getGauge( Monitor.CONCURRENCY ).decrement( Unit.UNARY );
+        monitor.getGauge( concurrency ).decrement( Unit.UNARY );
     }
 
 }

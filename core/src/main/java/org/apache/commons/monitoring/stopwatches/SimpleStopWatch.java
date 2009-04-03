@@ -1,8 +1,26 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.apache.commons.monitoring.stopwatches;
 
 import static org.apache.commons.monitoring.Unit.Time.NANOSECOND;
 
 import org.apache.commons.monitoring.Monitor;
+import org.apache.commons.monitoring.Role;
 import org.apache.commons.monitoring.StopWatch;
 
 /**
@@ -31,6 +49,13 @@ public class SimpleStopWatch
     /** flag for paused probe */
     protected boolean paused;
 
+    private Role role;
+
+    public SimpleStopWatch( Monitor monitor )
+    {
+        this( monitor, Monitor.PERFORMANCES );
+    }
+
     /**
      * Constructor.
      * <p>
@@ -38,20 +63,12 @@ public class SimpleStopWatch
      *
      * @param monitor the monitor associated with the process to be monitored
      */
-    public SimpleStopWatch( Monitor monitor )
+    public SimpleStopWatch( Monitor monitor, Role role )
     {
         super();
+        this.role = role;
         this.monitor = monitor;
         startedAt = nanotime();
-        doStart();
-    }
-
-    /**
-     * To be overriden by subclasses to add some features on stopWath start
-     */
-    protected void doStart()
-    {
-
     }
 
     /**
@@ -140,7 +157,7 @@ public class SimpleStopWatch
 
     protected void doStop()
     {
-        monitor.getCounter( Monitor.PERFORMANCES ).add( getElapsedTime(), NANOSECOND );
+        monitor.getCounter( role ).add( getElapsedTime(), NANOSECOND );
     }
 
     /**
