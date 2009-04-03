@@ -32,11 +32,18 @@ import org.apache.commons.monitoring.stopwatches.HistoryOfMyThread;
  */
 public class HOMTRepositoryDecorator
     extends RepositoryDecorator
-    implements Repository
+    implements Repository, HistoryOfMyThread.Listener
 {
     private ThreadLocal<HistoryOfMyThread> history = new ThreadLocal<HistoryOfMyThread>();
 
     private Collection<HistoryOfMyThread.Listener> listeners = new CopyOnWriteArrayList<HistoryOfMyThread.Listener>();
+
+    public HOMTRepositoryDecorator()
+    {
+        super();
+        // Act myself as a listener to force cleanup of the ThreadLocal
+        addListener( this );
+    }
 
     public void addListener( HistoryOfMyThread.Listener listener )
     {
@@ -70,5 +77,10 @@ public class HOMTRepositoryDecorator
             history.set( myThread );
         }
         return myThread;
+    }
+
+    public void onHistoryEnd( HistoryOfMyThread myThread, long elapsedTime )
+    {
+        history.remove();
     }
 }

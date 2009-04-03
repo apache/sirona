@@ -4,6 +4,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.apache.commons.monitoring.Repository;
 import org.apache.commons.monitoring.StopWatch;
 import org.apache.commons.monitoring.stopwatches.HistoryOfMyThread;
 
@@ -38,6 +39,29 @@ public class HistoryOfMyThreadTest
         assertEquals( s1, history.get( 0 ) );
         assertEquals( s2, history.get( 1 ) );
         assertEquals( s3, history.get( 2 ) );
+    }
+
+    public void testThreadLocalCleanUp()
+        throws Exception
+    {
+        HOMTRepositoryDecorator repository = new HOMTRepositoryDecorator();
+        repository.decorate( new DefaultRepository() );
+        repository.addListener( this );
+
+        run( repository );
+        run( repository );
+        run( repository );
+    }
+
+    private void run( Repository repository )
+    {
+        StopWatch s1 = repository.start( repository.getMonitor( "test0" ) );
+        s1.stop();
+
+        assertNotNull( historyOfMyThread );
+        List<StopWatch> history = historyOfMyThread.history();
+        assertEquals( 1, history.size() );
+        assertEquals( s1, history.get( 0 ) );
     }
 
     /**
