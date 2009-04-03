@@ -29,6 +29,7 @@ public class HistoryOfMyThreadTest
         s2.stop();
         StopWatch s3 = repository.start( repository.getMonitor( "test2" ) );
         s3.stop();
+        assertNull( historyOfMyThread );
         s1.stop();
 
         assertNotNull( historyOfMyThread );
