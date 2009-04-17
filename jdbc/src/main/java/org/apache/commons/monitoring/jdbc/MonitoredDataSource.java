@@ -17,100 +17,35 @@
 
 package org.apache.commons.monitoring.jdbc;
 
+
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.Repository;
-import org.apache.commons.monitoring.Role;
-import org.apache.commons.monitoring.StopWatch;
-import org.apache.commons.monitoring.Unit;
-import org.apache.commons.monitoring.Metric.Type;
-import org.apache.commons.monitoring.stopwatches.DefaultStopWatch;
+
 
 /**
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public class MonitoredDataSource
+public class MonitoredDataSource extends AbstractMonitoredDataSource
     implements DataSource
 {
-
-    private final static Role OPEN_CONECTIONS = new Role( "open connections", Unit.UNARY, Type.GAUGE );
-
-    private final static Role CONECTION_DURATION = new Role( "connection duration", Unit.Time.NANOSECOND, Type.COUNTER );
-
-    /** delegate DataSource */
-    private DataSource dataSource;
-
-    /** dataSource name */
-    private String dataSourceName = DataSource.class.getName();
-
-    private Repository repository;
-
-    private Monitor monitor;
-
     /**
      * Constructor
      * 
      * @param dataSource the datasource to monitor
      */
-    public MonitoredDataSource( DataSource dataSource )
+    public MonitoredDataSource( DataSource dataSource, Repository repository )
     {
-        super();
-        this.dataSource = dataSource;
+        super( dataSource, repository );
     }
 
-    /**
-    *
-    */
     public MonitoredDataSource()
     {
         super();
-    }
-
-    /**
-     * @param dataSource the dataSource to set
-     */
-    public void setDataSource( DataSource dataSource )
-    {
-        this.dataSource = dataSource;
-    }
-
-    /**
-     * @param dataSourceName the dataSourceName to set
-     */
-    public void setDataSourceName( String dataSourceName )
-    {
-        this.dataSourceName = dataSourceName;
-    }
-
-    /**
-     * required
-     * 
-     * @param repository
-     */
-    public void setRepository( Repository repository )
-    {
-        this.repository = repository;
-    }
-
-    /**
-     * @param monitor the monitor to set
-     */
-    public void setMonitor( Monitor monitor )
-    {
-        this.monitor = monitor;
-    }
-
-    public void init()
-    {
-        if ( monitor == null )
-        {
-            monitor = repository.getMonitor( dataSourceName, "jdbc" );
-        }
     }
 
     /**
@@ -121,7 +56,7 @@ public class MonitoredDataSource
     public Connection getConnection()
         throws SQLException
     {
-        Connection connection = dataSource.getConnection();
+        Connection connection = getDataSource().getConnection();
         return monitor( connection );
     }
 
@@ -133,48 +68,32 @@ public class MonitoredDataSource
     public Connection getConnection( String username, String password )
         throws SQLException
     {
-        Connection connection = dataSource.getConnection( username, password );
+        Connection connection = getDataSource().getConnection( username, password );
         return monitor( connection );
     }
-
-    private Connection monitor( Connection connection )
-    {
-        // Computes the number of open connections and the connection duration
-        final StopWatch stopWatch = new DefaultStopWatch( monitor, OPEN_CONECTIONS, CONECTION_DURATION );
-        return new MonitoredConnection( connection, repository, new MonitoredConnection.ConnectionClosedCallBack()
-        {
-            public void onConnectionClosed()
-            {
-                stopWatch.stop();
-            }
-        } );
-    }
-
-
-    // --- delegate methods ---
 
     public int getLoginTimeout()
         throws SQLException
     {
-        return dataSource.getLoginTimeout();
+        return getDataSource().getLoginTimeout();
     }
 
     public PrintWriter getLogWriter()
         throws SQLException
     {
-        return dataSource.getLogWriter();
+        return getDataSource().getLogWriter();
     }
 
     public void setLoginTimeout( int seconds )
         throws SQLException
     {
-        dataSource.setLoginTimeout( seconds );
+        getDataSource().setLoginTimeout( seconds );
     }
 
     public void setLogWriter( PrintWriter out )
         throws SQLException
     {
-        dataSource.setLogWriter( out );
+        getDataSource().setLogWriter( out );
     }
 
     // --- jdbc4 ----
@@ -182,13 +101,13 @@ public class MonitoredDataSource
     public boolean isWrapperFor( Class<?> iface )
         throws SQLException
     {
-        return dataSource.isWrapperFor( iface );
+        return getDataSource().isWrapperFor( iface );
     }
 
     public <T> T unwrap( Class<T> iface )
         throws SQLException
     {
-        return dataSource.unwrap( iface );
+        return getDataSource().unwrap( iface );
     }
 
 }

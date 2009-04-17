@@ -40,6 +40,7 @@
     <module>instrumentation</module>
     <module>spring</module>
     <module>reporting</module>
+    <module>jdbc</module>
   </modules>
 
   <developers>
@@ -74,6 +75,13 @@
         </executions>
       </plugin>
     </plugins>
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-webdav</artifactId>
+        <version>1.0-beta-2</version>
+      </extension>
+    </extensions>
   </build>
 
   <distributionManagement>
@@ -103,5 +111,17 @@
       </plugin>
     </plugins>
   </reporting>
+
+  <profiles>
+    <profile>
+      <id>nicolas</id>
+        <distributionManagement>
+          <snapshotRepository>
+            <id>archiva</id>
+            <url>dav:http://sai1rennes:8888/archiva/repository/snapshots</url>
+          </snapshotRepository>
+        </distributionManagement>
+      </profile>
+  </profiles>
 
 </project>

@@ -45,14 +45,6 @@ public class MonitoredConnection
     implements Connection
 {
 
-    /**
-     * CallBack on connection beeing closed
-     */
-    public interface ConnectionClosedCallBack
-    {
-        void onConnectionClosed();
-    }
-
     /** target connection */
     private Connection connection;
 
