@@ -30,7 +30,7 @@ import org.apache.commons.monitoring.Monitor.Key;
  *
  */
 public abstract class RepositoryDecorator
-    implements Repository
+    implements Repository, Repository.Observable
 {
     private Repository decorated;
 
@@ -99,4 +99,32 @@ public abstract class RepositoryDecorator
     {
         return decorated.start( monitor );
     }
+
+    public Repository getDecorated()
+    {
+        return decorated;
+    }
+
+    // --- Repository.Observable ---
+
+    public void addListener( Listener listener )
+    {
+        if ( decorated instanceof Repository.Observable )
+        {
+            ( (Repository.Observable) decorated ).addListener( listener );
+            return;
+        }
+        throw new UnsupportedOperationException( "Decorated repository is not Observable " + decorated.getClass() );
+    }
+
+    public void removeListener( Listener listener )
+    {
+        if ( decorated instanceof Repository.Observable )
+        {
+            ( (Repository.Observable) decorated ).removeListener( listener );
+            return;
+        }
+        throw new UnsupportedOperationException( "Decorated repository is not Observable " + decorated.getClass() );
+    }
+
 }
