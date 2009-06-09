@@ -48,6 +48,7 @@ import java.util.EventListener;
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public interface Monitor
+    extends Visitable
 {
     // --- Predefined roles -------------------------------------------------------------------
 

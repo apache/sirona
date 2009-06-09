@@ -187,6 +187,10 @@ public class Unit implements Comparable<Unit>
      */
     public double convert( double value, Unit unit )
     {
+        if ( unit == this )
+        {
+            return value;
+        }
         return value * unit.getScale() / this.getScale();
     }
 

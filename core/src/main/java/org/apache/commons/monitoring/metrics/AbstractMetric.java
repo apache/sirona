@@ -18,10 +18,13 @@
 package org.apache.commons.monitoring.metrics;
 
 import org.apache.commons.math.stat.descriptive.SummaryStatistics;
+import org.apache.commons.monitoring.Counter;
+import org.apache.commons.monitoring.Gauge;
 import org.apache.commons.monitoring.Metric;
 import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.Role;
 import org.apache.commons.monitoring.Unit;
+import org.apache.commons.monitoring.Visitor;
 
 /**
  * A simple implementation of {@link Metric}. Only provide methods to compute stats from aggregated data provided by
@@ -193,4 +196,19 @@ public abstract class AbstractMetric
     {
         return getSummary().getSumsq();
     }
+
+    public void accept( Visitor visitor )
+    {
+        switch ( getType() )
+        {
+            case COUNTER:
+                visitor.visit( (Counter) this );
+                break;
+            case GAUGE:
+            default:
+                visitor.visit( (Gauge) this );
+                break;
+        }
+    }
+
 }

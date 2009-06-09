@@ -26,6 +26,7 @@ import java.util.EventListener;
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public interface Metric
+    extends Visitable
 {
     public enum Type
     {

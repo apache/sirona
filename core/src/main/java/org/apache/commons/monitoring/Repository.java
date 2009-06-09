@@ -21,8 +21,6 @@ import java.util.Collection;
 import java.util.EventListener;
 import java.util.Set;
 
-import org.apache.commons.monitoring.Monitor.Key;
-
 /**
  * The repository maintains a set of monitors and ensure unicity. It creates monitors on-demand
  * based on requested Keys. After creation, the monitor Key cannot be updated.
@@ -30,6 +28,7 @@ import org.apache.commons.monitoring.Monitor.Key;
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public interface Repository
+    extends Visitable
 {
     /**
      * Retrieve or create a monitor it's key

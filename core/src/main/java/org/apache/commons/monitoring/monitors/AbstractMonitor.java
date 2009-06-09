@@ -27,6 +27,7 @@ import org.apache.commons.monitoring.Gauge;
 import org.apache.commons.monitoring.Metric;
 import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.Role;
+import org.apache.commons.monitoring.Visitor;
 
 /**
  * Abstract {@link Monitor} with implementation for base methods
@@ -138,4 +139,8 @@ public abstract class AbstractMonitor
         return (Gauge) getMetric( role );
     }
 
+    public void accept( Visitor visitor )
+    {
+        visitor.visit( this );
+    }
 }

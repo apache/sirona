@@ -23,6 +23,7 @@ import java.util.Set;
 import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.Repository;
 import org.apache.commons.monitoring.StopWatch;
+import org.apache.commons.monitoring.Visitor;
 import org.apache.commons.monitoring.Monitor.Key;
 
 /**
@@ -103,6 +104,11 @@ public abstract class RepositoryDecorator
     public Repository getDecorated()
     {
         return decorated;
+    }
+
+    public void accept( Visitor visitor )
+    {
+        decorated.accept( visitor );
     }
 
     // --- Repository.Observable ---

@@ -27,6 +27,7 @@ import java.util.concurrent.ConcurrentMap;
 
 import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.Repository;
+import org.apache.commons.monitoring.Visitor;
 import org.apache.commons.monitoring.Monitor.Key;
 
 /**
@@ -173,6 +174,11 @@ public abstract class AbstractRepository
         {
             monitor.reset();
         }
+    }
+
+    public void accept( Visitor visitor )
+    {
+        visitor.visit( this );
     }
 
 }

@@ -9,6 +9,7 @@ import org.apache.commons.monitoring.Metric;
 import org.apache.commons.monitoring.Monitor;
 import org.apache.commons.monitoring.Role;
 import org.apache.commons.monitoring.Unit;
+import org.apache.commons.monitoring.Visitor;
 import org.apache.commons.monitoring.metrics.NoOpCounter;
 import org.apache.commons.monitoring.metrics.NoOpGauge;
 
@@ -103,5 +104,10 @@ public class NullMonitor
         {
             return true;
         }
+    }
+
+    public void accept( Visitor visitor )
+    {
+        // NoOp
     }
 }
