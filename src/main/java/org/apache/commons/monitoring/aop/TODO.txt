@@ -1,7 +1,0 @@
-Create AOP-based monitoring helpers :
-
- - an Aopalliance method interceptor
- - a Spring BeanNameAutoProxyAdvisor or equivalent
- - an AspectJ abstract aspect
- - a simple proxy-based wrapper
-
