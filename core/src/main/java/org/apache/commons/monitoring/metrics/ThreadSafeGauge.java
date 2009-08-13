@@ -27,6 +27,18 @@ public abstract class ThreadSafeGauge
 
     protected Max max = new Max();
 
+    @Override
+    public double getMax()
+    {
+        return max.getResult();
+    }
+
+    @Override
+    public double getMin()
+    {
+        return min.getResult();
+    }	
+	
     public ThreadSafeGauge( Role role )
     {
         super( role );
@@ -106,8 +118,8 @@ public abstract class ThreadSafeGauge
             getSummary().addValue( s );
         }
         lastUse = now;
-        min.increment( d );
-        max.increment( d );
+        min.increment( value );
+        max.increment( value );
     }
 
     @Override
