@@ -30,11 +30,15 @@ public interface Gauge
      */
     double getValue();
 
+    void increment();
+	
     void increment( Unit unit );
 
     void set( double value, Unit unit );
 
     void decrement( Unit unit );
+	
+	void decrement();
 
     public interface Observable
         extends Metric.Observable, Gauge

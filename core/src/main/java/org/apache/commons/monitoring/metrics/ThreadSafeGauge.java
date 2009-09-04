@@ -1,3 +1,20 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.apache.commons.monitoring.metrics;
 
 import org.apache.commons.math.stat.descriptive.rank.Max;
@@ -27,45 +44,74 @@ public abstract class ThreadSafeGauge
 
     protected Max max = new Max();
 
-    @Override
-    public double getMax()
-    {
-        return max.getResult();
-    }
+    protected long hits;
 
-    @Override
-    public double getMin()
-    {
-        return min.getResult();
-    }	
-	
     public ThreadSafeGauge( Role role )
     {
         super( role );
     }
 
-    public double getValue()
+    public final Type getType()
+    {
+        return Type.GAUGE;
+    }
+
+    public final long getHits()
+    {
+        return hits;
+    }
+
+    public final double getMax()
+    {
+        return max.getResult();
+    }
+
+    public final double getMin()
+    {
+        return min.getResult();
+    }
+
+    public final double getMean()
+    {
+        if ( Double.isNaN( lastUse ) || Double.isNaN( firstUse ) )
+        {
+            return Double.NaN;
+        }
+        return getSummary().getMean() / ( lastUse - firstUse );
+    }
+
+    public final double getValue()
     {
         return value;
     }
 
-    public void increment( Unit unit )
+    public final void increment()
+    {
+        add( 1 );
+    }
+
+    public final void increment( Unit unit )
     {
         add( 1, unit );
     }
 
-    public void decrement( Unit unit )
+    public final void decrement( Unit unit )
     {
         add( -1, unit );
     }
 
-    public void add( double delta )
+    public final void decrement()
+    {
+        add( -1 );
+    }
+
+    public final void add( double delta )
     {
         double d = threadSafeAdd( delta );
         fireValueChanged( d );
     }
 
-    protected double threadSafeAdd( double delta )
+    protected final double threadSafeAdd( double delta )
     {
         threadSafeSet( value + delta );
         return value;
@@ -76,12 +122,12 @@ public abstract class ThreadSafeGauge
         return System.nanoTime();
     }
 
-    public double get()
+    public final double get()
     {
         return value;
     }
 
-    public void set( double d, Unit unit )
+    public final void set( double d, Unit unit )
     {
         d = normalize( d, unit );
         threadSafeSet( d );
@@ -95,7 +141,7 @@ public abstract class ThreadSafeGauge
      */
     protected abstract void threadSafeSet( double d );
 
-    protected void doReset()
+    protected final void doReset()
     {
         // Don't reset value !
         getSummary().clear();
@@ -103,7 +149,7 @@ public abstract class ThreadSafeGauge
         firstUse = Double.NaN;
     }
 
-    protected void doThreadSafeSet( double d )
+    protected final void doThreadSafeSet( double d )
     {
         value = d;
         long now = nanotime();
@@ -118,18 +164,9 @@ public abstract class ThreadSafeGauge
             getSummary().addValue( s );
         }
         lastUse = now;
+        hits++;
         min.increment( value );
         max.increment( value );
-    }
-
-    @Override
-    public double getMean()
-    {
-        if ( Double.isNaN( lastUse ) || Double.isNaN( firstUse ) )
-        {
-            return Double.NaN;
-        }
-        return super.getMean() / ( lastUse - firstUse );
     }
 
 }

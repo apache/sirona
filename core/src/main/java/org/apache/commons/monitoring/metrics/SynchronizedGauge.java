@@ -38,16 +38,6 @@ public class SynchronizedGauge
         super( role );
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @see org.apache.commons.monitoring.Metric#getType()
-     */
-    public Type getType()
-    {
-        return Type.GAUGE;
-    }
-
     public synchronized void reset()
     {
         doReset();

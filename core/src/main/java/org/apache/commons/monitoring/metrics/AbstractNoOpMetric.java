@@ -17,64 +17,50 @@
 
 package org.apache.commons.monitoring.metrics;
 
-import org.apache.commons.monitoring.Counter;
 import org.apache.commons.monitoring.Role;
 
-public abstract class ThreadSafeCounter
-    extends ObservableMetric
-    implements Counter, Counter.Observable
+/**
+ * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
+ */
+public abstract class AbstractNoOpMetric
+    extends AbstractMetric
 {
-    public ThreadSafeCounter( Role role )
+
+    /**
+     * @param role
+     */
+    public AbstractNoOpMetric( Role role )
     {
         super( role );
     }
 
-    public final Type getType()
+    public final void reset()
     {
-        return Type.COUNTER;
+        // NoOp
     }
 
     public final long getHits()
     {
-        return getSummary().getN();
-    }
-
-    public final double getMax()
-    {
-        return getSummary().getMax();
+        return 0;
     }
 
     public final double getMin()
     {
-        return getSummary().getMin();
+        return 0;
+    }
+
+    public final double getMax()
+    {
+        return 0;
     }
 
     public final double getMean()
     {
-        return getSummary().getMean();
+        return 0;
     }
 
     public final void add( double delta )
     {
-        threadSafeAdd( delta );
-        fireValueChanged( delta );
+        // NoOp
     }
-
-    /**
-     * Implementation of this method is responsible to ensure thread safety. It is
-     * expected to delegate computing to {@ #doThreadSafeAdd(long)}
-     * @param delta
-     */
-    protected abstract void threadSafeAdd( double delta );
-
-    protected final void doThreadSafeAdd( double delta )
-    {
-        getSummary().addValue( delta );
-    }
-
-    protected final void doReset()
-    {
-        getSummary().clear();
-    }
-
 }

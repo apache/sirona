@@ -74,7 +74,7 @@ public abstract class AbstractMetric
         add( delta );
     }
 
-    protected double normalize( double value, Unit unit )
+    protected final double normalize( double value, Unit unit )
     {
         if ( !this.unit.isCompatible( unit ) )
         {
@@ -83,17 +83,17 @@ public abstract class AbstractMetric
         return value * unit.getScale() / this.unit.getScale();
     }
 
-    public Monitor getMonitor()
+    public final Monitor getMonitor()
     {
         return monitor;
     }
 
-    public Role getRole()
+    public final Role getRole()
     {
         return role;
     }
 
-    public void setMonitor( Monitor monitor )
+    public final void setMonitor( Monitor monitor )
     {
         if ( this.monitor != null && this.monitor != monitor )
         {
@@ -102,43 +102,16 @@ public abstract class AbstractMetric
         this.monitor = monitor;
     }
 
-    public Unit getUnit()
+    public final Unit getUnit()
     {
         return unit;
     }
 
     /**
      * @return
-     * @see org.apache.commons.math.stat.descriptive.StatisticalSummary#getMax()
-     */
-    public double getMax()
-    {
-        return getSummary().getMax();
-    }
-
-    /**
-     * @return
-     * @see org.apache.commons.math.stat.descriptive.StatisticalSummary#getMin()
-     */
-    public double getMin()
-    {
-        return getSummary().getMin();
-    }
-
-    /**
-     * @return
-     * @see org.apache.commons.math.stat.descriptive.StatisticalSummary#getN()
-     */
-    public long getHits()
-    {
-        return getSummary().getN();
-    }
-
-    /**
-     * @return
      * @see org.apache.commons.math.stat.descriptive.StatisticalSummary#getStandardDeviation()
      */
-    public double getStandardDeviation()
+    public final double getStandardDeviation()
     {
         return getSummary().getStandardDeviation();
     }
@@ -147,7 +120,7 @@ public abstract class AbstractMetric
      * @return
      * @see org.apache.commons.math.stat.descriptive.StatisticalSummary#getSum()
      */
-    public double getSum()
+    public final double getSum()
     {
         return getSummary().getSum();
     }
@@ -156,25 +129,16 @@ public abstract class AbstractMetric
      * @return
      * @see org.apache.commons.math.stat.descriptive.StatisticalSummary#getVariance()
      */
-    public double getVariance()
+    public final double getVariance()
     {
         return getSummary().getVariance();
     }
 
     /**
      * @return
-     * @see org.apache.commons.math.stat.descriptive.SummaryStatistics#getMean()
-     */
-    public double getMean()
-    {
-        return getSummary().getMean();
-    }
-
-    /**
-     * @return
      * @see org.apache.commons.math.stat.descriptive.SummaryStatistics#getGeometricMean()
      */
-    public double getGeometricMean()
+    public final double getGeometricMean()
     {
         return getSummary().getGeometricMean();
     }
@@ -183,7 +147,7 @@ public abstract class AbstractMetric
      * @return
      * @see org.apache.commons.math.stat.descriptive.SummaryStatistics#getSumOfLogs()
      */
-    public double getSumOfLogs()
+    public final double getSumOfLogs()
     {
         return getSummary().getSumOfLogs();
     }
@@ -192,12 +156,12 @@ public abstract class AbstractMetric
      * @return
      * @see org.apache.commons.math.stat.descriptive.SummaryStatistics#getSumsq()
      */
-    public double getSumOfSquares()
+    public final double getSumOfSquares()
     {
         return getSummary().getSumsq();
     }
 
-    public void accept( Visitor visitor )
+    public final void accept( Visitor visitor )
     {
         switch ( getType() )
         {

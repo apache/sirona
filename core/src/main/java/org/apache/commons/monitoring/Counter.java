@@ -32,4 +32,6 @@ public interface Counter
     {
 
     }
+
+    public void add( double delta );
 }
