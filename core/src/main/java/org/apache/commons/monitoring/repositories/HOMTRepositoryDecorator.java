@@ -25,10 +25,8 @@ import org.apache.commons.monitoring.Repository;
 import org.apache.commons.monitoring.StopWatch;
 import org.apache.commons.monitoring.stopwatches.HistoryOfMyThread;
 
-
 /**
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
- *
  */
 public class HOMTRepositoryDecorator
     extends RepositoryDecorator
@@ -70,7 +68,7 @@ public class HOMTRepositoryDecorator
 
     public HistoryOfMyThread getThreadHistory()
     {
-        HistoryOfMyThread myThread = history.get();
+        HistoryOfMyThread myThread = getCurrentThreadHistory();
         if ( myThread == null )
         {
             myThread = new HistoryOfMyThread( listeners );
@@ -79,6 +77,15 @@ public class HOMTRepositoryDecorator
         return myThread;
     }
 
+    public HistoryOfMyThread getCurrentThreadHistory()
+    {
+        return history.get();
+    }
+
+    /**
+     * Cleanup the ThreadLocal {@link #history} when the active Thread history ends, so that the Thread can go back to
+     * thread pool
+     */
     public void onHistoryEnd( HistoryOfMyThread myThread, long elapsedTime )
     {
         history.remove();

@@ -49,8 +49,11 @@ public class HistoryOfMyThreadTest
         repository.addListener( this );
 
         run( repository );
+        assertNull( repository.getCurrentThreadHistory() );
         run( repository );
+        assertNull( repository.getCurrentThreadHistory() );
         run( repository );
+        assertNull( repository.getCurrentThreadHistory() );
     }
 
     private void run( Repository repository )
