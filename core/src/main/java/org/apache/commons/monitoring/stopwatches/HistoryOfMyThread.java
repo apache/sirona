@@ -55,10 +55,7 @@ public class HistoryOfMyThread
                 public StopWatch stop( boolean canceled )
                 {
                     super.stop( canceled );
-                    if ( !canceled )
-                    {
-                        historyEnd( super.getElapsedTime() );
-                    }
+                    historyEnd( super.getElapsedTime() );
                     return getDecorated();
                 }
 
