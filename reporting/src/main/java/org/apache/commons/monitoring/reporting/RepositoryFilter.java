@@ -17,27 +17,18 @@
 
 package org.apache.commons.monitoring.reporting;
 
-import org.apache.commons.monitoring.Role;
-import org.apache.commons.monitoring.Monitor.Key;
+import org.apache.commons.monitoring.Metric;
+import org.apache.commons.monitoring.Monitor;
 
 /**
+ * Filter repository content. Used to expose a restricted view on an existing Repository.
+ * 
+ * @see FilteredRepository
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public class VisitorConfigurationSupport
-    implements VisitorConfiguration
+public interface RepositoryFilter
 {
-    public boolean filter( Key key )
-    {
-        return true;
-    }
+    boolean filter( Monitor monitor );
 
-    public boolean filter( Role role )
-    {
-        return true;
-    }
-
-    public String format( double value )
-    {
-        return String.valueOf( value );
-    }
+    boolean filter( Metric metric );
 }

@@ -26,10 +26,15 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 import org.apache.commons.monitoring.Repository;
 import org.apache.commons.monitoring.Visitor;
 import org.apache.commons.monitoring.repositories.DefaultRepository;
+import org.codehaus.jettison.AbstractXMLStreamReader;
+import org.codehaus.jettison.json.JSONObject;
+import org.codehaus.jettison.mapped.MappedXMLStreamReader;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,9 +42,11 @@ import org.junit.Test;
 /**
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public class RendererTest
+public class FormattingVisitorTest
 {
     private Repository repository;
+
+    private NumberFormat format;
 
     @Before
     public void setup()
@@ -47,6 +54,9 @@ public class RendererTest
         repository = new DefaultRepository();
         repository.getMonitor( "RendererTest", "unit", "test" ).getCounter( FAILURES ).add( 1.0 );
         repository.getMonitor( "RendererTest", "unit", "test" ).getGauge( CONCURRENCY ).increment( UNARY );
+
+        format = NumberFormat.getNumberInstance( Locale.US );
+        format.setMinimumFractionDigits( 1 );
     }
 
     @Test
@@ -54,10 +64,11 @@ public class RendererTest
         throws Exception
     {
         StringWriter out = new StringWriter();
-        Visitor v = new XmlRenderer( new VisitorConfigurationSupport(), new PrintWriter( out ) );
+        Visitor v = new FormattingVisitor( Format.XML_PRETTY, new PrintWriter( out ), format );
         repository.accept( v );
 
-        Reader expected = new InputStreamReader( getClass().getResourceAsStream( "RendererTest.xml" ) );
+        System.out.println( out.toString() );
+		Reader expected = new InputStreamReader( getClass().getResourceAsStream( "RendererTest.xml" ) );
         XMLAssert.assertXMLEqual( expected, new StringReader( out.toString() ) );
     }
 
@@ -66,10 +77,14 @@ public class RendererTest
         throws Exception
     {
         StringWriter out = new StringWriter();
-        Visitor v = new JsonRenderer( new VisitorConfigurationSupport(), new PrintWriter( out ) );
+        Visitor v = new FormattingVisitor( Format.JSON_PRETTY, new PrintWriter( out ), format );
         repository.accept( v );
 
         System.out.println( out.toString() );
-        // JSON Testing framework
+        JSONObject json = new JSONObject( out.toString() );
+        AbstractXMLStreamReader reader = new MappedXMLStreamReader( json );
+
+        // FIXME can't use XMLStreamReader to compare actual with expected using XMLUnit :'(
+        // any JSON Testing framework ?
     }
 }

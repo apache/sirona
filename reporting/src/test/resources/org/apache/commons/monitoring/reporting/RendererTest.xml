@@ -1,9 +1,9 @@
 <repository>
   <monitor name="RendererTest" category="unit" subsystem="test">
     <counter role="failures" unit="" sum="1.0" max="1.0" min="1.0" hits="1.0" standardDeviation="0.0" variance="0.0"
-      mean="1.0" geometricMean="1.0" sumOfLogs="0.0" somOfSquares="1.0" />
+      mean="1.0" geometricMean="1.0" sumOfLogs="0.0" sumOfSquares="1.0" />
     <gauge role="concurrency" unit="" value="1.0" max="1.0" min="1.0" hits="1.0" standardDeviation="NaN" variance="NaN"
-      mean="NaN" geometricMean="NaN" sumOfLogs="NaN" somOfSquares="NaN" />
+      mean="NaN" geometricMean="NaN" sumOfLogs="NaN" sumOfSquares="NaN" />
   </monitor>
 </repository>
 
