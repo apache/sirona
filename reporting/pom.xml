@@ -19,6 +19,18 @@
       <version>2.4</version>
     </dependency>
     <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>[2.3,)</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.ws.rs</groupId>
+      <artifactId>jsr311-api</artifactId>
+      <version>1.1</version>
+      <scope>optional</scope>
+    </dependency>   
+    
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.5</version>
@@ -37,4 +49,11 @@
 	  <scope>test</scope>
     </dependency>
   </dependencies>
+  
+  <repositories>
+    <repository>
+        <id>java.net</id>
+        <url>http://download.java.net/maven/2</url>
+     </repository>
+  </repositories>
 </project>

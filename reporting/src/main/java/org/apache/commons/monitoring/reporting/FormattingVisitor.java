@@ -37,20 +37,11 @@ public class FormattingVisitor
 
     public FormattingVisitor( Format format, PrintWriter writer )
     {
-        this( format, writer, Locale.getDefault() );
-    }
-
-    public FormattingVisitor( Format format, PrintWriter writer, Locale locale )
-    {
-        this( format, writer, DecimalFormat.getNumberInstance( locale ) );
-    }
-
-    public FormattingVisitor( Format format, PrintWriter writer, NumberFormat numberFormat )
-    {
         super();
         this.format = format;
         this.writer = writer;
-        this.numberFormat = numberFormat;
+        this.numberFormat = DecimalFormat.getNumberInstance( Locale.US );
+        this.numberFormat.setMinimumFractionDigits( 1 );
     }
 
     protected void doVisit( Repository repository )

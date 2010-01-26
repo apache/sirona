@@ -27,7 +27,6 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.text.NumberFormat;
-import java.util.Locale;
 
 import org.apache.commons.monitoring.Repository;
 import org.apache.commons.monitoring.Visitor;
@@ -54,9 +53,6 @@ public class FormattingVisitorTest
         repository = new DefaultRepository();
         repository.getMonitor( "RendererTest", "unit", "test" ).getCounter( FAILURES ).add( 1.0 );
         repository.getMonitor( "RendererTest", "unit", "test" ).getGauge( CONCURRENCY ).increment( UNARY );
-
-        format = NumberFormat.getNumberInstance( Locale.US );
-        format.setMinimumFractionDigits( 1 );
     }
 
     @Test
@@ -64,7 +60,7 @@ public class FormattingVisitorTest
         throws Exception
     {
         StringWriter out = new StringWriter();
-        Visitor v = new FormattingVisitor( Format.XML_PRETTY, new PrintWriter( out ), format );
+        Visitor v = new FormattingVisitor( Format.XML_PRETTY, new PrintWriter( out ) );
         repository.accept( v );
 
         System.out.println( out.toString() );
@@ -77,7 +73,7 @@ public class FormattingVisitorTest
         throws Exception
     {
         StringWriter out = new StringWriter();
-        Visitor v = new FormattingVisitor( Format.JSON_PRETTY, new PrintWriter( out ), format );
+        Visitor v = new FormattingVisitor( Format.JSON_PRETTY, new PrintWriter( out ) );
         repository.accept( v );
 
         System.out.println( out.toString() );
