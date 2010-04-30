@@ -17,7 +17,7 @@
 
 package org.apache.commons.monitoring.instrumentation.aop;
 
-import static org.apache.commons.monitoring.Unit.Time.NANOSECOND;
+import static org.apache.commons.monitoring.Unit.UNARY;
 
 import java.lang.reflect.Method;
 
@@ -112,7 +112,7 @@ public abstract class AbstractPerformanceInterceptor<T>
     {
         if ( error != null )
         {
-            monitor.getCounter( Monitor.FAILURES ).add( duration, NANOSECOND );
+            monitor.getCounter( Monitor.FAILURES ).add( 1, UNARY );
         }
     }
 
