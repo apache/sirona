@@ -125,13 +125,11 @@ public abstract class AbstractVisitor
     private static final RepositoryFilter FULL = new RepositoryFilter()
     {
 
-        @Override
         public boolean filter( Monitor monitor )
         {
             return true;
         }
 
-        @Override
         public boolean filter( Metric metric )
         {
             return true;
