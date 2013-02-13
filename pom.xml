@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-sandbox-parent</artifactId>
-    <version>9</version>
+    <version>10</version>
   </parent>
   <groupId>org.apache.commons.monitoring</groupId>
   <artifactId>commons-monitoring-parent</artifactId>
