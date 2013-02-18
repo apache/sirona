@@ -112,7 +112,6 @@ public class MonitoredDataSource extends AbstractMonitoredDataSource
         return getDataSource().unwrap( iface );
     }
 
-    @Override
     public Logger getParentLogger()
         throws SQLFeatureNotSupportedException
     {
