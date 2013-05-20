@@ -53,7 +53,7 @@
         a <b>Repository</b>. It is identified by a name, a category (technical description of the application
         component) and a subsystem (functional description). In the previous code sample, only a name was set
         as category and subsystem are optional. We recommend to use them to create monitors as this is a
-        convenient and powerfull way to group and sort monitors and associated statistics.
+        convenient and powerful way to group and sort monitors and associated statistics.
       </p>
       <p>
         The monitor maintains a set of Metrics, that can be either <b>Counters</b> or <b>Gauges</b>.
