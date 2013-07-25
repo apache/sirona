@@ -41,6 +41,7 @@
     <module>spring</module>
     <module>reporting</module>
     <module>jdbc</module>
+    <module>cdi</module>
   </modules>
 
   <developers>
@@ -99,6 +100,18 @@
     <commons.componentid>monitoring</commons.componentid>
     <commons.jira.componentid>12312100</commons.jira.componentid>
   </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>4.11</version>
+        <scope>test</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
   <reporting>
     <plugins>
       <plugin>

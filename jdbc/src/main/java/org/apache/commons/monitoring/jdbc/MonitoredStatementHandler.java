@@ -69,5 +69,4 @@ public class MonitoredStatementHandler
         }
         return method.invoke( proxy, args );
     }
-
 }
