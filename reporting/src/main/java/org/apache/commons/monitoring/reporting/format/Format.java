@@ -17,35 +17,14 @@
 
 package org.apache.commons.monitoring.reporting.format;
 
-import org.apache.commons.monitoring.monitors.Monitor;
+import org.apache.commons.monitoring.reporting.web.handler.Renderer;
 
-import java.io.PrintWriter;
-
-public interface Format {
-
-    void repositoryStart(PrintWriter writer);
-
-    void repositoryEnd(PrintWriter writer);
-
-    void monitorStart(PrintWriter writer, Monitor monitor);
-
-    void monitorEnd(PrintWriter writer, String name);
-
-    void counterStart(PrintWriter writer, String name);
-
-    void counterEnd(PrintWriter writer, String name);
-
-    void attribute(PrintWriter writer, String name, String value);
-
-    void separator(PrintWriter writer);
-
-    void escape(PrintWriter writer, String string);
+public interface Format extends Renderer {
+    String type();
 
     public static interface Defaults {
-        static final Format JSON = new JSONFormat(false);
-        static final Format JSON_PRETTY = new JSONFormat(true);
-        static final Format XML = new XMLFormat(false);
-        static final Format XML_PRETTY = new XMLFormat(true);
+        static final Format JSON = new JSONFormat();
+        static final Format XML = new XMLFormat();
         static final Format CSV = new CSVFormat();
         static final Format HTML = new HTMLFormat();
     }

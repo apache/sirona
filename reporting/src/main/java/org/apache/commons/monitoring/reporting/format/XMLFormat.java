@@ -17,78 +17,33 @@
 
 package org.apache.commons.monitoring.reporting.format;
 
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.monitoring.counter.Counter;
 import org.apache.commons.monitoring.monitors.Monitor;
+import org.apache.commons.monitoring.repositories.Repository;
 
 import java.io.PrintWriter;
+import java.util.Map;
 
-/**
- * Format to XML, with optional indentation
- *
- * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
- */
 public class XMLFormat implements Format {
-    public XMLFormat(boolean indent) {
-        super();
-        this.indent = indent;
-    }
-
-    private boolean indent;
-
-    public void repositoryStart(PrintWriter writer) {
-        writer.append("<repository>");
-    }
-
-    public void repositoryEnd(PrintWriter writer) {
-        if (indent) {
-            writer.append("\n");
+    @Override
+    public void render(final PrintWriter writer, final Map<String, ?> params) {
+        writer.write("<repository>");
+        for (final Monitor monitor : Repository.INSTANCE.getMonitors()) {
+            writer.write("<monitor name=\"" + monitor.getKey().getName() + "\" category=\"" + monitor.getKey().getCategory() + "\">");
+            for (final Counter counter : monitor.getCounters()) {
+                writer.write("<counter role=\"" + counter.getRole().getName() + "\" unit=\"" + counter.getRole().getUnit().getName() + "\"");
+                for (final MetricData md : MetricData.values()) {
+                    writer.write(" " + md.name() + "=\"" + md.value(counter) + "\"");
+                }
+                writer.write(" />");
+            }
+            writer.write("</monitor>");
         }
-        writer.append("</repository>");
+        writer.write("</repository>");
     }
 
-    public void monitorStart(PrintWriter writer, Monitor monitor) {
-        if (indent) {
-            writer.append("\n  ");
-        }
-        writer.append("<monitor");
-        Monitor.Key key = monitor.getKey();
-        attribute(writer, "name", key.getName());
-        attribute(writer, "category", key.getCategory());
-        writer.append('>');
-    }
-
-    public void monitorEnd(PrintWriter writer, String name) {
-        if (indent) {
-            writer.append("\n  ");
-        }
-        writer.append("</monitor>");
-    }
-
-    public void counterStart(PrintWriter writer, String name) {
-        if (indent) {
-            writer.append("\n    ");
-        }
-        writer.append("<counter");
-        attribute(writer, "role", name);
-    }
-
-    public void counterEnd(PrintWriter writer, String name) {
-        writer.append("/>");
-    }
-
-    public void attribute(PrintWriter writer, String name, String value) {
-        writer.append(" ")
-            .append(name)
-            .append("=\"");
-        escape(writer, value);
-        writer.append("\"");
-    }
-
-    public void escape(PrintWriter writer, String string) {
-        writer.append(StringEscapeUtils.escapeXml(string));
-    }
-
-    public void separator(PrintWriter writer) {
-        // Nop
+    @Override
+    public String type() {
+        return "application/xml";
     }
 }

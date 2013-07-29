@@ -17,83 +17,52 @@
 
 package org.apache.commons.monitoring.reporting.format;
 
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.monitoring.counter.Counter;
 import org.apache.commons.monitoring.monitors.Monitor;
+import org.apache.commons.monitoring.repositories.Repository;
 
 import java.io.PrintWriter;
+import java.util.Iterator;
+import java.util.Map;
 
-
-/**
- * Format to JSON (JavaScript), with optional indentation
- *
- * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
- */
 public class JSONFormat implements Format {
-    private boolean indent;
+    private static final MetricData[] METRIC_DATA = MetricData.values();
 
-    public JSONFormat(boolean indent) {
-        this.indent = indent;
-    }
-
-    public void repositoryStart(PrintWriter writer) {
-        writer.append("{");
-    }
-
-    public void repositoryEnd(PrintWriter writer) {
-        if (indent) {
-            writer.append("\n");
+    @Override
+    public void render(final PrintWriter writer, final Map<String, ?> params) {
+        writer.write("{\"monitors\":[");
+        final Iterator<Monitor> monitors = Repository.INSTANCE.getMonitors().iterator();
+        while (monitors.hasNext()) {
+            final Monitor monitor = monitors.next();
+            writer.write("{\"name\":\"" + monitor.getKey().getName() + "\",");
+            writer.write("\"category\":\"" + monitor.getKey().getCategory() + "\",");
+            writer.write("\"counters\":[");
+            final Iterator<Counter> counters = monitor.getCounters().iterator();
+            while (counters.hasNext()) {
+                final Counter counter = counters.next();
+                writer.write("{\"role\":\"" + counter.getRole().getName() + "\",");
+                writer.write("\"unit\":\"" + counter.getRole().getUnit().getName() + "\",");
+                for (int i = 0; i < METRIC_DATA.length; i++) {
+                    writer.write("\"" + METRIC_DATA[i].name() + "\":\"" + METRIC_DATA[i].value(counter) + "\"");
+                    if (i < METRIC_DATA.length - 1) {
+                        writer.write(",");
+                    }
+                }
+                writer.write("}");
+                if (counters.hasNext()) {
+                    writer.write(",");
+                }
+            }
+            writer.write("]}");
+            if (monitors.hasNext()) {
+                writer.write(",");
+            }
         }
-        writer.append("}");
+        writer.write("]}");
     }
 
-    public void monitorStart(PrintWriter writer, Monitor monitor) {
-        if (indent) {
-            writer.append("\n  ");
-        }
-        Monitor.Key key = monitor.getKey();
-        escape(writer, key.getName());
-        writer.append(":{");
-        if (indent) {
-            writer.append("\n    \"category\": \"").append(monitor.getKey().getCategory()).append("\",");
-        }
-    }
-
-    public void monitorEnd(PrintWriter writer, String name) {
-        if (indent) {
-            writer.append("\n  ");
-        }
-
-        writer.append("}");
-    }
-
-    public void counterStart(PrintWriter writer, String name) {
-        if (indent) {
-            writer.append("\n    ");
-        }
-        escape(writer, name);
-        writer.append(":{");
-        writeAttribute(writer, "type", "counter");
-    }
-
-    public void counterEnd(PrintWriter writer, String name) {
-        writer.append("}");
-    }
-
-    public void attribute(PrintWriter writer, String name, String value) {
-        separator(writer);
-        writeAttribute(writer, name, value);
-    }
-
-    protected void writeAttribute(PrintWriter writer, String name, String value) {
-        writer.append("\"").append(name).append("\"").append(":");
-        escape(writer, value);
-    }
-
-    public void escape(PrintWriter writer, String string) {
-        writer.append('\"').append(StringEscapeUtils.escapeEcmaScript(string)).append('\"');
-    }
-
-    public void separator(PrintWriter writer) {
-        writer.append(",");
+    @Override
+    public String type() {
+        return "application/json";
     }
 }

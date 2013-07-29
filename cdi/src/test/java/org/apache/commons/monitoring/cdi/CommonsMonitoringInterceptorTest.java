@@ -24,7 +24,6 @@ import org.junit.Test;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.spi.BeanManager;
-
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;

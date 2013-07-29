@@ -14,28 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.commons.monitoring.reporting.format;
-
-import org.apache.commons.monitoring.counter.Unit;
-import org.apache.commons.monitoring.reporting.template.MapBuilder;
-import org.apache.commons.monitoring.reporting.template.Templates;
+package org.apache.commons.monitoring.reporting.web.handler;
 
 import java.io.PrintWriter;
 import java.util.Map;
 
-public class HTMLFormat extends MapFormat implements Format {
-    @Override
-    public void render(final PrintWriter writer, final Map<String, ?> params) {
-        final Unit timeUnit = timeUnit(params);
-        Templates.htmlRender(writer, "report.vm",
-            new MapBuilder<String, Object>()
-                .set("headers", ATTRIBUTES_ORDERED_LIST)
-                .set("data", snapshot(timeUnit))
-                .build());
-    }
-
-    @Override
-    public String type() {
-        return "text/html";
-    }
+public interface Renderer {
+    void render(PrintWriter writer, Map<String, ?> params);
 }

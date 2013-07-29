@@ -39,11 +39,21 @@ public enum MetricData {
         public double value(final Counter counter) {
             return counter.getHits();
         }
+
+        @Override
+        public boolean isTime() {
+            return false;
+        }
     },
     Max {
         @Override
         public double value(final Counter counter) {
             return counter.getMax();
+        }
+
+        @Override
+        public boolean isTime() {
+            return true;
         }
     },
     Mean {
@@ -51,11 +61,21 @@ public enum MetricData {
         public double value(final Counter counter) {
             return counter.getMean();
         }
+
+        @Override
+        public boolean isTime() {
+            return true;
+        }
     },
     Min {
         @Override
         public double value(final Counter counter) {
             return counter.getMin();
+        }
+
+        @Override
+        public boolean isTime() {
+            return true;
         }
     },
     StandardDeviation {
@@ -63,11 +83,21 @@ public enum MetricData {
         public double value(final Counter counter) {
             return counter.getStandardDeviation();
         }
+
+        @Override
+        public boolean isTime() {
+            return false;
+        }
     },
     Sum {
         @Override
         public double value(final Counter counter) {
             return counter.getSum();
+        }
+
+        @Override
+        public boolean isTime() {
+            return true;
         }
     },
     SumOfLogs {
@@ -75,11 +105,21 @@ public enum MetricData {
         public double value(final Counter counter) {
             return counter.getSumOfLogs();
         }
+
+        @Override
+        public boolean isTime() {
+            return false;
+        }
     },
     SumOfSquares {
         @Override
         public double value(final Counter counter) {
             return counter.getSumOfSquares();
+        }
+
+        @Override
+        public boolean isTime() {
+            return false;
         }
     },
     Variance {
@@ -87,11 +127,21 @@ public enum MetricData {
         public double value(final Counter counter) {
             return counter.getVariance();
         }
+
+        @Override
+        public boolean isTime() {
+            return false;
+        }
     },
     GeometricMean {
         @Override
         public double value(final Counter counter) {
             return counter.getGeometricMean();
+        }
+
+        @Override
+        public boolean isTime() {
+            return false;
         }
     },
     Value {
@@ -99,13 +149,24 @@ public enum MetricData {
         public double value(final Counter counter) {
             return counter.getSum();
         }
+
+        @Override
+        public boolean isTime() {
+            return true;
+        }
     },
     MaxConcurrency {
         @Override
         public double value(final Counter counter) {
             return counter.getMonitor().getMaxConcurrency();
         }
+
+        @Override
+        public boolean isTime() {
+            return false;
+        }
     };
 
     public abstract double value(Counter counter);
+    public abstract boolean isTime();
 }

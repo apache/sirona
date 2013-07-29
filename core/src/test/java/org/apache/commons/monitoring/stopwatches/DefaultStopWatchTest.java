@@ -21,7 +21,6 @@ import org.apache.commons.monitoring.Role;
 import org.apache.commons.monitoring.counter.Counter;
 import org.apache.commons.monitoring.counter.Unit;
 import org.apache.commons.monitoring.monitors.Monitor;
-import org.apache.commons.monitoring.Visitor;
 import org.apache.commons.monitoring.util.ClassLoaders;
 import org.junit.Test;
 
@@ -188,10 +187,6 @@ public class DefaultStopWatchTest {
         @Override
         public int getMaxConcurrency() {
             return 0;
-        }
-
-        public void accept(Visitor visitor) {
-            // NoOp
         }
     }
 }

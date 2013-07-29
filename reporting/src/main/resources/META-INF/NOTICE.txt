@@ -2,3 +2,10 @@ Table sorter
 
 website: https://github.com/Mottie/tablesorter
 licence: MIT
+
+------------------------
+
+Bootswatch
+
+website: http://bootswatch.com/
+licence: Apache v2

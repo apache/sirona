@@ -20,7 +20,6 @@ package org.apache.commons.monitoring.jdbc;
 import org.apache.commons.monitoring.Role;
 import org.apache.commons.monitoring.counter.Unit;
 import org.apache.commons.monitoring.monitors.Monitor;
-import org.apache.commons.monitoring.repositories.Repository;
 import org.apache.commons.monitoring.stopwatches.CounterStopWatch;
 import org.apache.commons.monitoring.stopwatches.StopWatch;
 import org.apache.commons.monitoring.util.ClassLoaders;

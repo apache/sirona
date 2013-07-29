@@ -14,24 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package org.apache.commons.monitoring.reporting.web;
+package org.apache.commons.monitoring.reporting.web.handler;
 
 import org.apache.commons.monitoring.reporting.format.Format;
-import org.apache.commons.monitoring.reporting.format.FormattingVisitor;
-import org.apache.commons.monitoring.reporting.format.RenderingContext;
-import org.apache.commons.monitoring.repositories.Repository;
+import org.apache.commons.monitoring.reporting.web.util.HttpUtils;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-public class MonitoringServlet extends HttpServlet {
+public class ReportHandler implements Handler {
     private static Map<String, Format> extensions = new HashMap<String, Format>();
     private static Map<String, Format> formats = new HashMap<String, Format>();
 
@@ -54,15 +48,15 @@ public class MonitoringServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
+    public Renderer handle(final HttpServletRequest request, final HttpServletResponse response) {
         Format format = null;
 
-        final String path = req.getRequestURI();
+        final String path = request.getRequestURI();
         final int dot = path.lastIndexOf('.');
         if (dot >= 0) {
             format = extensions.get(path.substring(dot + 1).toLowerCase(Locale.ENGLISH));
         } else {
-            final String mime = HttpUtils.parseAccept(req.getHeader("Accept"));
+            final String mime = HttpUtils.parseAccept(request.getHeader("Accept"));
             if (mime != null) {
                 format = formats.get(mime);
             }
@@ -71,11 +65,7 @@ public class MonitoringServlet extends HttpServlet {
             format = Format.Defaults.CSV;
         }
 
-        RenderingContext.setBase(req.getContextPath());
-        try {
-            Repository.INSTANCE.accept(new FormattingVisitor(format, resp.getWriter()));
-        } finally {
-            RenderingContext.clear();
-        }
+        response.setContentType(format.type());
+        return format;
     }
 }

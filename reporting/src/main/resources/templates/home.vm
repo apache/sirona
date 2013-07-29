@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+#*
   Licensed to the Apache Software Foundation (ASF) under one or more
   contributor license agreements.  See the NOTICE file distributed with
   this work for additional information regarding copyright ownership.
@@ -14,19 +13,16 @@
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
--->
-<web-app xmlns="http://java.sun.com/xml/ns/javaee"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
-         version="2.5">
+*#
+<div class=""container>
+    <h1>Home</h1>
 
-  <filter>
-    <filter-name>Monitoring</filter-name>
-    <filter-class>org.apache.commons.monitoring.reporting.web.MonitoringController</filter-class>
-  </filter>
-
-  <filter-mapping>
-    <filter-name>Monitoring</filter-name>
-    <url-pattern>/*</url-pattern>
-  </filter-mapping>
-</web-app>
+    <div>
+        Welcome to the Commons Monitoring Webapp. here is the list of available pages:
+    </div>
+    <div>
+        <ul>
+            <li><a href="$mapping/report">Report</a></li>
+        </ul>
+    </div>
+</div>

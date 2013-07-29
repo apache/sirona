@@ -18,7 +18,6 @@
 package org.apache.commons.monitoring.monitors;
 
 import org.apache.commons.monitoring.Role;
-import org.apache.commons.monitoring.Visitor;
 import org.apache.commons.monitoring.configuration.Configuration;
 import org.apache.commons.monitoring.counter.Counter;
 import org.apache.commons.monitoring.counter.factory.CounterFactory;
@@ -110,10 +109,5 @@ public class DefaultMonitor implements Monitor {
     @Override
     public int getMaxConcurrency() {
         return maxConcurrency;
-    }
-
-    @Override
-    public void accept(final Visitor visitor) {
-        visitor.visit(this);
     }
 }

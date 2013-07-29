@@ -79,8 +79,8 @@
             <exclude>**/*/MANIFEST.MF</exclude>
             <exclude>.git</exclude>
             <exclude>.gitignore</exclude>
-            <exclude>**/webapp/js/*.js</exclude>
-            <exclude>**/webapp/css/*.css</exclude>
+            <exclude>**/webapp/resources/js/*.js</exclude>
+            <exclude>**/webapp/resources/css/*.css</exclude>
           </excludes>
         </configuration>
         <executions>

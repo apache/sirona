@@ -17,8 +17,6 @@
 
 package org.apache.commons.monitoring.repositories;
 
-import org.apache.commons.monitoring.Visitor;
-import org.apache.commons.monitoring.configuration.Configuration;
 import org.apache.commons.monitoring.monitors.DefaultMonitor;
 import org.apache.commons.monitoring.monitors.Monitor;
 import org.apache.commons.monitoring.monitors.Monitor.Key;
@@ -107,10 +105,5 @@ public class DefaultRepository implements Repository {
     @Override
     public StopWatch start(final Monitor monitor) {
         return new CounterStopWatch(monitor);
-    }
-
-    @Override
-    public void accept(final Visitor visitor) {
-        visitor.visit(this);
     }
 }

@@ -14,28 +14,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.commons.monitoring.reporting.format;
+package org.apache.commons.monitoring.reporting.web.handler;
 
-import org.apache.commons.monitoring.counter.Unit;
-import org.apache.commons.monitoring.reporting.template.MapBuilder;
-import org.apache.commons.monitoring.reporting.template.Templates;
+import org.apache.commons.monitoring.MonitoringException;
 
-import java.io.PrintWriter;
-import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-public class HTMLFormat extends MapFormat implements Format {
+public abstract class RedirectHandler implements Handler {
     @Override
-    public void render(final PrintWriter writer, final Map<String, ?> params) {
-        final Unit timeUnit = timeUnit(params);
-        Templates.htmlRender(writer, "report.vm",
-            new MapBuilder<String, Object>()
-                .set("headers", ATTRIBUTES_ORDERED_LIST)
-                .set("data", snapshot(timeUnit))
-                .build());
+    public Renderer handle(final HttpServletRequest request, final HttpServletResponse response) {
+        try {
+            response.sendRedirect(request.getRequestURI().substring(0, request.getRequestURI().length() - from().length()) + to());
+        } catch (final Exception e) {
+            throw new MonitoringException(e);
+        }
+        return null;
     }
 
-    @Override
-    public String type() {
-        return "text/html";
-    }
+    public abstract String from();
+    public abstract String to();
 }

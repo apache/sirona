@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.commons.monitoring.reporting.web;
+package org.apache.commons.monitoring.reporting.web.util;
 
-public class HttpUtils {
+public final class HttpUtils {
 
     public static String parseAccept(String header) {
         return getPrefered(header);
@@ -56,4 +56,7 @@ public class HttpUtils {
         return 1;
     }
 
+    private HttpUtils() {
+        // no-op
+    }
 }

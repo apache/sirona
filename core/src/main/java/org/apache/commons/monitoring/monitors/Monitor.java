@@ -18,7 +18,6 @@
 package org.apache.commons.monitoring.monitors;
 
 import org.apache.commons.monitoring.Role;
-import org.apache.commons.monitoring.Visitable;
 import org.apache.commons.monitoring.counter.Counter;
 
 import java.util.Collection;
@@ -46,7 +45,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public interface Monitor extends Visitable {
+public interface Monitor {
     /**
      * @return the monitor key
      */

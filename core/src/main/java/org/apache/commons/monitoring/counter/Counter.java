@@ -18,7 +18,6 @@
 package org.apache.commons.monitoring.counter;
 
 import org.apache.commons.monitoring.Role;
-import org.apache.commons.monitoring.Visitable;
 import org.apache.commons.monitoring.monitors.Monitor;
 
 /**
@@ -27,7 +26,7 @@ import org.apache.commons.monitoring.monitors.Monitor;
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public interface Counter extends Visitable {
+public interface Counter {
     /**
      * reset the Metric
      */

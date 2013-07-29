@@ -44,8 +44,7 @@ public class Unit implements Comparable<Unit> {
     /**
      * Time based units
      */
-    public static class Time
-        extends Unit {
+    public static class Time extends Unit {
         public static final Unit NANOSECOND = new Unit("ns");
         public static final Unit MICROSECOND = new Unit("µs", NANOSECOND, 1000);
         public static final Unit MILLISECOND = new Unit("ms", MICROSECOND, 1000);
@@ -95,7 +94,7 @@ public class Unit implements Comparable<Unit> {
     // "BILLION" does not have same signification depending on country (10^12 or 10^9).
     // We use International system of unit names to avoid confusion
     // @see http://en.wikipedia.org/wiki/SI
-    public static final Unit UNARY = new Unit("-");
+    public static final Unit UNARY = new Unit("u");
     public static final Unit DECA = new Unit("*10", UNARY, 10);
     public static final Unit HECTO = new Unit("*100", DECA, 10);
     public static final Unit KILO = new Unit("*1000", HECTO, 10);

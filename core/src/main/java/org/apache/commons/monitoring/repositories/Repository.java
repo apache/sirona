@@ -17,7 +17,6 @@
 
 package org.apache.commons.monitoring.repositories;
 
-import org.apache.commons.monitoring.Visitable;
 import org.apache.commons.monitoring.configuration.Configuration;
 import org.apache.commons.monitoring.monitors.Monitor;
 import org.apache.commons.monitoring.stopwatches.StopWatch;
@@ -31,7 +30,7 @@ import java.util.Set;
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public interface Repository extends Visitable {
+public interface Repository {
     static final Repository INSTANCE = Configuration.newInstance(Repository.class);
 
     /**

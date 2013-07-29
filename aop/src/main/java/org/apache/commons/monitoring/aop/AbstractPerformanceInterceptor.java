@@ -24,8 +24,6 @@ import org.apache.commons.monitoring.stopwatches.StopWatch;
 
 import java.lang.reflect.Method;
 
-import static org.apache.commons.monitoring.counter.Unit.UNARY;
-
 /**
  * A method interceptor that compute method invocation performances.
  * <p/>

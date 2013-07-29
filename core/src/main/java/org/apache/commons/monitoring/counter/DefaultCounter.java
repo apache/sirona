@@ -18,7 +18,6 @@ package org.apache.commons.monitoring.counter;
 
 import org.apache.commons.math.stat.descriptive.SummaryStatistics;
 import org.apache.commons.monitoring.Role;
-import org.apache.commons.monitoring.Visitor;
 import org.apache.commons.monitoring.configuration.Configuration;
 import org.apache.commons.monitoring.counter.queuemanager.MetricQueueManager;
 import org.apache.commons.monitoring.monitors.Monitor;
@@ -128,11 +127,6 @@ public class DefaultCounter implements Counter {
     @Override
     public long getHits() {
         return statistics.getN();
-    }
-
-    @Override
-    public void accept(final Visitor visitor) {
-        visitor.visit(this);
     }
 
     public Lock getLock() {
