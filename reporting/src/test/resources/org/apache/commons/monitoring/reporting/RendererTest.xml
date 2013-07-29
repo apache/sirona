@@ -1,9 +1,23 @@
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
 <repository>
-  <monitor name="RendererTest" category="unit" subsystem="test">
-    <counter role="failures" unit="" sum="1.0" max="1.0" min="1.0" hits="1.0" standardDeviation="0.0" variance="0.0"
-      mean="1.0" geometricMean="1.0" sumOfLogs="0.0" sumOfSquares="1.0" />
-    <gauge role="concurrency" unit="" value="1.0" max="1.0" min="1.0" hits="1.0" standardDeviation="NaN" variance="NaN"
-      mean="NaN" geometricMean="NaN" sumOfLogs="NaN" sumOfSquares="NaN" />
+  <monitor name="RendererTest" category="unit">
+    <counter role="failures" Hits="1.0" Max="1.0" Mean="1.0" Min="1.0" StandardDeviation="0.0" Sum="1.0"
+             SumOfLogs="0.0" SumOfSquares="0.0" Variance="0.0" GeometricMean="1.0" Value="1.0" MaxConcurrency="1.0"/>
   </monitor>
 </repository>
 

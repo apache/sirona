@@ -17,65 +17,65 @@
 
 package org.apache.commons.monitoring.reporting.web;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import org.apache.commons.monitoring.reporting.format.Format;
+import org.apache.commons.monitoring.reporting.format.FormattingVisitor;
+import org.apache.commons.monitoring.reporting.format.RenderingContext;
+import org.apache.commons.monitoring.repositories.Repository;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
-import org.apache.commons.monitoring.Repository;
-import org.apache.commons.monitoring.Visitor;
-import org.apache.commons.monitoring.reporting.Format;
-import org.apache.commons.monitoring.reporting.FormattingVisitor;
-
-public class MonitoringServlet
-    extends HttpServlet
-{
-    private Repository repository;
-
-    @Override
-    public void init( ServletConfig config )
-        throws ServletException
-    {
-        repository = (Repository) config.getServletContext().getAttribute( Repository.class.getName() );
-    }
-
-    private static Map<String, Format> formats = new HashMap<String, Format>();
-    static
-    {
-        formats.put( "application/json", Format.JSON );
-        formats.put( "text/javascript", Format.JSON );
-        formats.put( "application/xml", Format.XML );
-        formats.put( "text/xml", Format.XML );
-    }
-
+public class MonitoringServlet extends HttpServlet {
     private static Map<String, Format> extensions = new HashMap<String, Format>();
-    static
-    {
-        extensions.put( "json", Format.JSON );
-        extensions.put( "js", Format.JSON );
-        extensions.put( "xml", Format.XML );
+    private static Map<String, Format> formats = new HashMap<String, Format>();
+
+    static {
+        formats.put("application/json", Format.Defaults.JSON);
+        formats.put("text/javascript", Format.Defaults.JSON);
+        formats.put("application/xml", Format.Defaults.XML);
+        formats.put("text/xml", Format.Defaults.XML);
+        formats.put("text/plain", Format.Defaults.CSV);
+        formats.put("text/csv", Format.Defaults.CSV);
+        formats.put("text/html", Format.Defaults.HTML);
+
+        extensions.put("json", Format.Defaults.JSON);
+        extensions.put("js", Format.Defaults.JSON);
+        extensions.put("xml", Format.Defaults.XML);
+        extensions.put("csv", Format.Defaults.CSV);
+        extensions.put("html", Format.Defaults.HTML);
+        extensions.put("htm", Format.Defaults.HTML);
+        extensions.put("xhtml", Format.Defaults.HTML);
     }
 
     @Override
-    protected void doGet( HttpServletRequest req, HttpServletResponse resp )
-        throws ServletException, IOException
-    {
-        String mime = HttpUtils.parseAccept( req.getHeader( "Accept" ) );
-        Format format = formats.get( mime );
-           
-        if ( format == null )
-        {
-            String path = req.getRequestURI();
-            String extension = path.substring( path.lastIndexOf( '.' ) );
-            format = formats.get( extension );
+    protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
+        Format format = null;
+
+        final String path = req.getRequestURI();
+        final int dot = path.lastIndexOf('.');
+        if (dot >= 0) {
+            format = extensions.get(path.substring(dot + 1).toLowerCase(Locale.ENGLISH));
+        } else {
+            final String mime = HttpUtils.parseAccept(req.getHeader("Accept"));
+            if (mime != null) {
+                format = formats.get(mime);
+            }
         }
-        
-        Visitor visitor = new FormattingVisitor( format, resp.getWriter() );
-        repository.accept( visitor );
+        if (format == null) {
+            format = Format.Defaults.CSV;
+        }
+
+        RenderingContext.setBase(req.getContextPath());
+        try {
+            Repository.INSTANCE.accept(new FormattingVisitor(format, resp.getWriter()));
+        } finally {
+            RenderingContext.clear();
+        }
     }
 }

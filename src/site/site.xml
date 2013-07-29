@@ -25,24 +25,24 @@
 
   <body>
     <menu name="Monitoring">
-      <item name="Overview"            href="/index.html"/>
-      <item name="Proposal"            href="/PROPOSAL.html"/>
-      <item name="Wiki"                href="http://wiki.apache.org/commons/Monitoring"/>
+      <item name="Overview" href="/index.html"/>
+      <item name="Proposal" href="/PROPOSAL.html"/>
+      <item name="Wiki" href="http://wiki.apache.org/commons/Monitoring"/>
     </menu>
     <menu name="User Guide">
-      <item name="Quick Tutorial"      href="/tutorial.html"/>
-      <item name="Instrumentation"     href="/instrumentation.html"/>
-      <item name="Listeners"           href="/listeners.html"/>
-      <item name="Reporting"           href="/reporting.html"/>
-      <item name="Use in a Webapp"     href="/web.html"/>
+      <item name="Quick Tutorial" href="/tutorial.html"/>
+      <item name="Instrumentation" href="/instrumentation.html"/>
+      <item name="Listeners" href="/listeners.html"/>
+      <item name="Reporting" href="/reporting.html"/>
+      <item name="Use in a Webapp" href="/web.html"/>
     </menu>
 
     <menu name="Development">
-      <item name="Mailing Lists"           href="/mail-lists.html"/>
-      <item name="Issue Tracking"          href="/issue-tracking.html"/>
-      <item name="Team"                    href="/team-list.html"/>
-      <item name="Source Repository"       href="/source-repository.html"/>
-      <item name="Javadoc (latest)"        href="/apidocs/index.html"/>
+      <item name="Mailing Lists" href="/mail-lists.html"/>
+      <item name="Issue Tracking" href="/issue-tracking.html"/>
+      <item name="Team" href="/team-list.html"/>
+      <item name="Source Repository" href="/source-repository.html"/>
+      <item name="Javadoc (latest)" href="/apidocs/index.html"/>
     </menu>
 
   </body>

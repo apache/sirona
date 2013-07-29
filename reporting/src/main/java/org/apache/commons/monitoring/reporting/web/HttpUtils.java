@@ -17,54 +17,40 @@
 
 package org.apache.commons.monitoring.reporting.web;
 
-import java.util.Locale;
+public class HttpUtils {
 
-public class HttpUtils
-{
-
-    public static String parseAccept( String header )
-    {
-        return getPrefered( header );
+    public static String parseAccept(String header) {
+        return getPrefered(header);
     }
 
-    private static String getPrefered( String header )
-    {
-        if ( header == null )
-        {
+    private static String getPrefered(String header) {
+        if (header == null) {
             return null;
         }
-        String[] languages = header.split( "," );
-        String prefered;
+        final String[] languages = header.split(",");
+        String prefered = null;
         double preference = 0.0D;
-        for ( String language : languages )
-        {
-            int idx = language.indexOf( ';' );
-            if ( idx > 0 )
-            {
-                String paramString = language.substring( idx + 1 );
-                double d = getQuality( paramString );
-                if ( d > preference )
-                {
+        for (String language : languages) {
+            int idx = language.indexOf(';');
+            if (idx > 0) {
+                String paramString = language.substring(idx + 1);
+                double d = getQuality(paramString);
+                if (d > preference) {
                     preference = d;
-                    prefered = language.substring( 0, idx );
+                    prefered = language.substring(0, idx);
                 }
-            }
-            else
-            {
+            } else {
                 return language;
             }
         }
-        return null;
+        return prefered;
     }
 
-    private static double getQuality( String paramString )
-    {
-        String[] params = paramString.split( ";" );
-        for ( String param : params )
-        {
-            if ( param.startsWith( "q=" ) )
-            {
-                return Double.parseDouble( param.substring( 2 ) );
+    private static double getQuality(String paramString) {
+        final String[] params = paramString.split(";");
+        for (final String param : params) {
+            if (param.startsWith("q=")) {
+                return Double.parseDouble(param.substring(2));
             }
         }
         return 1;

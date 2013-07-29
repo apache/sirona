@@ -18,7 +18,7 @@
 
 <document>
 
-<properties>
+  <properties>
     <title>Monitoring listeners</title>
   </properties>
 
@@ -32,23 +32,31 @@
         For example, the application can switch between two implementations of a component depending
         on the business process load. A monitor that computes this load can be used by the application to
         detect the overload and switch to a lightweight implementation. To implement this, the application
-        may use the monitor and programmatically (in a <code>if then else</code> block) select the
+        may use the monitor and programmatically (in a
+        <code>if then else</code>
+        block) select the
         implementation to use. A more elegant way is to attach a Listener to the Gauge that monitors the load.
       </p>
       <p>
-        Repository, Monitors and Metrics support listeners. The <code>Metric.Listener</code> interface
+        Repository, Monitors and Metrics support listeners. The
+        <code>Metric.Listener</code>
+        interface
         allows custom code to get notified when a value is updated. This is a nice way to detect some
         value to increase abnormally and to adapt application behavior. The main advantage is that such
         listener can be reused and don't require code intrusive changes in the monitored components.
       </p>
       <p>
-        <code>Monitor.Listener</code> allows the application to get evolved when a new Metric is registered
-        to the monitor. The application can register new statValues (or <em>automagically</em> creates new ones
+        <code>Monitor.Listener</code>
+        allows the application to get evolved when a new Metric is registered
+        to the monitor. The application can register new statValues (or
+        <em>automagically</em>
+        creates new ones
         when requested) at any moment, and this listener can be used to get notified and pre-configure the
         statValue before it gets used.
       </p>
       <p>
-        <code>Repository.Listener</code> can be used by the application to get notified any time a new monitor
+        <code>Repository.Listener</code>
+        can be used by the application to get notified any time a new monitor
         instance is created, for example to register a Monitor.Listener !
       </p>
     </section>
@@ -59,10 +67,13 @@
         application scalability.
       </p>
       <p>
-        The StopWatches used to monitor execution can be registered in the <code>ExecutionStack</code> utility
+        The StopWatches used to monitor execution can be registered in the
+        <code>ExecutionStack</code>
+        utility
         class that maintain the set of active stopWatches for the current thread. It is recommended
         to let the stopWatches register themselves and cleaning the stack by configuring the Repository to use
-        <code>ExecutionStopWatch</code> StopWatch implementation.
+        <code>ExecutionStopWatch</code>
+        StopWatch implementation.
       </p>
       <p>
         When the Listener on the business process detects some overload, it can look at the ExecutionStack
@@ -74,7 +85,7 @@
     <section name="Secondary monitors">
       <p>
         Listeners are low-level hooks to observe the monitored state and the state exposed by the application.
-        A higher level is provided via the <code>org.apache.commons.monitoring.listeners.SecondaryRepository</code>.
+        A higher level is provided via the<code>org.apache.commons.monitoring.listeners.SecondaryRepository</code>.
         Secondary repositories are used to observe the monitored state for a period of time, where Listeners
         are used to observe individual monitoring events.
       </p>
@@ -87,8 +98,8 @@
         and will then not get notified anymore on application monitoring events.
       </p>
       <p>
-       Secondary repositories are the first-class component for building a time-based monitoring console. See
-       reporting section for more information on there usage for this use case.
+        Secondary repositories are the first-class component for building a time-based monitoring console. See
+        reporting section for more information on there usage for this use case.
       </p>
     </section>
 

@@ -17,16 +17,15 @@
 
 package org.apache.commons.monitoring;
 
+import org.apache.commons.monitoring.counter.Counter;
+import org.apache.commons.monitoring.monitors.Monitor;
+import org.apache.commons.monitoring.repositories.Repository;
+
 /**
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public interface Visitor
-{
-    void visit( Repository repository );
-
-    void visit( Monitor monitor );
-
-    void visit( Gauge gauge );
-
-    void visit( Counter counter );
+public interface Visitor {
+    void visit(Repository repository);
+    void visit(Monitor monitor);
+    void visit(Counter counter);
 }

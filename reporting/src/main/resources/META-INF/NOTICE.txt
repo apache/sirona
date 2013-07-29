@@ -1,0 +1,4 @@
+Table sorter
+
+website: https://github.com/Mottie/tablesorter
+licence: MIT

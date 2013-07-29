@@ -17,381 +17,102 @@
 
 package org.apache.commons.monitoring.jdbc;
 
-import java.sql.Array;
-import java.sql.Blob;
-import java.sql.CallableStatement;
-import java.sql.Clob;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.NClob;
-import java.sql.PreparedStatement;
-import java.sql.SQLClientInfoException;
-import java.sql.SQLException;
-import java.sql.SQLWarning;
-import java.sql.SQLXML;
-import java.sql.Savepoint;
-import java.sql.Statement;
-import java.sql.Struct;
-import java.util.Map;
-import java.util.Properties;
+import org.apache.commons.monitoring.Role;
+import org.apache.commons.monitoring.counter.Unit;
+import org.apache.commons.monitoring.monitors.Monitor;
+import org.apache.commons.monitoring.repositories.Repository;
+import org.apache.commons.monitoring.stopwatches.CounterStopWatch;
+import org.apache.commons.monitoring.stopwatches.StopWatch;
+import org.apache.commons.monitoring.util.ClassLoaders;
 
-import org.apache.commons.monitoring.Repository;
-import org.apache.commons.monitoring.jdbc.MonitoredCallableStatement;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 
 /**
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public class MonitoredConnection
-    implements Connection
-{
+public class MonitoredConnection implements InvocationHandler {
+    private final static Role OPEN_CONECTIONS =
+        new Role("open connections", Unit.UNARY);
 
-    /** target connection */
+    private final static Role CONECTION_DURATION =
+        new Role("connection duration", Unit.Time.NANOSECOND);
+
+    /**
+     * target connection
+     */
     private Connection connection;
-
-    private Repository repository;
-
-    private ConnectionClosedCallBack callBack;
+    private StopWatch stopWatch;
 
     /**
      * @param connection target connection
-     * @param monitor monitor for opened connections
      */
-    public MonitoredConnection( Connection connection, Repository repository, ConnectionClosedCallBack callBack )
-    {
-        super();
+    public MonitoredConnection(final Connection connection, final StopWatch stopWatch) {
         this.connection = connection;
-        this.repository = repository;
-        this.callBack = callBack;
+        this.stopWatch = stopWatch;
     }
 
-    public void close()
-        throws SQLException
-    {
-        connection.close();
-        callBack.onConnectionClosed();
+    @Override
+    public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
+        final String name = method.getName();
+        if ("close".equals(name)) {
+            connection.close();
+            stopWatch.stop();
+            return null;
+        }
+
+        if (name.startsWith("prepare") || name.startsWith("create")) {
+            final Class<?> returnType = method.getReturnType();
+            if (CallableStatement.class.equals(returnType)) {
+                return monitor(CallableStatement.class.cast(doInvoke(method, args)), (String) args[0]);
+            } else if (PreparedStatement.class.equals(returnType)) {
+                return monitor(PreparedStatement.class.cast(doInvoke(method, args)), (String) args[0]);
+            } else if (Statement.class.equals(returnType)) {
+                return monitor(Statement.class.cast(doInvoke(method, args)));
+            }
+        }
+
+        return doInvoke(method, args);
     }
 
-    public Statement createStatement()
-        throws SQLException
-    {
-        return monitor( connection.createStatement() );
-    }
-
-    public Statement createStatement( int resultSetType, int resultSetConcurrency, int resultSetHoldability )
-        throws SQLException
-    {
-        return monitor( connection.createStatement( resultSetType, resultSetConcurrency, resultSetHoldability ) );
-    }
-
-    public Statement createStatement( int resultSetType, int resultSetConcurrency )
-        throws SQLException
-    {
-        return monitor( connection.createStatement( resultSetType, resultSetConcurrency ) );
-    }
-
-    public CallableStatement prepareCall( String sql, int resultSetType, int resultSetConcurrency,
-                                          int resultSetHoldability )
-        throws SQLException
-    {
-        return monitor( connection.prepareCall( sql, resultSetType, resultSetConcurrency, resultSetHoldability ), sql );
-    }
-
-    public CallableStatement prepareCall( String sql, int resultSetType, int resultSetConcurrency )
-        throws SQLException
-    {
-        return monitor( connection.prepareCall( sql, resultSetType, resultSetConcurrency ), sql );
-    }
-
-    public CallableStatement prepareCall( String sql )
-        throws SQLException
-    {
-        return monitor( connection.prepareCall( sql ), sql );
-    }
-
-    public PreparedStatement prepareStatement( String sql, int resultSetType, int resultSetConcurrency,
-                                               int resultSetHoldability )
-        throws SQLException
-    {
-        return monitor( connection.prepareStatement( sql, resultSetType, resultSetConcurrency, resultSetHoldability ),
-            sql );
-    }
-
-    public PreparedStatement prepareStatement( String sql, int resultSetType, int resultSetConcurrency )
-        throws SQLException
-    {
-        return monitor( connection.prepareStatement( sql, resultSetType, resultSetConcurrency ), sql );
-    }
-
-    public PreparedStatement prepareStatement( String sql, int autoGeneratedKeys )
-        throws SQLException
-    {
-        return monitor( connection.prepareStatement( sql, autoGeneratedKeys ), sql );
-    }
-
-    public PreparedStatement prepareStatement( String sql, int[] columnIndexes )
-        throws SQLException
-    {
-        return monitor( connection.prepareStatement( sql, columnIndexes ), sql );
-    }
-
-    public PreparedStatement prepareStatement( String sql, String[] columnNames )
-        throws SQLException
-    {
-        return monitor( connection.prepareStatement( sql, columnNames ), sql );
-    }
-
-    public PreparedStatement prepareStatement( String sql )
-        throws SQLException
-    {
-        return monitor( connection.prepareStatement( sql ), sql );
+    private Object doInvoke(final Method method, final Object[] args) throws IllegalAccessException, InvocationTargetException {
+        return method.invoke(connection, args);
     }
 
     /**
      * @param statement traget Statement
      * @return monitored Statement
      */
-    private Statement monitor( Statement statement )
-    {
-        return new MonitoredStatement( statement, repository );
+    private Statement monitor(final Statement statement) {
+        return Statement.class.cast(Proxy.newProxyInstance(ClassLoaders.current(), new Class<?>[]{Statement.class}, new MonitoredStatement(statement)));
     }
 
     /**
      * @param statement traget PreparedStatement
-     * @param sql SQL Query
+     * @param sql       SQL Query
      * @return monitored PreparedStatement
      */
-    private PreparedStatement monitor( PreparedStatement statement, String sql )
-    {
-        return new MonitoredPreparedStatement( statement, sql, repository );
+    private PreparedStatement monitor(final PreparedStatement statement, final String sql) {
+        return PreparedStatement.class.cast(Proxy.newProxyInstance(ClassLoaders.current(), new Class<?>[]{PreparedStatement.class}, new MonitoredPreparedStatement(statement, sql)));
     }
 
     /**
      * @param statement target PreparedStatement
-     * @param sql SQL Query
+     * @param sql       SQL Query
      * @return Monitored CallableStatement
      */
-    private CallableStatement monitor( CallableStatement statement, String sql )
-    {
-        return new MonitoredCallableStatement( statement, sql, repository );
+    private CallableStatement monitor(final CallableStatement statement, final String sql) {
+        return CallableStatement.class.cast(Proxy.newProxyInstance(ClassLoaders.current(), new Class<?>[]{CallableStatement.class}, new MonitoredPreparedStatement(statement, sql)));
     }
 
-    // --- delegates methods ---
-
-    public void clearWarnings()
-        throws SQLException
-    {
-        connection.clearWarnings();
-    }
-
-    public void commit()
-        throws SQLException
-    {
-        connection.commit();
-    }
-
-    public boolean getAutoCommit()
-        throws SQLException
-    {
-        return connection.getAutoCommit();
-    }
-
-    public String getCatalog()
-        throws SQLException
-    {
-        return connection.getCatalog();
-    }
-
-    public int getHoldability()
-        throws SQLException
-    {
-        return connection.getHoldability();
-    }
-
-    public DatabaseMetaData getMetaData()
-        throws SQLException
-    {
-        return connection.getMetaData();
-    }
-
-    public int getTransactionIsolation()
-        throws SQLException
-    {
-        return connection.getTransactionIsolation();
-    }
-
-    public Map<String, Class<?>> getTypeMap()
-        throws SQLException
-    {
-        return connection.getTypeMap();
-    }
-
-    public SQLWarning getWarnings()
-        throws SQLException
-    {
-        return connection.getWarnings();
-    }
-
-    public boolean isClosed()
-        throws SQLException
-    {
-        return connection.isClosed();
-    }
-
-    public boolean isReadOnly()
-        throws SQLException
-    {
-        return connection.isReadOnly();
-    }
-
-    public String nativeSQL( String sql )
-        throws SQLException
-    {
-        return connection.nativeSQL( sql );
-    }
-
-    public void releaseSavepoint( Savepoint savepoint )
-        throws SQLException
-    {
-        connection.releaseSavepoint( savepoint );
-    }
-
-    public void rollback()
-        throws SQLException
-    {
-        connection.rollback();
-    }
-
-    public void rollback( Savepoint savepoint )
-        throws SQLException
-    {
-        connection.rollback( savepoint );
-    }
-
-    public void setAutoCommit( boolean autoCommit )
-        throws SQLException
-    {
-        connection.setAutoCommit( autoCommit );
-    }
-
-    public void setCatalog( String catalog )
-        throws SQLException
-    {
-        connection.setCatalog( catalog );
-    }
-
-    public void setHoldability( int holdability )
-        throws SQLException
-    {
-        connection.setHoldability( holdability );
-    }
-
-    public void setReadOnly( boolean readOnly )
-        throws SQLException
-    {
-        connection.setReadOnly( readOnly );
-    }
-
-    public Savepoint setSavepoint()
-        throws SQLException
-    {
-        return connection.setSavepoint();
-    }
-
-    public Savepoint setSavepoint( String name )
-        throws SQLException
-    {
-        return connection.setSavepoint( name );
-    }
-
-    public void setTransactionIsolation( int level )
-        throws SQLException
-    {
-        connection.setTransactionIsolation( level );
-    }
-
-    public void setTypeMap( Map<String, Class<?>> map )
-        throws SQLException
-    {
-        connection.setTypeMap( map );
-    }
-
-    // --- jdbc4 ----
-
-    public Array createArrayOf( String typeName, Object[] elements )
-        throws SQLException
-    {
-        return connection.createArrayOf( typeName, elements );
-    }
-
-    public Blob createBlob()
-        throws SQLException
-    {
-        return connection.createBlob();
-    }
-
-    public Clob createClob()
-        throws SQLException
-    {
-        return connection.createClob();
-    }
-
-    public NClob createNClob()
-        throws SQLException
-    {
-        return connection.createNClob();
-    }
-
-    public SQLXML createSQLXML()
-        throws SQLException
-    {
-        return connection.createSQLXML();
-    }
-
-    public Struct createStruct( String typeName, Object[] attributes )
-        throws SQLException
-    {
-        return connection.createStruct( typeName, attributes );
-    }
-
-    public Properties getClientInfo()
-        throws SQLException
-    {
-        return connection.getClientInfo();
-    }
-
-    public String getClientInfo( String name )
-        throws SQLException
-    {
-        return connection.getClientInfo( name );
-    }
-
-    public boolean isValid( int timeout )
-        throws SQLException
-    {
-        return connection.isValid( timeout );
-    }
-
-    public boolean isWrapperFor( Class<?> iface )
-        throws SQLException
-    {
-        return connection.isWrapperFor( iface );
-    }
-
-    public void setClientInfo( Properties properties )
-        throws SQLClientInfoException
-    {
-        connection.setClientInfo( properties );
-    }
-
-    public void setClientInfo( String name, String value )
-        throws SQLClientInfoException
-    {
-        connection.setClientInfo( name, value );
-    }
-
-    public <T> T unwrap( Class<T> iface )
-        throws SQLException
-    {
-        return connection.unwrap( iface );
+    public static Connection monitor(final Connection connection, final Monitor monitor) {
+        final StopWatch stopWatch = new CounterStopWatch(monitor);
+        return Connection.class.cast(Proxy.newProxyInstance(ClassLoaders.current(), new Class<?>[]{Connection.class}, new MonitoredConnection(connection, stopWatch)));
     }
 }

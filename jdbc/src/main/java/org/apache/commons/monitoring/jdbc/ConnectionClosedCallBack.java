@@ -20,7 +20,6 @@ package org.apache.commons.monitoring.jdbc;
 /**
  * CallBack on connection beeing closed
  */
-public interface ConnectionClosedCallBack
-{
+public interface ConnectionClosedCallBack {
     void onConnectionClosed();
 }

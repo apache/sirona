@@ -45,7 +45,7 @@
 
     <dependency>
       <groupId>org.apache.commons.monitoring</groupId>
-      <artifactId>commons-monitoring-instrumentation</artifactId>
+      <artifactId>commons-monitoring-aop</artifactId>
       <version>${project.version}</version>
     </dependency>
 
@@ -56,9 +56,8 @@
     <dependency>
       <groupId>org.apache.geronimo.specs</groupId>
       <artifactId>geronimo-servlet_2.5_spec</artifactId>
-      <version>1.2</version>
+      <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>org.apache.openwebbeans.test</groupId>
       <artifactId>cditest-owb</artifactId>

@@ -17,18 +17,28 @@
 
 package org.apache.commons.monitoring.stopwatches;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
-
-import org.apache.commons.monitoring.StopWatch;
-import org.apache.commons.monitoring.monitors.NullMonitor;
+import org.apache.commons.monitoring.Role;
+import org.apache.commons.monitoring.counter.Counter;
+import org.apache.commons.monitoring.counter.Unit;
+import org.apache.commons.monitoring.monitors.Monitor;
+import org.apache.commons.monitoring.Visitor;
+import org.apache.commons.monitoring.util.ClassLoaders;
 import org.junit.Test;
+
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public class DefaultStopWatchTest
-{
+public class DefaultStopWatchTest {
     private long time;
 
     /**
@@ -39,23 +49,22 @@ public class DefaultStopWatchTest
      */
     @Test
     public void computeTime()
-        throws Exception
-    {
+        throws Exception {
         time = 0;
         StopWatch stopWatch = new MockTimeWatch();
         time++;
         stopWatch.pause();
-        assertTrue( stopWatch.isPaused() );
-        System.out.println( stopWatch.toString() );
+        assertTrue(stopWatch.isPaused());
+        System.out.println(stopWatch.toString());
         time++;
         stopWatch.resume();
-        assertTrue( !stopWatch.isPaused() );
-        System.out.println( stopWatch.toString() );
+        assertTrue(!stopWatch.isPaused());
+        System.out.println(stopWatch.toString());
         time++;
         stopWatch.stop();
-        assertEquals( 2, stopWatch.getElapsedTime() );
-        assertTrue( stopWatch.isStoped() );
-        System.out.println( stopWatch.toString() );
+        assertEquals(2, stopWatch.getElapsedTime());
+        assertTrue(stopWatch.isStoped());
+        System.out.println(stopWatch.toString());
     }
 
     /**
@@ -66,55 +75,123 @@ public class DefaultStopWatchTest
      */
     @Test
     public void supportUnexpectedCalls()
-        throws Exception
-    {
+        throws Exception {
         time = 0;
         StopWatch stopWatch = new MockTimeWatch();
 
         // resume the non-paused watch
-        assertTrue( !stopWatch.isPaused() );
+        assertTrue(!stopWatch.isPaused());
         stopWatch.resume();
-        assertTrue( !stopWatch.isPaused() );
+        assertTrue(!stopWatch.isPaused());
 
         // pause the watch multiple times
         time++;
         stopWatch.pause();
-        assertEquals( 1, stopWatch.getElapsedTime() );
-        assertTrue( stopWatch.isPaused() );
+        assertEquals(1, stopWatch.getElapsedTime());
+        assertTrue(stopWatch.isPaused());
         time++;
         stopWatch.pause();
-        assertEquals( 1, stopWatch.getElapsedTime() );
-        assertTrue( stopWatch.isPaused() );
+        assertEquals(1, stopWatch.getElapsedTime());
+        assertTrue(stopWatch.isPaused());
 
         stopWatch.stop();
-        assertEquals( 1, stopWatch.getElapsedTime() );
-        assertTrue( stopWatch.isStoped() );
+        assertEquals(1, stopWatch.getElapsedTime());
+        assertTrue(stopWatch.isStoped());
 
         // Unexpected use after stopped
         stopWatch.resume();
-        assertEquals( 1, stopWatch.getElapsedTime() );
-        assertTrue( stopWatch.isStoped() );
+        assertEquals(1, stopWatch.getElapsedTime());
+        assertTrue(stopWatch.isStoped());
         stopWatch.pause();
-        assertEquals( 1, stopWatch.getElapsedTime() );
-        assertTrue( stopWatch.isStoped() );
+        assertEquals(1, stopWatch.getElapsedTime());
+        assertTrue(stopWatch.isStoped());
         stopWatch.stop();
-        assertEquals( 1, stopWatch.getElapsedTime() );
-        assertTrue( stopWatch.isStoped() );
+        assertEquals(1, stopWatch.getElapsedTime());
+        assertTrue(stopWatch.isStoped());
     }
 
 
-    private class MockTimeWatch
-        extends DefaultStopWatch
-    {
-        public MockTimeWatch()
-        {
-            super( new NullMonitor() );
+    private class MockTimeWatch extends CounterStopWatch {
+        public MockTimeWatch() {
+            super(new NullMonitor());
         }
 
         @Override
-        protected long nanotime()
-        {
+        protected long nanotime() {
             return time;
+        }
+    }
+
+    public static class NullMonitor implements Monitor {
+        private static final Unit NULL = new Unit("null") {
+            @Override
+            public boolean isCompatible(Unit unit) {
+                return true;
+            }
+        };
+
+        private static final Role NOP_COUNTER = new Role("NopCounter", NULL);
+
+        private static final Role NOP_GAUGE = new Role("NopGauge", NULL);
+
+        private static final Counter counter = Counter.class.cast(Proxy.newProxyInstance(ClassLoaders.current(), new Class<?>[] { Counter.class }, new InvocationHandler() {
+            @Override
+            public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
+                return null;
+            }
+        }));
+
+        private Collection<Counter> counters = Arrays.asList(counter);
+
+        public Counter getCounter(String role) {
+            return counter;
+        }
+
+        public Counter getCounter(Role role) {
+            return counter;
+        }
+
+        public Key getKey() {
+            return new Key("noOp", null);
+        }
+
+        public Counter getMetric(String role) {
+            return counter;
+        }
+
+        public Counter getMetric(Role role) {
+            return counter;
+        }
+
+        public Collection<Counter> getCounters() {
+            return counters;
+        }
+
+        public Collection<Role> getRoles() {
+            return Arrays.asList(NOP_COUNTER, NOP_GAUGE);
+        }
+
+        public void reset() {
+            // NoOp
+        }
+
+        @Override
+        public AtomicInteger currentConcurrency() {
+            return new AtomicInteger();
+        }
+
+        @Override
+        public void updateConcurrency(int concurrency) {
+            // no-op
+        }
+
+        @Override
+        public int getMaxConcurrency() {
+            return 0;
+        }
+
+        public void accept(Visitor visitor) {
+            // NoOp
         }
     }
 }

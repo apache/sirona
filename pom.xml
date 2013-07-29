@@ -16,7 +16,7 @@
   limitations under the License.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                     http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
@@ -32,16 +32,20 @@
   <url>http://commons.apache.org/sandbox/monitoring/</url>
   <inceptionYear>2008</inceptionYear>
   <description>
-    Monitoring provides a simple, lightweight toolkit to instrument java application monitoring capabilities, including performances and thread concurrency.
+    Monitoring provides a simple, lightweight toolkit to instrument java application monitoring capabilities, including
+    performances and thread concurrency.
   </description>
 
   <modules>
     <module>core</module>
-    <module>instrumentation</module>
-    <module>spring</module>
-    <module>reporting</module>
     <module>jdbc</module>
+    <module>aop</module>
     <module>cdi</module>
+    <module>spring</module>
+    <module>web</module>
+    <module>reporting</module>
+    <module>cxf</module>
+    <module>aspectj</module>
   </modules>
 
   <developers>
@@ -60,6 +64,43 @@
     <url>http://svn.apache.org/viewvc/commons/sandbox/monitoring/trunk/</url>
   </scm>
 
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.rat</groupId>
+        <artifactId>apache-rat-plugin</artifactId>
+        <version>0.7</version>
+        <configuration>
+          <includes>
+            <include>src/**/*</include>
+            <include>pom.xml</include>
+          </includes>
+          <excludes>
+            <exclude>**/*/MANIFEST.MF</exclude>
+            <exclude>.git</exclude>
+            <exclude>.gitignore</exclude>
+            <exclude>**/webapp/js/*.js</exclude>
+            <exclude>**/webapp/css/*.css</exclude>
+          </excludes>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>verify</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-webdav</artifactId>
+        <version>1.0-beta-2</version>
+      </extension>
+    </extensions>
+  </build>
 
   <distributionManagement>
     <site>
@@ -71,8 +112,8 @@
 
   <!-- Compiler source and target JVM (see parent pom) -->
   <properties>
-    <maven.compile.source>1.5</maven.compile.source>
-    <maven.compile.target>1.5</maven.compile.target>
+    <maven.compile.source>1.6</maven.compile.source>
+    <maven.compile.target>1.6</maven.compile.target>
     <commons.componentid>monitoring</commons.componentid>
     <commons.jira.componentid>12312100</commons.jira.componentid>
   </properties>
@@ -86,14 +127,10 @@
         <scope>test</scope>
       </dependency>
       <dependency>
-        <groupId>org.apache.commons.monitoring</groupId>
-        <artifactId>commons-monitoring-core</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.commons.monitoring</groupId>
-        <artifactId>commons-monitoring-instrumentation</artifactId>
-        <version>${project.version}</version>
+        <groupId>org.apache.geronimo.specs</groupId>
+        <artifactId>geronimo-servlet_2.5_spec</artifactId>
+        <version>1.2</version>
+        <scope>provided</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>

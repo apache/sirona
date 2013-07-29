@@ -16,35 +16,56 @@
   limitations under the License.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                     http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
   <parent>
     <groupId>org.apache.commons.monitoring</groupId>
     <artifactId>commons-monitoring-parent</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
+
   <artifactId>commons-monitoring-core</artifactId>
   <packaging>jar</packaging>
-  <name>Commons Monitoring (Sandbox) core package</name>
+  <name>Commons Monitoring (Sandbox) :: Core</name>
+
   <dependencies>
-  	<dependency>
-  		<groupId>junit</groupId>
-  		<artifactId>junit</artifactId>
-  		<scope>test</scope>
-  	</dependency>
-  	<dependency>
-  		<groupId>org.apache.commons</groupId>
-  		<artifactId>commons-math</artifactId>
-  		<version>2.0</version>
-  	</dependency>
-  	<dependency>
-  		<groupId>javax.servlet</groupId>
-  		<artifactId>servlet-api</artifactId>
-  		<version>2.3</version>
-  		<scope>provided</scope>
-  		<optional>true</optional>
-  	</dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-math</artifactId>
+      <version>2.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+    </dependency>
   </dependencies>
 
+  <build>
+    <plugins>
+      <plugin> <!-- include commons-math in core to be able to install it in containers more trivially -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>2.1</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <relocations>
+                <relocation>
+                  <pattern>org.apache.commons.math</pattern>
+                  <shadedPattern>org.apache.commons.monitoring.math</shadedPattern>
+                </relocation>
+              </relocations>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>

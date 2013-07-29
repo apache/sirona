@@ -16,10 +16,8 @@
  */
 package org.apache.commons.monitoring.util;
 
-public final class ClassLoaders
-{
-    public static ClassLoader current()
-    {
+public final class ClassLoaders {
+    public static ClassLoader current() {
         final ClassLoader tccl = Thread.currentThread().getContextClassLoader();
         if (tccl != null) {
             return tccl;
@@ -27,8 +25,7 @@ public final class ClassLoaders
         return ClassLoaders.class.getClassLoader();
     }
 
-    private ClassLoaders()
-    {
+    private ClassLoaders() {
         // no-op
     }
 }

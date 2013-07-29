@@ -17,70 +17,77 @@
 
 package org.apache.commons.monitoring.reporting;
 
-import static org.apache.commons.monitoring.Monitor.CONCURRENCY;
-import static org.apache.commons.monitoring.Monitor.FAILURES;
-import static org.apache.commons.monitoring.Unit.UNARY;
+import org.apache.commons.monitoring.Role;
+import org.apache.commons.monitoring.Visitor;
+import org.apache.commons.monitoring.monitors.Monitor;
+import org.apache.commons.monitoring.reporting.format.CSVFormat;
+import org.apache.commons.monitoring.reporting.format.Format;
+import org.apache.commons.monitoring.reporting.format.FormattingVisitor;
+import org.apache.commons.monitoring.reporting.format.RoleFilter;
+import org.apache.commons.monitoring.repositories.DefaultRepository;
+import org.apache.commons.monitoring.repositories.Repository;
+import org.custommonkey.xmlunit.XMLAssert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.text.NumberFormat;
 
-import org.apache.commons.monitoring.Repository;
-import org.apache.commons.monitoring.Visitor;
-import org.apache.commons.monitoring.repositories.DefaultRepository;
-import org.codehaus.jettison.AbstractXMLStreamReader;
-import org.codehaus.jettison.json.JSONObject;
-import org.codehaus.jettison.mapped.MappedXMLStreamReader;
-import org.custommonkey.xmlunit.XMLAssert;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public class FormattingVisitorTest
-{
-    private Repository repository;
+public class FormattingVisitorTest {
+    private static Repository repository;
 
-    private NumberFormat format;
-
-    @Before
-    public void setup()
-    {
+    @BeforeClass
+    public static void setup() {
         repository = new DefaultRepository();
-        repository.getMonitor( "RendererTest", "unit", "test" ).getCounter( FAILURES ).add( 1.0 );
-        repository.getMonitor( "RendererTest", "unit", "test" ).getGauge( CONCURRENCY ).increment( UNARY );
+
+        final Monitor monitor = repository.getMonitor(new Monitor.Key("RendererTest", "unit"));
+        monitor.updateConcurrency(1);
+        monitor.getCounter(Role.FAILURES).add(1.);
     }
 
     @Test
     public void renderToXML()
-        throws Exception
-    {
-        StringWriter out = new StringWriter();
-        Visitor v = new FormattingVisitor( Format.XML_PRETTY, new PrintWriter( out ) );
-        repository.accept( v );
+        throws Exception {
+        final StringWriter out = new StringWriter();
+        final Visitor v = new FormattingVisitor(Format.Defaults.XML_PRETTY, new PrintWriter(out), RoleFilter.Defaults.FAILURES);
+        repository.accept(v);
 
-        System.out.println( out.toString() );
-		Reader expected = new InputStreamReader( getClass().getResourceAsStream( "RendererTest.xml" ) );
-        XMLAssert.assertXMLEqual( expected, new StringReader( out.toString() ) );
+        final Reader expected = new InputStreamReader(getClass().getResourceAsStream("RendererTest.xml"));
+        XMLAssert.assertXMLEqual(expected, new StringReader(out.toString()));
     }
 
     @Test
     public void renderToJSON()
-        throws Exception
-    {
-        StringWriter out = new StringWriter();
-        Visitor v = new FormattingVisitor( Format.JSON_PRETTY, new PrintWriter( out ) );
-        repository.accept( v );
+        throws Exception {
+        final StringWriter out = new StringWriter();
+        final Visitor v = new FormattingVisitor(Format.Defaults.JSON_PRETTY, new PrintWriter(out), RoleFilter.Defaults.FAILURES);
+        repository.accept(v);
 
-        System.out.println( out.toString() );
-        JSONObject json = new JSONObject( out.toString() );
-        AbstractXMLStreamReader reader = new MappedXMLStreamReader( json );
+        assertEquals("{\n" +
+            "  \"RendererTest\":{\n" +
+            "    \"category\": \"unit\",\n" +
+            "    \"failures\":{\"type\":\"counter\",\"Hits\":\"1.0\",\"Max\":\"1.0\",\"Mean\":\"1.0\",\"Min\":\"1.0\",\"StandardDeviation\":\"0.0\",\"Sum\":\"1.0\",\"SumOfLogs\":\"0.0\",\"SumOfSquares\":\"0.0\",\"Variance\":\"0.0\",\"GeometricMean\":\"1.0\",\"Value\":\"1.0\",\"MaxConcurrency\":\"1.0\"}\n" +
+            "  }\n" +
+            "}", out.toString());
+    }
 
-        // FIXME can't use XMLStreamReader to compare actual with expected using XMLUnit :'(
-        // any JSON Testing framework ?
+    @Test
+    public void renderToCSV()
+        throws Exception {
+        final StringWriter out = new StringWriter();
+        final Visitor v = new FormattingVisitor(Format.Defaults.CSV, new PrintWriter(out), RoleFilter.Defaults.FAILURES);
+        repository.accept(v);
+
+        assertEquals(CSVFormat.HEADER +
+            "RendererTest;unit;failures;1.0;1.0;1.0;1.0;0.0;1.0;0.0;0.0;0.0;1.0;1.0;1.0\n",
+            out.toString());
     }
 }

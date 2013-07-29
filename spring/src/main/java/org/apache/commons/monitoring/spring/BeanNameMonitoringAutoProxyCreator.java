@@ -29,11 +29,8 @@ import org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator;
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public class BeanNameMonitoringAutoProxyCreator
-    extends BeanNameAutoProxyCreator implements MonitoringConfigSource
-{
+    extends BeanNameAutoProxyCreator implements MonitoringConfigSource {
     private String category;
-
-    private String subsystem;
 
     private MonitorNameExtractor monitorNameExtractor;
 
@@ -44,12 +41,10 @@ public class BeanNameMonitoringAutoProxyCreator
      * java.lang.String, org.springframework.aop.TargetSource)
      */
     @Override
-    protected Object[] getAdvicesAndAdvisorsForBean( Class beanClass, String beanName, TargetSource targetSource )
-    {
-        if ( super.getAdvicesAndAdvisorsForBean( beanClass, beanName, targetSource ) != DO_NOT_PROXY )
-        {
-            Advice advice = MonitoringAdviceFactory.getAdvice( this );
-            return new Object[] { advice };
+    protected Object[] getAdvicesAndAdvisorsForBean(Class beanClass, String beanName, TargetSource targetSource) {
+        if (super.getAdvicesAndAdvisorsForBean(beanClass, beanName, targetSource) != DO_NOT_PROXY) {
+            Advice advice = MonitoringAdviceFactory.getAdvice(this);
+            return new Object[]{advice};
         }
         return DO_NOT_PROXY;
     }
@@ -57,51 +52,22 @@ public class BeanNameMonitoringAutoProxyCreator
     /**
      * @param category the category to set
      */
-    public void setCategory( String category )
-    {
+    public void setCategory(String category) {
         this.category = category;
-    }
-
-    /**
-     * @param subsystem the subsystem to set
-     */
-    public void setSubsystem( String subsystem )
-    {
-        this.subsystem = subsystem;
     }
 
     /**
      * @param monitorNameExtractor the monitorNameExtractor to set
      */
-    public void setMonitorNameExtractor( MonitorNameExtractor monitorNameExtractor )
-    {
+    public void setMonitorNameExtractor(MonitorNameExtractor monitorNameExtractor) {
         this.monitorNameExtractor = monitorNameExtractor;
     }
 
-    /**
-     * {@inheritDoc}
-     * @see org.apache.commons.monitoring.spring.MonitoringConfigSource#getCategory()
-     */
-    public String getCategory()
-    {
+    public String getCategory() {
         return category;
     }
 
-    /**
-     * {@inheritDoc}
-     * @see org.apache.commons.monitoring.spring.MonitoringConfigSource#getSubsystem()
-     */
-    public String getSubsystem()
-    {
-        return subsystem;
-    }
-
-    /**
-     * {@inheritDoc}
-     * @see org.apache.commons.monitoring.spring.MonitoringConfigSource#getMonitorNameExtractor()
-     */
-    public MonitorNameExtractor getMonitorNameExtractor()
-    {
+    public MonitorNameExtractor getMonitorNameExtractor() {
         return monitorNameExtractor;
     }
 }

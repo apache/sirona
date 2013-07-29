@@ -18,45 +18,30 @@
 package org.apache.commons.monitoring.spring;
 
 import org.aopalliance.aop.Advice;
-import org.apache.commons.monitoring.instrumentation.aop.AopaliancePerformanceInterceptor;
 import org.apache.commons.monitoring.instrumentation.aop.MonitorNameExtractor;
+import org.apache.commons.monitoring.spring.aop.AopaliancePerformanceInterceptor;
 
 /**
- *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public class MonitoringAdviceFactory
-{
+public class MonitoringAdviceFactory {
 
-    public static Advice getAdvice( MonitoringConfigSource source )
-    {
+    public static Advice getAdvice(MonitoringConfigSource source) {
         AopaliancePerformanceInterceptor interceptor = new AopaliancePerformanceInterceptor();
-        if ( source.getCategory() != null )
-        {
-            interceptor.setCategory( source.getCategory() );
+        if (source.getCategory() != null) {
+            interceptor.setCategory(source.getCategory());
         }
-        if ( source.getSubsystem() != null )
-        {
-            interceptor.setSubsystem( source.getSubsystem() );
-        }
-        if ( source.getMonitorNameExtractor() != null )
-        {
-            interceptor.setMonitorNameExtractor( source.getMonitorNameExtractor() );
+        if (source.getMonitorNameExtractor() != null) {
+            interceptor.setMonitorNameExtractor(source.getMonitorNameExtractor());
         }
         return interceptor;
     }
 
-    public interface MonitoringConfigSource
-    {
+    public interface MonitoringConfigSource {
         /**
          * @return the category
          */
         public abstract String getCategory();
-
-        /**
-         * @return the subsystem
-         */
-        public abstract String getSubsystem();
 
         /**
          * @return the monitorNameExtractor

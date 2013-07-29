@@ -25,15 +25,13 @@ import org.springframework.aop.aspectj.AspectJExpressionPointcut;
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public class AspectJMonitoringAutoProxyCreator
-    extends PointcutMonitoringAutoProxyCreator
-{
+    extends PointcutMonitoringAutoProxyCreator {
     /**
      * Set the AspectJ expression to be used to select beans / methods to get monitored
      */
-    public void setExpression( String expression )
-    {
+    public void setExpression(String expression) {
         AspectJExpressionPointcut pointcut = new AspectJExpressionPointcut();
-        pointcut.setExpression( expression );
-        setPointcut( pointcut );
+        pointcut.setExpression(expression);
+        setPointcut(pointcut);
     }
 }

@@ -20,7 +20,6 @@ package org.apache.commons.monitoring;
 /**
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public interface Visitable
-{
-    void accept( Visitor visitor );
+public interface Visitable {
+    void accept(Visitor visitor);
 }

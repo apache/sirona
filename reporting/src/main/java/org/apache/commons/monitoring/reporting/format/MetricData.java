@@ -1,0 +1,111 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.commons.monitoring.reporting.format;
+
+import org.apache.commons.monitoring.counter.Counter;
+
+/**
+ * An enum to acces data from a Counter based on the property name. Can be used to avoid reflection on Counter
+ * implementation when requesting data and undesirable exposure of internals.
+ * <p/>
+ * example :
+ * <p/>
+ * <pre>
+ * String property = httpServletRequest.getParameter( &quot;property&quot; );
+ *
+ * Double data = MetricData.valueOf( property ).value( metric );
+ * </pre>
+ *
+ * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
+ */
+public enum MetricData {
+    Hits {
+        @Override
+        public double value(final Counter counter) {
+            return counter.getHits();
+        }
+    },
+    Max {
+        @Override
+        public double value(final Counter counter) {
+            return counter.getMax();
+        }
+    },
+    Mean {
+        @Override
+        public double value(final Counter counter) {
+            return counter.getMean();
+        }
+    },
+    Min {
+        @Override
+        public double value(final Counter counter) {
+            return counter.getMin();
+        }
+    },
+    StandardDeviation {
+        @Override
+        public double value(final Counter counter) {
+            return counter.getStandardDeviation();
+        }
+    },
+    Sum {
+        @Override
+        public double value(final Counter counter) {
+            return counter.getSum();
+        }
+    },
+    SumOfLogs {
+        @Override
+        public double value(final Counter counter) {
+            return counter.getSumOfLogs();
+        }
+    },
+    SumOfSquares {
+        @Override
+        public double value(final Counter counter) {
+            return counter.getSumOfSquares();
+        }
+    },
+    Variance {
+        @Override
+        public double value(final Counter counter) {
+            return counter.getVariance();
+        }
+    },
+    GeometricMean {
+        @Override
+        public double value(final Counter counter) {
+            return counter.getGeometricMean();
+        }
+    },
+    Value {
+        @Override
+        public double value(final Counter counter) {
+            return counter.getSum();
+        }
+    },
+    MaxConcurrency {
+        @Override
+        public double value(final Counter counter) {
+            return counter.getMonitor().getMaxConcurrency();
+        }
+    };
+
+    public abstract double value(Counter counter);
+}

@@ -16,34 +16,29 @@
  */
 package org.apache.commons.monitoring.cdi;
 
-import org.apache.commons.monitoring.instrumentation.aop.AbstractPerformanceInterceptor;
-import org.apache.commons.monitoring.repositories.RepositoryFinder;
+import org.apache.commons.monitoring.aop.AbstractPerformanceInterceptor;
 
 import javax.interceptor.AroundInvoke;
+import javax.interceptor.AroundTimeout;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
 
-@Interceptor @Monitored
+@Interceptor
+@Monitored
 public class CommonsMonitoringInterceptor extends AbstractPerformanceInterceptor<InvocationContext> {
-    public CommonsMonitoringInterceptor() {
-        setRepository(RepositoryFinder.REPOSITORY);
-    }
-
     @AroundInvoke
-    public Object monitor(final InvocationContext invocationContext) throws Throwable
-    {
+    @AroundTimeout
+    public Object monitor(final InvocationContext invocationContext) throws Throwable {
         return doInvoke(invocationContext);
     }
 
     @Override
-    protected Object proceed(final InvocationContext invocation) throws Throwable
-    {
+    protected Object proceed(final InvocationContext invocation) throws Throwable {
         return invocation.proceed();
     }
 
     @Override
-    protected String getMonitorName(InvocationContext invocation)
-    {
-        return getMonitorName(invocation.getMethod());
+    protected String getMonitorName(final InvocationContext invocation) {
+        return getMonitorName(invocation.getTarget(), invocation.getMethod());
     }
 }

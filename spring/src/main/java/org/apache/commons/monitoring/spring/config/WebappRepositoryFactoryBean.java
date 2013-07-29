@@ -17,44 +17,42 @@
 
 package org.apache.commons.monitoring.spring.config;
 
-import javax.servlet.ServletContext;
-
-import org.apache.commons.monitoring.instrumentation.servlet.ServletContextUtil;
+import org.apache.commons.monitoring.repositories.Repository;
 import org.springframework.web.context.ServletContextAware;
+
+import javax.servlet.ServletContext;
 
 /**
  * Creates monitored proxies for beans that match a pointcut.
- * 
+ *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public class WebappRepositoryFactoryBean extends RepositoryFactoryBean
-    implements ServletContextAware
-{
-    /** The web application context */
+    implements ServletContextAware {
+    /**
+     * The web application context
+     */
     private ServletContext servletContext;
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.springframework.web.context.ServletContextAware#setServletContext(javax.servlet.ServletContext)
      */
-    public void setServletContext( ServletContext servletContext )
-    {
+    public void setServletContext(ServletContext servletContext) {
         this.servletContext = servletContext;
-    };
+    }
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
      */
     public void afterPropertiesSet()
-        throws Exception
-    {
+        throws Exception {
         super.afterPropertiesSet();
-        if ( servletContext != null )
-        {
-            servletContext.setAttribute( ServletContextUtil.REPOSITORY_KEY, getObject() );
+        if (servletContext != null) {
+            servletContext.setAttribute(Repository.class.getName(), getObject());
         }
     }
 

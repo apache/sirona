@@ -18,103 +18,129 @@
 package org.apache.commons.monitoring.jdbc;
 
 
+import org.apache.commons.monitoring.monitors.Monitor;
+import org.apache.commons.monitoring.repositories.Repository;
+
+import javax.sql.DataSource;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.logging.Logger;
 
-import javax.sql.DataSource;
-
-import org.apache.commons.monitoring.Repository;
-
 
 /**
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public class MonitoredDataSource extends AbstractMonitoredDataSource
-    implements DataSource
-{
+public class MonitoredDataSource implements DataSource {
+    /**
+     * delegate DataSource
+     */
+    private DataSource dataSource;
+
+    /**
+     * dataSource name
+     */
+    private String dataSourceName = DataSource.class.getName();
+    private Monitor monitor;
+
     /**
      * Constructor
-     * 
+     *
      * @param dataSource the datasource to monitor
      */
-    public MonitoredDataSource( DataSource dataSource, Repository repository )
-    {
-        super( dataSource, repository );
+    public MonitoredDataSource(final DataSource dataSource) {
+        this.dataSource = dataSource;
+        this.monitor = Repository.INSTANCE.getMonitor(dataSourceName, "jdbc");
     }
 
-    public MonitoredDataSource()
-    {
+    public MonitoredDataSource() {
         super();
     }
 
+    public void setDataSource(final DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+
+    /**
+     * @param dataSourceName the dataSourceName to set
+     */
+    public void setDataSourceName(final String dataSourceName) {
+        this.dataSourceName = dataSourceName;
+    }
+
+    /**
+     * @param monitor the monitor to set
+     */
+    public void setMonitor(final Monitor monitor) {
+        this.monitor = monitor;
+    }
+
+    protected Connection monitor(final Connection connection) {
+        return MonitoredConnection.monitor(connection, monitor);
+    }
+
+    /**
+     * @return the dataSource
+     */
+    protected DataSource getDataSource() {
+        return dataSource;
+    }
+
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see javax.sql.DataSource#getConnection()
      */
     public Connection getConnection()
-        throws SQLException
-    {
-        Connection connection = getDataSource().getConnection();
-        return monitor( connection );
+        throws SQLException {
+        return monitor(getDataSource().getConnection());
     }
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see javax.sql.DataSource#getConnection(java.lang.String, java.lang.String)
      */
-    public Connection getConnection( String username, String password )
-        throws SQLException
-    {
-        Connection connection = getDataSource().getConnection( username, password );
-        return monitor( connection );
+    public Connection getConnection(String username, String password)
+        throws SQLException {
+        return monitor(getDataSource().getConnection(username, password));
     }
 
     public int getLoginTimeout()
-        throws SQLException
-    {
+        throws SQLException {
         return getDataSource().getLoginTimeout();
     }
 
     public PrintWriter getLogWriter()
-        throws SQLException
-    {
+        throws SQLException {
         return getDataSource().getLogWriter();
     }
 
-    public void setLoginTimeout( int seconds )
-        throws SQLException
-    {
-        getDataSource().setLoginTimeout( seconds );
+    public void setLoginTimeout(int seconds)
+        throws SQLException {
+        getDataSource().setLoginTimeout(seconds);
     }
 
-    public void setLogWriter( PrintWriter out )
-        throws SQLException
-    {
-        getDataSource().setLogWriter( out );
+    public void setLogWriter(PrintWriter out)
+        throws SQLException {
+        getDataSource().setLogWriter(out);
     }
 
     // --- jdbc4 ----
 
-    public boolean isWrapperFor( Class<?> iface )
-        throws SQLException
-    {
-        return getDataSource().isWrapperFor( iface );
+    public boolean isWrapperFor(Class<?> iface)
+        throws SQLException {
+        return getDataSource().isWrapperFor(iface);
     }
 
-    public <T> T unwrap( Class<T> iface )
-        throws SQLException
-    {
-        return getDataSource().unwrap( iface );
+    public <T> T unwrap(Class<T> iface)
+        throws SQLException {
+        return getDataSource().unwrap(iface);
     }
 
     public Logger getParentLogger()
-        throws SQLFeatureNotSupportedException
-    {
-        return null;
+        throws SQLFeatureNotSupportedException {
+        return Logger.getLogger("commons-monitoring.datasource");
     }
 }

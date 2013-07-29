@@ -17,9 +17,6 @@
 
 package org.apache.commons.monitoring.spring;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.aopalliance.aop.Advice;
 import org.apache.commons.monitoring.instrumentation.aop.MonitorNameExtractor;
 import org.apache.commons.monitoring.spring.MonitoringAdviceFactory.MonitoringConfigSource;
@@ -29,6 +26,9 @@ import org.springframework.aop.PointcutAdvisor;
 import org.springframework.aop.framework.autoproxy.AbstractAdvisorAutoProxyCreator;
 import org.springframework.aop.support.DefaultPointcutAdvisor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Creates monitored proxies for beans that match a pointcut.
  *
@@ -36,11 +36,8 @@ import org.springframework.aop.support.DefaultPointcutAdvisor;
  */
 public class PointcutMonitoringAutoProxyCreator
     extends AbstractAdvisorAutoProxyCreator
-    implements MonitoringConfigSource
-{
+    implements MonitoringConfigSource {
     private String category;
-
-    private String subsystem;
 
     private MonitorNameExtractor monitorNameExtractor;
 
@@ -52,78 +49,51 @@ public class PointcutMonitoringAutoProxyCreator
      * @see org.springframework.aop.framework.autoproxy.AbstractAdvisorAutoProxyCreator#findCandidateAdvisors()
      */
     @Override
-    protected List<Advisor> findCandidateAdvisors()
-    {
-        List<Advisor> adivisors = new ArrayList<Advisor>( 1 );
+    protected List<Advisor> findCandidateAdvisors() {
+        List<Advisor> adivisors = new ArrayList<Advisor>(1);
 
-        PointcutAdvisor adivsor = createPointcutAdvisor( MonitoringAdviceFactory.getAdvice( this ) );
+        PointcutAdvisor adivsor = createPointcutAdvisor(MonitoringAdviceFactory.getAdvice(this));
 
-        adivisors.add( adivsor );
+        adivisors.add(adivsor);
         return adivisors;
     }
 
-    /**
-     * @param interceptor
-     * @return
-     */
-    protected PointcutAdvisor createPointcutAdvisor( Advice advice )
-    {
-        return new DefaultPointcutAdvisor( pointcut, advice );
+    protected PointcutAdvisor createPointcutAdvisor(Advice advice) {
+        return new DefaultPointcutAdvisor(pointcut, advice);
     }
 
     /**
      * @param category the category to set
      */
-    public void setCategory( String category )
-    {
+    public void setCategory(String category) {
         this.category = category;
-    }
-
-    /**
-     * @param subsystem the subsystem to set
-     */
-    public void setSubsystem( String subsystem )
-    {
-        this.subsystem = subsystem;
     }
 
     /**
      * @param monitorNameExtractor the monitorNameExtractor to set
      */
-    public void setMonitorNameExtractor( MonitorNameExtractor monitorNameExtractor )
-    {
+    public void setMonitorNameExtractor(MonitorNameExtractor monitorNameExtractor) {
         this.monitorNameExtractor = monitorNameExtractor;
     }
 
     /**
      * @param pointcut the pointcut to set
      */
-    public void setPointcut( Pointcut pointcut )
-    {
+    public void setPointcut(Pointcut pointcut) {
         this.pointcut = pointcut;
     }
 
     /**
      * @return the category
      */
-    public String getCategory()
-    {
+    public String getCategory() {
         return category;
-    }
-
-    /**
-     * @return the subsystem
-     */
-    public String getSubsystem()
-    {
-        return subsystem;
     }
 
     /**
      * @return the monitorNameExtractor
      */
-    public MonitorNameExtractor getMonitorNameExtractor()
-    {
+    public MonitorNameExtractor getMonitorNameExtractor() {
         return monitorNameExtractor;
     }
 }

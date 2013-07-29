@@ -17,68 +17,53 @@
 
 package org.apache.commons.monitoring;
 
+import org.apache.commons.monitoring.counter.Unit;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+
+import static org.apache.commons.monitoring.counter.Unit.Time.NANOSECOND;
 
 /**
  * As a monitored resource may have multipe Metrics, each one has a dedicated 'role' that
  * defines the type of data or the monitored aspect it handles.
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
- * @param <M> The metric this role relates to
  */
-public class Role
-    implements Comparable<Role>
-{
-    private String name;
-
-    private Unit unit;
-
-    private Metric.Type type;
-
+public class Role implements Comparable<Role> {
     private static final ConcurrentMap<String, Role> ROLES = new ConcurrentHashMap<String, Role>();
 
-    public static Role getRole( String name )
-    {
-        return ROLES.get( name );
+    public static final Role PERFORMANCES = new Role("performances", NANOSECOND);
+    public static final Role FAILURES = new Role("failures", Unit.UNARY);
+
+    private String name;
+    private Unit unit;
+
+    public static Role getRole(String name) {
+        return ROLES.get(name);
 
     }
 
-    public static Collection<Role> getRoles()
-    {
-        return Collections.unmodifiableCollection( ROLES.values() );
+    public static Collection<Role> getRoles() {
+        return Collections.unmodifiableCollection(ROLES.values());
     }
 
-    public Role( String name, Unit unit, Metric.Type type )
-    {
+    public Role(String name, Unit unit) {
         super();
-        if ( name == null )
-        {
-            throw new IllegalArgumentException( "A role name is required" );
+        if (name == null) {
+            throw new IllegalArgumentException("A role name is required");
         }
-        if ( unit == null )
-        {
-            throw new IllegalArgumentException( "A role unit is required" );
-        }
-        if ( type == null )
-        {
-            throw new IllegalArgumentException( "A type is required" );
+        if (unit == null) {
+            throw new IllegalArgumentException("A role unit is required");
         }
         this.name = name;
         this.unit = unit;
-        this.type = type;
-        Role old = ROLES.putIfAbsent( name, this );
-        if ( old != null )
-        {
-            if ( !type.equals( old.type ) )
-            {
-                throw new IllegalStateException( "A role already exists with this name but distinct type" );
-            }
-            if ( !unit.equals( old.unit ) )
-            {
-                throw new IllegalStateException( "A role already exists with this name but distinct unit" );
+        final Role old = ROLES.putIfAbsent(name, this);
+        if (old != null) {
+            if (!unit.equals(old.unit)) {
+                throw new IllegalStateException("A role already exists with this name but distinct unit");
             }
         }
     }
@@ -86,16 +71,14 @@ public class Role
     /**
      * @return the role
      */
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
     /**
      * @return the unit
      */
-    public Unit getUnit()
-    {
+    public Unit getUnit() {
         return unit;
     }
 
@@ -103,8 +86,7 @@ public class Role
      * @see java.lang.Object#hashCode()
      */
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return name.hashCode();
     }
 
@@ -112,22 +94,18 @@ public class Role
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
-    public boolean equals( Object obj )
-    {
-        if ( this == obj )
+    public boolean equals(Object obj) {
+        if (this == obj)
             return true;
-        if ( obj == null )
+        if (obj == null)
             return false;
-        if ( getClass() != obj.getClass() )
+        if (getClass() != obj.getClass())
             return false;
         final Role other = (Role) obj;
-        if ( name == null )
-        {
-            if ( other.name != null )
+        if (name == null) {
+            if (other.name != null)
                 return false;
-        }
-        else if ( !name.equals( other.name ) )
-        {
+        } else if (!name.equals(other.name)) {
             return false;
         }
         return true;
@@ -136,20 +114,12 @@ public class Role
     /**
      * {@inheritDoc}
      */
-    public int compareTo( Role o )
-    {
-        return name.compareTo( o.name );
+    public int compareTo(Role o) {
+        return name.compareTo(o.name);
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return name;
     }
-
-    public Metric.Type getType()
-    {
-        return type;
-    }
-
 }

@@ -16,8 +16,8 @@
  */
 package org.apache.commons.monitoring.cdi;
 
-import org.apache.commons.monitoring.Counter;
-import org.apache.commons.monitoring.repositories.RepositoryFinder;
+import org.apache.commons.monitoring.counter.Counter;
+import org.apache.commons.monitoring.repositories.Repository;
 import org.apache.webbeans.cditest.CdiTestContainer;
 import org.apache.webbeans.cditest.CdiTestContainerLoader;
 import org.junit.Test;
@@ -25,14 +25,14 @@ import org.junit.Test;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.spi.BeanManager;
 
+import java.util.concurrent.TimeUnit;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-public class CommonsMonitoringInterceptorTest
-{
+public class CommonsMonitoringInterceptorTest {
     @Test
-    public void checkMeasures() throws Exception
-    {
+    public void checkMeasures() throws Exception {
         final CdiTestContainer container = CdiTestContainerLoader.getCdiContainer();
         container.bootContainer();
         container.startApplicationScope();
@@ -45,13 +45,13 @@ public class CommonsMonitoringInterceptorTest
         container.stopApplicationScope();
         container.shutdownContainer();
 
-        final Counter perf = RepositoryFinder.REPOSITORY.getMonitor(MonitoredBean.class.getName() + ".twoSeconds").getCounter("performances");
+        final Counter perf = Repository.INSTANCE.getMonitor(MonitoredBean.class.getName() + ".twoSeconds").getCounter("performances");
         assertNotNull(perf);
-
-        assertEquals(2000, perf.getMax(), 200);
+        assertEquals(2000, TimeUnit.NANOSECONDS.toMillis((int) perf.getMax()), 200);
     }
 
-    @Monitored @ApplicationScoped
+    @Monitored
+    @ApplicationScoped
     public static class MonitoredBean {
         public void twoSeconds() {
             try {
