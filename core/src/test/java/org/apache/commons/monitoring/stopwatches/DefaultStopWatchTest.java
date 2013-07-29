@@ -188,5 +188,10 @@ public class DefaultStopWatchTest {
         public int getMaxConcurrency() {
             return 0;
         }
+
+        @Override
+        public int getConcurrency() {
+            return 0;
+        }
     }
 }

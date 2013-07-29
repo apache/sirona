@@ -55,7 +55,7 @@ public class FormatsTest {
         assertEquals("<repository>" +
             "<monitor name=\"RendererTest\" category=\"unit\">" +
             "<counter role=\"failures\" unit=\"u\" Hits=\"1.0\" Max=\"1.0\" Mean=\"1.0\" Min=\"1.0\" StandardDeviation=\"0.0\" Sum=\"1.0\" " +
-            "SumOfLogs=\"0.0\" SumOfSquares=\"0.0\" Variance=\"0.0\" GeometricMean=\"1.0\" Value=\"1.0\" MaxConcurrency=\"1.0\" />" +
+            "SumOfLogs=\"0.0\" SumOfSquares=\"0.0\" Variance=\"0.0\" GeometricMean=\"1.0\" Value=\"1.0\" Concurrency=\"0.0\" MaxConcurrency=\"1.0\" />" +
             "</monitor>" +
             "</repository>".trim(), out.toString());
     }
@@ -69,7 +69,7 @@ public class FormatsTest {
             "{\"name\":\"RendererTest\",\"category\":\"unit\",\"counters\":[" +
             "{\"role\":\"failures\",\"unit\":\"u\",\"Hits\":\"1.0\",\"Max\":\"1.0\",\"Mean\":\"1.0\",\"Min\":\"1.0\"," +
             "\"StandardDeviation\":\"0.0\",\"Sum\":\"1.0\",\"SumOfLogs\":\"0.0\",\"SumOfSquares\":\"0.0\",\"Variance\":\"0.0\"," +
-            "\"GeometricMean\":\"1.0\",\"Value\":\"1.0\",\"MaxConcurrency\":\"1.0\"}]}]}", out.toString());
+            "\"GeometricMean\":\"1.0\",\"Value\":\"1.0\",\"Concurrency\":\"0.0\",\"MaxConcurrency\":\"1.0\"}]}]}", out.toString());
     }
 
     @Test
@@ -78,7 +78,7 @@ public class FormatsTest {
         Format.Defaults.CSV.render(new PrintWriter(out), Collections.<String, Object>emptyMap());
 
         assertEquals(CSVFormat.HEADER +
-            "RendererTest;unit;failures (u);1.0;1.0;1.0;1.0;0.0;1.0;0.0;0.0;0.0;1.0;1.0;1.0\n",
+            "RendererTest;unit;failures (u);1.0;1.0;1.0;1.0;0.0;1.0;0.0;0.0;0.0;1.0;1.0;0.0;1.0\n",
             out.toString());
     }
 }

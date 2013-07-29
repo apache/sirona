@@ -87,6 +87,7 @@ public interface Monitor {
     void updateConcurrency(int concurrency);
 
     int getMaxConcurrency();
+    int getConcurrency();
 
     /**
      * Identifier class for Monitors.

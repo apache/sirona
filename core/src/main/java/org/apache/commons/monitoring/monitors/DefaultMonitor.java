@@ -110,4 +110,9 @@ public class DefaultMonitor implements Monitor {
     public int getMaxConcurrency() {
         return maxConcurrency;
     }
+
+    @Override
+    public int getConcurrency() {
+        return currentConcurrency().get();
+    }
 }

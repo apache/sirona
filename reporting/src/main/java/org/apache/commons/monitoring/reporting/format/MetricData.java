@@ -155,6 +155,17 @@ public enum MetricData {
             return true;
         }
     },
+    Concurrency {
+        @Override
+        public double value(final Counter counter) {
+            return counter.getMonitor().getConcurrency();
+        }
+
+        @Override
+        public boolean isTime() {
+            return false;
+        }
+    },
     MaxConcurrency {
         @Override
         public double value(final Counter counter) {
