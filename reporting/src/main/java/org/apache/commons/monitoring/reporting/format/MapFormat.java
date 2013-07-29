@@ -42,8 +42,22 @@ public class MapFormat {
 
     protected static Unit timeUnit(final Map<String, ?> params) {
         final Object u = params.get("unit");
-        if (u != null && String.class.isInstance(u)) {
-            return Unit.get(String.class.cast(u).toUpperCase());
+        if (u != null) {
+            if (String.class.isInstance(u)) {
+                final Unit unit = Unit.get(String.class.cast(u).toLowerCase());
+                if (unit != null) {
+                    return unit;
+                }
+            }
+            if (String[].class.isInstance(u)) {
+                final String[] array = String[].class.cast(u);
+                if (array.length > 0) {
+                    final Unit unit = Unit.get(array[0].toLowerCase());
+                    if (unit != null) {
+                        return unit;
+                    }
+                }
+            }
         }
         return Unit.Time.MILLISECOND;
     }
