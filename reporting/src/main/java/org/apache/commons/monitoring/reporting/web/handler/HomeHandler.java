@@ -23,11 +23,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
 import java.util.Map;
 
-public class HtmlHandler implements Handler {
-    private final HtmlRenderer renderer;
+public class HomeHandler implements Handler {
+    private final HomeRenderer renderer;
 
-    public HtmlHandler(final String template) {
-        this.renderer = new HtmlRenderer(template);
+    public HomeHandler() {
+        this.renderer = new HomeRenderer();
     }
 
     @Override
@@ -35,16 +35,10 @@ public class HtmlHandler implements Handler {
         return renderer;
     }
 
-    protected static class HtmlRenderer implements Renderer {
-        private final String template;
-
-        public HtmlRenderer(final String template) {
-            this.template = template;
-        }
-
+    protected static class HomeRenderer implements Renderer {
         @Override
         public void render(final PrintWriter writer, final Map<String, ?> params) {
-            Templates.htmlRender(writer, template, params);
+            Templates.htmlRender(writer, "home.vm", params);
         }
     }
 }

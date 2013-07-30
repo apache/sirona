@@ -14,37 +14,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.commons.monitoring.reporting.web.handler;
+package org.apache.commons.monitoring.reporting.web.plugin.jmx;
 
-import org.apache.commons.monitoring.reporting.template.Templates;
+import org.apache.commons.monitoring.reporting.web.handler.Handler;
+import org.apache.commons.monitoring.reporting.web.handler.Renderer;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
 import java.util.Map;
 
-public class HtmlHandler implements Handler {
-    private final HtmlRenderer renderer;
-
-    public HtmlHandler(final String template) {
-        this.renderer = new HtmlRenderer(template);
-    }
-
+public class JMXHandler implements Handler {
     @Override
     public Renderer handle(final HttpServletRequest request, final HttpServletResponse response) {
-        return renderer;
-    }
-
-    protected static class HtmlRenderer implements Renderer {
-        private final String template;
-
-        public HtmlRenderer(final String template) {
-            this.template = template;
-        }
-
-        @Override
-        public void render(final PrintWriter writer, final Map<String, ?> params) {
-            Templates.htmlRender(writer, template, params);
-        }
+        return new Renderer() {
+            @Override
+            public void render(final PrintWriter writer, final Map<String, ?> params) {
+                writer.write("TODO");
+            }
+        };
     }
 }

@@ -21,10 +21,11 @@ import org.apache.commons.monitoring.reporting.template.Templates;
 import org.apache.commons.monitoring.reporting.web.handler.ClearHandler;
 import org.apache.commons.monitoring.reporting.web.handler.FilteringHandler;
 import org.apache.commons.monitoring.reporting.web.handler.Handler;
-import org.apache.commons.monitoring.reporting.web.handler.HtmlHandler;
+import org.apache.commons.monitoring.reporting.web.handler.HomeHandler;
 import org.apache.commons.monitoring.reporting.web.handler.Renderer;
 import org.apache.commons.monitoring.reporting.web.handler.ReportHandler;
 import org.apache.commons.monitoring.reporting.web.handler.ResetHandler;
+import org.apache.commons.monitoring.reporting.web.plugin.PluginRepository;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -54,7 +55,8 @@ public class MonitoringController implements Filter {
     }
 
     private void initHandlers() {
-        defaultHandler = new HtmlHandler("home.vm");
+        defaultHandler = new HomeHandler();
+
         handlers.put("/", defaultHandler);
         handlers.put("/home", defaultHandler);
         handlers.put("/report", new ReportHandler(Format.Defaults.HTML));
@@ -64,6 +66,12 @@ public class MonitoringController implements Filter {
         handlers.put("/clear", new ClearHandler());
         handlers.put("/reset", new ResetHandler());
         handlers.put("/resources/css/monitoring.css", FilteringHandler.INSTANCE); // filtered to get the right base for pictures
+
+        for (final PluginRepository.PluginInfo plugin : PluginRepository.PLUGIN_INFO) {
+            if (plugin.getHandler() != null && plugin.getUrl() != null) {
+                handlers.put("/" + plugin.getUrl(), plugin.getHandler());
+            }
+        }
     }
 
     private void initTemplates() {

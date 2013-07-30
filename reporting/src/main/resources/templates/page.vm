@@ -36,20 +36,29 @@
               <a class="brand" href="http://commons.apache.org/sandbox/commons-monitoring/">Commons Monitoring</a>
               <div class="nav-collapse">
                   <ul class="nav">
-                      #if ( $currentTemplate == "home.vm")
+                      #if ( $templateId == "home")
                         <li class="active">
                       #else
                         <li>
                       #end
                           <a href="$mapping/">Home</a>
                       </li>
-                      #if ( $currentTemplate == "report.vm")
+                      #if ( $templateId == "report")
                         <li class="active">
                       #else
                         <li>
                       #end
                           <a href="$mapping/report">Report</a>
                       </li>
+                      #foreach ( $plugin in $plugins )
+                          #if ( $templateId == $plugin.name )
+                            <li class="active">
+                          #else
+                            <li>
+                          #end
+                              <a href="$mapping/$plugin.url">$plugin.name</a>
+                          </li>
+                      #end
                   </ul>
                   <ul class="nav pull-right">
                       <li><a href="http://www.apache.org/">ASF</a></li>

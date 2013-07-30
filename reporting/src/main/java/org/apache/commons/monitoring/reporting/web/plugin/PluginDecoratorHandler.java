@@ -14,37 +14,49 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.commons.monitoring.reporting.web.handler;
+package org.apache.commons.monitoring.reporting.web.plugin;
 
-import org.apache.commons.monitoring.reporting.template.Templates;
+import org.apache.commons.monitoring.reporting.web.handler.Handler;
+import org.apache.commons.monitoring.reporting.web.handler.Renderer;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.Map;
 
-public class HtmlHandler implements Handler {
-    private final HtmlRenderer renderer;
+public class PluginDecoratorHandler implements Handler {
+    private final Handler delegate;
+    private final String plugin;
 
-    public HtmlHandler(final String template) {
-        this.renderer = new HtmlRenderer(template);
+    public PluginDecoratorHandler(final Handler handler, final String name) {
+        delegate = handler;
+        plugin = name;
     }
 
     @Override
     public Renderer handle(final HttpServletRequest request, final HttpServletResponse response) {
-        return renderer;
+        return new PluginDecoratorRenderer(delegate.handle(request, response), plugin);
     }
 
-    protected static class HtmlRenderer implements Renderer {
-        private final String template;
+    private static class PluginDecoratorRenderer implements Renderer {
+        private final Renderer delegate;
+        private final String plugin;
 
-        public HtmlRenderer(final String template) {
-            this.template = template;
+        public PluginDecoratorRenderer(final Renderer handle, final String name) {
+            delegate = handle;
+            plugin = name;
         }
 
         @Override
         public void render(final PrintWriter writer, final Map<String, ?> params) {
-            Templates.htmlRender(writer, template, params);
+            final Map<String, Object> map = new HashMap<String, Object>();
+            if (params != null && !params.isEmpty()) {
+                map.putAll(params);
+            }
+            map.put("templateId", plugin);
+
+            delegate.render(writer, map);
         }
     }
 }

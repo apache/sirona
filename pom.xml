@@ -81,6 +81,7 @@
             <exclude>.gitignore</exclude>
             <exclude>**/webapp/resources/js/*.js</exclude>
             <exclude>**/webapp/resources/css/*.css</exclude>
+            <exclude>**/META-INF/services/*</exclude>
           </excludes>
         </configuration>
         <executions>

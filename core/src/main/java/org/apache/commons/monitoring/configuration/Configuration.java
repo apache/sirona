@@ -97,6 +97,10 @@ public final class Configuration {
         return Boolean.parseBoolean(getProperty(key.key, "false"));
     }
 
+    public static boolean is(final String key, final boolean defaultValue) {
+        return Boolean.parseBoolean(getProperty(key, Boolean.toString(defaultValue)));
+    }
+
     public static String getProperty(final String key, final String defaultValue) {
         return PROPERTIES.getProperty(key, defaultValue);
     }

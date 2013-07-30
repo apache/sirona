@@ -16,6 +16,7 @@
  */
 package org.apache.commons.monitoring.reporting.template;
 
+import org.apache.commons.monitoring.reporting.web.plugin.PluginRepository;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
@@ -63,6 +64,10 @@ public final class Templates {
         context.put("base", base);
         context.put("mapping", mapping);
         context.put("currentTemplate", template);
+        context.put("plugins", PluginRepository.PLUGIN_INFO);
+        if (context.get("templateId") == null) {
+            context.put("templateId", template.replace(".vm", ""));
+        }
 
         final Template velocityTemplate = Velocity.getTemplate("/templates/page.vm", "UTF-8");
         velocityTemplate.merge(context, writer);
