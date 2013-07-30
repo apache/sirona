@@ -26,7 +26,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class MapFormat {
+public abstract class MapFormat {
     protected static final Collection<String> ATTRIBUTES_ORDERED_LIST = buildMetricDataHeader();
 
     protected static Collection<String> buildMetricDataHeader() {
