@@ -17,54 +17,19 @@
 package org.apache.commons.monitoring.reporting.web.handler;
 
 import org.apache.commons.monitoring.reporting.format.Format;
-import org.apache.commons.monitoring.reporting.web.util.HttpUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
 
 public class ReportHandler implements Handler {
-    private static Map<String, Format> extensions = new HashMap<String, Format>();
-    private static Map<String, Format> formats = new HashMap<String, Format>();
+    private final Format format;
 
-    static {
-        formats.put("application/json", Format.Defaults.JSON);
-        formats.put("text/javascript", Format.Defaults.JSON);
-        formats.put("application/xml", Format.Defaults.XML);
-        formats.put("text/xml", Format.Defaults.XML);
-        formats.put("text/plain", Format.Defaults.CSV);
-        formats.put("text/csv", Format.Defaults.CSV);
-        formats.put("text/html", Format.Defaults.HTML);
-
-        extensions.put("json", Format.Defaults.JSON);
-        extensions.put("js", Format.Defaults.JSON);
-        extensions.put("xml", Format.Defaults.XML);
-        extensions.put("csv", Format.Defaults.CSV);
-        extensions.put("html", Format.Defaults.HTML);
-        extensions.put("htm", Format.Defaults.HTML);
-        extensions.put("xhtml", Format.Defaults.HTML);
+    public ReportHandler(final Format frm) {
+        format = frm;
     }
 
     @Override
     public Renderer handle(final HttpServletRequest request, final HttpServletResponse response) {
-        Format format = null;
-
-        final String path = request.getRequestURI();
-        final int dot = path.lastIndexOf('.');
-        if (dot >= 0) {
-            format = extensions.get(path.substring(dot + 1).toLowerCase(Locale.ENGLISH));
-        } else {
-            final String mime = HttpUtils.parseAccept(request.getHeader("Accept"));
-            if (mime != null) {
-                format = formats.get(mime);
-            }
-        }
-        if (format == null) {
-            format = Format.Defaults.CSV;
-        }
-
         response.setContentType(format.type());
         return format;
     }

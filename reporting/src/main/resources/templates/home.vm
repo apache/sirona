@@ -22,7 +22,7 @@
     </div>
     <div>
         <ul>
-            <li><a href="$mapping/report">Report</a></li>
+            <li><a href="$mapping/report">Report</a> (<a href="$mapping/report.xml">xml</a>, <a href="$mapping/report.json">json</a>, <a href="$mapping/report.csv">csv</a>)</li>
         </ul>
     </div>
 </div>

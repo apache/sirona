@@ -32,3 +32,6 @@ th#report-table {
     background-repeat: no-repeat;
     background-position: right;
 }
+.timeUnit {
+    width: 5em;
+}

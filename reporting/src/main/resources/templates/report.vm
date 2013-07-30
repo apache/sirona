@@ -16,23 +16,20 @@
 *#
 <h1>Report</h1>
 
+<ul class="breadcrumb">
+    <li><a href="$mapping/clear">Clear</a> <span class="divider">/</span></li>
+    <li><a href="$mapping/reset">Reset</a> </li>
+
+    <li class="pull-right"><a href="$mapping/report?unit=s">s</a></li>
+    <li class="pull-right"><a href="$mapping/report?unit=ms">ms</a> <span class="divider">/</span></li>
+    <li class="pull-right"><a href="$mapping/report?unit=ns">ns</a> <span class="divider">/</span></li>
+</ul>
+
 <table id="report-table" class="table table-bordered table-striped table-hover">
     <thead>
         <tr>
             #foreach( $header in $headers )
-                #if ( $header == "Monitor")
-                    <th>
-                        <div class="row-fluid">
-                            $header
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-default"><a href="$mapping/clear">Clear</a></button>
-                                <button type="button" class="btn btn-default"><a href="$mapping/reset">Reset</a></button>
-                            </div>
-                        </div>
-                    </th>
-                #else
-                    <th>$header</th>
-                #end
+                <th>$header</th>
             #end
         </tr>
     </thead>
