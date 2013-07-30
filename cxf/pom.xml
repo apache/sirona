@@ -29,11 +29,14 @@
   <artifactId>commons-monitoring-cxf</artifactId>
   <name>Commons Monitoring (Sandbox) :: CXF Integration</name>
 
+  <properties>
+    <cxf.version>2.6.9</cxf.version>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.apache.commons.monitoring</groupId>
       <artifactId>commons-monitoring-core</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.cxf</groupId>
@@ -53,7 +56,4 @@
     </dependency>
   </dependencies>
 
-  <properties>
-    <cxf.version>2.6.9</cxf.version>
-  </properties>
 </project>
