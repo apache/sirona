@@ -136,6 +136,11 @@
         <artifactId>commons-monitoring-aop</artifactId>
         <version>${project.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.apache.commons.monitoring</groupId>
+        <artifactId>commons-monitoring-instrumentation</artifactId>
+        <version>${project.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
