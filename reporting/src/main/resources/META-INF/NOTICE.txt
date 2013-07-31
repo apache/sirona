@@ -1,18 +1,15 @@
 Table sorter
 
+Used to handle table sorting/filtering in report page.
+
 website: https://github.com/Mottie/tablesorter
 license: MIT
 
 ------------------------
 
-Jstree
-
-website: http://www.jstree.com/
-license: MIT
-
-------------------------
-
 Bootswatch
+
+Used for the theming.
 
 website: http://bootswatch.com/
 license: Apache v2
