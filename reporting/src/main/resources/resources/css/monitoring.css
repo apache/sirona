@@ -35,21 +35,13 @@ th#report-table {
     background-position: right;
 }
 
-ul {
+ul.jmx {
     list-style: none;
     margin: 0;
     padding: 0;
 }
-li {
-    /*
-    background-image: url(page.png);
-    background-position: 0 1px;
-    background-repeat: no-repeat;
-    */
+li.jmx {
     padding-left: 20px;
-}
-li.node {
-    /*background-image: url(folder.png);*/
 }
 
 a.nodeText {

@@ -67,6 +67,7 @@
     </tbody>
 </table>
 
+<script type="text/javascript" src="$mapping/resources/js/bootstrap-dropdown.js"></script>
 <script type="text/javascript" src="$mapping/resources/js/jquery.tablesorter.js"></script>
 <script type="text/javascript" src="$mapping/resources/js/jquery.tablesorter.widgets.js"></script>
 <script type="text/javascript">
