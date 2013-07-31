@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.commons.monitoring.reporting.web.handler.format;
+package org.apache.commons.monitoring.reporting.web.plugin.report.format;
 
 import org.apache.commons.monitoring.counter.Counter;
 

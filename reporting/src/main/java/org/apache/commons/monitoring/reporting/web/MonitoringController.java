@@ -16,14 +16,10 @@
  */
 package org.apache.commons.monitoring.reporting.web;
 
-import org.apache.commons.monitoring.reporting.web.handler.ClearHandler;
 import org.apache.commons.monitoring.reporting.web.handler.FilteringHandler;
 import org.apache.commons.monitoring.reporting.web.handler.Handler;
 import org.apache.commons.monitoring.reporting.web.handler.HomeHandler;
 import org.apache.commons.monitoring.reporting.web.handler.Renderer;
-import org.apache.commons.monitoring.reporting.web.handler.ReportHandler;
-import org.apache.commons.monitoring.reporting.web.handler.ResetHandler;
-import org.apache.commons.monitoring.reporting.web.handler.format.Format;
 import org.apache.commons.monitoring.reporting.web.plugin.PluginRepository;
 import org.apache.commons.monitoring.reporting.web.template.MapBuilder;
 import org.apache.commons.monitoring.reporting.web.template.Templates;
@@ -63,12 +59,6 @@ public class MonitoringController implements Filter {
 
         handlers.put("/", defaultHandler);
         handlers.put("/home", defaultHandler);
-        handlers.put("/report", new ReportHandler(Format.Defaults.HTML));
-        handlers.put("/report.csv", new ReportHandler(Format.Defaults.CSV));
-        handlers.put("/report.json", new ReportHandler(Format.Defaults.JSON));
-        handlers.put("/report.xml", new ReportHandler(Format.Defaults.XML));
-        handlers.put("/clear", new ClearHandler());
-        handlers.put("/reset", new ResetHandler());
         handlers.put("/resources/css/monitoring.css", FilteringHandler.INSTANCE); // filtered to get the right base for pictures
 
         for (final PluginRepository.PluginInfo plugin : PluginRepository.PLUGIN_INFO) {

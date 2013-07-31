@@ -14,23 +14,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.commons.monitoring.reporting.web.handler;
+package org.apache.commons.monitoring.reporting.web.plugin.report;
 
-import org.apache.commons.monitoring.repositories.Repository;
+import org.apache.commons.monitoring.reporting.web.handler.Handler;
+import org.apache.commons.monitoring.reporting.web.plugin.Plugin;
 
-public class ResetHandler extends RedirectHandler {
+public class ReportPlugin implements Plugin {
     @Override
-    protected void preRedirect() {
-        Repository.INSTANCE.reset();
+    public String name() {
+        return "Report";
     }
 
     @Override
-    public String from() {
-        return "reset";
+    public Class<? extends Handler> handler() {
+        return ReportHandler.class;
     }
 
     @Override
-    public String to() {
-        return "report";
+    public String mapping() {
+        return "report*";
     }
 }

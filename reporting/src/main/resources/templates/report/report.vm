@@ -16,13 +16,36 @@
 *#
 <h1>Report</h1>
 
-<ul class="breadcrumb">
-    <li><a href="$mapping/clear">Clear</a> <span class="divider">/</span></li>
-    <li><a href="$mapping/reset">Reset</a> </li>
-
-    <li class="pull-right"><a href="$mapping/report?unit=s">s</a></li>
-    <li class="pull-right"><a href="$mapping/report?unit=ms">ms</a> <span class="divider">/</span></li>
-    <li class="pull-right"><a href="$mapping/report?unit=ns">ns</a> <span class="divider">/</span></li>
+<ul class="nav nav-pills">
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+            Actions <b class="caret"></b>
+        </a>
+        <ul class="dropdown-menu">
+            <li><a href="$mapping/report/clear">Clear</a></li>
+            <li><a href="$mapping/report/reset">Reset</a></li>
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+            Formats <b class="caret"></b>
+        </a>
+        <ul class="dropdown-menu">
+            <li><a href="$mapping/report.xml">xml</a></li>
+            <li><a href="$mapping/report.csv">csv</a></li>
+            <li><a href="$mapping/report.json">json</a></li>
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+            Time Unit <b class="caret"></b>
+        </a>
+        <ul class="dropdown-menu">
+            <li><a href="$mapping/report?unit=s">s</a></li>
+            <li><a href="$mapping/report?unit=ms">ms</a></li>
+            <li><a href="$mapping/report?unit=ns">ns</a></li>
+        </ul>
+    </li>
 </ul>
 
 <table id="report-table" class="table table-bordered table-striped table-hover">

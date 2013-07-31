@@ -35,7 +35,7 @@
             #tree ( $jmxTree )
         </div>
         <div id="jmx-info" class="span10">
-            TODO
+            Click on the left tree to select a leaf top show the attributes of a MBean.
         </div>
     </div>
 </div>

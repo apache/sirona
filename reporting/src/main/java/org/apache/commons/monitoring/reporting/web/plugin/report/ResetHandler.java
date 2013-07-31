@@ -14,23 +14,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.commons.monitoring.reporting.web.plugin;
+package org.apache.commons.monitoring.reporting.web.plugin.report;
 
-import org.apache.commons.monitoring.reporting.web.handler.Handler;
+import org.apache.commons.monitoring.reporting.web.handler.RedirectHandler;
+import org.apache.commons.monitoring.repositories.Repository;
 
-public interface Plugin {
-    /**
-     * @return plugin name.
-     */
-    String name();
+public class ResetHandler extends RedirectHandler {
+    @Override
+    protected void preRedirect() {
+        Repository.INSTANCE.reset();
+    }
 
-    /**
-     * @return the handler to call when mappings() are matched.
-     */
-    Class<? extends Handler> handler();
+    @Override
+    public String from() {
+        return "reset";
+    }
 
-    /**
-     * @return the mapping of the handler if not null. Note: it shouldn't start with '/' but can end with /*.
-     */
-    String mapping();
+    @Override
+    public String to() {
+        return "report";
+    }
 }

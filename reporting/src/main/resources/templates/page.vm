@@ -39,13 +39,6 @@
                           #end
                               <a href="$mapping/">Home</a>
                           </li>
-                          #if ( $templateId == "report")
-                            <li class="active">
-                          #else
-                            <li>
-                          #end
-                              <a href="$mapping/report">Report</a>
-                          </li>
                           #foreach ( $plugin in $plugins )
                               #if ( $templateId == $plugin.name )
                                 <li class="active">

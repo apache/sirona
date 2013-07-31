@@ -1,1 +1,2 @@
+org.apache.commons.monitoring.reporting.web.plugin.report.ReportPlugin
 org.apache.commons.monitoring.reporting.web.plugin.jmx.JMXPlugin

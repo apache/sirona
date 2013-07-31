@@ -16,29 +16,47 @@
  */
 package org.apache.commons.monitoring.reporting.web.handler;
 
+import org.apache.commons.monitoring.reporting.web.template.MapBuilder;
 import org.apache.commons.monitoring.reporting.web.template.Templates;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
+import java.util.Collections;
 import java.util.Map;
 
 public abstract class HandlerRendererAdapter implements Handler, Renderer {
     @Override
     public Renderer handle(final HttpServletRequest request, final HttpServletResponse response, final String path) {
+        final Renderer renderer = rendererFor(response, path);
+        if (renderer != null) {
+            return renderer;
+        }
         return rendererFor(path);
     }
 
     @Override
     public void render(final PrintWriter writer, final Map<String, ?> params) {
-        Templates.htmlRender(writer, getTemplate(), getVariables());
+        Templates.htmlRender(writer, getTemplate(),
+            new MapBuilder<String, Object>()
+                .set(Map.class.cast(params))
+                .set(Map.class.cast(getVariables()))
+                .build());
+    }
+
+    protected Renderer rendererFor(final HttpServletResponse response, final String path) {
+        return null;
     }
 
     protected Renderer rendererFor(final String path) {
         return this;
     }
 
-    protected abstract String getTemplate();
+    protected String getTemplate() {
+        return null;
+    }
 
-    protected abstract Map<String,?> getVariables();
+    protected Map<String,?> getVariables() {
+        return Collections.emptyMap();
+    }
 }

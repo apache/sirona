@@ -27,6 +27,11 @@ public class MapBuilder<A, B> {
         return this;
     }
 
+    public MapBuilder<A, B> set(final Map<A, B> params) {
+        map.putAll(params);
+        return this;
+    }
+
     public Map<A, B> build() {
         return map;
     }

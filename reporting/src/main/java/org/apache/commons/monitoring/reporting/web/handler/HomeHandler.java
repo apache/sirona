@@ -16,29 +16,9 @@
  */
 package org.apache.commons.monitoring.reporting.web.handler;
 
-import org.apache.commons.monitoring.reporting.web.template.Templates;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.PrintWriter;
-import java.util.Map;
-
-public class HomeHandler implements Handler {
-    private final HomeRenderer renderer;
-
-    public HomeHandler() {
-        this.renderer = new HomeRenderer();
-    }
-
+public class HomeHandler extends HandlerRendererAdapter {
     @Override
-    public Renderer handle(final HttpServletRequest request, final HttpServletResponse response, final String path) {
-        return renderer;
-    }
-
-    protected static class HomeRenderer implements Renderer {
-        @Override
-        public void render(final PrintWriter writer, final Map<String, ?> params) {
-            Templates.htmlRender(writer, "home.vm", params);
-        }
+    protected String getTemplate() {
+        return "home.vm";
     }
 }

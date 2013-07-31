@@ -14,23 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.commons.monitoring.reporting.web.handler;
 
-import org.apache.commons.monitoring.reporting.web.handler.format.Format;
+package org.apache.commons.monitoring.reporting.web.plugin.report.format;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.monitoring.reporting.web.handler.Renderer;
 
-public class ReportHandler implements Handler {
-    private final Format format;
+public interface Format extends Renderer {
+    String type();
 
-    public ReportHandler(final Format frm) {
-        format = frm;
-    }
-
-    @Override
-    public Renderer handle(final HttpServletRequest request, final HttpServletResponse response, final String path) {
-        response.setContentType(format.type());
-        return format;
+    public static interface Defaults {
+        static final Format JSON = new JSONFormat();
+        static final Format XML = new XMLFormat();
+        static final Format CSV = new CSVFormat();
+        static final Format HTML = new HTMLFormat();
     }
 }

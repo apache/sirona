@@ -14,42 +14,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.commons.monitoring.reporting.web.handler.format;
+package org.apache.commons.monitoring.reporting.web.plugin.report.format;
 
-import org.apache.commons.monitoring.configuration.Configuration;
 import org.apache.commons.monitoring.counter.Unit;
+import org.apache.commons.monitoring.reporting.web.template.MapBuilder;
+import org.apache.commons.monitoring.reporting.web.template.Templates;
 
 import java.io.PrintWriter;
-import java.util.Collection;
 import java.util.Map;
 
-public class CSVFormat extends MapFormat implements Format {
-    private static final String SEPARATOR = Configuration.getProperty(Configuration.COMMONS_MONITORING_PREFIX + "csv.separator", ";");
-    public static final String HEADER = "Monitor" + SEPARATOR + "Category" + SEPARATOR + "Role" + SEPARATOR + toCsv(ATTRIBUTES_ORDERED_LIST);
-
-
+public class HTMLFormat extends MapFormat implements Format {
     @Override
     public void render(final PrintWriter writer, final Map<String, ?> params) {
         final Unit timeUnit = timeUnit(params);
-
-        writer.write(HEADER);
-        for (final Collection<String> line : snapshot(timeUnit)) {
-            writer.write(toCsv(line));
-        }
+        Templates.htmlRender(writer, "report/report.vm",
+            new MapBuilder<String, Object>()
+                .set(Map.class.cast(params))
+                .set("headers", ATTRIBUTES_ORDERED_LIST)
+                .set("data", snapshot(timeUnit))
+                .build());
     }
 
     @Override
     public String type() {
-        return "text/plain";
-    }
-
-    private static String toCsv(final Collection<String> line) {
-        final StringBuilder builder = new StringBuilder();
-        for (final String s : line) {
-            builder.append(s).append(SEPARATOR);
-        }
-
-        final String str = builder.toString();
-        return str.substring(0, str.length() - 1) + '\n';
+        return "text/html";
     }
 }

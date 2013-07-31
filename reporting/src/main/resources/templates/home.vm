@@ -21,7 +21,6 @@
 </div>
 <div>
     <ul>
-        <li><a href="$mapping/report">Report</a> (<a href="$mapping/report.xml">xml</a>, <a href="$mapping/report.json">json</a>, <a href="$mapping/report.csv">csv</a>)</li>
         #foreach ( $plugin in $plugins )
             <li><a href="$mapping/$plugin.rootUrl">$plugin.name</a></li>
         #end

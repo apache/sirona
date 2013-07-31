@@ -37,14 +37,12 @@ public class PluginRepository {
                 continue;
             }
 
-            final String[] mappings = plugin.mappings();
+            final String mapping = plugin.mapping();
             final Class<? extends Handler> handler = plugin.handler();
-            if (mappings != null && handler != null) {
+            if (mapping != null && handler != null) {
                 try {
                     final Handler handlerInstance = new PluginDecoratorHandler(handler.newInstance(), name);
-                    for (final String mapping : mappings) {
-                        PLUGIN_INFO.add(new PluginInfo(mapping, handlerInstance, name));
-                    }
+                    PLUGIN_INFO.add(new PluginInfo(mapping, handlerInstance, name));
                 } catch (final Exception e) {
                     throw new MonitoringException(e);
                 }
@@ -62,10 +60,14 @@ public class PluginRepository {
             this.url = url;
             this.handler = handler;
             this.name = name;
-            if (!url.endsWith("/*")) {
+            if (!url.endsWith("*")) {
                 rootUrl = url;
             } else {
-                rootUrl = url.substring(0, url.length() - "/*".length());
+                if (url.endsWith("/")) {
+                    rootUrl = url.substring(0, url.length() - "/*".length());
+                } else {
+                    rootUrl = url.substring(0, url.length() - "*".length());
+                }
             }
         }
 
