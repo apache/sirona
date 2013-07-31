@@ -15,63 +15,77 @@
   limitations under the License.
 *#
 <div class="page-header">
-    <h1><small>$objectname</small></h1>
+    <h1><small><div id="objectName">$objectname</div></small></h1>
     <h2><small>$classname</small></h2>
 </div>
 
-<div class="alert alert-info">
-    $description
+<div id="invoke-result"></div>
+
+<div class="tabbable">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#attributes" data-toggle="tab">Attributes</a></li>
+        <li><a href="#operations" data-toggle="tab">Operations</a></li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane active" id="attributes">
+            <table id="mbean-table" class="table table-bordered table-striped table-hover">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Value</th>
+                    <th>Type</th>
+                </tr>
+                </thead>
+                <tbody>
+                    #foreach( $attribute in $attributes )
+                    <tr>
+                        <td>$attribute.name</td>
+                        <td>$attribute.description</td>
+                        <td>$attribute.value</td>
+                        <td>$attribute.type</td>
+                    </tr>
+                    #end
+                </tbody>
+            </table>
+        </div>
+        <div class="tab-pane" id="operations">
+            <ul>
+                #foreach( $operation in $operations )
+                    <li>
+                        <form class="form-inline invoker" id="operation-${objectnameHash}-$operation.name">
+                            $operation.name (
+                            #foreach( $param in $operation.parameters )
+                                <input type="text" class="input-small" placeholder="$param.name: $param.type#if( $foreach.hasNext ),#end">
+                            #end
+                            )
+                            <button type="submit" class="btn btn-primary">Invoke</button>
+                        </form>
+                    </li>
+                #end
+            </ul>
+        </div>
+    </div>
 </div>
 
-<table id="mbean-table" class="table table-bordered table-striped table-hover">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Description</th>
-            <th>Value</th>
-            <th>Type</th>
-        </tr>
-    </thead>
-    <tbody>
-        #foreach( $attribute in $attributes )
-            <tr>
-                <td>$attribute.name</td>
-                <td>$attribute.description</td>
-                <td>$attribute.value</td>
-                <td>$attribute.type</td>
-            </tr>
-        #end
-    </tbody>
-</table>
-
-<script type="text/javascript" src="$mapping/resources/js/jquery.tablesorter.js"></script>
-<script type="text/javascript" src="$mapping/resources/js/jquery.tablesorter.widgets.js"></script>
 <script type="text/javascript">
     $(function() {
-        $("table#report-table").tablesorter({
-            widthFixed : false,
-            widgets: [ "filter" ],
-            widgetOptions : {
-                filter_childRows : false,
-                filter_columnFilters : true,
-                filter_cssFilter : 'tablesorter-filter',
-                filter_filteredRow   : 'filtered',
-                filter_formatter : null,
-                filter_functions : null,
-                filter_hideFilters : false,
-                filter_ignoreCase : true,
-                filter_liveSearch : true,
-                filter_reset : 'button.reset',
-                filter_searchDelay : 300,
-                filter_serversideFiltering: false,
-                filter_startsWith : false,
-                filter_useParsedData : false,
-                cssAsc: 'headerSortUp',
-                cssDesc: 'headerSortDown',
-                sortList: [[4, 1]] // sort by mean in descending order
-            }
-        });
+        $('.invoker').submit(function () {
+            var id = $(this).closest("form").attr('id');
+            var url = '$mapping/jmx/' + id.replace(/-/g, "/");
 
-        $("table#report-table tr th div").addClass("blue");
+            // we pass base64 as id so this is a workaround since = will likely make #id fail
+            $('[id=\'' + id + '\']' + ' :input').each(function () {
+                url = url + "/" + $(this).val();
+            });
+
+            $.get(url, function(data) {
+                var result = $('#invoke-result');
+                result.addClass('alert alert-success');
+                result.html(data);
+            });
+
+            return false;
+        });
     });
 </script>

@@ -20,4 +20,8 @@ public class MonitoringException extends RuntimeException {
     public MonitoringException(final Exception e) {
         super(e);
     }
+
+    public MonitoringException(final String s) {
+        super(s);
+    }
 }

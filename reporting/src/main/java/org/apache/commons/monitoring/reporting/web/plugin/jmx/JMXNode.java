@@ -17,6 +17,7 @@
 package org.apache.commons.monitoring.reporting.web.plugin.jmx;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.StringEscapeUtils;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -38,9 +39,9 @@ public class JMXNode {
         for (final String k : props.split(",")) {
             final String[] kv = k.split("=");
             if (kv.length < 2) {
-                properties.put(kv[0], "");
+                properties.put(StringEscapeUtils.escapeHtml4(kv[0]), "");
             } else {
-                properties.put(kv[0], kv[1]);
+                properties.put(StringEscapeUtils.escapeHtml4(kv[0]), StringEscapeUtils.escapeHtml4(kv[1]));
             }
         }
 
