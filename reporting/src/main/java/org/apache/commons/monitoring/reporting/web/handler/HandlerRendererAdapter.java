@@ -16,35 +16,29 @@
  */
 package org.apache.commons.monitoring.reporting.web.handler;
 
-import org.apache.commons.monitoring.reporting.template.Templates;
+import org.apache.commons.monitoring.reporting.web.template.Templates;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
 import java.util.Map;
 
-public class HtmlHandler implements Handler {
-    private final HtmlRenderer renderer;
-
-    public HtmlHandler(final String template) {
-        this.renderer = new HtmlRenderer(template);
+public abstract class HandlerRendererAdapter implements Handler, Renderer {
+    @Override
+    public Renderer handle(final HttpServletRequest request, final HttpServletResponse response, final String path) {
+        return rendererFor(path);
     }
 
     @Override
-    public Renderer handle(final HttpServletRequest request, final HttpServletResponse response) {
-        return renderer;
+    public void render(final PrintWriter writer, final Map<String, ?> params) {
+        Templates.htmlRender(writer, getTemplate(), getVariables());
     }
 
-    protected static class HtmlRenderer implements Renderer {
-        private final String template;
-
-        public HtmlRenderer(final String template) {
-            this.template = template;
-        }
-
-        @Override
-        public void render(final PrintWriter writer, final Map<String, ?> params) {
-            Templates.htmlRender(writer, template, params);
-        }
+    protected Renderer rendererFor(final String path) {
+        return this;
     }
+
+    protected abstract String getTemplate();
+
+    protected abstract Map<String,?> getVariables();
 }

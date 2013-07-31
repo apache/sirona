@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.commons.monitoring.reporting.format;
+package org.apache.commons.monitoring.reporting.web.handler.format;
 
 import org.apache.commons.monitoring.counter.Counter;
 import org.apache.commons.monitoring.counter.Unit;

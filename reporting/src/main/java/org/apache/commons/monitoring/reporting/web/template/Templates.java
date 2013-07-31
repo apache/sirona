@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.commons.monitoring.reporting.template;
+package org.apache.commons.monitoring.reporting.web.template;
 
 import org.apache.commons.monitoring.reporting.web.plugin.PluginRepository;
 import org.apache.velocity.Template;
@@ -22,20 +22,16 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.log.JdkLogChute;
+import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 
-import javax.servlet.ServletContext;
 import java.io.PrintWriter;
 import java.util.Map;
 import java.util.Properties;
 
 public final class Templates {
-    private static String base;
     private static String mapping;
-    private static ServletContext servletContext;
 
-    public static void init(final ServletContext context, final String filterMapping) {
-        servletContext = context;
-
+    public static void init(final String context, final String filterMapping) {
         final Properties velocityConfiguration = new Properties();
         velocityConfiguration.setProperty(RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS, JdkLogChute.class.getName());
         velocityConfiguration.setProperty(RuntimeConstants.ENCODING_DEFAULT, "UTF-8");
@@ -44,24 +40,18 @@ public final class Templates {
         velocityConfiguration.setProperty(RuntimeConstants.RUNTIME_REFERENCES_STRICT, Boolean.TRUE.toString());
         velocityConfiguration.setProperty(RuntimeConstants.RUNTIME_REFERENCES_STRICT_ESCAPE, Boolean.TRUE.toString());
         velocityConfiguration.setProperty(RuntimeConstants.RESOURCE_LOADER, "monitoring");
-        velocityConfiguration.setProperty("monitoring." + RuntimeConstants.RESOURCE_LOADER + ".class", WebResourceLoader.class.getName());
+        velocityConfiguration.setProperty("monitoring." + RuntimeConstants.RESOURCE_LOADER + ".class", ClasspathResourceLoader.class.getName());
         Velocity.init(velocityConfiguration);
 
-        base = context.getContextPath();
         if (filterMapping.isEmpty()) {
-            mapping = context.getContextPath();
+            mapping = context;
         } else {
-            mapping = context.getContextPath() + filterMapping;
+            mapping = context + filterMapping;
         }
-    }
-
-    public static ServletContext getServletContext() {
-        return servletContext;
     }
 
     public static void htmlRender(final PrintWriter writer, final String template, final Map<String, ?> variables) {
         final VelocityContext context = newVelocityContext(variables);
-        context.put("base", base);
         context.put("mapping", mapping);
         context.put("currentTemplate", template);
         context.put("plugins", PluginRepository.PLUGIN_INFO);
@@ -75,7 +65,7 @@ public final class Templates {
 
     public static void render(final PrintWriter writer, final String template, final Map<String, ?> variables) {
         final VelocityContext context = newVelocityContext(variables);
-        context.put("base", base);
+        context.put("mapping", mapping);
         final Template velocityTemplate = Velocity.getTemplate(template, "UTF-8");
         velocityTemplate.merge(context, writer);
     }

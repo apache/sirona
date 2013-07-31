@@ -16,7 +16,7 @@
  */
 package org.apache.commons.monitoring.reporting.web.handler;
 
-import org.apache.commons.monitoring.reporting.format.Format;
+import org.apache.commons.monitoring.reporting.web.handler.format.Format;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -29,7 +29,7 @@ public class ReportHandler implements Handler {
     }
 
     @Override
-    public Renderer handle(final HttpServletRequest request, final HttpServletResponse response) {
+    public Renderer handle(final HttpServletRequest request, final HttpServletResponse response, final String path) {
         response.setContentType(format.type());
         return format;
     }

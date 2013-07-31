@@ -32,6 +32,6 @@ public class JMXPlugin implements Plugin {
 
     @Override
     public String[] mappings() {
-        return new String[] { "jmx" };
+        return new String[] { "jmx/*" };
     }
 }

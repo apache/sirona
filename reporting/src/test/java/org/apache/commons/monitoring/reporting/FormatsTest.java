@@ -19,8 +19,8 @@ package org.apache.commons.monitoring.reporting;
 
 import org.apache.commons.monitoring.Role;
 import org.apache.commons.monitoring.monitors.Monitor;
-import org.apache.commons.monitoring.reporting.format.CSVFormat;
-import org.apache.commons.monitoring.reporting.format.Format;
+import org.apache.commons.monitoring.reporting.web.handler.format.CSVFormat;
+import org.apache.commons.monitoring.reporting.web.handler.format.Format;
 import org.apache.commons.monitoring.repositories.Repository;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;

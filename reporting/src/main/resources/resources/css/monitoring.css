@@ -18,20 +18,45 @@ table .blue {
     color: #049cdb;
     border-bottom-color: #049cdb;
 }
+
 th#report-table {
     text-align: center;
 }
+
 .tablesorter-headerAsc {
-    background-image: url('$base/resources/images/asc.gif');
+    background-image: url('$mapping/resources/images/asc.gif');
     background-repeat: no-repeat;
     background-position: right;
 }
 
 .tablesorter-headerDesc {
-    background-image: url('$base/resources/images/desc.gif');
+    background-image: url('$mapping/resources/images/desc.gif');
     background-repeat: no-repeat;
     background-position: right;
 }
-.timeUnit {
-    width: 5em;
+
+ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+li {
+    /*
+    background-image: url(page.png);
+    background-position: 0 1px;
+    background-repeat: no-repeat;
+    */
+    padding-left: 20px;
+}
+li.node {
+    /*background-image: url(folder.png);*/
+}
+
+a.nodeText {
+    color: #000000;
+    cursor: pointer;
+    text-decoration: none;
+}
+a.nodeText:hover {
+    text-decoration: underline;
 }

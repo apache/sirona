@@ -1,11 +1,18 @@
 Table sorter
 
 website: https://github.com/Mottie/tablesorter
-licence: MIT
+license: MIT
+
+------------------------
+
+Jstree
+
+website: http://www.jstree.com/
+license: MIT
 
 ------------------------
 
 Bootswatch
 
 website: http://bootswatch.com/
-licence: Apache v2
+license: Apache v2

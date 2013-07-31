@@ -16,7 +16,7 @@
  */
 package org.apache.commons.monitoring.reporting.web.handler;
 
-import org.apache.commons.monitoring.reporting.template.Templates;
+import org.apache.commons.monitoring.reporting.web.template.Templates;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -31,7 +31,7 @@ public class HomeHandler implements Handler {
     }
 
     @Override
-    public Renderer handle(final HttpServletRequest request, final HttpServletResponse response) {
+    public Renderer handle(final HttpServletRequest request, final HttpServletResponse response, final String path) {
         return renderer;
     }
 

@@ -88,8 +88,8 @@
             <exclude>**/*/MANIFEST.MF</exclude>
             <exclude>.git</exclude>
             <exclude>.gitignore</exclude>
-            <exclude>**/webapp/resources/js/*.js</exclude>
-            <exclude>**/webapp/resources/css/*.css</exclude>
+            <exclude>**/resources/js/*.js</exclude>
+            <exclude>**/resources/css/*.css</exclude>
             <exclude>**/META-INF/services/*</exclude>
           </excludes>
         </configuration>

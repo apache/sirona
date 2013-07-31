@@ -18,14 +18,10 @@ package org.apache.commons.monitoring.reporting.web.handler;
 
 import org.apache.commons.monitoring.repositories.Repository;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 public class ClearHandler extends RedirectHandler {
     @Override
-    public Renderer handle(final HttpServletRequest request, final HttpServletResponse response) {
+    protected void preRedirect() {
         Repository.INSTANCE.clear();
-        return super.handle(request, response);
     }
 
     @Override

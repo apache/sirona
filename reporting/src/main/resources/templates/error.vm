@@ -14,16 +14,13 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 *#
-<h1>Home</h1>
+<div class="container">
+    <h1>Error</h1>
 
-<div>
-    Welcome to the Commons Monitoring Webapp. here is the list of available pages:
-</div>
-<div>
-    <ul>
-        <li><a href="$mapping/report">Report</a> (<a href="$mapping/report.xml">xml</a>, <a href="$mapping/report.json">json</a>, <a href="$mapping/report.csv">csv</a>)</li>
-        #foreach ( $plugin in $plugins )
-            <li><a href="$mapping/$plugin.rootUrl">$plugin.name</a></li>
-        #end
-    </ul>
+    <div class="alert alert-error">
+        An error occured.
+    </div>
+    <div>
+        $exception
+    </div>
 </div>

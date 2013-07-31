@@ -35,8 +35,8 @@ public class PluginDecoratorHandler implements Handler {
     }
 
     @Override
-    public Renderer handle(final HttpServletRequest request, final HttpServletResponse response) {
-        return new PluginDecoratorRenderer(delegate.handle(request, response), plugin);
+    public Renderer handle(final HttpServletRequest request, final HttpServletResponse response, final String path) {
+        return new PluginDecoratorRenderer(delegate.handle(request, response, path), plugin);
     }
 
     private static class PluginDecoratorRenderer implements Renderer {

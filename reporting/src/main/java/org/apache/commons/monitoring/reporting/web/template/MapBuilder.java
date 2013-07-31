@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.commons.monitoring.reporting.template;
+package org.apache.commons.monitoring.reporting.web.template;
 
 import java.util.HashMap;
 import java.util.Map;

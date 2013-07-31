@@ -23,13 +23,18 @@ import javax.servlet.http.HttpServletResponse;
 
 public abstract class RedirectHandler implements Handler {
     @Override
-    public Renderer handle(final HttpServletRequest request, final HttpServletResponse response) {
+    public Renderer handle(final HttpServletRequest request, final HttpServletResponse response, final String path) {
+        preRedirect();
         try {
             response.sendRedirect(request.getRequestURI().substring(0, request.getRequestURI().length() - from().length()) + to());
         } catch (final Exception e) {
             throw new MonitoringException(e);
         }
         return null;
+    }
+
+    protected void preRedirect() {
+        // no-op
     }
 
     public abstract String from();

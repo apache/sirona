@@ -1,0 +1,64 @@
+#*
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+*#
+#macro ( tree $tree )
+    <ul>
+        #foreach( $node in $tree.children )
+            #if ( $node.isLeaf() )
+                <li id="$node.base64" class="leaf">
+            #else
+                <li>
+            #end
+                $node.name
+                #tree ( $node )
+            </li>
+        #end
+    </ul>
+#end
+
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div id="jmx-tree" class="span2">
+            #tree ( $jmxTree )
+        </div>
+        <div id="jmx-info" class="span10">
+            TODO
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function() {
+        $('li > ul').each(function (i) {
+            var parent_li = $(this).parent('li');
+            parent_li.addClass('node');
+
+            var sub_ul = $(this).remove();
+            parent_li.wrapInner('<a class="nodeText" />').find('a').click(function() {
+                sub_ul.toggle();
+            });
+            parent_li.append(sub_ul);
+        });
+        $('ul ul').hide();
+
+        $('.leaf').click(function () {
+            var url = '$mapping/jmx/' + $(this).attr("id");
+            $.get(url, function(data) {
+                $("#jmx-info").html(data);
+            });
+        });
+    });
+</script>

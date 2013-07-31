@@ -16,8 +16,6 @@
  */
 package org.apache.commons.monitoring.reporting.web;
 
-import org.apache.commons.monitoring.reporting.format.Format;
-import org.apache.commons.monitoring.reporting.template.Templates;
 import org.apache.commons.monitoring.reporting.web.handler.ClearHandler;
 import org.apache.commons.monitoring.reporting.web.handler.FilteringHandler;
 import org.apache.commons.monitoring.reporting.web.handler.Handler;
@@ -25,33 +23,39 @@ import org.apache.commons.monitoring.reporting.web.handler.HomeHandler;
 import org.apache.commons.monitoring.reporting.web.handler.Renderer;
 import org.apache.commons.monitoring.reporting.web.handler.ReportHandler;
 import org.apache.commons.monitoring.reporting.web.handler.ResetHandler;
+import org.apache.commons.monitoring.reporting.web.handler.format.Format;
 import org.apache.commons.monitoring.reporting.web.plugin.PluginRepository;
+import org.apache.commons.monitoring.reporting.web.template.MapBuilder;
+import org.apache.commons.monitoring.reporting.web.template.Templates;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
 
 public class MonitoringController implements Filter {
+    private final Map<String, byte[]> cachedResources = new HashMap<String, byte[]>();
     private final Map<String, Handler> handlers = new HashMap<String, Handler>();
     private Handler defaultHandler;
     private String mapping;
-    private ServletContext servletContext;
+    private ClassLoader classloader;
 
     @Override
     public void init(final FilterConfig config) throws ServletException {
-        servletContext = config.getServletContext();
+        classloader = Thread.currentThread().getContextClassLoader();
         initMapping(config);
         initHandlers();
-        initTemplates();
+        Templates.init(config.getServletContext().getContextPath(), mapping);
     }
 
     private void initHandlers() {
@@ -72,10 +76,6 @@ public class MonitoringController implements Filter {
                 handlers.put("/" + plugin.getUrl(), plugin.getHandler());
             }
         }
-    }
-
-    private void initTemplates() {
-        Templates.init(servletContext, mapping);
     }
 
     private void initMapping(FilterConfig config) {
@@ -99,28 +99,58 @@ public class MonitoringController implements Filter {
 
         final HttpServletRequest httpRequest = HttpServletRequest.class.cast(request);
 
-        final Handler handler = findHandler(httpRequest);
-        final String path = httpRequest.getRequestURI().substring(httpRequest.getContextPath().length());
-        if (handler == defaultHandler && servletContext.getResourceAsStream(path) != null) {
-            chain.doFilter(request, response);
-            return;
-        }
-
-        final Renderer renderer = handler.handle(httpRequest, HttpServletResponse.class.cast(response));
-        if (renderer != null) {
-            renderer.render(response.getWriter(), request.getParameterMap());
-        }
-    }
-
-    private Handler findHandler(final HttpServletRequest request) {
-        String path = request.getRequestURI().substring(request.getContextPath().length() + mapping.length());
+        String path = httpRequest.getRequestURI().substring(httpRequest.getContextPath().length() + mapping.length());
         if (!path.startsWith("/")) {
             path = "/" + path;
         }
 
+        final Handler handler = findHandler(path);
+        if (handler == defaultHandler && !"/".equals(path)){ // resource, they are in the classloader and not in the webapp for embedded case
+            byte[] bytes = cachedResources.get(path);
+            if (bytes == null) {
+                final InputStream is = classloader.getResourceAsStream(path.substring(1));
+                if (is != null) {
+                    final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    int i;
+                    while ((i = is.read()) != -1) {
+                        baos.write(i);
+                    }
+
+                    bytes = baos.toByteArray();
+                    cachedResources.put(path, bytes);
+                }
+            }
+            if (bytes != null) {
+                response.getOutputStream().write(bytes);
+                return;
+            }
+        }
+
+        try {
+            final Renderer renderer = handler.handle(httpRequest, HttpServletResponse.class.cast(response), path);
+            if (renderer != null) {
+                renderer.render(response.getWriter(), request.getParameterMap());
+            }
+        } catch (final Exception e) {
+            final ByteArrayOutputStream err = new ByteArrayOutputStream();
+            e.printStackTrace(new PrintStream(err));
+            Templates.htmlRender(response.getWriter(), "error.vm", new MapBuilder<String, Object>().set("exception", new String(err.toByteArray())).build());
+        }
+    }
+
+    private Handler findHandler(final String path) {
         final Handler handler = handlers.get(path);
         if (handler != null) {
             return handler;
+        }
+
+        for (final String mapping : handlers.keySet()) {
+            if (mapping.endsWith("/*") && path.startsWith(mapping.substring(0, mapping.length() - "/*".length()))) {
+                return handlers.get(mapping);
+            }
+            if (mapping.endsWith("*") && path.startsWith(mapping.substring(0, mapping.length() - "*".length()))) {
+                return handlers.get(mapping);
+            }
         }
 
         return defaultHandler;

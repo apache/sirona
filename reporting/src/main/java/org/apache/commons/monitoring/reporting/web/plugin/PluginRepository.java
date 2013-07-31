@@ -56,11 +56,17 @@ public class PluginRepository {
         private final String url;
         private final Handler handler;
         private final String name;
+        private final String rootUrl;
 
         public PluginInfo(final String url, final Handler handler, final String name) {
             this.url = url;
             this.handler = handler;
             this.name = name;
+            if (!url.endsWith("/*")) {
+                rootUrl = url;
+            } else {
+                rootUrl = url.substring(0, url.length() - "/*".length());
+            }
         }
 
         public String getUrl() {
@@ -73,6 +79,10 @@ public class PluginRepository {
 
         public String getName() {
             return name;
+        }
+
+        public String getRootUrl() {
+            return rootUrl;
         }
     }
 }

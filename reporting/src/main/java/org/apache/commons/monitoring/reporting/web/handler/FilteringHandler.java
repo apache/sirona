@@ -16,7 +16,7 @@
  */
 package org.apache.commons.monitoring.reporting.web.handler;
 
-import org.apache.commons.monitoring.reporting.template.Templates;
+import org.apache.commons.monitoring.reporting.web.template.Templates;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -32,8 +32,8 @@ public class FilteringHandler implements Handler {
     }
 
     @Override
-    public Renderer handle(final HttpServletRequest request, final HttpServletResponse response) {
-        return new FilteringRenderer(request.getRequestURI().substring(request.getContextPath().length()));
+    public Renderer handle(final HttpServletRequest request, final HttpServletResponse response, final String path) {
+        return new FilteringRenderer(path);
     }
 
     private static class FilteringRenderer implements Renderer {

@@ -20,5 +20,5 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 public interface Handler {
-    Renderer handle(HttpServletRequest request, HttpServletResponse response);
+    Renderer handle(HttpServletRequest request, HttpServletResponse response, String path);
 }

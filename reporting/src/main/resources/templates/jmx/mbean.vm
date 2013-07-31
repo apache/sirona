@@ -14,31 +14,31 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 *#
-<h1>Report</h1>
+<div class="page-header">
+    <h1><small>$objectname</small></h1>
+    <h2><small>$classname</small></h2>
+</div>
 
-<ul class="breadcrumb">
-    <li><a href="$mapping/clear">Clear</a> <span class="divider">/</span></li>
-    <li><a href="$mapping/reset">Reset</a> </li>
+<div class="alert alert-info">
+    $description
+</div>
 
-    <li class="pull-right"><a href="$mapping/report?unit=s">s</a></li>
-    <li class="pull-right"><a href="$mapping/report?unit=ms">ms</a> <span class="divider">/</span></li>
-    <li class="pull-right"><a href="$mapping/report?unit=ns">ns</a> <span class="divider">/</span></li>
-</ul>
-
-<table id="report-table" class="table table-bordered table-striped table-hover">
+<table id="mbean-table" class="table table-bordered table-striped table-hover">
     <thead>
         <tr>
-            #foreach( $header in $headers )
-                <th>$header</th>
-            #end
+            <th>Name</th>
+            <th>Description</th>
+            <th>Value</th>
+            <th>Type</th>
         </tr>
     </thead>
     <tbody>
-        #foreach( $line in $data )
+        #foreach( $attribute in $attributes )
             <tr>
-                #foreach( $item in $line )
-                    <td>$item</td>
-                #end
+                <td>$attribute.name</td>
+                <td>$attribute.description</td>
+                <td>$attribute.value</td>
+                <td>$attribute.type</td>
             </tr>
         #end
     </tbody>

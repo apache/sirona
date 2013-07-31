@@ -22,51 +22,49 @@
 
     <title>Monitoring HTML Report</title>
 
-    <link rel="stylesheet" href="$base/resources/css/bootstrap.min.css">
-    <link rel="stylesheet" href="$base/resources/css/monitoring.css">
-
-    <script type="text/javascript" src="$base/resources/js/jquery.min.js"></script>
-    <script type="text/javascript" src="$base/resources/js/jquery.tablesorter.js"></script>
-    <script type="text/javascript" src="$base/resources/js/jquery.tablesorter.widgets.js"></script>
+    <link rel="stylesheet" href="$mapping/resources/css/bootstrap.min.css">
+    <link rel="stylesheet" href="$mapping/resources/css/monitoring.css">
   </head>
   <body>
-  <div class="navbar navbar-inverse">
-      <div class="navbar-inner">
-          <div class="container">
-              <a class="brand" href="http://commons.apache.org/sandbox/commons-monitoring/">Commons Monitoring</a>
-              <div class="nav-collapse">
-                  <ul class="nav">
-                      #if ( $templateId == "home")
-                        <li class="active">
-                      #else
-                        <li>
-                      #end
-                          <a href="$mapping/">Home</a>
-                      </li>
-                      #if ( $templateId == "report")
-                        <li class="active">
-                      #else
-                        <li>
-                      #end
-                          <a href="$mapping/report">Report</a>
-                      </li>
-                      #foreach ( $plugin in $plugins )
-                          #if ( $templateId == $plugin.name )
+      <div class="navbar navbar-inverse">
+          <div class="navbar-inner">
+              <div class="container">
+                  <a class="brand" href="http://commons.apache.org/sandbox/commons-monitoring/">Commons Monitoring</a>
+                  <div class="nav-collapse">
+                      <ul class="nav">
+                          #if ( $templateId == "home")
                             <li class="active">
                           #else
                             <li>
                           #end
-                              <a href="$mapping/$plugin.url">$plugin.name</a>
+                              <a href="$mapping/">Home</a>
                           </li>
-                      #end
-                  </ul>
-                  <ul class="nav pull-right">
-                      <li><a href="http://www.apache.org/">ASF</a></li>
-                  </ul>
+                          #if ( $templateId == "report")
+                            <li class="active">
+                          #else
+                            <li>
+                          #end
+                              <a href="$mapping/report">Report</a>
+                          </li>
+                          #foreach ( $plugin in $plugins )
+                              #if ( $templateId == $plugin.name )
+                                <li class="active">
+                              #else
+                                <li>
+                              #end
+                                  <a href="$mapping/$plugin.rootUrl">$plugin.name</a>
+                              </li>
+                          #end
+                      </ul>
+                      <ul class="nav pull-right">
+                          <li><a href="http://www.apache.org/">ASF</a></li>
+                      </ul>
+                  </div>
               </div>
           </div>
       </div>
-  </div>
+
+      <script type="text/javascript" src="$mapping/resources/js/jquery.min.js"></script>
 
       #parse( "/templates/$currentTemplate" )
   </body>

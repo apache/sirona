@@ -14,28 +14,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.commons.monitoring.reporting.format;
+package org.apache.commons.monitoring.reporting.web.handler.format;
 
+import org.apache.commons.monitoring.configuration.Configuration;
 import org.apache.commons.monitoring.counter.Unit;
-import org.apache.commons.monitoring.reporting.template.MapBuilder;
-import org.apache.commons.monitoring.reporting.template.Templates;
 
 import java.io.PrintWriter;
+import java.util.Collection;
 import java.util.Map;
 
-public class HTMLFormat extends MapFormat implements Format {
+public class CSVFormat extends MapFormat implements Format {
+    private static final String SEPARATOR = Configuration.getProperty(Configuration.COMMONS_MONITORING_PREFIX + "csv.separator", ";");
+    public static final String HEADER = "Monitor" + SEPARATOR + "Category" + SEPARATOR + "Role" + SEPARATOR + toCsv(ATTRIBUTES_ORDERED_LIST);
+
+
     @Override
     public void render(final PrintWriter writer, final Map<String, ?> params) {
         final Unit timeUnit = timeUnit(params);
-        Templates.htmlRender(writer, "report.vm",
-            new MapBuilder<String, Object>()
-                .set("headers", ATTRIBUTES_ORDERED_LIST)
-                .set("data", snapshot(timeUnit))
-                .build());
+
+        writer.write(HEADER);
+        for (final Collection<String> line : snapshot(timeUnit)) {
+            writer.write(toCsv(line));
+        }
     }
 
     @Override
     public String type() {
-        return "text/html";
+        return "text/plain";
+    }
+
+    private static String toCsv(final Collection<String> line) {
+        final StringBuilder builder = new StringBuilder();
+        for (final String s : line) {
+            builder.append(s).append(SEPARATOR);
+        }
+
+        final String str = builder.toString();
+        return str.substring(0, str.length() - 1) + '\n';
     }
 }
