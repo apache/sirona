@@ -17,7 +17,6 @@
 
 package org.apache.commons.monitoring.stopwatches;
 
-import org.apache.commons.monitoring.Role;
 import org.apache.commons.monitoring.counter.Counter;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -32,13 +31,11 @@ import static org.apache.commons.monitoring.counter.Unit.Time.NANOSECOND;
 public class CounterStopWatch implements StopWatch {
     protected final Counter counter;
     protected final long startedAt;
-    protected final Role role;
     protected final AtomicInteger concurrencyCounter;
     protected long stopedAt;
     protected boolean stoped;
 
     public CounterStopWatch(final Counter counter) {
-        this.role = Role.PERFORMANCES;
         this.counter = counter;
         startedAt = nanotime();
 
