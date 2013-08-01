@@ -16,8 +16,8 @@
  */
 package org.apache.commons.monitoring.counter.queuemanager;
 
-import org.apache.commons.monitoring.counter.DefaultCounter;
+import org.apache.commons.monitoring.counter.Counter;
 
 public interface MetricQueueManager {
-    void add(DefaultCounter baseMetrics, double delta);
+    void add(Counter baseMetrics, double delta);
 }

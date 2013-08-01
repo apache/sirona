@@ -16,6 +16,7 @@
  */
 package org.apache.commons.monitoring.counter.queuemanager;
 
+import org.apache.commons.monitoring.counter.Counter;
 import org.apache.commons.monitoring.counter.DefaultCounter;
 
 import java.util.concurrent.locks.Lock;
@@ -162,11 +163,16 @@ public class DisruptorMetricQueueManager implements MetricQueueManager {
 */
 public class DefaultMetricQueueManager implements MetricQueueManager {
     @Override
-    public void add(final DefaultCounter baseMetrics, final double delta) {
-        final Lock lock = baseMetrics.getLock();
+    public void add(final Counter counter, final double delta) {
+        if (!DefaultCounter.class.isInstance(counter)) {
+            throw new IllegalArgumentException(DefaultMetricQueueManager.class.getName() + " only supports " + DefaultCounter.class.getName());
+        }
+
+        final DefaultCounter defaultCounter = DefaultCounter.class.cast(counter);
+        final Lock lock = defaultCounter.getLock();
         lock.lock();
         try {
-            baseMetrics.addInternal(delta);
+            defaultCounter.addInternal(delta);
         } finally {
             lock.unlock();
         }
