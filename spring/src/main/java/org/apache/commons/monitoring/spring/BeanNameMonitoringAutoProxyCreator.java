@@ -17,9 +17,8 @@
 
 package org.apache.commons.monitoring.spring;
 
-import org.aopalliance.aop.Advice;
-import org.apache.commons.monitoring.instrumentation.aop.MonitorNameExtractor;
-import org.apache.commons.monitoring.spring.MonitoringAdviceFactory.MonitoringConfigSource;
+import org.apache.commons.monitoring.aop.DefaultMonitorNameExtractor;
+import org.apache.commons.monitoring.aop.MonitorNameExtractor;
 import org.springframework.aop.TargetSource;
 import org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator;
 
@@ -28,23 +27,17 @@ import org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator;
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public class BeanNameMonitoringAutoProxyCreator
-    extends BeanNameAutoProxyCreator implements MonitoringConfigSource {
-    private String category;
+public class BeanNameMonitoringAutoProxyCreator extends BeanNameAutoProxyCreator {
+    private String category = "spring";
+    private MonitorNameExtractor monitorNameExtractor = DefaultMonitorNameExtractor.INSTANCE;
 
-    private MonitorNameExtractor monitorNameExtractor;
-
-    /**
-     * {@inheritDoc}
-     *
-     * @see org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator#getAdvicesAndAdvisorsForBean(java.lang.Class,
-     * java.lang.String, org.springframework.aop.TargetSource)
-     */
     @Override
-    protected Object[] getAdvicesAndAdvisorsForBean(Class beanClass, String beanName, TargetSource targetSource) {
+    protected Object[] getAdvicesAndAdvisorsForBean(final Class beanClass, final String beanName, final TargetSource targetSource) {
         if (super.getAdvicesAndAdvisorsForBean(beanClass, beanName, targetSource) != DO_NOT_PROXY) {
-            Advice advice = MonitoringAdviceFactory.getAdvice(this);
-            return new Object[]{advice};
+            final AopaliancePerformanceInterceptor interceptor = new AopaliancePerformanceInterceptor();
+            interceptor.setCategory(category);
+            interceptor.setMonitorNameExtractor(monitorNameExtractor);
+            return new Object[] { interceptor };
         }
         return DO_NOT_PROXY;
     }
@@ -52,14 +45,14 @@ public class BeanNameMonitoringAutoProxyCreator
     /**
      * @param category the category to set
      */
-    public void setCategory(String category) {
+    public void setCategory(final String category) {
         this.category = category;
     }
 
     /**
      * @param monitorNameExtractor the monitorNameExtractor to set
      */
-    public void setMonitorNameExtractor(MonitorNameExtractor monitorNameExtractor) {
+    public void setMonitorNameExtractor(final MonitorNameExtractor monitorNameExtractor) {
         this.monitorNameExtractor = monitorNameExtractor;
     }
 

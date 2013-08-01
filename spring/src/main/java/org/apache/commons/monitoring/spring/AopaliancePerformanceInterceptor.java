@@ -17,21 +17,29 @@
 
 package org.apache.commons.monitoring.spring;
 
-import org.springframework.aop.aspectj.AspectJExpressionPointcut;
+import org.aopalliance.intercept.MethodInterceptor;
+import org.aopalliance.intercept.MethodInvocation;
+import org.apache.commons.monitoring.aop.AbstractPerformanceInterceptor;
 
 /**
- * Creates monitored proxies for beans that match an aspectJ expression.
+ * Spring-aop implementation of PerformanceInterceptor.
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public class AspectJMonitoringAutoProxyCreator
-    extends PointcutMonitoringAutoProxyCreator {
-    /**
-     * Set the AspectJ expression to be used to select beans / methods to get monitored
-     */
-    public void setExpression(String expression) {
-        AspectJExpressionPointcut pointcut = new AspectJExpressionPointcut();
-        pointcut.setExpression(expression);
-        setPointcut(pointcut);
+public class AopaliancePerformanceInterceptor extends AbstractPerformanceInterceptor<MethodInvocation> implements MethodInterceptor {
+    @Override
+    public Object invoke(final MethodInvocation invocation) throws Throwable {
+        return doInvoke(invocation);
     }
+
+    @Override
+    protected String getMonitorName(final MethodInvocation invocation) {
+        return getMonitorName(invocation.getThis(), invocation.getMethod());
+    }
+
+    @Override
+    protected Object proceed(final MethodInvocation invocation) throws Throwable {
+        return invocation.proceed();
+    }
+
 }
