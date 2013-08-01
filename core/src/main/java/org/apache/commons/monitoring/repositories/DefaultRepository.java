@@ -29,20 +29,11 @@ import java.util.concurrent.ConcurrentMap;
 public class DefaultRepository implements Repository {
     private final ConcurrentMap<Counter.Key, Counter> counters = new ConcurrentHashMap<Counter.Key, Counter>(50);
 
-    protected Counter newCounterInstance(final Counter.Key key) {
-        return new DefaultCounter(key);
-    }
-
-    protected Counter register(final Counter monitor) {
-        return counters.putIfAbsent(monitor.getKey(), monitor);
-    }
-
-    @Override
     public Counter getCounter(final Counter.Key key) {
         Counter monitor = counters.get(key);
         if (monitor == null) {
-            monitor = newCounterInstance(key);
-            final Counter previous = register(monitor);
+            monitor = new DefaultCounter(key);
+            final Counter previous = counters.putIfAbsent(key, monitor);
             if (previous != null) {
                 monitor = previous;
             }
@@ -53,13 +44,6 @@ public class DefaultRepository implements Repository {
     @Override
     public void clear() {
         counters.clear();
-    }
-
-    @Override
-    public void reset() {
-        for (final Counter monitor : counters.values()) {
-            monitor.reset();
-        }
     }
 
     @Override

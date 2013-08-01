@@ -19,12 +19,15 @@ package org.apache.commons.monitoring.configuration;
 import org.apache.commons.monitoring.MonitoringException;
 import org.apache.commons.monitoring.util.ClassLoaders;
 
-import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Properties;
@@ -34,20 +37,12 @@ import java.util.logging.Logger;
 public final class Configuration {
     private static final Logger LOGGER = Logger.getLogger(Configuration.class.getName());
 
-    private static final Collection<Closeable> INSTANCES = new ArrayList<Closeable>();
+    private static final Collection<ToDestroy> INSTANCES = new ArrayList<ToDestroy>();
 
     public static final String COMMONS_MONITORING_PREFIX = "org.apache.commons.monitoring.";
     private static final String DEFAULT_CONFIGURATION_FILE = "commons-monitoring.properties";
 
-    public static enum Keys {
-        JMX("org.apache.commons.monitoring.jmx");
-
-        public final String key;
-
-        Keys(final String s) {
-            key = s;
-        }
-    }
+    private static Thread shutdownHook = null;
 
     private static final Properties PROPERTIES = new Properties(System.getProperties());
     static {
@@ -69,7 +64,7 @@ public final class Configuration {
         return ClassLoaders.current().getResourceAsStream(filename);
     }
 
-    public static <T> T newInstance(final Class<T> clazz) {
+    public static synchronized <T> T newInstance(final Class<T> clazz) {
         try {
             String config = PROPERTIES.getProperty(clazz.getName());
             if (config == null) {
@@ -84,17 +79,27 @@ public final class Configuration {
             }
 
             final Object instance = loadedClass.newInstance();
-            if (Closeable.class.isInstance(instance)) {
-                INSTANCES.add(Closeable.class.cast(instance));
+            for (final Method m : loadedClass.getMethods()) {
+                if (m.getAnnotation(Created.class) != null) {
+                    m.invoke(instance);
+                } else if (m.getAnnotation(Destroying.class) != null) {
+                    if (is("org.apache.commons.monitoring.shutdown.hook", false) && shutdownHook == null) {
+                        shutdownHook = new Thread() {
+                            @Override
+                            public void run() {
+                                shutdown();
+                            }
+                        };
+                        Runtime.getRuntime().addShutdownHook(shutdownHook);
+                    }
+                    INSTANCES.add(new ToDestroy(m, instance));
+                }
             }
+
             return clazz.cast(instance);
         } catch (final Exception e) {
             throw new MonitoringException(e);
         }
-    }
-
-    public static boolean isActivated(final Keys key) {
-        return Boolean.parseBoolean(getProperty(key.key, "false"));
     }
 
     public static boolean is(final String key, final boolean defaultValue) {
@@ -106,17 +111,41 @@ public final class Configuration {
     }
 
     public static void shutdown() {
-        for (final Closeable c : INSTANCES) {
-            try {
-                c.close();
-            } catch (IOException e) {
-                // no-op
-            }
+        for (final ToDestroy c : INSTANCES) {
+            c.destroy();
         }
         INSTANCES.clear();
     }
 
     private Configuration() {
         // no-op
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.METHOD)
+    public static @interface Created {
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.METHOD)
+    public static @interface Destroying {
+    }
+
+    private static class ToDestroy {
+        private final Method method;
+        private final Object target;
+
+        public ToDestroy(final Method m, final Object instance) {
+            this.method = m;
+            this.target = instance;
+        }
+
+        public void destroy() {
+            try {
+                method.invoke(target);
+            } catch (final Exception e) {
+                // no-op
+            }
+        }
     }
 }

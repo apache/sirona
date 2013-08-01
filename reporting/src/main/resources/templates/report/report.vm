@@ -23,7 +23,6 @@
         </a>
         <ul class="dropdown-menu">
             <li><a href="$mapping/report/clear">Clear</a></li>
-            <li><a href="$mapping/report/reset">Reset</a></li>
         </ul>
     </li>
     <li class="dropdown">

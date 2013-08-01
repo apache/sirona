@@ -47,7 +47,6 @@ import com.lmax.disruptor.dsl.ProducerType;
 import org.apache.commons.monitoring.counter.DefaultCounter;
 import org.apache.commons.monitoring.util.DaemonThreadFactory;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -55,7 +54,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class DisruptorMetricQueueManager implements MetricQueueManager, Closeable {
+public class DisruptorMetricQueueManager implements MetricQueueManager {
     private static final Logger LOGGER = Logger.getLogger(DefaultCounter.class.getName());
 
     private static final int RINGBUFFER_DEFAULT_SIZE = 256 * 1024;
@@ -92,8 +91,8 @@ public class DisruptorMetricQueueManager implements MetricQueueManager, Closeabl
         DISRUPTOR.publishEvent(new MetricEventTranslator(metric, delta));
     }
 
-    @Override
-    public void close() throws IOException {
+    @Destroying
+    public void shutdown()  {
         DISRUPTOR.shutdown();
         flushRingBuffer();
 

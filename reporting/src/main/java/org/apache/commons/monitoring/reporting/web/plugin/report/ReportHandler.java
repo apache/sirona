@@ -29,7 +29,6 @@ public class ReportHandler implements Handler {
     private final FormatReportHandler json;
     private final FormatReportHandler xml;
     private final ClearHandler clear;
-    private final ResetHandler reset;
 
     public ReportHandler() {
         html = new FormatReportHandler(Format.Defaults.HTML);
@@ -37,7 +36,6 @@ public class ReportHandler implements Handler {
         json = new FormatReportHandler(Format.Defaults.JSON);
         xml = new FormatReportHandler(Format.Defaults.XML);
         clear = new ClearHandler();
-        reset = new ResetHandler();
     }
 
     @Override
@@ -53,9 +51,6 @@ public class ReportHandler implements Handler {
         }
         if (path.endsWith("/clear")) {
             return clear.handle(request, response, path);
-        }
-        if (path.endsWith("/reset")) {
-            return reset.handle(request, response, path);
         }
 
         return html.handle(request, response, path);

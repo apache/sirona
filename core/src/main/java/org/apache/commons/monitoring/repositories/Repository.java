@@ -41,12 +41,6 @@ public interface Repository extends Iterable<Counter> {
     void clear();
 
     /**
-     * Convenience method to reset all monitors (don't remove them from repository)
-     */
-    void reset();
-
-
-    /**
      * Start a StopWatch to counter execution
      *
      * @param counter the counter associated with the process
