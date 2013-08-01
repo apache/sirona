@@ -18,6 +18,7 @@ package org.apache.commons.monitoring.reporting.web.plugin.jmx;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.monitoring.MonitoringException;
+import org.apache.commons.monitoring.configuration.Configuration;
 import org.apache.commons.monitoring.reporting.web.handler.HandlerRendererAdapter;
 import org.apache.commons.monitoring.reporting.web.handler.Renderer;
 import org.apache.commons.monitoring.reporting.web.template.MapBuilder;
@@ -35,9 +36,11 @@ import javax.management.ObjectName;
 import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.TabularData;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.lang.management.ManagementFactory;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -50,6 +53,7 @@ import java.util.Set;
 
 public class JMXHandler extends HandlerRendererAdapter {
     private static final MBeanServer SERVER = ManagementFactory.getPlatformMBeanServer();
+    private static final boolean METHOD_INVOCATION_ALLOWED = Configuration.is(Configuration.COMMONS_MONITORING_PREFIX + "jmx.method.allowed", true);
 
     private static final Map<String, Class<?>> WRAPPERS = new HashMap<String, Class<?>>();
 
@@ -74,19 +78,31 @@ public class JMXHandler extends HandlerRendererAdapter {
 
         String subPath = path.substring("/jmx/".length());
         if (subPath.startsWith("operation/")) {
+            if (!METHOD_INVOCATION_ALLOWED) {
+                throw new MonitoringException("Method invocation not allowed");
+            }
+
             subPath = subPath.substring("operation/".length());
             final String[] parts = subPath.split("/");
-
-            final Collection<String> params = new ArrayList<String>(parts.length - 2);
+            final List<String> params = new ArrayList<String>(parts.length - 2);
             { // remove object name and operation name to keep only parameters
                 params.addAll(Arrays.asList(parts));
                 final Iterator<String> it = params.iterator();
                 it.next(); it.remove();
                 it.next(); it.remove();
             }
+            // decode params
+            final String[] decodedParams = new String[params.size()];
+            for (int i = 0; i < params.size(); i++) {
+                try {
+                    decodedParams[i] = URLDecoder.decode(params.get(i), "UTF-8");
+                } catch (final UnsupportedEncodingException e) {
+                    decodedParams[i] = params.get(i);
+                }
+            }
 
             try {
-                return new InvokeRenderer(new ObjectName(new String(Base64.decodeBase64(parts[0]))), parts[1], params.toArray(new String[params.size()]));
+                return new InvokeRenderer(new ObjectName(new String(Base64.decodeBase64(parts[0]))), parts[1], decodedParams);
             } catch (final MalformedObjectNameException e) {
                 throw new MonitoringException(e);
             }

@@ -76,7 +76,7 @@
 
             // we pass base64 as id so this is a workaround since = will likely make #id fail
             $('[id=\'' + id + '\']' + ' :input').each(function () {
-                url = url + "/" + $(this).val();
+                url = url + "/" + encodeURIComponent($(this).val());
             });
 
             $.get(url, function(data) {
