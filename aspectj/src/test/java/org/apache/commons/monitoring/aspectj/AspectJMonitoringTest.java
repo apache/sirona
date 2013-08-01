@@ -16,7 +16,7 @@
  */
 package org.apache.commons.monitoring.aspectj;
 
-import org.apache.commons.monitoring.Role;
+import org.apache.commons.monitoring.counter.Role;
 import org.apache.commons.monitoring.counter.Counter;
 import org.apache.commons.monitoring.repositories.Repository;
 import org.junit.Test;

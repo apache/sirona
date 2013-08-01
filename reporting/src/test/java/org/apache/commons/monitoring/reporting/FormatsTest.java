@@ -17,7 +17,7 @@
 
 package org.apache.commons.monitoring.reporting;
 
-import org.apache.commons.monitoring.Role;
+import org.apache.commons.monitoring.counter.Role;
 import org.apache.commons.monitoring.counter.Counter;
 import org.apache.commons.monitoring.reporting.web.plugin.report.format.CSVFormat;
 import org.apache.commons.monitoring.reporting.web.plugin.report.format.Format;

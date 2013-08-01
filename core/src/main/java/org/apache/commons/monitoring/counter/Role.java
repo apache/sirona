@@ -15,9 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.commons.monitoring;
-
-import org.apache.commons.monitoring.counter.Unit;
+package org.apache.commons.monitoring.counter;
 
 import static org.apache.commons.monitoring.counter.Unit.Time.NANOSECOND;
 
@@ -95,7 +93,7 @@ public class Role implements Comparable<Role> {
     /**
      * {@inheritDoc}
      */
-    public int compareTo(Role o) {
+    public int compareTo(final Role o) {
         return name.compareTo(o.name);
     }
 

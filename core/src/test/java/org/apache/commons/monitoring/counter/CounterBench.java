@@ -16,7 +16,6 @@
  */
 package org.apache.commons.monitoring.counter;
 
-import org.apache.commons.monitoring.Role;
 import org.junit.Test;
 
 import java.util.concurrent.ExecutorService;
