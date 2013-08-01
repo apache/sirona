@@ -44,7 +44,6 @@
     <module>spring</module>
     <module>web</module>
     <module>reporting</module>
-    <module>cxf</module>
     <module>aspectj</module>
   </modules>
 
