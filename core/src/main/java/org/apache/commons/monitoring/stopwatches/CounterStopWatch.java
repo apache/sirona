@@ -18,7 +18,7 @@
 package org.apache.commons.monitoring.stopwatches;
 
 import org.apache.commons.monitoring.Role;
-import org.apache.commons.monitoring.monitors.Monitor;
+import org.apache.commons.monitoring.counter.Counter;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -30,60 +30,39 @@ import static org.apache.commons.monitoring.counter.Unit.Time.NANOSECOND;
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public class CounterStopWatch implements StopWatch {
-    protected final Monitor monitor;
+    protected final Counter counter;
     protected final long startedAt;
     protected final Role role;
     protected final AtomicInteger concurrencyCounter;
     protected long stopedAt;
-    protected long pauseDelay;
     protected boolean stoped;
-    protected boolean paused;
 
-    public CounterStopWatch(final Monitor monitor) {
+    public CounterStopWatch(final Counter counter) {
         this.role = Role.PERFORMANCES;
-        this.monitor = monitor;
+        this.counter = counter;
         startedAt = nanotime();
 
-        concurrencyCounter = monitor.currentConcurrency();
+        concurrencyCounter = counter.currentConcurrency();
         final int concurrency = concurrencyCounter.incrementAndGet();
-        monitor.updateConcurrency(concurrency);
+        counter.updateConcurrency(concurrency);
     }
 
     protected long nanotime() {
         return System.nanoTime();
     }
 
+    @Override
     public long getElapsedTime() {
-        if (!stoped && !paused) {
-            return nanotime() - startedAt - pauseDelay;
+        if (!stoped) {
+            return nanotime() - startedAt;
         }
-        return stopedAt - startedAt - pauseDelay;
+        return stopedAt - startedAt;
     }
 
-    public StopWatch pause() {
-        if (!paused && !stoped) {
-            stopedAt = nanotime();
-            paused = true;
-        }
-        return this;
-    }
-
-    public StopWatch resume() {
-        if (paused && !stoped) {
-            pauseDelay = nanotime() - stopedAt;
-            paused = false;
-            stopedAt = 0;
-        }
-        return this;
-    }
-
+    @Override
     public StopWatch stop() {
         if (!stoped) {
-            final long t = nanotime();
-            if (paused) {
-                pauseDelay = t - stopedAt;
-            }
-            stopedAt = t;
+            stopedAt = nanotime();
             stoped = true;
             doStop();
         }
@@ -91,52 +70,17 @@ public class CounterStopWatch implements StopWatch {
     }
 
     protected void doStop() {
-        monitor.getCounter(role).add(getElapsedTime(), NANOSECOND);
+        counter.add(getElapsedTime(), NANOSECOND);
         concurrencyCounter.decrementAndGet();
-    }
-
-    public StopWatch stop(boolean canceled) {
-        if (canceled) {
-            cancel();
-        } else {
-            stop();
-        }
-        return this;
-    }
-
-    public StopWatch cancel() {
-        if (!stoped) {
-            stoped = true;
-            doCancel();
-        }
-        return this;
-    }
-
-    protected void doCancel() {
-        // no-op
-    }
-
-    public boolean isStoped() {
-        return stoped;
-    }
-
-    public boolean isPaused() {
-        return paused;
-    }
-
-    public Monitor getMonitor() {
-        return monitor;
     }
 
     @Override
     public String toString() {
         final StringBuilder stb = new StringBuilder();
-        if (monitor != null) {
-            stb.append("Execution for ").append(monitor.getKey().toString()).append(" ");
+        if (counter != null) {
+            stb.append("Execution for ").append(counter.getKey().toString()).append(" ");
         }
-        if (paused) {
-            stb.append("paused after ").append(getElapsedTime()).append("ns");
-        } else if (stoped) {
+        if (stoped) {
             stb.append("stoped after ").append(getElapsedTime()).append("ns");
         } else {
             stb.append("running for ").append(getElapsedTime()).append("ns");

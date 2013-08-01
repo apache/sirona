@@ -16,6 +16,8 @@
  */
 package org.apache.commons.monitoring.jdbc;
 
+import org.apache.commons.monitoring.Role;
+import org.apache.commons.monitoring.counter.Counter;
 import org.apache.commons.monitoring.repositories.Repository;
 import org.apache.commons.monitoring.stopwatches.StopWatch;
 
@@ -40,7 +42,7 @@ public class MonitoredPreparedStatement extends MonitoredStatement {
     public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
         final String name = method.getName();
         if ((args == null || args.length == 0) && name.startsWith("execute")) {
-            final StopWatch stopWatch = Repository.INSTANCE.start(Repository.INSTANCE.getMonitor(sql, "jdbc"));
+            final StopWatch stopWatch = Repository.INSTANCE.start(Repository.INSTANCE.getCounter(new Counter.Key(Role.JDBC, sql)));
             try {
                 return method.invoke(statement, args);
             } catch (final InvocationTargetException e) {

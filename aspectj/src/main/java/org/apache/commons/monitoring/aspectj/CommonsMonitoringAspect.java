@@ -41,8 +41,8 @@ public abstract class CommonsMonitoringAspect extends AbstractPerformanceInterce
     }
 
     @Override
-    protected String getMonitorName(final ProceedingJoinPoint invocation) {
-        final String monitorName = getMonitorName(invocation.getTarget(), findMethod(invocation.getSignature()));
+    protected String getCounterName(final ProceedingJoinPoint invocation) {
+        final String monitorName = getCounterName(invocation.getTarget(), findMethod(invocation.getSignature()));
         if (monitorName != null) {
             return monitorName;
         }

@@ -17,37 +17,32 @@
 
 package org.apache.commons.monitoring.repositories;
 
-import org.apache.commons.monitoring.monitors.DefaultMonitor;
-import org.apache.commons.monitoring.monitors.Monitor;
-import org.apache.commons.monitoring.monitors.Monitor.Key;
+import org.apache.commons.monitoring.counter.Counter;
+import org.apache.commons.monitoring.counter.DefaultCounter;
 import org.apache.commons.monitoring.stopwatches.CounterStopWatch;
 import org.apache.commons.monitoring.stopwatches.StopWatch;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Set;
+import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 public class DefaultRepository implements Repository {
-    private final ConcurrentMap<Key, Monitor> monitors = new ConcurrentHashMap<Key, Monitor>(50);
+    private final ConcurrentMap<Counter.Key, Counter> counters = new ConcurrentHashMap<Counter.Key, Counter>(50);
 
-    protected Monitor newMonitorInstance(final Key key) {
-        return new DefaultMonitor(key);
+    protected Counter newCounterInstance(final Counter.Key key) {
+        return new DefaultCounter(key);
     }
 
-    protected Monitor register(final Monitor monitor) {
-        return monitors.putIfAbsent(monitor.getKey(), monitor);
+    protected Counter register(final Counter monitor) {
+        return counters.putIfAbsent(monitor.getKey(), monitor);
     }
 
     @Override
-    public Monitor getMonitor(final Key key) {
-        Monitor monitor = monitors.get(key);
+    public Counter getCounter(final Counter.Key key) {
+        Counter monitor = counters.get(key);
         if (monitor == null) {
-            monitor = newMonitorInstance(key);
-            final Monitor previous = register(monitor);
+            monitor = newCounterInstance(key);
+            final Counter previous = register(monitor);
             if (previous != null) {
                 monitor = previous;
             }
@@ -56,54 +51,24 @@ public class DefaultRepository implements Repository {
     }
 
     @Override
-    public Monitor getMonitor(final String name) {
-        return getMonitor(name, Key.DEFAULT);
-    }
-
-    @Override
-    public Monitor getMonitor(final String name, final String category) {
-        return getMonitor(new Monitor.Key(name, category));
-    }
-
-    @Override
-    public Collection<Monitor> getMonitors() {
-        return Collections.unmodifiableCollection(monitors.values());
-    }
-
-    @Override
-    public Collection<Monitor> getMonitorsFromCategory(final String category) {
-        final Collection<Monitor> filtered = new LinkedList<Monitor>();
-        for (final Monitor monitor : monitors.values()) {
-            if (category.equals(monitor.getKey().getCategory())) {
-                filtered.add(monitor);
-            }
-        }
-        return filtered;
-    }
-
-    @Override
-    public Set<String> getCategories() {
-        final Set<String> categories = new HashSet<String>();
-        for (final Key key : monitors.keySet()) {
-            categories.add(key.getCategory());
-        }
-        return categories;
-    }
-
-    @Override
     public void clear() {
-        monitors.clear();
+        counters.clear();
     }
 
     @Override
     public void reset() {
-        for (final Monitor monitor : monitors.values()) {
+        for (final Counter monitor : counters.values()) {
             monitor.reset();
         }
     }
 
     @Override
-    public StopWatch start(final Monitor monitor) {
+    public StopWatch start(final Counter monitor) {
         return new CounterStopWatch(monitor);
+    }
+
+    @Override
+    public Iterator<Counter> iterator() {
+        return counters.values().iterator();
     }
 }

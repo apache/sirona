@@ -16,6 +16,7 @@
  */
 package org.apache.commons.monitoring.cdi;
 
+import org.apache.commons.monitoring.Role;
 import org.apache.commons.monitoring.counter.Counter;
 import org.apache.commons.monitoring.repositories.Repository;
 import org.apache.webbeans.cditest.CdiTestContainer;
@@ -44,7 +45,7 @@ public class CommonsMonitoringInterceptorTest {
         container.stopApplicationScope();
         container.shutdownContainer();
 
-        final Counter perf = Repository.INSTANCE.getMonitor(MonitoredBean.class.getName() + ".twoSeconds").getCounter("performances");
+        final Counter perf = Repository.INSTANCE.getCounter(new Counter.Key(Role.PERFORMANCES, MonitoredBean.class.getName() + ".twoSeconds"));
         assertNotNull(perf);
         assertEquals(2000, TimeUnit.NANOSECONDS.toMillis((int) perf.getMax()), 200);
     }

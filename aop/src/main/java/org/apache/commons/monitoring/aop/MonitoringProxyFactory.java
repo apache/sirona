@@ -21,6 +21,7 @@ import org.apache.commons.monitoring.util.ClassLoaders;
 import org.apache.commons.proxy.Invoker;
 import org.apache.commons.proxy.ProxyFactory;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public final class MonitoringProxyFactory {
@@ -48,12 +49,16 @@ public final class MonitoringProxyFactory {
 
         @Override
         protected Object proceed(final Invocation invocation) throws Throwable {
-            return invocation.method.invoke(invocation.target, invocation.args);
+            try {
+                return invocation.method.invoke(invocation.target, invocation.args);
+            } catch (final InvocationTargetException ite) {
+                throw ite.getCause();
+            }
         }
 
         @Override
-        protected String getMonitorName(final Invocation invocation) {
-            return getMonitorName(invocation.target, invocation.method);
+        protected String getCounterName(final Invocation invocation) {
+            return getCounterName(invocation.target, invocation.method);
         }
     }
 

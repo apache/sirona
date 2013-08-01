@@ -18,7 +18,6 @@
 package org.apache.commons.monitoring.reporting.web.plugin.report.format;
 
 import org.apache.commons.monitoring.counter.Counter;
-import org.apache.commons.monitoring.monitors.Monitor;
 import org.apache.commons.monitoring.repositories.Repository;
 
 import java.io.PrintWriter;
@@ -28,16 +27,12 @@ public class XMLFormat implements Format {
     @Override
     public void render(final PrintWriter writer, final Map<String, ?> params) {
         writer.write("<repository>");
-        for (final Monitor monitor : Repository.INSTANCE.getMonitors()) {
-            writer.write("<monitor name=\"" + monitor.getKey().getName() + "\" category=\"" + monitor.getKey().getCategory() + "\">");
-            for (final Counter counter : monitor.getCounters()) {
-                writer.write("<counter role=\"" + counter.getRole().getName() + "\" unit=\"" + counter.getRole().getUnit().getName() + "\"");
-                for (final MetricData md : MetricData.values()) {
-                    writer.write(" " + md.name() + "=\"" + md.value(counter) + "\"");
-                }
-                writer.write(" />");
+        for (final Counter counter : Repository.INSTANCE) {
+            writer.write("<counter name=\"" + counter.getKey().getName() + "\" role=\"" + counter.getKey().getRole().getName() + "\" unit=\"" + counter.getKey().getRole().getUnit().getName() + "\"");
+            for (final MetricData md : MetricData.values()) {
+                writer.write(" " + md.name() + "=\"" + md.value(counter) + "\"");
             }
-            writer.write("</monitor>");
+            writer.write(" />");
         }
         writer.write("</repository>");
     }

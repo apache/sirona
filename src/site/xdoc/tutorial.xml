@@ -29,7 +29,7 @@
         The
         <b>Monitoring</b>
         class is a convenience utility class to make application instrumentation
-        as simple as possible. To monitor application performance, simply do :
+        as simple as possible. To counter application performance, simply do :
         <pre>
           public void myMethodToGetMonitored()
           {
@@ -45,7 +45,7 @@
           }
         </pre>
         The StopWatch class will compute the time elapsed during code execution and report it to the
-        monitor "MyClass.myMethod".
+        counter "MyClass.myMethod".
       </p>
     </section>
     <section name="Instrumentation">
@@ -53,14 +53,14 @@
         A
         <b>Monitor</b>
         defines a control point in the application. It can be associated to a resource,
-        a code fragment or anything relevant for the application. The monitor is unique and retrieved from
+        a code fragment or anything relevant for the application. The counter is unique and retrieved from
         a<b>Repository</b>. It is identified by a name, a category (technical description of the application
         component) and a subsystem (functional description). In the previous code sample, only a name was set
         as category and subsystem are optional. We recommend to use them to create monitors as this is a
         convenient and powerful way to group and sort monitors and associated statistics.
       </p>
       <p>
-        The monitor maintains a set of Metrics, that can be either
+        The counter maintains a set of Metrics, that can be either
         <b>Counters</b>
         or<b>Gauges</b>.
         <ul>
@@ -69,18 +69,18 @@
           </li>
           <li>A Gauge allows the application to expose how a resource is used : active connections...</li>
         </ul>
-        Each Metric is identified by a ROLE in the monitor. Default roles are defined for PERFORMANCES and
-        CONCURRENCY (threads running same code), and you can register Counters/Gauges for custom roles to monitor
+        Each Metric is identified by a ROLE in the counter. Default roles are defined for PERFORMANCES and
+        CONCURRENCY (threads running same code), and you can register Counters/Gauges for custom roles to counter
         anything that is relevant for your application (bytes processed, message payload, account balance ...) :
         <pre>
-          Monitor monitor = repository.getMonitor( "SoapEndpoint.process", "soap" );
+          Monitor counter = repository.getMonitor( "SoapEndpoint.process", "soap" );
 
           // Process a SOAP message
-          monitor.getCounter( "bytes" ).add( SOAPMessage.getSize() );
+          counter.getCounter( "bytes" ).add( SOAPMessage.getSize() );
         </pre>
       </p>
       <p>
-        Commons Monitoring provides Helpers to instrument application, for example to monitor web application
+        Commons Monitoring provides Helpers to instrument application, for example to counter web application
         Request or JDBC operations, so that in many case you don't have to know commons-monitoring API to
         get basic instrumentation on your application.
       </p>

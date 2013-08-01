@@ -35,14 +35,12 @@ import java.util.List;
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public class PointcutMonitoringAutoProxyCreator extends AbstractAdvisorAutoProxyCreator {
-    private String category = "spring";
     private MonitorNameExtractor monitorNameExtractor = DefaultMonitorNameExtractor.INSTANCE;
     private Pointcut pointcut;
 
     @Override
     protected List<Advisor> findCandidateAdvisors() {
         final AopaliancePerformanceInterceptor interceptor = new AopaliancePerformanceInterceptor();
-        interceptor.setCategory(category);
         interceptor.setMonitorNameExtractor(monitorNameExtractor);
 
         final PointcutAdvisor adivsor = createPointcutAdvisor(interceptor);
@@ -56,20 +54,12 @@ public class PointcutMonitoringAutoProxyCreator extends AbstractAdvisorAutoProxy
         return new DefaultPointcutAdvisor(pointcut, advice);
     }
 
-    public void setCategory(final String category) {
-        this.category = category;
-    }
-
     public void setMonitorNameExtractor(final MonitorNameExtractor monitorNameExtractor) {
         this.monitorNameExtractor = monitorNameExtractor;
     }
 
     public void setPointcut(final Pointcut pointcut) {
         this.pointcut = pointcut;
-    }
-
-    public String getCategory() {
-        return category;
     }
 
     public MonitorNameExtractor getMonitorNameExtractor() {

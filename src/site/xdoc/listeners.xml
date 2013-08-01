@@ -30,9 +30,9 @@
       </p>
       <p>
         For example, the application can switch between two implementations of a component depending
-        on the business process load. A monitor that computes this load can be used by the application to
+        on the business process load. A counter that computes this load can be used by the application to
         detect the overload and switch to a lightweight implementation. To implement this, the application
-        may use the monitor and programmatically (in a
+        may use the counter and programmatically (in a
         <code>if then else</code>
         block) select the
         implementation to use. A more elegant way is to attach a Listener to the Gauge that monitors the load.
@@ -48,7 +48,7 @@
       <p>
         <code>Monitor.Listener</code>
         allows the application to get evolved when a new Metric is registered
-        to the monitor. The application can register new statValues (or
+        to the counter. The application can register new statValues (or
         <em>automagically</em>
         creates new ones
         when requested) at any moment, and this listener can be used to get notified and pre-configure the
@@ -56,7 +56,7 @@
       </p>
       <p>
         <code>Repository.Listener</code>
-        can be used by the application to get notified any time a new monitor
+        can be used by the application to get notified any time a new counter
         instance is created, for example to register a Monitor.Listener !
       </p>
     </section>
@@ -67,7 +67,7 @@
         application scalability.
       </p>
       <p>
-        The StopWatches used to monitor execution can be registered in the
+        The StopWatches used to counter execution can be registered in the
         <code>ExecutionStack</code>
         utility
         class that maintain the set of active stopWatches for the current thread. It is recommended
@@ -93,7 +93,7 @@
         When a SecondaryRepository is created, it registers all the required listeners to maintain a set
         or secondary monitors / counters / gauges in sync with the "primary" repository.
         A secondary gauge will share the initial state of the primary gauge. A secondary counter will start
-        with initial value set to 0. The secondary repository can so be used to monitor the application during
+        with initial value set to 0. The secondary repository can so be used to counter the application during
         a period as if monitoring had just been reseted. It can then be detached from the primary repository,
         and will then not get notified anymore on application monitoring events.
       </p>

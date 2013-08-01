@@ -17,7 +17,7 @@
 package org.apache.commons.monitoring.jdbc;
 
 import org.apache.commons.monitoring.Role;
-import org.apache.commons.monitoring.monitors.Monitor;
+import org.apache.commons.monitoring.counter.Counter;
 import org.apache.commons.monitoring.repositories.Repository;
 import org.hsqldb.jdbcDriver;
 import org.junit.BeforeClass;
@@ -54,14 +54,14 @@ public class HsqlDBTest {
         final String create = "CREATE TABLE Address (Nr INTEGER, Name VARCHAR(128));";
         final Statement statement = connection.createStatement();
         statement.execute(create);
-        assertEquals(1, Repository.INSTANCE.getMonitor(new Monitor.Key(create, "jdbc")).getMaxConcurrency(), 0.);
+        assertEquals(1, Repository.INSTANCE.getCounter(new Counter.Key(Role.JDBC, create)).getMaxConcurrency(), 0.);
 
         final String insert = "INSERT INTO Address (Nr, Name) VALUES(1, 'foo')";
         final PreparedStatement preparedStatement = connection.prepareStatement(insert);
         preparedStatement.execute();
-        assertEquals(1, Repository.INSTANCE.getMonitor(new Monitor.Key(insert, "jdbc")).getMaxConcurrency(), 0.);
+        assertEquals(1, Repository.INSTANCE.getCounter(new Counter.Key(Role.JDBC, insert)).getMaxConcurrency(), 0.);
         preparedStatement.execute();
-        assertEquals(1, Repository.INSTANCE.getMonitor(new Monitor.Key(insert, "jdbc")).getMaxConcurrency(), 0.);
-        assertEquals(2, Repository.INSTANCE.getMonitor(new Monitor.Key(insert, "jdbc")).getCounter(Role.PERFORMANCES).getHits(), 0.);
+        assertEquals(1, Repository.INSTANCE.getCounter(new Counter.Key(Role.JDBC, insert)).getMaxConcurrency(), 0.);
+        assertEquals(2, Repository.INSTANCE.getCounter(new Counter.Key(Role.JDBC, insert)).getHits(), 0.);
     }
 }

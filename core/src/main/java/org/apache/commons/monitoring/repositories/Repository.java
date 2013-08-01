@@ -18,52 +18,22 @@
 package org.apache.commons.monitoring.repositories;
 
 import org.apache.commons.monitoring.configuration.Configuration;
-import org.apache.commons.monitoring.monitors.Monitor;
+import org.apache.commons.monitoring.counter.Counter;
 import org.apache.commons.monitoring.stopwatches.StopWatch;
-
-import java.util.Collection;
-import java.util.Set;
 
 /**
  * The repository maintains a set of monitors and ensure unicity. It creates monitors on-demand
- * based on requested Keys. After creation, the monitor Key cannot be updated.
+ * based on requested Keys. After creation, the counter Key cannot be updated.
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public interface Repository {
+public interface Repository extends Iterable<Counter> {
     static final Repository INSTANCE = Configuration.newInstance(Repository.class);
 
     /**
-     * Retrieve or create a monitor it's key
+     * Retrieve or create a counter it's key
      */
-    Monitor getMonitor(Monitor.Key key);
-
-    /**
-     * Retrieve or create a monitor by name
-     */
-    Monitor getMonitor(String name);
-
-    /**
-     * Retrieve or create a monitor by name and category
-     */
-    Monitor getMonitor(String name, String category);
-
-    /**
-     * @return all monitors registered in the repository
-     */
-    Collection<Monitor> getMonitors();
-
-    /**
-     * @param category a category name
-     * @return all monitors in the repository that declare this category in
-     * there Key
-     */
-    Collection<Monitor> getMonitorsFromCategory(String category);
-
-    /**
-     * @return the categories declared by monitors in the repository
-     */
-    Set<String> getCategories();
+    Counter getCounter(Counter.Key key);
 
     /**
      * Reset the repository : all existing monitors are destroyed and data are lost.
@@ -77,10 +47,10 @@ public interface Repository {
 
 
     /**
-     * Start a StopWatch to monitor execution
+     * Start a StopWatch to counter execution
      *
-     * @param monitor the monitor associated with the process
+     * @param counter the counter associated with the process
      * @return a running StopWatch
      */
-    StopWatch start(Monitor monitor);
+    StopWatch start(Counter counter);
 }

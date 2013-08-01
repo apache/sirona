@@ -17,9 +17,7 @@
 
 package org.apache.commons.monitoring.jdbc;
 
-import org.apache.commons.monitoring.Role;
-import org.apache.commons.monitoring.counter.Unit;
-import org.apache.commons.monitoring.monitors.Monitor;
+import org.apache.commons.monitoring.counter.Counter;
 import org.apache.commons.monitoring.stopwatches.CounterStopWatch;
 import org.apache.commons.monitoring.stopwatches.StopWatch;
 import org.apache.commons.monitoring.util.ClassLoaders;
@@ -37,15 +35,6 @@ import java.sql.Statement;
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public class MonitoredConnection implements InvocationHandler {
-    private final static Role OPEN_CONECTIONS =
-        new Role("open connections", Unit.UNARY);
-
-    private final static Role CONECTION_DURATION =
-        new Role("connection duration", Unit.Time.NANOSECOND);
-
-    /**
-     * target connection
-     */
     private Connection connection;
     private StopWatch stopWatch;
 
@@ -84,10 +73,6 @@ public class MonitoredConnection implements InvocationHandler {
         return method.invoke(connection, args);
     }
 
-    /**
-     * @param statement traget Statement
-     * @return monitored Statement
-     */
     private Statement monitor(final Statement statement) {
         return Statement.class.cast(Proxy.newProxyInstance(ClassLoaders.current(), new Class<?>[]{Statement.class}, new MonitoredStatement(statement)));
     }
@@ -110,8 +95,8 @@ public class MonitoredConnection implements InvocationHandler {
         return CallableStatement.class.cast(Proxy.newProxyInstance(ClassLoaders.current(), new Class<?>[]{CallableStatement.class}, new MonitoredPreparedStatement(statement, sql)));
     }
 
-    public static Connection monitor(final Connection connection, final Monitor monitor) {
-        final StopWatch stopWatch = new CounterStopWatch(monitor);
+    public static Connection monitor(final Connection connection, final Counter counter) {
+        final StopWatch stopWatch = new CounterStopWatch(counter);
         return Connection.class.cast(Proxy.newProxyInstance(ClassLoaders.current(), new Class<?>[]{Connection.class}, new MonitoredConnection(connection, stopWatch)));
     }
 }

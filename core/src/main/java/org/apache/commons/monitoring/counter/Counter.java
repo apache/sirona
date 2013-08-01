@@ -18,7 +18,8 @@
 package org.apache.commons.monitoring.counter;
 
 import org.apache.commons.monitoring.Role;
-import org.apache.commons.monitoring.monitors.Monitor;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * A <code>Metric</code> is a numerical indicator of some monitored application state with support for simple
@@ -27,49 +28,19 @@ import org.apache.commons.monitoring.monitors.Monitor;
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public interface Counter {
-    /**
-     * reset the Metric
-     */
+    Key getKey();
+
     void reset();
 
-    /**
-     * Add value to the metric. For Counters, the value is expected to be always positive.
-     * <p/>
-     * The delta MUST use the metric unit ({@link #getUnit()})
-     *
-     * @param delta value to be added
-     */
     void add(double delta);
 
-    /**
-     * Add value to the metric with the specified Unit. For Counters, the value is expected to be always positive.
-     *
-     * @param delta value to be added
-     * @param unit  the unit used for delta, MUST be compatible with the metric unit ({@link #getUnit()})
-     */
     void add(double delta, Unit unit);
 
-    /**
-     * Set the monitor this Metric is attached to
-     *
-     * @param monitor
-     */
-    void setMonitor(Monitor monitor);
+    AtomicInteger currentConcurrency();
 
-    /**
-     * @return the monitor this Metric is attached to
-     */
-    Monitor getMonitor();
+    void updateConcurrency(int concurrency);
 
-    /**
-     * @return the role for this Metric in the monitor
-     */
-    Role getRole();
-
-    /**
-     * @return the data unit
-     */
-    Unit getUnit();
+    int getMaxConcurrency();
 
     // --- Statistical indicators --------------------------------------------
 
@@ -92,4 +63,44 @@ public interface Counter {
     double getSumOfLogs();
 
     double getSumOfSquares();
+
+    public static class Key {
+        private final String name;
+        private final Role role;
+
+        public Key(final Role role, final String name) {
+            this.role = role;
+            this.name = name;
+        }
+
+        @Override
+        public String toString() {
+            return "name=" + name;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            final Key key = (Key) o;
+            return name.equals(key.name) && role.equals(key.role);
+
+        }
+
+        @Override
+        public int hashCode() {
+            int result = name.hashCode();
+            result = 31 * result + role.hashCode();
+            return result;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public Role getRole() {
+            return role;
+        }
+    }
 }

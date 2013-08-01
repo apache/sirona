@@ -22,17 +22,10 @@
 
   <bean id="service" class="org.apache.commons.monitoring.spring.service.MyService" />
 
-  <bean id="monitoringAdvisor" class="org.apache.commons.monitoring.spring.AopaliancePerformanceInterceptor" />
-
   <bean class="org.apache.commons.monitoring.spring.BeanNameMonitoringAutoProxyCreator">
     <property name="beanNames">
       <list>
         <value>service</value>
-      </list>
-    </property>
-    <property name="interceptorNames">
-      <list>
-        <value>monitoringAdvisor</value>
       </list>
     </property>
   </bean>

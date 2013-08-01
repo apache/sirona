@@ -16,6 +16,8 @@
  */
 package org.apache.commons.monitoring.aspectj;
 
+import org.apache.commons.monitoring.Role;
+import org.apache.commons.monitoring.counter.Counter;
 import org.apache.commons.monitoring.repositories.Repository;
 import org.junit.Test;
 
@@ -25,7 +27,7 @@ public class AspectJMonitoringTest {
     @Test
     public void monitor() {
         new MonitorMe().foo();
-        assertEquals(1, Repository.INSTANCE.getMonitor("org.apache.commons.monitoring.aspectj.AspectJMonitoringTest$MonitorMe.foo").getCounter("performances").getHits());
+        assertEquals(1, Repository.INSTANCE.getCounter(new Counter.Key(Role.PERFORMANCES, "org.apache.commons.monitoring.aspectj.AspectJMonitoringTest$MonitorMe.foo")).getHits());
     }
 
     public static class MonitorMe {

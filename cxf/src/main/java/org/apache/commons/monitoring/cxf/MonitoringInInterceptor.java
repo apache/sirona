@@ -17,7 +17,8 @@
 
 package org.apache.commons.monitoring.cxf;
 
-import org.apache.commons.monitoring.monitors.Monitor;
+import org.apache.commons.monitoring.Role;
+import org.apache.commons.monitoring.counter.Counter;
 import org.apache.commons.monitoring.repositories.Repository;
 import org.apache.commons.monitoring.stopwatches.StopWatch;
 import org.apache.cxf.binding.soap.Soap11;
@@ -37,13 +38,11 @@ import java.util.Map;
 /**
  * A CXF Interceptor to apply monitoring on incoming messages.
  * <p/>
- * The monitor name is set based on message SOAPAction header (if set).
+ * The counter name is set based on message SOAPAction header (if set).
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public class MonitoringInInterceptor extends AbstractSoapInterceptor {
-    private String category = "soap";
-
     public MonitoringInInterceptor() {
         super(Phase.READ);
     }
@@ -53,34 +52,14 @@ public class MonitoringInInterceptor extends AbstractSoapInterceptor {
     }
 
     public void handleMessage(final SoapMessage message) throws Fault {
-        final Monitor monitor = Repository.INSTANCE.getMonitor(getMonitorName(message), getMonitorCategory(message));
+        final Counter monitor = Repository.INSTANCE.getCounter(new Counter.Key(Role.PERFORMANCES, getCounterName(message)));
         StopWatch stopWatch = Repository.INSTANCE.start(monitor);
         message.getExchange().put(StopWatch.class, stopWatch);
     }
 
-    /**
-     * Detect the monitor name from incoming message
-     * <p/>
-     * May be overriden to use another Strategy to attach a Monitor to a SoapMessage
-     *
-     * @param message
-     * @return
-     */
-    protected String getMonitorName(final SoapMessage message) {
+    protected String getCounterName(final SoapMessage message) {
         String soapAction = getSoapAction(message);
         return soapAction != null ? soapAction : "unknown";
-    }
-
-    /**
-     * Detect the monitor category from incoming message
-     * <p/>
-     * May be overriden to use another Strategy to attach a Monitor to a SoapMessage
-     *
-     * @param message
-     * @return
-     */
-    protected String getMonitorCategory(final SoapMessage message) {
-        return category;
     }
 
     /**
@@ -129,12 +108,5 @@ public class MonitoringInInterceptor extends AbstractSoapInterceptor {
 
     public void handleFault(final SoapMessage message) {
         message.getExchange().get(StopWatch.class).stop();
-    }
-
-    /**
-     * @param category The monitoring category
-     */
-    public void setCategory(final String category) {
-        this.category = category;
     }
 }

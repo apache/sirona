@@ -18,10 +18,12 @@
 package org.apache.commons.monitoring.aop;
 
 import org.apache.commons.monitoring.Role;
-import org.apache.commons.monitoring.monitors.Monitor;
+import org.apache.commons.monitoring.counter.Counter;
 import org.apache.commons.monitoring.repositories.Repository;
 import org.apache.commons.monitoring.stopwatches.StopWatch;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.lang.reflect.Method;
 
 /**
@@ -34,8 +36,6 @@ import java.lang.reflect.Method;
  */
 public abstract class AbstractPerformanceInterceptor<T> {
 
-    protected String category;
-
     protected MonitorNameExtractor monitorNameExtractor;
 
     public AbstractPerformanceInterceptor() {
@@ -46,12 +46,12 @@ public abstract class AbstractPerformanceInterceptor<T> {
      * API neutral method invocation
      */
     protected Object doInvoke(final T invocation) throws Throwable {
-        final String name = getMonitorName(invocation);
+        final String name = getCounterName(invocation);
         if (name == null) {
             return proceed(invocation);
         }
 
-        final Monitor monitor = Repository.INSTANCE.getMonitor(name, category);
+        final Counter monitor = Repository.INSTANCE.getCounter(new Counter.Key(Role.PERFORMANCES, name));
         final StopWatch stopwatch = Repository.INSTANCE.start(monitor);
         Throwable error = null;
         try {
@@ -61,32 +61,26 @@ public abstract class AbstractPerformanceInterceptor<T> {
             throw t;
         } finally {
             stopwatch.stop();
-            beforeReturning(monitor, error, stopwatch.getElapsedTime());
+            if (error != null) {
+                final ByteArrayOutputStream writer = new ByteArrayOutputStream();
+                error.printStackTrace(new PrintStream(writer));
+                Repository.INSTANCE.getCounter(new Counter.Key(Role.FAILURES, writer.toString())).add(stopwatch.getElapsedTime());
+            }
         }
     }
 
     protected abstract Object proceed(T invocation) throws Throwable;
 
-    protected abstract String getMonitorName(T invocation);
+    protected abstract String getCounterName(T invocation);
 
     /**
-     * Compute the monitor name associated to this method invocation
+     * Compute the counter name associated to this method invocation
      *
      * @param method method being invoked
-     * @return monitor name. If <code>null</code>, nothing will be monitored
+     * @return counter name. If <code>null</code>, nothing will be monitored
      */
-    protected String getMonitorName(final Object instance, final Method method) {
+    protected String getCounterName(final Object instance, final Method method) {
         return monitorNameExtractor.getMonitorName(instance, method);
-    }
-
-    protected void beforeReturning(final Monitor monitor, final Throwable error, final long duration) {
-        if (error != null) {
-            monitor.getCounter(Role.FAILURES).add(duration);
-        }
-    }
-
-    public void setCategory(final String category) {
-        this.category = category;
     }
 
     public void setMonitorNameExtractor(final MonitorNameExtractor monitorNameExtractor) {

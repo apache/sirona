@@ -16,6 +16,7 @@
  */
 package org.apache.commons.monitoring.aop;
 
+import org.apache.commons.monitoring.Role;
 import org.apache.commons.monitoring.counter.Counter;
 import org.apache.commons.monitoring.repositories.Repository;
 import org.junit.Test;
@@ -24,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 public class MonitoringProxyFactoryTest {
     @Test
@@ -31,7 +33,7 @@ public class MonitoringProxyFactoryTest {
         final Foo foo = MonitoringProxyFactory.monitor(Foo.class, new FooImpl());
         foo.haveARest(2000);
 
-        final Counter perf = Repository.INSTANCE.getMonitor(FooImpl.class.getName() + ".haveARest").getCounter("performances");
+        final Counter perf = Repository.INSTANCE.getCounter(new Counter.Key(Role.PERFORMANCES, FooImpl.class.getName() + ".haveARest"));
         assertNotNull(perf);
         assertEquals(2000, TimeUnit.NANOSECONDS.toMillis((int) perf.getMax()), 200);
 
@@ -41,7 +43,16 @@ public class MonitoringProxyFactoryTest {
             // normal
         }
 
-        final Counter failures = Repository.INSTANCE.getMonitor(FooImpl.class.getName() + ".throwSthg").getCounter("failures");
+        Counter failures = null;
+        for (final Counter c : Repository.INSTANCE) {
+            if (c.getKey().getName().contains("UnsupportedOperationException")) {
+                if (failures != null) {
+                    fail();
+                }
+                failures = c;
+            }
+        }
+
         assertNotNull(failures);
         assertEquals(1, failures.getHits());
     }

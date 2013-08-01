@@ -22,45 +22,24 @@ import org.apache.commons.monitoring.aop.MonitorNameExtractor;
 import org.springframework.aop.TargetSource;
 import org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator;
 
-/**
- * Creates monitored proxies for beans that match a naming pattern.
- *
- * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
- */
 public class BeanNameMonitoringAutoProxyCreator extends BeanNameAutoProxyCreator {
-    private String category = "spring";
-    private MonitorNameExtractor monitorNameExtractor = DefaultMonitorNameExtractor.INSTANCE;
+    private MonitorNameExtractor counterNameExtractor = DefaultMonitorNameExtractor.INSTANCE;
 
     @Override
     protected Object[] getAdvicesAndAdvisorsForBean(final Class beanClass, final String beanName, final TargetSource targetSource) {
         if (super.getAdvicesAndAdvisorsForBean(beanClass, beanName, targetSource) != DO_NOT_PROXY) {
             final AopaliancePerformanceInterceptor interceptor = new AopaliancePerformanceInterceptor();
-            interceptor.setCategory(category);
-            interceptor.setMonitorNameExtractor(monitorNameExtractor);
+            interceptor.setMonitorNameExtractor(counterNameExtractor);
             return new Object[] { interceptor };
         }
         return DO_NOT_PROXY;
     }
 
-    /**
-     * @param category the category to set
-     */
-    public void setCategory(final String category) {
-        this.category = category;
+    public void setCounterNameExtractor(final MonitorNameExtractor counterNameExtractor) {
+        this.counterNameExtractor = counterNameExtractor;
     }
 
-    /**
-     * @param monitorNameExtractor the monitorNameExtractor to set
-     */
-    public void setMonitorNameExtractor(final MonitorNameExtractor monitorNameExtractor) {
-        this.monitorNameExtractor = monitorNameExtractor;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public MonitorNameExtractor getMonitorNameExtractor() {
-        return monitorNameExtractor;
+    public MonitorNameExtractor getCounterNameExtractor() {
+        return counterNameExtractor;
     }
 }

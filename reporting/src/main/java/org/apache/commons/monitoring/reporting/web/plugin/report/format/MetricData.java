@@ -158,7 +158,7 @@ public enum MetricData {
     Concurrency {
         @Override
         public double value(final Counter counter) {
-            return counter.getMonitor().getConcurrency();
+            return counter.currentConcurrency().get();
         }
 
         @Override
@@ -169,7 +169,7 @@ public enum MetricData {
     MaxConcurrency {
         @Override
         public double value(final Counter counter) {
-            return counter.getMonitor().getMaxConcurrency();
+            return counter.getMaxConcurrency();
         }
 
         @Override

@@ -16,6 +16,8 @@
  */
 package org.apache.commons.monitoring.jdbc;
 
+import org.apache.commons.monitoring.Role;
+import org.apache.commons.monitoring.counter.Counter;
 import org.apache.commons.monitoring.repositories.Repository;
 
 import java.sql.Connection;
@@ -58,7 +60,7 @@ public class MonitoringDriver implements Driver {
         final String realDriver = url.substring(driverIndex + DRIVER_SUFFIX.length());
         try {
             final Driver delegate = Driver.class.cast(Class.forName(realDriver).newInstance());
-            return MonitoredConnection.monitor(delegate.connect(realUrl, info), Repository.INSTANCE.getMonitor(Driver.class.getName(), "jdbc"));
+            return MonitoredConnection.monitor(delegate.connect(realUrl, info), Repository.INSTANCE.getCounter(new Counter.Key(Role.JDBC, url)));
         } catch (final Exception e) {
             throw new SQLException(e);
         }

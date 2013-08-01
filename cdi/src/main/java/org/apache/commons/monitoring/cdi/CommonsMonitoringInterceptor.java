@@ -38,7 +38,7 @@ public class CommonsMonitoringInterceptor extends AbstractPerformanceInterceptor
     }
 
     @Override
-    protected String getMonitorName(final InvocationContext invocation) {
-        return getMonitorName(invocation.getTarget(), invocation.getMethod());
+    protected String getCounterName(final InvocationContext invocation) {
+        return getCounterName(invocation.getTarget(), invocation.getMethod());
     }
 }

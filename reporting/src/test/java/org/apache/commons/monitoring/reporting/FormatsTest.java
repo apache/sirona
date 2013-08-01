@@ -18,7 +18,7 @@
 package org.apache.commons.monitoring.reporting;
 
 import org.apache.commons.monitoring.Role;
-import org.apache.commons.monitoring.monitors.Monitor;
+import org.apache.commons.monitoring.counter.Counter;
 import org.apache.commons.monitoring.reporting.web.plugin.report.format.CSVFormat;
 import org.apache.commons.monitoring.reporting.web.plugin.report.format.Format;
 import org.apache.commons.monitoring.repositories.Repository;
@@ -37,9 +37,9 @@ public class FormatsTest {
     public static void setup() {
         Repository.INSTANCE.clear();
 
-        final Monitor monitor = Repository.INSTANCE.getMonitor(new Monitor.Key("RendererTest", "unit"));
-        monitor.updateConcurrency(1);
-        monitor.getCounter(Role.FAILURES).add(1.);
+        final Counter counter = Repository.INSTANCE.getCounter(new Counter.Key(Role.FAILURES, "RendererTest"));
+        counter.updateConcurrency(1);
+        counter.add(1.);
     }
 
     @AfterClass
@@ -53,10 +53,8 @@ public class FormatsTest {
         Format.Defaults.XML.render(new PrintWriter(out), Collections.<String, Object>emptyMap());
 
         assertEquals("<repository>" +
-            "<monitor name=\"RendererTest\" category=\"unit\">" +
-            "<counter role=\"failures\" unit=\"u\" Hits=\"1.0\" Max=\"1.0\" Mean=\"1.0\" Min=\"1.0\" StandardDeviation=\"0.0\" Sum=\"1.0\" " +
+            "<counter name=\"RendererTest\" role=\"failures\" unit=\"u\" Hits=\"1.0\" Max=\"1.0\" Mean=\"1.0\" Min=\"1.0\" StandardDeviation=\"0.0\" Sum=\"1.0\" " +
             "SumOfLogs=\"0.0\" SumOfSquares=\"0.0\" Variance=\"0.0\" GeometricMean=\"1.0\" Value=\"1.0\" Concurrency=\"0.0\" MaxConcurrency=\"1.0\" />" +
-            "</monitor>" +
             "</repository>".trim(), out.toString());
     }
 
@@ -65,11 +63,10 @@ public class FormatsTest {
         final StringWriter out = new StringWriter();
         Format.Defaults.JSON.render(new PrintWriter(out), Collections.<String, Object>emptyMap());
 
-        assertEquals("{\"monitors\":[" +
-            "{\"name\":\"RendererTest\",\"category\":\"unit\",\"counters\":[" +
-            "{\"role\":\"failures\",\"unit\":\"u\",\"Hits\":\"1.0\",\"Max\":\"1.0\",\"Mean\":\"1.0\",\"Min\":\"1.0\"," +
+        assertEquals("{\"counters\":[" +
+            "{\"name\":\"RendererTest\",\"role\":\"failures\",\"unit\":\"u\",\"Hits\":\"1.0\",\"Max\":\"1.0\",\"Mean\":\"1.0\",\"Min\":\"1.0\"," +
             "\"StandardDeviation\":\"0.0\",\"Sum\":\"1.0\",\"SumOfLogs\":\"0.0\",\"SumOfSquares\":\"0.0\",\"Variance\":\"0.0\"," +
-            "\"GeometricMean\":\"1.0\",\"Value\":\"1.0\",\"Concurrency\":\"0.0\",\"MaxConcurrency\":\"1.0\"}]}]}", out.toString());
+            "\"GeometricMean\":\"1.0\",\"Value\":\"1.0\",\"Concurrency\":\"0.0\",\"MaxConcurrency\":\"1.0\"}]}", out.toString());
     }
 
     @Test
@@ -78,7 +75,7 @@ public class FormatsTest {
         Format.Defaults.CSV.render(new PrintWriter(out), Collections.<String, Object>emptyMap());
 
         assertEquals(CSVFormat.HEADER +
-            "RendererTest;unit;failures (u);1.0;1.0;1.0;1.0;0.0;1.0;0.0;0.0;0.0;1.0;1.0;0.0;1.0\n",
+            "RendererTest;failures (u);1.0;1.0;1.0;1.0;0.0;1.0;0.0;0.0;0.0;1.0;1.0;0.0;1.0\n",
             out.toString());
     }
 }

@@ -25,7 +25,7 @@ import javax.servlet.jsp.tagext.TagSupport;
 import static org.apache.commons.monitoring.web.jsp.TagUtils.getScope;
 
 /**
- * A JSP tag to monitor JSP rendering performances
+ * A JSP tag to counter JSP rendering performances
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */

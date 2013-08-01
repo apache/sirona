@@ -16,6 +16,8 @@
  */
 package org.apache.commons.monitoring.web.servlet;
 
+import org.apache.commons.monitoring.Role;
+import org.apache.commons.monitoring.counter.Counter;
 import org.apache.commons.monitoring.repositories.Repository;
 import org.apache.commons.monitoring.stopwatches.StopWatch;
 
@@ -30,7 +32,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class MonitoringFilter implements Filter {
-    private String category;
+    @Override
+    public void init(final FilterConfig filterConfig) throws ServletException {
+        // no-op
+    }
 
     @Override
     public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain) throws IOException, ServletException {
@@ -44,10 +49,14 @@ public class MonitoringFilter implements Filter {
         }
     }
 
+    @Override
+    public void destroy() {
+        // no-op
+    }
+
     protected void doFilter(final HttpServletRequest request, final HttpServletResponse response, final FilterChain chain) throws IOException, ServletException {
         final String uri = getRequestedUri(request);
-        final String category = getCategory(uri);
-        final StopWatch stopWatch = Repository.INSTANCE.start(Repository.INSTANCE.getMonitor(uri, category));
+        final StopWatch stopWatch = Repository.INSTANCE.start(Repository.INSTANCE.getCounter(new Counter.Key(Role.WEB, uri)));
         try {
             chain.doFilter(request, response);
         } finally {
@@ -59,22 +68,5 @@ public class MonitoringFilter implements Filter {
         final String uri = request.getRequestURI();
         final String context = request.getContextPath();
         return uri.substring(context.length());
-    }
-
-    protected String getCategory(final String uri) {
-        return category;
-    }
-
-    @Override
-    public void init(final FilterConfig config) throws ServletException {
-        category = config.getInitParameter("category");
-        if (category == null) {
-            category = "web";
-        }
-    }
-
-    @Override
-    public void destroy() {
-        // Nop
     }
 }

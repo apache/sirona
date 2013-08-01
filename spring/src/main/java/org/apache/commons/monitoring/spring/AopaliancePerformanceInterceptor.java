@@ -33,8 +33,8 @@ public class AopaliancePerformanceInterceptor extends AbstractPerformanceInterce
     }
 
     @Override
-    protected String getMonitorName(final MethodInvocation invocation) {
-        return getMonitorName(invocation.getThis(), invocation.getMethod());
+    protected String getCounterName(final MethodInvocation invocation) {
+        return getCounterName(invocation.getThis(), invocation.getMethod());
     }
 
     @Override

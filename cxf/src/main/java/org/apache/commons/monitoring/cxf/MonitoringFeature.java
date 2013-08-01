@@ -35,12 +35,9 @@ import org.apache.cxf.interceptor.InterceptorProvider;
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public class MonitoringFeature extends AbstractFeature {
-    private String category = "soap";
-
     @Override
     protected void initializeProvider(InterceptorProvider provider, Bus bus) {
         final MonitoringInInterceptor in = getMonitoringInInterceptor();
-        in.setCategory(category);
         final MonitoringOutInterceptor out = new MonitoringOutInterceptor();
         provider.getInInterceptors().add(in);
         provider.getInFaultInterceptors().add(in);
@@ -50,9 +47,5 @@ public class MonitoringFeature extends AbstractFeature {
 
     protected MonitoringInInterceptor getMonitoringInInterceptor() {
         return new MonitoringInInterceptor();
-    }
-
-    public void setCategory(final String category) {
-        this.category = category;
     }
 }

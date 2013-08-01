@@ -17,31 +17,51 @@
 package org.apache.commons.monitoring.counter;
 
 import org.apache.commons.math.stat.descriptive.SummaryStatistics;
-import org.apache.commons.monitoring.Role;
 import org.apache.commons.monitoring.configuration.Configuration;
 import org.apache.commons.monitoring.counter.queuemanager.MetricQueueManager;
-import org.apache.commons.monitoring.monitors.Monitor;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class DefaultCounter implements Counter {
     private static final MetricQueueManager QUEUE_MANAGER = Configuration.newInstance(MetricQueueManager.class);
 
-    protected Monitor monitor;
+    private final AtomicInteger concurrency = new AtomicInteger(0);
+    private final Key key;
+    private volatile int maxConcurrency = 0;
     protected SummaryStatistics statistics;
-    protected Role role;
-    protected Unit unit;
     protected Lock lock = new ReentrantLock();
 
-    public DefaultCounter(final Role role) {
-        this.role = role;
-        this.unit = role.getUnit();
+    public DefaultCounter(final Key key) {
+        this.key = key;
         this.statistics = new SummaryStatistics();
     }
 
     public void addInternal(final double delta) { // should be called from a thread safe environment
         statistics.addValue(delta);
+    }
+
+    @Override
+    public void updateConcurrency(final int concurrency) {
+        if (concurrency > maxConcurrency) {
+            maxConcurrency = concurrency;
+        }
+    }
+
+    @Override
+    public int getMaxConcurrency() {
+        return maxConcurrency;
+    }
+
+    @Override
+    public AtomicInteger currentConcurrency() {
+        return concurrency;
+    }
+
+    @Override
+    public Key getKey() {
+        return key;
     }
 
     @Override
@@ -56,27 +76,7 @@ public class DefaultCounter implements Counter {
 
     @Override
     public void add(final double delta, final Unit deltaUnit) {
-        add(unit.convert(delta, deltaUnit));
-    }
-
-    @Override
-    public void setMonitor(final Monitor monitor) {
-        this.monitor = monitor;
-    }
-
-    @Override
-    public Monitor getMonitor() {
-        return monitor;
-    }
-
-    @Override
-    public Role getRole() {
-        return role;
-    }
-
-    @Override
-    public Unit getUnit() {
-        return unit;
+        add(key.getRole().getUnit().convert(delta, deltaUnit));
     }
 
     @Override

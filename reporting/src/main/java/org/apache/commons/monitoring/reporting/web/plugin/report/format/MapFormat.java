@@ -18,7 +18,6 @@ package org.apache.commons.monitoring.reporting.web.plugin.report.format;
 
 import org.apache.commons.monitoring.counter.Counter;
 import org.apache.commons.monitoring.counter.Unit;
-import org.apache.commons.monitoring.monitors.Monitor;
 import org.apache.commons.monitoring.repositories.Repository;
 
 import java.util.ArrayList;
@@ -31,8 +30,7 @@ public abstract class MapFormat {
 
     protected static Collection<String> buildMetricDataHeader() {
         final Collection<String> list = new CopyOnWriteArrayList<String>();
-        list.add("Monitor");
-        list.add("Category");
+        list.add("Counter");
         list.add("Role");
         for (final MetricData md : MetricData.values()) {
             list.add(md.name());
@@ -64,30 +62,27 @@ public abstract class MapFormat {
 
     protected static Collection<Collection<String>> snapshot(final Unit timeUnit) {
         final Collection<Collection<String>> data = new ArrayList<Collection<String>>();
-        for (final Monitor monitor : Repository.INSTANCE.getMonitors()) {
-            for (final Counter counter : monitor.getCounters()) {
-                final Unit counterUnit = counter.getRole().getUnit();
-                final boolean compatible = timeUnit.isCompatible(counterUnit);
+        for (final Counter counter : Repository.INSTANCE) {
+            final Unit counterUnit = counter.getKey().getRole().getUnit();
+            final boolean compatible = timeUnit.isCompatible(counterUnit);
 
-                final Collection<String> line = new ArrayList<String>();
-                data.add(line);
+            final Collection<String> line = new ArrayList<String>();
+            data.add(line);
 
-                line.add(monitor.getKey().getName());
-                line.add(monitor.getKey().getCategory());
+            line.add(counter.getKey().getName());
 
-                if (compatible) {
-                    line.add(counter.getRole().getName() + " (" + timeUnit.getName() + ")");
-                } else {
-                    line.add(counter.getRole().getName() + " (" + counterUnit.getName() + ")");
+            if (compatible) {
+                line.add(counter.getKey().getRole().getName() + " (" + timeUnit.getName() + ")");
+            } else {
+                line.add(counter.getKey().getRole().getName() + " (" + counterUnit.getName() + ")");
+            }
+
+            for (final MetricData md : MetricData.values()) {
+                double value = md.value(counter);
+                if (md.isTime() && compatible && timeUnit != counterUnit) {
+                    value = timeUnit.convert(value, counterUnit);
                 }
-
-                for (final MetricData md : MetricData.values()) {
-                    double value = md.value(counter);
-                    if (md.isTime() && compatible && timeUnit != counterUnit) {
-                        value = timeUnit.convert(value, counterUnit);
-                    }
-                    line.add(Double.toString(value));
-                }
+                line.add(Double.toString(value));
             }
         }
         return data;

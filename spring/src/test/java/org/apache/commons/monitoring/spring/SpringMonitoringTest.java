@@ -17,7 +17,7 @@
 package org.apache.commons.monitoring.spring;
 
 import org.apache.commons.monitoring.Role;
-import org.apache.commons.monitoring.monitors.Monitor;
+import org.apache.commons.monitoring.counter.Counter;
 import org.apache.commons.monitoring.repositories.Repository;
 import org.apache.commons.monitoring.spring.service.MyService;
 import org.junit.Test;
@@ -37,6 +37,6 @@ public class SpringMonitoringTest {
     @Test
     public void checkMonitoringIsActivated() {
         service.doIt();
-        assertEquals(1, Repository.INSTANCE.getMonitor(new Monitor.Key(MyService.class.getName() + ".doIt", "spring")).getCounter(Role.PERFORMANCES).getHits());
+        assertEquals(1, Repository.INSTANCE.getCounter(new Counter.Key(Role.PERFORMANCES, MyService.class.getName() + ".doIt")).getHits());
     }
 }

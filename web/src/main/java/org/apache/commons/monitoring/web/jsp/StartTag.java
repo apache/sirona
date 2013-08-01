@@ -17,6 +17,8 @@
 
 package org.apache.commons.monitoring.web.jsp;
 
+import org.apache.commons.monitoring.Role;
+import org.apache.commons.monitoring.counter.Counter;
 import org.apache.commons.monitoring.repositories.Repository;
 import org.apache.commons.monitoring.stopwatches.StopWatch;
 
@@ -26,7 +28,7 @@ import javax.servlet.jsp.tagext.TagSupport;
 import static org.apache.commons.monitoring.web.jsp.TagUtils.getScope;
 
 /**
- * A JSP tag to monitor JSP rendering performances
+ * A JSP tag to counter JSP rendering performances
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
@@ -34,8 +36,6 @@ public class StartTag extends TagSupport {
     private String id;
     private String scope;
     private String name;
-    private String category;
-    protected String repository;
 
     public void setId(String id) {
         this.id = id;
@@ -43,7 +43,7 @@ public class StartTag extends TagSupport {
 
     @Override
     public int doStartTag() throws JspException {
-        final StopWatch stopWatch = Repository.INSTANCE.start(Repository.INSTANCE.getMonitor(name, category));
+        final StopWatch stopWatch = Repository.INSTANCE.start(Repository.INSTANCE.getCounter(new Counter.Key(Role.JSP, name)));
         if (scope != null) {
             pageContext.setAttribute(id, stopWatch, getScope(scope));
         } else {
@@ -52,24 +52,11 @@ public class StartTag extends TagSupport {
         return EVAL_PAGE;
     }
 
-    /**
-     * @param scope the scope to set
-     */
     public void setScope(String scope) {
         this.scope = scope;
     }
 
-    /**
-     * @param name the name to set
-     */
     public void setName(String name) {
         this.name = name;
-    }
-
-    /**
-     * @param category the category to set
-     */
-    public void setCategory(String category) {
-        this.category = category;
     }
 }

@@ -35,7 +35,7 @@ public class CounterBench implements Runnable {
     @Test
     public void defaultCounter() throws Exception {
         mode = "RentrantLockCounter";
-        counter = new DefaultCounter(Role.FAILURES);
+        counter = new DefaultCounter(new Counter.Key(Role.FAILURES, mode));
         runConcurrent();
     }
 

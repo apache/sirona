@@ -37,7 +37,7 @@
     <section name="Concepts">
       <subsection name="Monitors">
         <p>
-          The application exposes it's state based on<b>monitors</b>. A monitor is an abstraction for any
+          The application exposes it's state based on<b>monitors</b>. A counter is an abstraction for any
           element in the application that can expose state or resource consumption. This can be a code
           fragment, a web application URI, a JDBC query, some business object data, etc. It is identified
           by :
@@ -53,7 +53,7 @@
             </li>
             <li>a
               <b>subsystem</b>
-              that associate the monitor to a functional subsystem in the application
+              that associate the counter to a functional subsystem in the application
               ("admin", "accounts management" ...)
             </li>
           </ul>
@@ -65,7 +65,7 @@
       </subsection>
       <subsection name="Repository">
         <p>
-          Monitors are registered in a repository, that ensure a monitor is unique for a name/category/subsytem
+          Monitors are registered in a repository, that ensure a counter is unique for a name/category/subsytem
           Key. The repository is used to retrieve existing monitors and create new ones. The
           <a href="xref/org/apache/commons/monitoring/impl/repositories/DefaultRepository">default repository
             implementation
@@ -73,9 +73,9 @@
           creates new Monitor instance when a non-existing one is requested, so you don't have to wory
           about monitors management.
           <pre>
-            Monitor monitor = repository.getMonitor( "MyService.myMethod" );
-            Monitor monitor = repository.getMonitor( "SoapEndpoint.process", "soap" );
-            Monitor monitor = repository.getMonitor( "/admin/userEdit.do", "struts", "user management" );
+            Monitor counter = repository.getMonitor( "MyService.myMethod" );
+            Monitor counter = repository.getMonitor( "SoapEndpoint.process", "soap" );
+            Monitor counter = repository.getMonitor( "/admin/userEdit.do", "struts", "user management" );
           </pre>
           You can use a custom repository by extending one of the provided implementations. You can also
           use the
@@ -89,7 +89,7 @@
           Monitors manage a set of
           <code>Metrics</code>
           that the application uses to expose state. The
-          monitor only identifies where the data comes from, and the statValues handle the monitored data.
+          counter only identifies where the data comes from, and the statValues handle the monitored data.
           There is two types of values that application can use, depending on the data to be exposed :
           <ul>
             <li>a
@@ -134,7 +134,7 @@
         </p>
         <p>The
           <a href="xref/org/apache/commons/monitoring/impl/monitors/CreateValuesOnDemandMonitor">
-            default monitor implementation
+            default counter implementation
           </a>
           will create the required Gauge/Counters implementation when a
           statValue is requested by the application.
@@ -142,14 +142,14 @@
       </subsection>
       <subsection name="Role">
         <p>
-          A monitor can handle many statValues. Metrics are identified in a monitor by a role, that
+          A counter can handle many statValues. Metrics are identified in a counter by a role, that
           describes the data beeing computed. There is predefined roles for performances, concurrency
-          monitoring and failures count, but any other relevant counter/gauge can be registered to a monitor.
+          monitoring and failures count, but any other relevant counter/gauge can be registered to a counter.
           <pre>
             final static Role BYTES = new Role( "bytes", Unit.BYTES, Counter.class );
 
-            static Monitor monitor = repository.getMonitor( "SoapEndpoint.process" );
-            static Counter bytes = monitor.getCounter( BYTES );
+            static Monitor counter = repository.getMonitor( "SoapEndpoint.process" );
+            static Counter bytes = counter.getCounter( BYTES );
 
             public void process( SOAPMessage message )
             {
@@ -161,7 +161,7 @@
           </pre>
           A role can be considered as a statValue prototype. It defines :
           <ul>
-            <li>The name of the statValue inside the monitor</li>
+            <li>The name of the statValue inside the counter</li>
             <li>The unit used for data gathered by the statValue</li>
             <li>The statValue type, beeing either
               <code>Counter.class</code>
@@ -189,8 +189,8 @@
         <p>Performance monitoring is first-class use case of Commons Monitoring. The
           <code>org.apache.commons.monitoring.stopwatches.StopWatch</code>
           class provides the necessary tooling
-          to compute and monitor code or service invocation performances. A StopWatch is created
-          by the repository for a monitor. The stopwatch is initialy "started", and will compute
+          to compute and counter code or service invocation performances. A StopWatch is created
+          by the repository for a counter. The stopwatch is initialy "started", and will compute
           elapsed time until it is stopped by the application. The application MUST ALLWAYS stop
           the StopWatches it has created ! To ensure this, always use a finally block :
           <pre>
@@ -208,7 +208,7 @@
         <p>
           You can nest stopWatches, in many case by monitoring some high-level process (for example web
           request rendering time) and nested low-level service (remote service invocation, JDBC request...).
-          The monitor maintains statistics about those informations as the PERFORMANCE and RESPONSE_TIME
+          The counter maintains statistics about those informations as the PERFORMANCE and RESPONSE_TIME
           counters. First one only computes performance of the target code, not sub-processes.
         </p>
         <p>
@@ -231,7 +231,7 @@
         The
         <b>Monitoring</b>
         class is a convenience utility class to make application instrumentation
-        as simple as possible. To monitor application performance, simply do :
+        as simple as possible. To counter application performance, simply do :
         <pre>
           public void myMethodToGetMonitored()
           {
@@ -247,7 +247,7 @@
           }
         </pre>
         The StopWatch class will compute the time elapsed during code execution and report it to the
-        monitor "MyClass.myMethod".
+        counter "MyClass.myMethod".
       </p>
       <p>
         Other helper classes are provided for simplier use with commons frameworks. The

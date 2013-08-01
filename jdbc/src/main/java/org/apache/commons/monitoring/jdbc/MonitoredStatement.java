@@ -18,7 +18,7 @@
 package org.apache.commons.monitoring.jdbc;
 
 import org.apache.commons.monitoring.Role;
-import org.apache.commons.monitoring.monitors.Monitor;
+import org.apache.commons.monitoring.counter.Counter;
 import org.apache.commons.monitoring.repositories.Repository;
 import org.apache.commons.monitoring.stopwatches.StopWatch;
 
@@ -28,9 +28,6 @@ import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-/**
- * @author <a href="mailto:ndeloof@sourceforge.net">Nicolas De Loof</a>
- */
 public class MonitoredStatement implements InvocationHandler {
     private final Statement statement;
 
@@ -40,8 +37,7 @@ public class MonitoredStatement implements InvocationHandler {
 
     protected SQLException monitor(final SQLException sqle) {
         final String name = "SQLException:" + sqle.getSQLState() + ":" + sqle.getErrorCode();
-        final Monitor monitor = Repository.INSTANCE.getMonitor(name, "jdbc");
-        monitor.getCounter(Role.FAILURES).add(1);
+        Repository.INSTANCE.getCounter(new Counter.Key(Role.FAILURES, name)).add(1);
         return sqle;
     }
 
@@ -51,9 +47,9 @@ public class MonitoredStatement implements InvocationHandler {
         if (name.startsWith("execute")) {
             final StopWatch stopWatch;
             if (name.endsWith("Batch") && (args == null || args.length == 0)) {
-                stopWatch = Repository.INSTANCE.start(Repository.INSTANCE.getMonitor("batch", "jdbc"));
+                stopWatch = Repository.INSTANCE.start(Repository.INSTANCE.getCounter(new Counter.Key(Role.JDBC, "batch")));
             } else {
-                stopWatch = Repository.INSTANCE.start(Repository.INSTANCE.getMonitor((String) args[0], "jdbc"));
+                stopWatch = Repository.INSTANCE.start(Repository.INSTANCE.getCounter(new Counter.Key(Role.JDBC, (String) args[0])));
             }
 
             try {

@@ -26,7 +26,7 @@ import javax.servlet.http.HttpServletRequest;
  * A variant of MonitoringInInterceptor dedicated to web service endpoint based on HttpServlet - most commonly used, but
  * not required.
  * <p/>
- * When no SOAPAction Header is set, the monitor name is extracted from servlet PathInfo
+ * When no SOAPAction Header is set, the counter name is extracted from servlet PathInfo
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
@@ -40,7 +40,7 @@ public class HttpMonitoringInInterceptor extends MonitoringInInterceptor {
     }
 
     @Override
-    protected String getMonitorName(SoapMessage message) {
+    protected String getCounterName(final SoapMessage message) {
         String soapAction = getSoapAction(message);
         if (soapAction != null) {
             return soapAction;

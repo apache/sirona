@@ -46,7 +46,7 @@
             &lt;/filter-mapping&gt;
           </pre>
           Any incoming request will then be monitored and added to the repository.
-          The monitor name is the requested URI path, and the extension is used to select a category.
+          The counter name is the requested URI path, and the extension is used to select a category.
         </p>
       </subsection>
       <subsection name="MonitoringServlet">

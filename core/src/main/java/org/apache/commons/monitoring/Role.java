@@ -19,11 +19,6 @@ package org.apache.commons.monitoring;
 
 import org.apache.commons.monitoring.counter.Unit;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-
 import static org.apache.commons.monitoring.counter.Unit.Time.NANOSECOND;
 
 /**
@@ -33,22 +28,14 @@ import static org.apache.commons.monitoring.counter.Unit.Time.NANOSECOND;
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public class Role implements Comparable<Role> {
-    private static final ConcurrentMap<String, Role> ROLES = new ConcurrentHashMap<String, Role>();
-
+    public static final Role WEB = new Role("web", NANOSECOND);
+    public static final Role JSP = new Role("web", NANOSECOND);
+    public static final Role JDBC = new Role("jdbc", NANOSECOND);
     public static final Role PERFORMANCES = new Role("performances", NANOSECOND);
     public static final Role FAILURES = new Role("failures", Unit.UNARY);
 
     private String name;
     private Unit unit;
-
-    public static Role getRole(String name) {
-        return ROLES.get(name);
-
-    }
-
-    public static Collection<Role> getRoles() {
-        return Collections.unmodifiableCollection(ROLES.values());
-    }
 
     public Role(String name, Unit unit) {
         super();
@@ -60,12 +47,6 @@ public class Role implements Comparable<Role> {
         }
         this.name = name;
         this.unit = unit;
-        final Role old = ROLES.putIfAbsent(name, this);
-        if (old != null) {
-            if (!unit.equals(old.unit)) {
-                throw new IllegalStateException("A role already exists with this name but distinct unit");
-            }
-        }
     }
 
     /**

@@ -18,7 +18,8 @@
 package org.apache.commons.monitoring.jdbc;
 
 
-import org.apache.commons.monitoring.monitors.Monitor;
+import org.apache.commons.monitoring.Role;
+import org.apache.commons.monitoring.counter.Counter;
 import org.apache.commons.monitoring.repositories.Repository;
 
 import javax.sql.DataSource;
@@ -42,16 +43,16 @@ public class MonitoredDataSource implements DataSource {
      * dataSource name
      */
     private String dataSourceName = DataSource.class.getName();
-    private Monitor monitor;
+    private Counter counter;
 
     /**
      * Constructor
      *
-     * @param dataSource the datasource to monitor
+     * @param dataSource the datasource to counter
      */
     public MonitoredDataSource(final DataSource dataSource) {
         this.dataSource = dataSource;
-        this.monitor = Repository.INSTANCE.getMonitor(dataSourceName, "jdbc");
+        this.counter = Repository.INSTANCE.getCounter(new Counter.Key(Role.JDBC, dataSourceName));
     }
 
     public MonitoredDataSource() {
@@ -70,14 +71,14 @@ public class MonitoredDataSource implements DataSource {
     }
 
     /**
-     * @param monitor the monitor to set
+     * @param counter the counter to set
      */
-    public void setMonitor(final Monitor monitor) {
-        this.monitor = monitor;
+    public void setCounter(final Counter counter) {
+        this.counter = counter;
     }
 
     protected Connection monitor(final Connection connection) {
-        return MonitoredConnection.monitor(connection, monitor);
+        return MonitoredConnection.monitor(connection, counter);
     }
 
     /**
