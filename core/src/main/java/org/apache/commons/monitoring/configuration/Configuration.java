@@ -83,7 +83,7 @@ public final class Configuration {
                 if (m.getAnnotation(Created.class) != null) {
                     m.invoke(instance);
                 } else if (m.getAnnotation(Destroying.class) != null) {
-                    if (is("org.apache.commons.monitoring.shutdown.hook", false) && shutdownHook == null) {
+                    if (shutdownHook == null == is(COMMONS_MONITORING_PREFIX + ".shutdown.hook", false)) {
                         shutdownHook = new Thread() {
                             @Override
                             public void run() {

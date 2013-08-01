@@ -117,7 +117,7 @@ public class JMXHandler extends HandlerRendererAdapter {
 
     @Override
     protected String getTemplate() {
-        return "jmx/main.vm";
+        return "jmx/jvm.vm";
     }
 
     @Override

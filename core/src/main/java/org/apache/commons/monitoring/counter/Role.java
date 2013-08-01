@@ -27,7 +27,7 @@ import static org.apache.commons.monitoring.counter.Unit.Time.NANOSECOND;
  */
 public class Role implements Comparable<Role> {
     public static final Role WEB = new Role("web", NANOSECOND);
-    public static final Role JSP = new Role("web", NANOSECOND);
+    public static final Role JSP = new Role("jsp", NANOSECOND);
     public static final Role JDBC = new Role("jdbc", NANOSECOND);
     public static final Role PERFORMANCES = new Role("performances", NANOSECOND);
     public static final Role FAILURES = new Role("failures", Unit.UNARY);

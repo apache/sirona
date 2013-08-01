@@ -41,7 +41,7 @@ public class PluginRepository {
             final Class<? extends Handler> handler = plugin.handler();
             if (mapping != null && handler != null) {
                 try {
-                    final Handler handlerInstance = new PluginDecoratorHandler(handler.newInstance(), name);
+                    final Handler handlerInstance = new PluginDecoratorHandler(Configuration.newInstance(handler), name);
                     PLUGIN_INFO.add(new PluginInfo(mapping, handlerInstance, name));
                 } catch (final Exception e) {
                     throw new MonitoringException(e);
