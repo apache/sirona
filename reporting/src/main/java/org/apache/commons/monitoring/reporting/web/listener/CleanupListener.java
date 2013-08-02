@@ -14,23 +14,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.commons.monitoring.reporting.web.plugin.jvm;
+package org.apache.commons.monitoring.reporting.web.listener;
 
-import org.apache.commons.monitoring.reporting.web.handler.HandlerRendererAdapter;
-import org.apache.commons.monitoring.reporting.web.template.MapBuilder;
+import org.apache.commons.monitoring.reporting.web.plugin.jvm.CPUGauge;
+import org.apache.commons.monitoring.reporting.web.plugin.jvm.MemoryGauge;
 import org.apache.commons.monitoring.repositories.Repository;
 
-import java.util.Map;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 
-public class JVMHandler extends HandlerRendererAdapter {
-    protected String getTemplate() {
-        return "jvm/jvm.vm";
+public class CleanupListener implements ServletContextListener {
+    @Override
+    public void contextInitialized(final ServletContextEvent sce) {
+        // no-op
     }
 
-    protected Map<String,?> getVariables() {
-        return new MapBuilder<String, Object>()
-            .set("cpu", Repository.INSTANCE.getGaugeValues(CPUGauge.CPU))
-            .set("memory", Repository.INSTANCE.getGaugeValues(MemoryGauge.MEMORY))
-            .build();
+    @Override
+    public void contextDestroyed(final ServletContextEvent sce) {
+        Repository.INSTANCE.stopGauge(CPUGauge.CPU);
+        Repository.INSTANCE.stopGauge(MemoryGauge.MEMORY);
     }
 }

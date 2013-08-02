@@ -14,23 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.commons.monitoring.reporting.web.plugin.jvm;
+package org.apache.commons.monitoring.counters.queuemanager;
 
-import org.apache.commons.monitoring.reporting.web.handler.HandlerRendererAdapter;
-import org.apache.commons.monitoring.reporting.web.template.MapBuilder;
-import org.apache.commons.monitoring.repositories.Repository;
+import org.apache.commons.monitoring.counters.Counter;
 
-import java.util.Map;
-
-public class JVMHandler extends HandlerRendererAdapter {
-    protected String getTemplate() {
-        return "jvm/jvm.vm";
-    }
-
-    protected Map<String,?> getVariables() {
-        return new MapBuilder<String, Object>()
-            .set("cpu", Repository.INSTANCE.getGaugeValues(CPUGauge.CPU))
-            .set("memory", Repository.INSTANCE.getGaugeValues(MemoryGauge.MEMORY))
-            .build();
-    }
+public interface MetricQueueManager {
+    void add(Counter baseMetrics, double delta);
 }

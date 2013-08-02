@@ -14,5 +14,26 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 *#
-Memory mean: $memory
-CPU mean: $cpu
+#macro(printMap $name $map)
+    <section>
+        <div class="page-header">
+            <h2>$name:</h2>
+        </div>
+        <table class="table table-bordered">
+            <thead>
+                <tr><td>Time (ns)</td><td>Value</td></tr>
+            </thead>
+            <tbody>
+                #foreach ($entry in $map.entrySet())
+                    <tr>
+                        <td>$entry.key</td>
+                        <td>$entry.value</td>
+                    </tr>
+                #end
+            </tbody>
+        </table>
+    </section>
+#end
+
+#printMap("Memory", $memory)
+#printMap("CPU", $cpu)

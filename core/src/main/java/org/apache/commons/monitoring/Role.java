@@ -15,9 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.commons.monitoring.counter;
+package org.apache.commons.monitoring;
 
-import static org.apache.commons.monitoring.counter.Unit.Time.NANOSECOND;
+import org.apache.commons.monitoring.counters.Unit;
+
+import static org.apache.commons.monitoring.counters.Unit.Time.NANOSECOND;
 
 /**
  * As a monitored resource may have multipe Metrics, each one has a dedicated 'role' that

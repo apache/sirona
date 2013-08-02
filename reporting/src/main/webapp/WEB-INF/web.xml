@@ -20,6 +20,10 @@
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
          version="2.5">
 
+  <listener>
+    <listener-class>org.apache.commons.monitoring.reporting.web.listener.CleanupListener</listener-class>
+  </listener>
+
   <filter>
     <filter-name>Monitoring</filter-name>
     <filter-class>org.apache.commons.monitoring.reporting.web.MonitoringController</filter-class>
@@ -29,4 +33,5 @@
     <filter-name>Monitoring</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
+
 </web-app>

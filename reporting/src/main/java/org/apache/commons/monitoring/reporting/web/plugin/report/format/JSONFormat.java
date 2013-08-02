@@ -17,7 +17,7 @@
 
 package org.apache.commons.monitoring.reporting.web.plugin.report.format;
 
-import org.apache.commons.monitoring.counter.Counter;
+import org.apache.commons.monitoring.counters.Counter;
 import org.apache.commons.monitoring.repositories.Repository;
 
 import java.io.PrintWriter;

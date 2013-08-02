@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.commons.monitoring.counter;
+package org.apache.commons.monitoring.counters;
 
 import java.util.ArrayList;
 import java.util.Collections;

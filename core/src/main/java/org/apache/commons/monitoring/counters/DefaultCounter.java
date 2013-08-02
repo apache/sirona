@@ -14,11 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.commons.monitoring.counter;
+package org.apache.commons.monitoring.counters;
 
 import org.apache.commons.math.stat.descriptive.SummaryStatistics;
 import org.apache.commons.monitoring.configuration.Configuration;
-import org.apache.commons.monitoring.counter.queuemanager.MetricQueueManager;
+import org.apache.commons.monitoring.counters.queuemanager.MetricQueueManager;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;

@@ -1,0 +1,2 @@
+org.apache.commons.monitoring.reporting.web.plugin.jvm.CPUGauge
+org.apache.commons.monitoring.reporting.web.plugin.jvm.MemoryGauge

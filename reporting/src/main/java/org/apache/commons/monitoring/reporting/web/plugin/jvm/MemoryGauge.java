@@ -16,21 +16,30 @@
  */
 package org.apache.commons.monitoring.reporting.web.plugin.jvm;
 
-import org.apache.commons.monitoring.reporting.web.handler.HandlerRendererAdapter;
-import org.apache.commons.monitoring.reporting.web.template.MapBuilder;
-import org.apache.commons.monitoring.repositories.Repository;
+import org.apache.commons.monitoring.Role;
+import org.apache.commons.monitoring.counters.Unit;
+import org.apache.commons.monitoring.gauges.Gauge;
 
-import java.util.Map;
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryMXBean;
 
-public class JVMHandler extends HandlerRendererAdapter {
-    protected String getTemplate() {
-        return "jvm/jvm.vm";
+public class MemoryGauge implements Gauge {
+    public static final Role MEMORY = new Role("Memory", Unit.UNARY);
+
+    private static final MemoryMXBean MEMORY_MX_BEAN = ManagementFactory.getMemoryMXBean();
+
+    @Override
+    public Role role() {
+        return MEMORY;
     }
 
-    protected Map<String,?> getVariables() {
-        return new MapBuilder<String, Object>()
-            .set("cpu", Repository.INSTANCE.getGaugeValues(CPUGauge.CPU))
-            .set("memory", Repository.INSTANCE.getGaugeValues(MemoryGauge.MEMORY))
-            .build();
+    @Override
+    public double value() {
+        return MEMORY_MX_BEAN.getHeapMemoryUsage().getUsed();
+    }
+
+    @Override
+    public long period() {
+        return 60000;
     }
 }

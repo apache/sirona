@@ -14,10 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.commons.monitoring.counter.queuemanager;
+package org.apache.commons.monitoring.counters.queuemanager;
 
-import org.apache.commons.monitoring.counter.Counter;
-import org.apache.commons.monitoring.counter.DefaultCounter;
+import org.apache.commons.monitoring.counters.Counter;
+import org.apache.commons.monitoring.counters.DefaultCounter;
 
 import java.util.concurrent.locks.Lock;
 
@@ -45,7 +45,7 @@ import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.SleepingWaitStrategy;
 import com.lmax.disruptor.dsl.Disruptor;
 import com.lmax.disruptor.dsl.ProducerType;
-import org.apache.commons.monitoring.counter.DefaultCounter;
+import org.apache.commons.monitoring.counters.DefaultCounter;
 import org.apache.commons.monitoring.util.DaemonThreadFactory;
 
 import java.io.IOException;

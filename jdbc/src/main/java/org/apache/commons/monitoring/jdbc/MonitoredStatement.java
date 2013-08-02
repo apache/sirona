@@ -17,8 +17,8 @@
 
 package org.apache.commons.monitoring.jdbc;
 
-import org.apache.commons.monitoring.counter.Role;
-import org.apache.commons.monitoring.counter.Counter;
+import org.apache.commons.monitoring.Role;
+import org.apache.commons.monitoring.counters.Counter;
 import org.apache.commons.monitoring.repositories.Repository;
 import org.apache.commons.monitoring.stopwatches.StopWatch;
 

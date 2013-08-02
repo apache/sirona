@@ -15,7 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.commons.monitoring.counter;
+package org.apache.commons.monitoring.counters;
+
+import org.apache.commons.monitoring.Role;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

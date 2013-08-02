@@ -111,7 +111,7 @@
               (milliseconds),
               <tt>s</tt>
               (seconds) ... Please refer to the
-              <code>org.apache.commons.monitoring.counter.Unit</code>
+              <code>org.apache.commons.monitoring.counters.Unit</code>
               javadoc for more infos on units.
             </li>
           </ul>

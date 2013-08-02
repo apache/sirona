@@ -14,8 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.commons.monitoring.counter;
+package org.apache.commons.monitoring.counters;
 
+import org.apache.commons.monitoring.Role;
 import org.junit.Test;
 
 import java.util.concurrent.ExecutorService;

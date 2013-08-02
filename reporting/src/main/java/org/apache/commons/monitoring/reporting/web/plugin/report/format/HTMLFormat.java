@@ -16,7 +16,7 @@
  */
 package org.apache.commons.monitoring.reporting.web.plugin.report.format;
 
-import org.apache.commons.monitoring.counter.Unit;
+import org.apache.commons.monitoring.counters.Unit;
 import org.apache.commons.monitoring.reporting.web.template.MapBuilder;
 import org.apache.commons.monitoring.reporting.web.template.Templates;
 

@@ -24,7 +24,7 @@ import java.util.Collection;
 import java.util.ServiceLoader;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class PluginRepository {
+public final class PluginRepository {
     public static Collection<PluginInfo> PLUGIN_INFO = new CopyOnWriteArrayList<PluginInfo>();
 
     static {
@@ -48,6 +48,10 @@ public class PluginRepository {
                 }
             }
         }
+    }
+
+    private PluginRepository() {
+        // no-op
     }
 
     public static class PluginInfo {

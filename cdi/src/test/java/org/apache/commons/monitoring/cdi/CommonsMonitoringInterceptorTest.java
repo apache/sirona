@@ -16,8 +16,8 @@
  */
 package org.apache.commons.monitoring.cdi;
 
-import org.apache.commons.monitoring.counter.Role;
-import org.apache.commons.monitoring.counter.Counter;
+import org.apache.commons.monitoring.Role;
+import org.apache.commons.monitoring.counters.Counter;
 import org.apache.commons.monitoring.repositories.Repository;
 import org.apache.webbeans.cditest.CdiTestContainer;
 import org.apache.webbeans.cditest.CdiTestContainerLoader;

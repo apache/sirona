@@ -83,7 +83,7 @@ public final class Configuration {
                 if (m.getAnnotation(Created.class) != null) {
                     m.invoke(instance);
                 } else if (m.getAnnotation(Destroying.class) != null) {
-                    if (shutdownHook == null == is(COMMONS_MONITORING_PREFIX + ".shutdown.hook", false)) {
+                    if (shutdownHook == null == is(COMMONS_MONITORING_PREFIX + ".shutdown.hook", true)) {
                         shutdownHook = new Thread() {
                             @Override
                             public void run() {
@@ -104,6 +104,10 @@ public final class Configuration {
 
     public static boolean is(final String key, final boolean defaultValue) {
         return Boolean.parseBoolean(getProperty(key, Boolean.toString(defaultValue)));
+    }
+
+    public static int getInteger(final String key, final int defaultValue) {
+        return Integer.parseInt(getProperty(key, Integer.toString(defaultValue)));
     }
 
     public static String getProperty(final String key, final String defaultValue) {

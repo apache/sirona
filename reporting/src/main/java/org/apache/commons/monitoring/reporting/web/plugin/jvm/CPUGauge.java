@@ -16,21 +16,30 @@
  */
 package org.apache.commons.monitoring.reporting.web.plugin.jvm;
 
-import org.apache.commons.monitoring.reporting.web.handler.HandlerRendererAdapter;
-import org.apache.commons.monitoring.reporting.web.template.MapBuilder;
-import org.apache.commons.monitoring.repositories.Repository;
+import org.apache.commons.monitoring.Role;
+import org.apache.commons.monitoring.counters.Unit;
+import org.apache.commons.monitoring.gauges.Gauge;
 
-import java.util.Map;
+import java.lang.management.ManagementFactory;
+import java.lang.management.OperatingSystemMXBean;
 
-public class JVMHandler extends HandlerRendererAdapter {
-    protected String getTemplate() {
-        return "jvm/jvm.vm";
+public class CPUGauge implements Gauge {
+    public static final Role CPU = new Role("CPU", Unit.UNARY);
+
+    private static final OperatingSystemMXBean SYSTEM_MX_BEAN = ManagementFactory.getOperatingSystemMXBean();
+
+    @Override
+    public Role role() {
+        return CPU;
     }
 
-    protected Map<String,?> getVariables() {
-        return new MapBuilder<String, Object>()
-            .set("cpu", Repository.INSTANCE.getGaugeValues(CPUGauge.CPU))
-            .set("memory", Repository.INSTANCE.getGaugeValues(MemoryGauge.MEMORY))
-            .build();
+    @Override
+    public double value() {
+        return SYSTEM_MX_BEAN.getSystemLoadAverage();
+    }
+
+    @Override
+    public long period() {
+        return 60000;
     }
 }

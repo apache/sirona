@@ -17,7 +17,7 @@
 
 package org.apache.commons.monitoring.reporting.web.plugin.report.format;
 
-import org.apache.commons.monitoring.counter.Counter;
+import org.apache.commons.monitoring.counters.Counter;
 
 /**
  * An enum to acces data from a Counter based on the property name. Can be used to avoid reflection on Counter

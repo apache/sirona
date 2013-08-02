@@ -17,34 +17,23 @@
 
 package org.apache.commons.monitoring.repositories;
 
+import org.apache.commons.monitoring.Role;
 import org.apache.commons.monitoring.configuration.Configuration;
-import org.apache.commons.monitoring.counter.Counter;
+import org.apache.commons.monitoring.counters.Counter;
 import org.apache.commons.monitoring.stopwatches.StopWatch;
 
-/**
- * The repository maintains a set of monitors and ensure unicity. It creates monitors on-demand
- * based on requested Keys. After creation, the counter Key cannot be updated.
- *
- * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
- */
+import java.util.Map;
+
 public interface Repository extends Iterable<Counter> {
     static final Repository INSTANCE = Configuration.newInstance(Repository.class);
 
-    /**
-     * Retrieve or create a counter it's key
-     */
     Counter getCounter(Counter.Key key);
 
-    /**
-     * Reset the repository : all existing monitors are destroyed and data are lost.
-     */
     void clear();
 
-    /**
-     * Start a StopWatch to counter execution
-     *
-     * @param counter the counter associated with the process
-     * @return a running StopWatch
-     */
     StopWatch start(Counter counter);
+
+    Map<Long, Double> getGaugeValues(Role role);
+
+    void stopGauge(Role role);
 }

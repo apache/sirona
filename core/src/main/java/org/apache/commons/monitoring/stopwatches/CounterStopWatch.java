@@ -17,11 +17,11 @@
 
 package org.apache.commons.monitoring.stopwatches;
 
-import org.apache.commons.monitoring.counter.Counter;
+import org.apache.commons.monitoring.counters.Counter;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.apache.commons.monitoring.counter.Unit.Time.NANOSECOND;
+import static org.apache.commons.monitoring.counters.Unit.Time.NANOSECOND;
 
 /**
  * Simple implementation of StopWatch that estimate monitored element execution time.

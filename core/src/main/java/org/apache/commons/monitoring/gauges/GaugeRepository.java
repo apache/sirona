@@ -14,10 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.commons.monitoring.counter.queuemanager;
+package org.apache.commons.monitoring.gauges;
 
-import org.apache.commons.monitoring.counter.Counter;
+import org.apache.commons.monitoring.Role;
 
-public interface MetricQueueManager {
-    void add(Counter baseMetrics, double delta);
+import java.util.Map;
+
+public interface GaugeRepository {
+    void start(Map<Role, Map<Long, Double>> initialData);
+
+    void stop();
+
+    Map<Long, Double> getValues(Role role);
+
+    void stopGauge(Role role);
 }

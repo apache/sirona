@@ -17,18 +17,34 @@
 
 package org.apache.commons.monitoring.repositories;
 
-import org.apache.commons.monitoring.counter.Counter;
-import org.apache.commons.monitoring.counter.DefaultCounter;
+import org.apache.commons.monitoring.Role;
+import org.apache.commons.monitoring.configuration.Configuration;
+import org.apache.commons.monitoring.counters.Counter;
+import org.apache.commons.monitoring.counters.DefaultCounter;
+import org.apache.commons.monitoring.gauges.DefaultGaugeRepository;
 import org.apache.commons.monitoring.stopwatches.CounterStopWatch;
 import org.apache.commons.monitoring.stopwatches.StopWatch;
 
 import java.util.Iterator;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 public class DefaultRepository implements Repository {
+    private final DefaultGaugeRepository gaugeRepository = new DefaultGaugeRepository();
     private final ConcurrentMap<Counter.Key, Counter> counters = new ConcurrentHashMap<Counter.Key, Counter>(50);
 
+    @Configuration.Created
+    public void startGaugeTimers() {
+        gaugeRepository.start(null); // no persistence
+    }
+
+    @Configuration.Destroying
+    public void stopGaugeTimers() {
+        gaugeRepository.stop();
+    }
+
+    @Override
     public Counter getCounter(final Counter.Key key) {
         Counter monitor = counters.get(key);
         if (monitor == null) {
@@ -54,5 +70,15 @@ public class DefaultRepository implements Repository {
     @Override
     public Iterator<Counter> iterator() {
         return counters.values().iterator();
+    }
+
+    @Override
+    public Map<Long, Double> getGaugeValues(final Role role) {
+        return gaugeRepository.getValues(role);
+    }
+
+    @Override
+    public void stopGauge(final Role role) {
+        gaugeRepository.stopGauge(role);
     }
 }

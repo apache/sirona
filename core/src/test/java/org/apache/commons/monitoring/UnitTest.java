@@ -19,11 +19,11 @@ package org.apache.commons.monitoring;
 
 import org.junit.Test;
 
-import static org.apache.commons.monitoring.counter.Unit.Time.HOUR;
-import static org.apache.commons.monitoring.counter.Unit.Time.MICROSECOND;
-import static org.apache.commons.monitoring.counter.Unit.Time.MILLISECOND;
-import static org.apache.commons.monitoring.counter.Unit.Time.NANOSECOND;
-import static org.apache.commons.monitoring.counter.Unit.Time.SECOND;
+import static org.apache.commons.monitoring.counters.Unit.Time.HOUR;
+import static org.apache.commons.monitoring.counters.Unit.Time.MICROSECOND;
+import static org.apache.commons.monitoring.counters.Unit.Time.MILLISECOND;
+import static org.apache.commons.monitoring.counters.Unit.Time.NANOSECOND;
+import static org.apache.commons.monitoring.counters.Unit.Time.SECOND;
 import static org.junit.Assert.assertEquals;
 
 /**
