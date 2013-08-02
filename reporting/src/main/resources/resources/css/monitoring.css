@@ -49,10 +49,19 @@ a.nodeText {
     color: #000000;
     cursor: pointer;
     text-decoration: none;
+    padding-left: 20px;
 }
 
 a.nodeText:hover {
     text-decoration: underline;
+}
+
+.treeClosed {
+    background: url("$mapping/resources/images/tree-closed.gif") no-repeat center left;
+}
+
+.treeOpened {
+    background: url("$mapping/resources/images/tree-opened.gif") no-repeat center left;
 }
 
 .plot {

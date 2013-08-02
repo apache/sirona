@@ -47,13 +47,31 @@
             var parent_li = $(this).parent('li');
             parent_li.addClass('node');
 
+            var wrapInner;
+            if (parent_li.hasClass('leaf')) {
+                wrapInner = parent_li.wrapInner('<a class="nodeText" />')
+            } else {
+                wrapInner = parent_li.wrapInner('<a class="nodeText treeClosed" />')
+            }
+
             var sub_ul = $(this).remove();
-            parent_li.wrapInner('<a class="nodeText" />').find('a').click(function() {
+            wrapInner.find('a').click(function() {
                 sub_ul.toggle();
             });
+
             parent_li.append(sub_ul);
         });
         $('ul ul').hide();
+
+        $('.nodeText').click(function () {
+            if ($(this).hasClass('treeClosed')) {
+                $(this).removeClass('treeClosed');
+                $(this).addClass('treeOpened');
+            } else if ($(this).hasClass('treeOpened')) {
+                $(this).removeClass('treeOpened');
+                $(this).addClass('treeClosed');
+            } // else leaf
+        });
 
         $('.leaf').click(function () {
             var url = '$mapping/jmx/' + $(this).attr("id");

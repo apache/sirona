@@ -335,6 +335,7 @@ public class JMXHandler extends HandlerRendererAdapter {
                     final List<?> values = (List<?>) type;
                     final CompositeData data = td.get(values.toArray(new Object[values.size()]));
                     builder.append("<tr>");
+                    final Set<String> dataKeys = data.getCompositeType().keySet();
                     for (final String k : data.getCompositeType().keySet()) {
                         builder.append("<td>").append(value(data.get(k))).append("</td>");
                     }
