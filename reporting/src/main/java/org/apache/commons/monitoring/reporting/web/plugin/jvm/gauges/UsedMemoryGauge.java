@@ -14,50 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-table .blue {
-    color: #049cdb;
-    border-bottom-color: #049cdb;
-}
+package org.apache.commons.monitoring.reporting.web.plugin.jvm.gauges;
 
-th#report-table {
-    text-align: center;
-}
+import org.apache.commons.monitoring.Role;
+import org.apache.commons.monitoring.counters.Unit;
 
-.tablesorter-headerAsc {
-    background-image: url('$mapping/resources/images/asc.gif');
-    background-repeat: no-repeat;
-    background-position: right;
-}
+public class UsedMemoryGauge extends BaseMemoryGauge {
+    public static final Role USED_MEMORY = new Role("Used Memory", Unit.UNARY);
 
-.tablesorter-headerDesc {
-    background-image: url('$mapping/resources/images/desc.gif');
-    background-repeat: no-repeat;
-    background-position: right;
-}
+    @Override
+    public Role role() {
+        return USED_MEMORY;
+    }
 
-ul.jmx {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-
-li.jmx {
-    padding-left: 20px;
-}
-
-a.nodeText {
-    color: #000000;
-    cursor: pointer;
-    text-decoration: none;
-}
-
-a.nodeText:hover {
-    text-decoration: underline;
-}
-
-.plot {
-    width: 100%;
-    min-width: 100px;
-    height: 100%;
-    min-height: 300px
+    @Override
+    public double value() {
+        return MEMORY_MX_BEAN.getHeapMemoryUsage().getUsed();
+    }
 }

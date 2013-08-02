@@ -26,8 +26,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 
-public final class DefaultGaugeRepository implements GaugeRepository {
-    private static final int MAX_SIZE = Configuration.getInteger(Configuration.COMMONS_MONITORING_PREFIX + "gauge.max-size", 150000);
+public final class DefaultGaugeManager implements GaugeManager {
+    private static final int MAX_SIZE = Configuration.getInteger(Configuration.COMMONS_MONITORING_PREFIX + "gauge.max-size", 10);
 
     private final Map<Role, Timer> timers = new ConcurrentHashMap<Role, Timer>();
     private final Map<Role, FixedSizedMap> values = new ConcurrentHashMap<Role, FixedSizedMap>();
@@ -108,7 +108,7 @@ public final class DefaultGaugeRepository implements GaugeRepository {
         }
 
         public synchronized void add(final double value) {
-            put(System.nanoTime(), value);
+            put(System.currentTimeMillis(), value);
         }
 
         @Override

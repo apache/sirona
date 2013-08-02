@@ -14,26 +14,84 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 *#
-#macro(printMap $name $map)
-    <section>
-        <div class="page-header">
-            <h2>$name:</h2>
-        </div>
-        <table class="table table-bordered">
-            <thead>
-                <tr><td>Time (ns)</td><td>Value</td></tr>
-            </thead>
-            <tbody>
-                #foreach ($entry in $map.entrySet())
-                    <tr>
-                        <td>$entry.key</td>
-                        <td>$entry.value</td>
-                    </tr>
-                #end
-            </tbody>
-        </table>
-    </section>
+#macro ( generateData $map )
+    [
+        #foreach ( $entry in $map.entrySet() )
+        [ $entry.key, $entry.value ]#if ($foreach.hasNext),#end
+        #end
+    ]
 #end
 
-#printMap("Memory", $memory)
-#printMap("CPU", $cpu)
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div id="jmx-tree" class="span6">
+            <div class="page-header">
+                <h2>CPU</h2>
+            </div>
+            <div id="cpu-graph" class="plot"></div>
+            <table id="mbean-table" class="table table-bordered table-striped table-hover">
+                <tbody>
+                    <tr><td>OS Name</td><td>$name</td></tr>
+                    <tr><td>Version</td><td>$version</td></tr>
+                    <tr><td>Architecture</td><td>$architecture</td></tr>
+                    <tr><td>Number of processors</td><td>$numberProcessor</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div id="jmx-info" class="span6">
+            <div class="page-header">
+                <h2>Memory</h2>
+            </div>
+            <div id="memory-graph" class="plot"></div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="$mapping/resources/js/jquery.flot.min.js"></script>
+<script type="text/javascript" src="$mapping/resources/js/jquery.flot.time.min.js"></script>
+<script type="text/javascript">
+    $(function() {
+        $.plot("#cpu-graph", [ { data: #generateData($cpu), label: "CPU Usage", color: '#317eac' } ], {
+            canvas: true,
+            series: { lines: { show: true }, points: { show: true } },
+            grid: { hoverable: true, clickable: true },
+            xaxes: [ { mode: "time" } ],
+            yaxes: [ {
+                    min: 0,
+                    tickFormatter: function (value, axis) {
+                        return value.toFixed(axis.tickDecimals) + "%";
+                    }
+            } ]
+        });
+        $.plot("#memory-graph", [ { data: #generateData($memory), label: "Used Memory", color: '#317eac' } ], {
+            canvas: true,
+            series: { lines: { show: true }, points: { show: true } },
+            grid: { hoverable: true, clickable: true },
+            xaxes: [ { mode: "time" } ],
+            yaxes: [
+                {
+                    min: 0,
+                    tickFormatter: function (bytes, axis) {
+                        var precision = 2;
+                        var kb = 1024;
+                        var mb = kb * kb;
+                        var gb = mb * kb;
+
+                        if (bytes >= 0 && bytes < kb) {
+                            return bytes + ' o';
+                        } else if (bytes >= kb && bytes < mb) {
+                            return (bytes / kb).toFixed(precision) + ' Ko';
+                        } else if (bytes >= mb && bytes < gb) {
+                            return (bytes / mb).toFixed(precision) + ' Mo';
+                        } else if (bytes >= gb) {
+                            return (bytes / gb).toFixed(precision) + ' Go';
+                        }
+
+                        return bytes + ' B';
+                    }
+                }
+            ]
+        });
+
+    });
+</script>

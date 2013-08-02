@@ -20,3 +20,17 @@ Used for the theming.
 
 website: http://bootswatch.com/
 license: Apache v2
+
+-------------------------
+
+Flot
+
+website: http://www.flotcharts.org/
+license: MIT
+
+-------------------------
+
+timezone.js
+
+website: https://github.com/mde/timezone-js
+license: Apache v2

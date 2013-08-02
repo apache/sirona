@@ -21,7 +21,7 @@ import org.apache.commons.monitoring.Role;
 import org.apache.commons.monitoring.configuration.Configuration;
 import org.apache.commons.monitoring.counters.Counter;
 import org.apache.commons.monitoring.counters.DefaultCounter;
-import org.apache.commons.monitoring.gauges.DefaultGaugeRepository;
+import org.apache.commons.monitoring.gauges.DefaultGaugeManager;
 import org.apache.commons.monitoring.stopwatches.CounterStopWatch;
 import org.apache.commons.monitoring.stopwatches.StopWatch;
 
@@ -31,7 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 public class DefaultRepository implements Repository {
-    private final DefaultGaugeRepository gaugeRepository = new DefaultGaugeRepository();
+    private final DefaultGaugeManager gaugeRepository = new DefaultGaugeManager();
     private final ConcurrentMap<Counter.Key, Counter> counters = new ConcurrentHashMap<Counter.Key, Counter>(50);
 
     @Configuration.Created

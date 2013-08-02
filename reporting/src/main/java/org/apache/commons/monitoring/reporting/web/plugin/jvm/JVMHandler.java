@@ -17,9 +17,13 @@
 package org.apache.commons.monitoring.reporting.web.plugin.jvm;
 
 import org.apache.commons.monitoring.reporting.web.handler.HandlerRendererAdapter;
+import org.apache.commons.monitoring.reporting.web.plugin.jvm.gauges.CPUGauge;
+import org.apache.commons.monitoring.reporting.web.plugin.jvm.gauges.UsedMemoryGauge;
 import org.apache.commons.monitoring.reporting.web.template.MapBuilder;
 import org.apache.commons.monitoring.repositories.Repository;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.OperatingSystemMXBean;
 import java.util.Map;
 
 public class JVMHandler extends HandlerRendererAdapter {
@@ -28,9 +32,14 @@ public class JVMHandler extends HandlerRendererAdapter {
     }
 
     protected Map<String,?> getVariables() {
+        final OperatingSystemMXBean os = ManagementFactory.getOperatingSystemMXBean();
         return new MapBuilder<String, Object>()
+            .set("architecture", os.getArch())
+            .set("name", os.getName())
+            .set("version", os.getVersion())
+            .set("numberProcessor", os.getAvailableProcessors())
             .set("cpu", Repository.INSTANCE.getGaugeValues(CPUGauge.CPU))
-            .set("memory", Repository.INSTANCE.getGaugeValues(MemoryGauge.MEMORY))
+            .set("memory", Repository.INSTANCE.getGaugeValues(UsedMemoryGauge.USED_MEMORY))
             .build();
     }
 }

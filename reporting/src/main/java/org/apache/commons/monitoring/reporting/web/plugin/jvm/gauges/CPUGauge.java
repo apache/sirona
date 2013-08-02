@@ -14,32 +14,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.commons.monitoring.reporting.web.plugin.jvm;
+package org.apache.commons.monitoring.reporting.web.plugin.jvm.gauges;
 
 import org.apache.commons.monitoring.Role;
+import org.apache.commons.monitoring.configuration.Configuration;
 import org.apache.commons.monitoring.counters.Unit;
 import org.apache.commons.monitoring.gauges.Gauge;
 
 import java.lang.management.ManagementFactory;
-import java.lang.management.MemoryMXBean;
+import java.lang.management.OperatingSystemMXBean;
 
-public class MemoryGauge implements Gauge {
-    public static final Role MEMORY = new Role("Memory", Unit.UNARY);
+public class CPUGauge implements Gauge {
+    public static final Role CPU = new Role("CPU", Unit.UNARY);
 
-    private static final MemoryMXBean MEMORY_MX_BEAN = ManagementFactory.getMemoryMXBean();
+    private static final OperatingSystemMXBean SYSTEM_MX_BEAN = ManagementFactory.getOperatingSystemMXBean();
 
     @Override
     public Role role() {
-        return MEMORY;
+        return CPU;
     }
 
     @Override
     public double value() {
-        return MEMORY_MX_BEAN.getHeapMemoryUsage().getUsed();
+        return SYSTEM_MX_BEAN.getSystemLoadAverage();
     }
 
     @Override
     public long period() {
-        return 60000;
+        return Configuration.getInteger(Configuration.COMMONS_MONITORING_PREFIX + "gauge.cpu.period", 4000);
     }
 }

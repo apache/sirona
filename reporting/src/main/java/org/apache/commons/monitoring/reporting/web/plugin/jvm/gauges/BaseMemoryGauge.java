@@ -14,18 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.commons.monitoring.gauges;
+package org.apache.commons.monitoring.reporting.web.plugin.jvm.gauges;
 
-import org.apache.commons.monitoring.Role;
+import org.apache.commons.monitoring.configuration.Configuration;
+import org.apache.commons.monitoring.gauges.Gauge;
 
-import java.util.Map;
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryMXBean;
 
-public interface GaugeRepository {
-    void start(Map<Role, Map<Long, Double>> initialData);
+public abstract class BaseMemoryGauge implements Gauge {
+    protected static final MemoryMXBean MEMORY_MX_BEAN = ManagementFactory.getMemoryMXBean();
 
-    void stop();
-
-    Map<Long, Double> getValues(Role role);
-
-    void stopGauge(Role role);
+    @Override
+    public long period() {
+        return Configuration.getInteger(Configuration.COMMONS_MONITORING_PREFIX + "gauge.memory.period", 4000);
+    }
 }

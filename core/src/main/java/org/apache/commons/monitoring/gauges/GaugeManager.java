@@ -14,32 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.commons.monitoring.reporting.web.plugin.jvm;
+package org.apache.commons.monitoring.gauges;
 
 import org.apache.commons.monitoring.Role;
-import org.apache.commons.monitoring.counters.Unit;
-import org.apache.commons.monitoring.gauges.Gauge;
 
-import java.lang.management.ManagementFactory;
-import java.lang.management.OperatingSystemMXBean;
+import java.util.Map;
 
-public class CPUGauge implements Gauge {
-    public static final Role CPU = new Role("CPU", Unit.UNARY);
+public interface GaugeManager {
+    void start(Map<Role, Map<Long, Double>> initialData);
 
-    private static final OperatingSystemMXBean SYSTEM_MX_BEAN = ManagementFactory.getOperatingSystemMXBean();
+    void stop();
 
-    @Override
-    public Role role() {
-        return CPU;
-    }
+    Map<Long, Double> getValues(Role role);
 
-    @Override
-    public double value() {
-        return SYSTEM_MX_BEAN.getSystemLoadAverage();
-    }
-
-    @Override
-    public long period() {
-        return 60000;
-    }
+    void stopGauge(Role role);
 }

@@ -16,8 +16,8 @@
  */
 package org.apache.commons.monitoring.reporting.web.listener;
 
-import org.apache.commons.monitoring.reporting.web.plugin.jvm.CPUGauge;
-import org.apache.commons.monitoring.reporting.web.plugin.jvm.MemoryGauge;
+import org.apache.commons.monitoring.reporting.web.plugin.jvm.gauges.CPUGauge;
+import org.apache.commons.monitoring.reporting.web.plugin.jvm.gauges.UsedMemoryGauge;
 import org.apache.commons.monitoring.repositories.Repository;
 
 import javax.servlet.ServletContextEvent;
@@ -32,6 +32,6 @@ public class CleanupListener implements ServletContextListener {
     @Override
     public void contextDestroyed(final ServletContextEvent sce) {
         Repository.INSTANCE.stopGauge(CPUGauge.CPU);
-        Repository.INSTANCE.stopGauge(MemoryGauge.MEMORY);
+        Repository.INSTANCE.stopGauge(UsedMemoryGauge.USED_MEMORY);
     }
 }
