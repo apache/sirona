@@ -56,11 +56,14 @@ public class MonitoringController implements Filter {
 
     private void initHandlers() {
         defaultHandler = new HomeHandler();
-
         handlers.put("/", defaultHandler);
         handlers.put("/home", defaultHandler);
-        handlers.put("/resources/css/monitoring.css", FilteringHandler.INSTANCE); // filtered to get the right base for pictures
 
+        // filtered to get the right base for pictures
+        handlers.put("/resources/css/monitoring.css", FilteringHandler.INSTANCE);
+        handlers.put("/resources/css/bootstrap.min.css", FilteringHandler.INSTANCE);
+
+        // plugins handlers
         for (final PluginRepository.PluginInfo plugin : PluginRepository.PLUGIN_INFO) {
             if (plugin.getHandler() != null && plugin.getUrl() != null) {
                 handlers.put("/" + plugin.getUrl(), plugin.getHandler());

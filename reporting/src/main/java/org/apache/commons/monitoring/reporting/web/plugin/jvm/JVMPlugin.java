@@ -32,6 +32,6 @@ public class JVMPlugin implements Plugin {
 
     @Override
     public String mapping() {
-        return "jvm";
+        return "jvm*";
     }
 }

@@ -23,6 +23,7 @@
     <title>Monitoring HTML Report</title>
 
     <link rel="stylesheet" href="$mapping/resources/css/bootstrap.min.css">
+    <link rel="stylesheet" href="$mapping/resources/css/bootstrap-datetimepicker.min.css">
     <link rel="stylesheet" href="$mapping/resources/css/monitoring.css">
   </head>
   <body>

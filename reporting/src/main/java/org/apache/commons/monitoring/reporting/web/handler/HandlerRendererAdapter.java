@@ -59,4 +59,8 @@ public abstract class HandlerRendererAdapter implements Handler, Renderer {
     protected Map<String,?> getVariables() {
         return Collections.emptyMap();
     }
+
+    protected static boolean isPath(final String path, final String compared) {
+        return path.equals(compared) || (path + "/").equals(compared);
+    }
 }

@@ -34,3 +34,10 @@ timezone.js
 
 website: https://github.com/mde/timezone-js
 license: Apache v2
+
+-------------------------
+
+bootstrap-datetimepicker
+
+website: https://github.com/tarruda/bootstrap-datetimepicker
+license: Apache v2

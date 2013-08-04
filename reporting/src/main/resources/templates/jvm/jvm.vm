@@ -14,22 +14,35 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 *#
-#macro ( generateData $map )
-    [
-        #foreach ( $entry in $map.entrySet() )
-        [ $entry.key, $entry.value ]#if ($foreach.hasNext),#end
-        #end
-    ]
+#macro ( datePicker $label $id )
+    <div id="$id" class="input-append date">
+        <label for="$id">$label</label>
+        <input data-format="dd/MM/yyyy hh:mm:ss" type="text">
+        <span class="add-on">
+          <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
+        </span>
+    </div>
+#end
+#macro (dateForm $id)
+    <form class="form-inline" id="update-$id">
+        #datePicker("From", "${id}-datetimepicker-start")
+        #datePicker("To", "${id}-datetimepicker-end")
+        <button type="submit" class="btn btn-primary">Update</button>
+    </form>
 #end
 
 <div class="container-fluid">
     <div class="row-fluid">
-        <div id="jmx-tree" class="span6">
+        <div class="span6">
             <div class="page-header">
                 <h2>CPU</h2>
             </div>
+
             <div id="cpu-graph" class="plot"></div>
-            <table id="mbean-table" class="table table-bordered table-striped table-hover">
+
+            #dateForm('cpu')
+
+            <table id="cpu-table" class="table table-bordered table-striped table-hover">
                 <tbody>
                     <tr><td>OS Name</td><td>$name</td></tr>
                     <tr><td>Version</td><td>$version</td></tr>
@@ -38,36 +51,52 @@
                 </tbody>
             </table>
         </div>
-        <div id="jmx-info" class="span6">
+        <div class="span6">
             <div class="page-header">
                 <h2>Memory</h2>
             </div>
+
             <div id="memory-graph" class="plot"></div>
+
+            #dateForm('memory')
+
+            <table id="memory-table" class="table table-bordered table-striped table-hover">
+                <tbody>
+                    <tr><td>Init</td><td>$initMemory</td></tr>
+                    <tr><td>Max</td><td>$maxMemory</td></tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
 
+<script type="text/javascript" src="$mapping/resources/js/bootstrap-datetimepicker.min.js"></script>
 <script type="text/javascript" src="$mapping/resources/js/jquery.flot.min.js"></script>
 <script type="text/javascript" src="$mapping/resources/js/jquery.flot.time.min.js"></script>
 <script type="text/javascript">
     $(function() {
-        $.plot("#cpu-graph", [ { data: #generateData($cpu), label: "CPU Usage", color: '#317eac' } ], {
+        $('#memory-datetimepicker-start').datetimepicker();
+        $('#memory-datetimepicker-end').datetimepicker();
+        $('#cpu-datetimepicker-start').datetimepicker();
+        $('#cpu-datetimepicker-end').datetimepicker();
+
+        var memoryOptions = {
             canvas: true,
             series: { lines: { show: true }, points: { show: true } },
             grid: { hoverable: true, clickable: true },
-            xaxes: [ { mode: "time" } ],
+            xaxes: [ { mode: "time", timezone: "browser" } ],
             yaxes: [ {
-                    min: 0,
-                    tickFormatter: function (value, axis) {
-                        return value.toFixed(axis.tickDecimals) + "%";
-                    }
+                min: 0,
+                tickFormatter: function (value, axis) {
+                    return value.toFixed(axis.tickDecimals) + "%";
+                }
             } ]
-        });
-        $.plot("#memory-graph", [ { data: #generateData($memory), label: "Used Memory", color: '#317eac' } ], {
+        };
+        var cpuOptions = {
             canvas: true,
             series: { lines: { show: true }, points: { show: true } },
             grid: { hoverable: true, clickable: true },
-            xaxes: [ { mode: "time" } ],
+            xaxes: [ { mode: "time", timezone: "browser" } ],
             yaxes: [
                 {
                     min: 0,
@@ -91,7 +120,43 @@
                     }
                 }
             ]
-        });
+        };
 
+        var updateGraph = function (graph, start, end) {
+            $.ajax({
+                url: "$mapping/jvm/" + graph + "/" + start + "/" + end,
+                type: "GET",
+                dataType: "json",
+                success: function (data) {
+                    $.plot("#" + graph + "-graph", [ data ], memoryOptions);
+                }
+            });
+        };
+
+        var extractTime = function (picker) {
+            return picker.data('datetimepicker').getLocalDate().getTime();
+        };
+
+        (function () { // init
+            var now = new Date();
+            var yesterday = new Date();
+            yesterday.setMinutes(now.getMinutes() - 10);
+
+            var start = yesterday.getTime();
+            var end = now.getTime();
+
+            updateGraph('cpu', start, end);
+            updateGraph('memory', start, end);
+        })();
+
+        // update diagram when clicking on update buttons
+        $('#update-cpu').submit(function () {
+            updateGraph('cpu', extractTime($('#cpu-datetimepicker-start')), extractTime($('#cpu-datetimepicker-end')));
+            return false;
+        });
+        $('#update-memory').submit(function () {
+            updateGraph('memory', extractTime($('#memory-datetimepicker-start')), extractTime($('#memory-datetimepicker-end')));
+            return false;
+        });
     });
 </script>
