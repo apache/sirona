@@ -19,6 +19,9 @@ package org.apache.commons.monitoring.gauges;
 import org.apache.commons.monitoring.Role;
 import org.apache.commons.monitoring.store.DataStore;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.Timer;
@@ -58,9 +61,17 @@ public final class DefaultGaugeManager implements GaugeManager {
         }
     }
 
-    protected ServiceLoader<Gauge> findGauges() {
+    protected Collection<Gauge> findGauges() {
         // core (where gauge is) is often in an upper classloader so don't use Gauge classloader
-        return ServiceLoader.load(Gauge.class, Thread.currentThread().getContextClassLoader());
+        final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        final Collection<Gauge> gauges = new LinkedList<Gauge>();
+        for (final Gauge g : ServiceLoader.load(Gauge.class, classLoader)) {
+            gauges.add(g);
+        }
+        for (final GaugeFactory gf : ServiceLoader.load(GaugeFactory.class, classLoader)) {
+            gauges.addAll(Arrays.asList(gf.gauges()));
+        }
+        return gauges;
     }
 
     @Override
