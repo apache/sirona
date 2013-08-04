@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.commons.monitoring.stopwatches;
 
 import org.apache.commons.monitoring.counters.Counter;
@@ -23,11 +22,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.apache.commons.monitoring.counters.Unit.Time.NANOSECOND;
 
-/**
- * Simple implementation of StopWatch that estimate monitored element execution time.
- *
- * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
- */
 public class CounterStopWatch implements StopWatch {
     protected final Counter counter;
     protected final long startedAt;

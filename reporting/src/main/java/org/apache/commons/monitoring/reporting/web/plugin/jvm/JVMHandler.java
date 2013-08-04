@@ -32,14 +32,15 @@ public class JVMHandler extends HandlerRendererAdapter {
     }
 
     protected Map<String,?> getVariables() {
+        final long now = System.currentTimeMillis();
         final OperatingSystemMXBean os = ManagementFactory.getOperatingSystemMXBean();
         return new MapBuilder<String, Object>()
             .set("architecture", os.getArch())
             .set("name", os.getName())
             .set("version", os.getVersion())
             .set("numberProcessor", os.getAvailableProcessors())
-            .set("cpu", Repository.INSTANCE.getGaugeValues(CPUGauge.CPU))
-            .set("memory", Repository.INSTANCE.getGaugeValues(UsedMemoryGauge.USED_MEMORY))
+            .set("cpu", Repository.INSTANCE.getGaugeValues(0, now, CPUGauge.CPU))
+            .set("memory", Repository.INSTANCE.getGaugeValues(0, now, UsedMemoryGauge.USED_MEMORY))
             .build();
     }
 }

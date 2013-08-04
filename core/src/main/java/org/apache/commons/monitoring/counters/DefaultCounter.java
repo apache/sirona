@@ -17,25 +17,24 @@
 package org.apache.commons.monitoring.counters;
 
 import org.apache.commons.math.stat.descriptive.SummaryStatistics;
-import org.apache.commons.monitoring.configuration.Configuration;
-import org.apache.commons.monitoring.counters.queuemanager.MetricQueueManager;
+import org.apache.commons.monitoring.store.DataStore;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class DefaultCounter implements Counter {
-    private static final MetricQueueManager QUEUE_MANAGER = Configuration.newInstance(MetricQueueManager.class);
-
     private final AtomicInteger concurrency = new AtomicInteger(0);
     private final Key key;
+    private final DataStore dataStore;
     private volatile int maxConcurrency = 0;
     protected SummaryStatistics statistics;
     protected Lock lock = new ReentrantLock();
 
-    public DefaultCounter(final Key key) {
+    public DefaultCounter(final Key key, final DataStore store) {
         this.key = key;
         this.statistics = new SummaryStatistics();
+        this.dataStore = store;
     }
 
     public void addInternal(final double delta) { // should be called from a thread safe environment
@@ -70,8 +69,8 @@ public class DefaultCounter implements Counter {
     }
 
     @Override
-    public void add(final double delta) { // sensitive method which need to be thread safe, default implementation relies on disruptor
-        QUEUE_MANAGER.add(this, delta);
+    public void add(final double delta) {
+        dataStore.addToCounter(this, delta);
     }
 
     @Override

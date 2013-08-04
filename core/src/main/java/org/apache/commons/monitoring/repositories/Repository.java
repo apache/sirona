@@ -33,7 +33,7 @@ public interface Repository extends Iterable<Counter> {
 
     StopWatch start(Counter counter);
 
-    Map<Long, Double> getGaugeValues(Role role);
+    Map<Long, Double> getGaugeValues(long start, long end, Role role);
 
     void stopGauge(Role role);
 }

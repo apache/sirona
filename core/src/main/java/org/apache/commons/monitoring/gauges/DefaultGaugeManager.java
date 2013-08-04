@@ -17,9 +17,8 @@
 package org.apache.commons.monitoring.gauges;
 
 import org.apache.commons.monitoring.Role;
-import org.apache.commons.monitoring.configuration.Configuration;
+import org.apache.commons.monitoring.store.DataStore;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.Timer;
@@ -27,19 +26,15 @@ import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class DefaultGaugeManager implements GaugeManager {
-    private static final int MAX_SIZE = Configuration.getInteger(Configuration.COMMONS_MONITORING_PREFIX + "gauge.max-size", 10);
-
     private final Map<Role, Timer> timers = new ConcurrentHashMap<Role, Timer>();
-    private final Map<Role, FixedSizedMap> values = new ConcurrentHashMap<Role, FixedSizedMap>();
+    private final DataStore store;
+
+    public DefaultGaugeManager(final DataStore dataStore) {
+        store = dataStore;
+    }
 
     @Override
-    public void start(final Map<Role, Map<Long, Double>> initialData) {
-        if (initialData != null) {
-            for (final Map.Entry<Role, Map<Long, Double>> entry : initialData.entrySet()) {
-                values.put(entry.getKey(), new FixedSizedMap(entry.getValue()));
-            }
-        }
-
+    public void start() {
         startFoundGaugeTimers();
     }
 
@@ -51,21 +46,15 @@ public final class DefaultGaugeManager implements GaugeManager {
         timers.clear();
     }
 
-    @Override
-    public Map<Long, Double> getValues(final Role role) {
-        return values.get(role).copy();
-    }
-
     protected void startFoundGaugeTimers() {
         for (final Gauge gauge : findGauges()) {
             final Role role = gauge.role();
 
-            final FixedSizedMap gaugeValues = new FixedSizedMap();
-            this.values.put(role, gaugeValues);
+            this.store.createOrNoopGauge(role);
 
             final Timer timer = new Timer("gauge-" + role.getName() + "-timer", true);
             timers.put(role, timer);
-            timer.scheduleAtFixedRate(new GaugeTask(gauge, gaugeValues), 0, gauge.period());
+            timer.scheduleAtFixedRate(new GaugeTask(store, gauge), 0, gauge.period());
         }
     }
 
@@ -84,40 +73,16 @@ public final class DefaultGaugeManager implements GaugeManager {
 
     private static class GaugeTask extends TimerTask {
         private final Gauge gauge;
-        private final FixedSizedMap values;
+        private final DataStore store;
 
-        public GaugeTask(final Gauge gauge, FixedSizedMap values) {
+        public GaugeTask(final DataStore store, final Gauge gauge) {
+            this.store = store;
             this.gauge = gauge;
-            this.values = values;
         }
 
         @Override
         public void run() {
-            values.add(gauge.value());
-        }
-    }
-
-    // no perf issues here normally since add is called not that often
-    protected static class FixedSizedMap extends LinkedHashMap<Long, Double> {
-        protected FixedSizedMap() {
-            super(MAX_SIZE);
-        }
-
-        protected FixedSizedMap(final Map<Long, Double> value) {
-            super(value);
-        }
-
-        public synchronized void add(final double value) {
-            put(System.currentTimeMillis(), value);
-        }
-
-        @Override
-        protected boolean removeEldestEntry(final Map.Entry<Long, Double> eldest) {
-            return size() > MAX_SIZE;
-        }
-
-        public synchronized Map<Long, Double> copy() {
-            return Map.class.cast(super.clone());
+            store.addToGauge(gauge, System.currentTimeMillis(), gauge.value());
         }
     }
 }

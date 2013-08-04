@@ -14,10 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.commons.monitoring.counters.queuemanager;
+package org.apache.commons.monitoring.store;
 
+import org.apache.commons.monitoring.Role;
 import org.apache.commons.monitoring.counters.Counter;
+import org.apache.commons.monitoring.gauges.Gauge;
 
-public interface MetricQueueManager {
-    void add(Counter baseMetrics, double delta);
+import java.util.Collection;
+import java.util.Map;
+
+public interface DataStore {
+    Counter getOrCreateCounter(Counter.Key key);
+    void clearCounters();
+    Collection<Counter> getCounters();
+    void addToCounter(Counter defaultCounter, double delta);  // sensitive method which need to be thread safe
+
+    Map<Long,Double> getGaugeValues(long start, long end, Role role);
+    void createOrNoopGauge(Role role);
+    void addToGauge(Gauge gauge, long time, double value);
 }

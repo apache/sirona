@@ -18,14 +18,10 @@ package org.apache.commons.monitoring.gauges;
 
 import org.apache.commons.monitoring.Role;
 
-import java.util.Map;
-
 public interface GaugeManager {
-    void start(Map<Role, Map<Long, Double>> initialData);
+    void start();
 
     void stop();
-
-    Map<Long, Double> getValues(Role role);
 
     void stopGauge(Role role);
 }
