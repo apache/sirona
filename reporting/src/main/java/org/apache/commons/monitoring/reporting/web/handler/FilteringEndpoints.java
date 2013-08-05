@@ -16,27 +16,20 @@
  */
 package org.apache.commons.monitoring.reporting.web.handler;
 
-import org.apache.commons.monitoring.MonitoringException;
+import org.apache.commons.monitoring.reporting.web.handler.api.Regex;
+import org.apache.commons.monitoring.reporting.web.handler.api.TemplateHelper;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+public class FilteringEndpoints {
+    private static final String BOOTSTRAP_CSS = "/resources/css/bootstrap.min.css";
+    private static final String MONITORING_CSS = "/resources/css/monitoring.css";
 
-public abstract class RedirectHandler implements Handler {
-    @Override
-    public Renderer handle(final HttpServletRequest request, final HttpServletResponse response, final String path) {
-        preRedirect();
-        try {
-            response.sendRedirect(request.getRequestURI().substring(0, request.getRequestURI().length() - from().length()) + to());
-        } catch (final Exception e) {
-            throw new MonitoringException(e);
-        }
-        return null;
+    @Regex(MONITORING_CSS)
+    public void filterCss(final TemplateHelper helper) {
+        helper.renderPlain(MONITORING_CSS);
     }
 
-    protected void preRedirect() {
-        // no-op
+    @Regex(BOOTSTRAP_CSS)
+    public void filterBootstrapCss(final TemplateHelper helper) {
+        helper.renderPlain(BOOTSTRAP_CSS);
     }
-
-    public abstract String from();
-    public abstract String to();
 }

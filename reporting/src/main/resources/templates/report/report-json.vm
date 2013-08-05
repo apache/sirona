@@ -13,16 +13,8 @@
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
-*#
-<h1>Home</h1>
-
-<div>
-    Welcome to the Commons Monitoring Webapp. here is the list of available pages:
-</div>
-<div>
-    <ul>
-        #foreach ( $plugin in $plugins )
-            <li><a href="$mapping$plugin.url">$plugin.name</a></li>
-        #end
-    </ul>
-</div>
+*#{"counters":[
+#foreach ( $counter in $counters )
+    {"name":"$counter.key.name", "role":"$counter.key.role.name","unit":"$counter.key.role.unit.name",#foreach ( $md in $MetricData.values())"$md.name()":"$md.value($counter)"#if( $foreach.hasNext ),#end#end}
+#end
+]}

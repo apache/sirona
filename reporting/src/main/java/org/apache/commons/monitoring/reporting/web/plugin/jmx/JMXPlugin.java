@@ -16,7 +16,6 @@
  */
 package org.apache.commons.monitoring.reporting.web.plugin.jmx;
 
-import org.apache.commons.monitoring.reporting.web.handler.Handler;
 import org.apache.commons.monitoring.reporting.web.plugin.Plugin;
 
 public class JMXPlugin implements Plugin {
@@ -26,12 +25,12 @@ public class JMXPlugin implements Plugin {
     }
 
     @Override
-    public Class<? extends Handler> handler() {
-        return JMXHandler.class;
+    public Class<?> endpoints() {
+        return JMXEndpoints.class;
     }
 
     @Override
     public String mapping() {
-        return "jmx/*";
+        return "/jmx";
     }
 }

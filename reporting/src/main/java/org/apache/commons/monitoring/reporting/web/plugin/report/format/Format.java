@@ -17,10 +17,13 @@
 
 package org.apache.commons.monitoring.reporting.web.plugin.report.format;
 
-import org.apache.commons.monitoring.reporting.web.handler.Renderer;
+import org.apache.commons.monitoring.reporting.web.handler.api.Template;
 
-public interface Format extends Renderer {
+import java.util.Map;
+
+public interface Format {
     String type();
+    Template render(Map<String, ?> params);
 
     public static interface Defaults {
         static final Format JSON = new JSONFormat();

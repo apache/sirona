@@ -16,8 +16,6 @@
  */
 package org.apache.commons.monitoring.reporting.web.plugin;
 
-import org.apache.commons.monitoring.reporting.web.handler.Handler;
-
 public interface Plugin {
     /**
      * @return plugin name.
@@ -25,12 +23,12 @@ public interface Plugin {
     String name();
 
     /**
-     * @return the handler to call when mappings() are matched.
+     * @return the endpoints to call when mapping() is matched.
      */
-    Class<? extends Handler> handler();
+    Class<?> endpoints();
 
     /**
-     * @return the mapping of the handler if not null. Note: it shouldn't start with '/' but can end with /*.
+     * @return the base mapping of the endpoints if not null.
      */
     String mapping();
 }

@@ -14,24 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.commons.monitoring.reporting.web.plugin.report;
+package org.apache.commons.monitoring.reporting.web.handler.api;
 
-import org.apache.commons.monitoring.reporting.web.handler.RedirectHandler;
-import org.apache.commons.monitoring.repositories.Repository;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public class ClearHandler extends RedirectHandler {
-    @Override
-    protected void preRedirect() {
-        Repository.INSTANCE.clear();
-    }
-
-    @Override
-    public String from() {
-        return "clear";
-    }
-
-    @Override
-    public String to() {
-        return "report";
-    }
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface Regex {
+    String value() default ""; // root, the root page is mandatory, it is the one linked in the menu
 }

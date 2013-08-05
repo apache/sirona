@@ -17,7 +17,7 @@
 package org.apache.commons.monitoring;
 
 public class MonitoringException extends RuntimeException {
-    public MonitoringException(final Exception e) {
+    public MonitoringException(final Throwable e) {
         super(e);
     }
 

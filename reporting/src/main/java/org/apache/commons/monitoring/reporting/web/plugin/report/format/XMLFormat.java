@@ -17,24 +17,20 @@
 
 package org.apache.commons.monitoring.reporting.web.plugin.report.format;
 
-import org.apache.commons.monitoring.counters.Counter;
+import org.apache.commons.monitoring.reporting.web.handler.api.Template;
+import org.apache.commons.monitoring.reporting.web.template.MapBuilder;
 import org.apache.commons.monitoring.repositories.Repository;
 
-import java.io.PrintWriter;
 import java.util.Map;
 
 public class XMLFormat implements Format {
     @Override
-    public void render(final PrintWriter writer, final Map<String, ?> params) {
-        writer.write("<repository>");
-        for (final Counter counter : Repository.INSTANCE) {
-            writer.write("<counter name=\"" + counter.getKey().getName() + "\" role=\"" + counter.getKey().getRole().getName() + "\" unit=\"" + counter.getKey().getRole().getUnit().getName() + "\"");
-            for (final MetricData md : MetricData.values()) {
-                writer.write(" " + md.name() + "=\"" + md.value(counter) + "\"");
-            }
-            writer.write(" />");
-        }
-        writer.write("</repository>");
+    public Template render(final Map<String, ?> params) {
+        return new Template("/templates/report/report-xml.vm",
+            new MapBuilder<String, Object>()
+                .set("MetricData", MetricData.class)
+                .set("counters", Repository.INSTANCE.iterator())
+                .build(), false);
     }
 
     @Override

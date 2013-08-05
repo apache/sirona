@@ -16,7 +16,6 @@
  */
 package org.apache.commons.monitoring.reporting.web.plugin.jvm;
 
-import org.apache.commons.monitoring.reporting.web.handler.Handler;
 import org.apache.commons.monitoring.reporting.web.plugin.Plugin;
 
 public class JVMPlugin implements Plugin {
@@ -26,12 +25,12 @@ public class JVMPlugin implements Plugin {
     }
 
     @Override
-    public Class<? extends Handler> handler() {
-        return JVMHandler.class;
+    public Class<?> endpoints() {
+        return JVMEndpoints.class;
     }
 
     @Override
     public String mapping() {
-        return "jvm*";
+        return "/jvm";
     }
 }

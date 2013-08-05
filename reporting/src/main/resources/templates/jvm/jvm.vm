@@ -80,7 +80,7 @@
         $('#cpu-datetimepicker-start').datetimepicker();
         $('#cpu-datetimepicker-end').datetimepicker();
 
-        var memoryOptions = {
+        var cpuOptions = {
             canvas: true,
             series: { lines: { show: true }, points: { show: true } },
             grid: { hoverable: true, clickable: true },
@@ -92,7 +92,7 @@
                 }
             } ]
         };
-        var cpuOptions = {
+        var memoryOptions = {
             canvas: true,
             series: { lines: { show: true }, points: { show: true } },
             grid: { hoverable: true, clickable: true },
@@ -122,13 +122,13 @@
             ]
         };
 
-        var updateGraph = function (graph, start, end) {
+        var updateGraph = function (graph, start, end, options) {
             $.ajax({
                 url: "$mapping/jvm/" + graph + "/" + start + "/" + end,
                 type: "GET",
                 dataType: "json",
                 success: function (data) {
-                    $.plot("#" + graph + "-graph", [ data ], memoryOptions);
+                    $.plot("#" + graph + "-graph", [ data ], options);
                 }
             });
         };
@@ -145,17 +145,17 @@
             var start = yesterday.getTime();
             var end = now.getTime();
 
-            updateGraph('cpu', start, end);
-            updateGraph('memory', start, end);
+            updateGraph('cpu', start, end, cpuOptions);
+            updateGraph('memory', start, end, memoryOptions);
         })();
 
         // update diagram when clicking on update buttons
         $('#update-cpu').submit(function () {
-            updateGraph('cpu', extractTime($('#cpu-datetimepicker-start')), extractTime($('#cpu-datetimepicker-end')));
+            updateGraph('cpu', extractTime($('#cpu-datetimepicker-start')), extractTime($('#cpu-datetimepicker-end')), cpuOptions);
             return false;
         });
         $('#update-memory').submit(function () {
-            updateGraph('memory', extractTime($('#memory-datetimepicker-start')), extractTime($('#memory-datetimepicker-end')));
+            updateGraph('memory', extractTime($('#memory-datetimepicker-start')), extractTime($('#memory-datetimepicker-end')), memoryOptions);
             return false;
         });
     });

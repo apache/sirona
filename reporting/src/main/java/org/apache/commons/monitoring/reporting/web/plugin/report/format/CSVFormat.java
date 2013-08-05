@@ -18,8 +18,9 @@ package org.apache.commons.monitoring.reporting.web.plugin.report.format;
 
 import org.apache.commons.monitoring.configuration.Configuration;
 import org.apache.commons.monitoring.counters.Unit;
+import org.apache.commons.monitoring.reporting.web.handler.api.Template;
+import org.apache.commons.monitoring.reporting.web.template.MapBuilder;
 
-import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.Map;
 
@@ -27,15 +28,15 @@ public class CSVFormat extends MapFormat implements Format {
     private static final String SEPARATOR = Configuration.getProperty(Configuration.COMMONS_MONITORING_PREFIX + "csv.separator", ";");
     public static final String HEADER = "Monitor" + SEPARATOR + "Role" + SEPARATOR + toCsv(ATTRIBUTES_ORDERED_LIST);
 
-
     @Override
-    public void render(final PrintWriter writer, final Map<String, ?> params) {
+    public Template render(final Map<String, ?> params) {
         final Unit timeUnit = timeUnit(params);
-
-        writer.write(HEADER);
-        for (final Collection<String> line : snapshot(timeUnit)) {
-            writer.write(toCsv(line));
-        }
+        return new Template("/templates/report/report-csv.vm",
+                        new MapBuilder<String, Object>()
+                        .set("headers", HEADER)
+                        .set("separator", SEPARATOR)
+                        .set("lines", snapshot(timeUnit))
+                        .build(), false);
     }
 
     @Override

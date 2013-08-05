@@ -17,36 +17,20 @@
 
 package org.apache.commons.monitoring.reporting.web.plugin.report.format;
 
-import org.apache.commons.monitoring.counters.Counter;
+import org.apache.commons.monitoring.reporting.web.handler.api.Template;
+import org.apache.commons.monitoring.reporting.web.template.MapBuilder;
 import org.apache.commons.monitoring.repositories.Repository;
 
-import java.io.PrintWriter;
-import java.util.Iterator;
 import java.util.Map;
 
 public class JSONFormat implements Format {
-    private static final MetricData[] METRIC_DATA = MetricData.values();
-
     @Override
-    public void render(final PrintWriter writer, final Map<String, ?> params) {
-        writer.write("{\"counters\":[");
-        final Iterator<Counter> counters = Repository.INSTANCE.iterator();
-        while (counters.hasNext()) {
-            final Counter counter = counters.next();
-            writer.write("{\"name\":\"" + counter.getKey().getName() + "\",\"role\":\"" + counter.getKey().getRole().getName() + "\",");
-            writer.write("\"unit\":\"" + counter.getKey().getRole().getUnit().getName() + "\",");
-            for (int i = 0; i < METRIC_DATA.length; i++) {
-                writer.write("\"" + METRIC_DATA[i].name() + "\":\"" + METRIC_DATA[i].value(counter) + "\"");
-                if (i < METRIC_DATA.length - 1) {
-                    writer.write(",");
-                }
-            }
-            writer.write("}");
-            if (counters.hasNext()) {
-                writer.write(",");
-            }
-        }
-        writer.write("]}");
+    public Template render(final Map<String, ?> params) {
+        return new Template("/templates/report/report-json.vm",
+            new MapBuilder<String, Object>()
+                .set("MetricData", MetricData.class)
+                .set("counters", Repository.INSTANCE.iterator())
+                .build(), false);
     }
 
     @Override

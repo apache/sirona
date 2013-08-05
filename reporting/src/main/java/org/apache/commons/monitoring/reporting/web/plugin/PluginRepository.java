@@ -16,13 +16,15 @@
  */
 package org.apache.commons.monitoring.reporting.web.plugin;
 
-import org.apache.commons.monitoring.MonitoringException;
 import org.apache.commons.monitoring.configuration.Configuration;
-import org.apache.commons.monitoring.reporting.web.handler.Handler;
+import org.apache.commons.monitoring.reporting.web.handler.internal.EndpointInfo;
+import org.apache.commons.monitoring.reporting.web.handler.internal.Invoker;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.regex.Pattern;
 
 public final class PluginRepository {
     public static Collection<PluginInfo> PLUGIN_INFO = new CopyOnWriteArrayList<PluginInfo>();
@@ -38,14 +40,9 @@ public final class PluginRepository {
             }
 
             final String mapping = plugin.mapping();
-            final Class<? extends Handler> handler = plugin.handler();
-            if (mapping != null && handler != null) {
-                try {
-                    final Handler handlerInstance = new PluginDecoratorHandler(Configuration.newInstance(handler), name);
-                    PLUGIN_INFO.add(new PluginInfo(mapping, handlerInstance, name));
-                } catch (final Exception e) {
-                    throw new MonitoringException(e);
-                }
+            final Class<?> handler = plugin.endpoints();
+            if (mapping != null) {
+                PLUGIN_INFO.add(new PluginInfo(mapping, name, EndpointInfo.build(handler, plugin.name(), plugin.mapping())));
             }
         }
     }
@@ -56,39 +53,25 @@ public final class PluginRepository {
 
     public static class PluginInfo {
         private final String url;
-        private final Handler handler;
         private final String name;
-        private final String rootUrl;
+        private final EndpointInfo info;
 
-        public PluginInfo(final String url, final Handler handler, final String name) {
+        public PluginInfo(final String url, String name, final EndpointInfo info) {
             this.url = url;
-            this.handler = handler;
             this.name = name;
-            if (!url.endsWith("*")) {
-                rootUrl = url;
-            } else {
-                if (url.endsWith("/")) {
-                    rootUrl = url.substring(0, url.length() - "/*".length());
-                } else {
-                    rootUrl = url.substring(0, url.length() - "*".length());
-                }
-            }
+            this.info = info;
         }
 
         public String getUrl() {
             return url;
         }
 
-        public Handler getHandler() {
-            return handler;
-        }
-
         public String getName() {
             return name;
         }
 
-        public String getRootUrl() {
-            return rootUrl;
+        public Map<Pattern, Invoker> getInvokers() {
+            return info.getInvokers();
         }
     }
 }

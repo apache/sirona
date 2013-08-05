@@ -16,9 +16,12 @@
  */
 package org.apache.commons.monitoring.reporting.web.handler;
 
-public class HomeHandler extends HandlerRendererAdapter {
-    @Override
-    protected String getTemplate() {
-        return "home.vm";
+import org.apache.commons.monitoring.reporting.web.handler.api.Regex;
+import org.apache.commons.monitoring.reporting.web.handler.api.Template;
+
+public class HomeEndpoint {
+    @Regex
+    public Template home() {
+        return new Template("home.vm");
     }
 }

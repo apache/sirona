@@ -16,7 +16,6 @@
  */
 package org.apache.commons.monitoring.reporting.web.plugin.report;
 
-import org.apache.commons.monitoring.reporting.web.handler.Handler;
 import org.apache.commons.monitoring.reporting.web.plugin.Plugin;
 
 public class ReportPlugin implements Plugin {
@@ -26,12 +25,12 @@ public class ReportPlugin implements Plugin {
     }
 
     @Override
-    public Class<? extends Handler> handler() {
-        return ReportHandler.class;
+    public Class<?> endpoints() {
+        return ReportEndpoints.class;
     }
 
     @Override
     public String mapping() {
-        return "report*";
+        return "/report";
     }
 }

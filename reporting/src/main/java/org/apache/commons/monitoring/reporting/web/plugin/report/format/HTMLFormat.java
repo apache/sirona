@@ -17,17 +17,16 @@
 package org.apache.commons.monitoring.reporting.web.plugin.report.format;
 
 import org.apache.commons.monitoring.counters.Unit;
+import org.apache.commons.monitoring.reporting.web.handler.api.Template;
 import org.apache.commons.monitoring.reporting.web.template.MapBuilder;
-import org.apache.commons.monitoring.reporting.web.template.Templates;
 
-import java.io.PrintWriter;
 import java.util.Map;
 
 public class HTMLFormat extends MapFormat implements Format {
     @Override
-    public void render(final PrintWriter writer, final Map<String, ?> params) {
+    public Template render(final Map<String, ?> params) {
         final Unit timeUnit = timeUnit(params);
-        Templates.htmlRender(writer, "report/report.vm",
+        return new Template("report/report.vm",
             new MapBuilder<String, Object>()
                 .set(Map.class.cast(params))
                 .set("headers", ATTRIBUTES_ORDERED_LIST)

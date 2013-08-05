@@ -13,16 +13,5 @@
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
-*#
-<h1>Home</h1>
+*#$headers#foreach ( $line in $lines )#foreach ( $item in $line )$item#if( $foreach.hasNext )$separator#end#end#end
 
-<div>
-    Welcome to the Commons Monitoring Webapp. here is the list of available pages:
-</div>
-<div>
-    <ul>
-        #foreach ( $plugin in $plugins )
-            <li><a href="$mapping$plugin.url">$plugin.name</a></li>
-        #end
-    </ul>
-</div>

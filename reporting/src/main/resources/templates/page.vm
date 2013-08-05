@@ -46,7 +46,7 @@
                               #else
                                 <li>
                               #end
-                                  <a href="$mapping/$plugin.rootUrl">$plugin.name</a>
+                                  <a href="$mapping$plugin.url">$plugin.name</a>
                               </li>
                           #end
                       </ul>
