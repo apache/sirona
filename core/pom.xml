@@ -48,7 +48,8 @@
       <plugin> <!-- include commons-math in core to be able to install it in containers more trivially -->
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
-        <version>2.1</version>
+        <!-- Later versions - i.e. 2.x - require Maven 3 -->
+        <version>1.7.1</version>
         <executions>
           <execution>
             <phase>package</phase>
