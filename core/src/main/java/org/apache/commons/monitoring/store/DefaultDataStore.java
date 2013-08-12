@@ -24,16 +24,16 @@ import org.apache.commons.monitoring.gauges.Gauge;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.locks.Lock;
 
 public class DefaultDataStore implements DataStore {
     private final ConcurrentMap<Counter.Key, Counter> counters = new ConcurrentHashMap<Counter.Key, Counter>(50);
-    private final Map<Role, FixedSizedMap> gauges = new ConcurrentHashMap<Role, FixedSizedMap>();
+    private final Map<Role, Map<Long, Double>> gauges = new ConcurrentHashMap<Role, Map<Long, Double>>();
 
     @Override
     public Counter getOrCreateCounter(final Counter.Key key) {
@@ -81,8 +81,11 @@ public class DefaultDataStore implements DataStore {
             return Collections.emptyMap();
         }
 
+        final Map<Long, Double> copy = new TreeMap<Long, Double>();
+        copy.putAll(map);
+
         final Map<Long, Double> out = new TreeMap<Long, Double>();
-        for (final Map.Entry<Long, Double> entry : map.entrySet()) {
+        for (final Map.Entry<Long, Double> entry : copy.entrySet()) {
             final long time = entry.getKey();
             if (time >= start && time <= end) {
                 out.put(time, entry.getValue());
@@ -102,11 +105,11 @@ public class DefaultDataStore implements DataStore {
     }
 
     // no perf issues here normally since add is called not that often
-    protected static class FixedSizedMap extends LinkedHashMap<Long, Double> {
+    protected static class FixedSizedMap extends ConcurrentSkipListMap<Long, Double> {
         private static final int MAX_SIZE = Configuration.getInteger(Configuration.COMMONS_MONITORING_PREFIX + "gauge.max-size", 100);
 
         protected FixedSizedMap() {
-            super(MAX_SIZE);
+            // no-op
         }
 
         protected FixedSizedMap(final Map<Long, Double> value) {
@@ -114,12 +117,11 @@ public class DefaultDataStore implements DataStore {
         }
 
         @Override
-        protected boolean removeEldestEntry(final Map.Entry<Long, Double> eldest) {
-            return size() > MAX_SIZE;
-        }
-
-        public synchronized Map<Long, Double> copy() {
-            return Map.class.cast(super.clone());
+        public Double put(final Long key, final Double value) {
+            if (size() >= MAX_SIZE) {
+                remove(keySet().iterator().next());
+            }
+            return super.put(key, value);
         }
     }
 }

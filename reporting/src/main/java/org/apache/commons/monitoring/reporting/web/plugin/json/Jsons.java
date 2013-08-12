@@ -14,12 +14,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.commons.monitoring.gauges;
+package org.apache.commons.monitoring.reporting.web.plugin.json;
 
-import org.apache.commons.monitoring.Role;
+import java.util.Iterator;
+import java.util.Map;
 
-public interface GaugeManager {
-    void stop();
-    void addGauge(Gauge gauge);
-    void stopGauge(Role role);
+public final class Jsons {
+    public static String toJson(final Map<Long, Double> data) { // helper for gauges
+        final StringBuilder builder = new StringBuilder().append("[");
+        final Iterator<Map.Entry<Long,Double>> iterator = data.entrySet().iterator();
+        while (iterator.hasNext()) {
+            final Map.Entry<Long, Double> entry = iterator.next();
+            builder.append("[").append(entry.getKey()).append(", ").append(entry.getValue()).append("]");
+            if (iterator.hasNext()) {
+                builder.append(", ");
+            }
+        }
+        return builder.append("]").toString();
+    }
+
+    private Jsons() {
+        // no-op
+    }
 }

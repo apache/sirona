@@ -39,7 +39,7 @@ you can embed it. You'll need to update your web.xml to declare the monitoring f
              version="2.5">
 
       <listener>
-        <listener-class>org.apache.commons.monitoring.reporting.web.listener.CleanupListener</listener-class>
+        <listener-class>org.apache.commons.monitoring.reporting.web.listener.MonitoringListener</listener-class>
       </listener>
 
       <filter>

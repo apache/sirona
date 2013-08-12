@@ -17,9 +17,51 @@
 package org.apache.commons.monitoring.gauges;
 
 import org.apache.commons.monitoring.Role;
+import org.apache.commons.monitoring.repositories.Repository;
+
+import java.util.LinkedList;
+import java.util.ServiceLoader;
 
 public interface Gauge {
     Role role();
     double value();
     long period();
+
+    public static class LoaderHelper {
+        private LinkedList<Gauge> gauges = new LinkedList<Gauge>();
+
+        public LoaderHelper(final boolean excludeParent, final String... includedPrefixes) {
+            final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+
+            for (final Gauge g : ServiceLoader.load(Gauge.class, classLoader)) {
+                addGaugeIfNecessary(classLoader, g, excludeParent, includedPrefixes);
+            }
+            for (final GaugeFactory gf : ServiceLoader.load(GaugeFactory.class, classLoader)) {
+                for (final Gauge g : gf.gauges()) {
+                    addGaugeIfNecessary(classLoader, g, excludeParent, includedPrefixes);
+                }
+            }
+        }
+
+        private void addGaugeIfNecessary(final ClassLoader classLoader, final Gauge g, final boolean excludeParent, final String... prefixes) {
+            final Class<? extends Gauge> gaugeClass = g.getClass();
+            if (!excludeParent || gaugeClass.getClassLoader() == classLoader) {
+                if (prefixes != null) {
+                    for (final String p : prefixes) {
+                        if (!gaugeClass.getName().startsWith(p)) {
+                            return;
+                        }
+                    }
+                }
+                Repository.INSTANCE.addGauge(g);
+                gauges.add(g);
+            }
+        }
+
+        public void destroy() {
+            for (final Gauge gauge : gauges) {
+                Repository.INSTANCE.stopGauge(gauge.role());
+            }
+        }
+    }
 }

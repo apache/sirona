@@ -20,6 +20,7 @@ package org.apache.commons.monitoring.repositories;
 import org.apache.commons.monitoring.Role;
 import org.apache.commons.monitoring.configuration.Configuration;
 import org.apache.commons.monitoring.counters.Counter;
+import org.apache.commons.monitoring.gauges.Gauge;
 import org.apache.commons.monitoring.stopwatches.StopWatch;
 
 import java.util.Map;
@@ -28,12 +29,10 @@ public interface Repository extends Iterable<Counter> {
     static final Repository INSTANCE = Configuration.newInstance(Repository.class);
 
     Counter getCounter(Counter.Key key);
-
     void clear();
-
     StopWatch start(Counter counter);
 
-    Map<Long, Double> getGaugeValues(long start, long end, Role role);
-
+    void addGauge(final Gauge gauge);
     void stopGauge(Role role);
+    Map<Long, Double> getGaugeValues(long start, long end, Role role);
 }

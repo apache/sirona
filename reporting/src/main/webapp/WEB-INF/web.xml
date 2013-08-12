@@ -20,8 +20,13 @@
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
          version="2.5">
 
+  <context-param> <!-- only register this webapp gauges -->
+    <param-name>monitoring.discovery.packages</param-name>
+    <param-value>org.apache.commons.monitoring.reporting.web.plugin</param-value>
+  </context-param>
+
   <listener>
-    <listener-class>org.apache.commons.monitoring.reporting.web.listener.CleanupListener</listener-class>
+    <listener-class>org.apache.commons.monitoring.web.discovery.GaugeDiscoveryListener</listener-class>
   </listener>
 
   <filter>

@@ -20,6 +20,7 @@ import org.apache.commons.monitoring.Role;
 import org.apache.commons.monitoring.configuration.Configuration;
 import org.apache.commons.monitoring.counters.Counter;
 import org.apache.commons.monitoring.gauges.DefaultGaugeManager;
+import org.apache.commons.monitoring.gauges.Gauge;
 import org.apache.commons.monitoring.stopwatches.CounterStopWatch;
 import org.apache.commons.monitoring.stopwatches.StopWatch;
 import org.apache.commons.monitoring.store.DataStore;
@@ -34,11 +35,6 @@ public class DefaultRepository implements Repository {
     public DefaultRepository() {
         this.dataStore = Configuration.newInstance(DataStore.class);
         this.gaugeManager = new DefaultGaugeManager(dataStore);
-    }
-
-    @Configuration.Created
-    public void startGaugeTimers() {
-        gaugeManager.start(); // no persistence
     }
 
     @Configuration.Destroying
@@ -69,6 +65,11 @@ public class DefaultRepository implements Repository {
     @Override
     public Map<Long, Double> getGaugeValues(final long start, final long end, final Role role) {
         return dataStore.getGaugeValues(start, end, role);
+    }
+
+    @Override
+    public void addGauge(final Gauge gauge) {
+        gaugeManager.addGauge(gauge);
     }
 
     @Override

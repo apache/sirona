@@ -39,6 +39,10 @@
       <artifactId>commons-monitoring-core</artifactId>
       <scope>provided</scope> <!-- using to put it in the container to get JDBC monitoring and deploy the webapp -->
     </dependency>
+    <dependency>
+      <groupId>org.apache.commons.monitoring</groupId>
+      <artifactId>commons-monitoring-web</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.apache.commons</groupId>

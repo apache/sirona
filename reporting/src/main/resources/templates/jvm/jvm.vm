@@ -14,23 +14,6 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 *#
-#macro ( datePicker $label $id )
-    <div id="$id" class="input-append date">
-        <label for="$id">$label</label>
-        <input data-format="dd/MM/yyyy hh:mm:ss" type="text">
-        <span class="add-on">
-          <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
-        </span>
-    </div>
-#end
-#macro (dateForm $id)
-    <form class="form-inline" id="update-$id">
-        #datePicker("From", "${id}-datetimepicker-start")
-        #datePicker("To", "${id}-datetimepicker-end")
-        <button type="submit" class="btn btn-primary">Update</button>
-    </form>
-#end
-
 <div class="container-fluid">
     <div class="row-fluid">
         <div class="span6">

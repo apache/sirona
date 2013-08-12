@@ -42,9 +42,10 @@
     <module>aop</module>
     <module>cdi</module>
     <module>spring</module>
+    <module>aspectj</module>
+    <module>jta</module>
     <module>web</module>
     <module>reporting</module>
-    <module>aspectj</module>
   </modules>
 
   <developers>
@@ -166,6 +167,11 @@
       <dependency>
         <groupId>org.apache.commons.monitoring</groupId>
         <artifactId>commons-monitoring-instrumentation</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons.monitoring</groupId>
+        <artifactId>commons-monitoring-web</artifactId>
         <version>${project.version}</version>
       </dependency>
     </dependencies>

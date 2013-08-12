@@ -18,6 +18,7 @@ package org.apache.commons.monitoring.reporting.web.plugin.jvm;
 
 import org.apache.commons.monitoring.reporting.web.handler.api.Regex;
 import org.apache.commons.monitoring.reporting.web.handler.api.Template;
+import org.apache.commons.monitoring.reporting.web.plugin.json.Jsons;
 import org.apache.commons.monitoring.reporting.web.plugin.jvm.gauges.CPUGauge;
 import org.apache.commons.monitoring.reporting.web.plugin.jvm.gauges.UsedMemoryGauge;
 import org.apache.commons.monitoring.reporting.web.template.MapBuilder;
@@ -47,24 +48,11 @@ public class JVMEndpoints {
 
     @Regex("/cpu/([0-9]*)/([0-9]*)")
     public String cpu(final long start, final long end) {
-        return "{ \"data\": " + toJson(Repository.INSTANCE.getGaugeValues(start, end, CPUGauge.CPU)) + ", \"label\": \"CPU Usage\", \"color\": \"#317eac\" }";
+        return "{ \"data\": " + Jsons.toJson(Repository.INSTANCE.getGaugeValues(start, end, CPUGauge.CPU)) + ", \"label\": \"CPU Usage\", \"color\": \"#317eac\" }";
     }
 
     @Regex("/memory/([0-9]*)/([0-9]*)")
     public String memory(final long start, final long end) {
-        return "{ \"data\": " + toJson(Repository.INSTANCE.getGaugeValues(start, end, UsedMemoryGauge.USED_MEMORY)) + ", \"label\": \"Used Memory\", \"color\": \"#317eac\" }";
-    }
-
-    private String toJson(final Map<Long, Double> data) {
-        final StringBuilder builder = new StringBuilder().append("[");
-        final Iterator<Map.Entry<Long,Double>> iterator = data.entrySet().iterator();
-        while (iterator.hasNext()) {
-            final Map.Entry<Long, Double> entry = iterator.next();
-            builder.append("[").append(entry.getKey()).append(", ").append(entry.getValue()).append("]");
-            if (iterator.hasNext()) {
-                builder.append(", ");
-            }
-        }
-        return builder.append("]").toString();
+        return "{ \"data\": " + Jsons.toJson(Repository.INSTANCE.getGaugeValues(start, end, UsedMemoryGauge.USED_MEMORY)) + ", \"label\": \"Used Memory\", \"color\": \"#317eac\" }";
     }
 }

@@ -14,24 +14,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.commons.monitoring.reporting.web.listener;
+package org.apache.commons.monitoring.reporting.web.plugin.jta;
 
-import org.apache.commons.monitoring.reporting.web.plugin.jvm.gauges.CPUGauge;
-import org.apache.commons.monitoring.reporting.web.plugin.jvm.gauges.UsedMemoryGauge;
-import org.apache.commons.monitoring.repositories.Repository;
+import org.apache.commons.monitoring.reporting.web.plugin.Plugin;
 
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-
-public class CleanupListener implements ServletContextListener {
+public class JTAPlugin implements Plugin {
     @Override
-    public void contextInitialized(final ServletContextEvent sce) {
-        // no-op
+    public String name() {
+        return "JTA";
     }
 
     @Override
-    public void contextDestroyed(final ServletContextEvent sce) {
-        Repository.INSTANCE.stopGauge(CPUGauge.CPU);
-        Repository.INSTANCE.stopGauge(UsedMemoryGauge.USED_MEMORY);
+    public Class<?> endpoints() {
+        return JTAEndpoints.class;
+    }
+
+    @Override
+    public String mapping() {
+        return "/jta";
     }
 }

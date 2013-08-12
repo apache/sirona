@@ -40,6 +40,7 @@ public final class Templates {
         velocityConfiguration.setProperty(RuntimeConstants.RUNTIME_REFERENCES_STRICT, Boolean.TRUE.toString());
         velocityConfiguration.setProperty(RuntimeConstants.RUNTIME_REFERENCES_STRICT_ESCAPE, Boolean.TRUE.toString());
         velocityConfiguration.setProperty(RuntimeConstants.RESOURCE_LOADER, "monitoring");
+        velocityConfiguration.setProperty(RuntimeConstants.VM_LIBRARY, "/templates/macro.vm");
         velocityConfiguration.setProperty("monitoring." + RuntimeConstants.RESOURCE_LOADER + ".class", ClasspathResourceLoader.class.getName());
         Velocity.init(velocityConfiguration);
 
