@@ -29,6 +29,11 @@
   <name>Commons Monitoring (Sandbox) :: Reporting</name>
   <packaging>war</packaging>
 
+  <properties>
+    <tomcatRunPort>8080</tomcatRunPort>
+    <tomcatRunPath>/monitoring</tomcatRunPath>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.apache.geronimo.specs</groupId>
@@ -76,6 +81,21 @@
           <archiveClasses>true</archiveClasses>
           <attachClasses>true</attachClasses>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.tomcat.maven</groupId>
+        <artifactId>tomcat7-maven-plugin</artifactId>
+        <configuration>
+          <port>${tomcatRunPort}</port>
+          <path>${tomcatRunPath}</path>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.commons.monitoring</groupId>
+            <artifactId>commons-monitoring-core</artifactId>
+            <version>${project.version}</version>
+          </dependency>
+        </dependencies>
       </plugin>
     </plugins>
   </build>

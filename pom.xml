@@ -36,6 +36,15 @@
     performances and thread concurrency.
   </description>
 
+  <!-- Compiler source and target JVM (see parent pom) -->
+  <properties>
+    <maven.compile.source>1.6</maven.compile.source>
+    <maven.compile.target>1.6</maven.compile.target>
+    <commons.componentid>monitoring</commons.componentid>
+    <commons.jira.componentid>12312100</commons.jira.componentid>
+    <commons.scmPubUrl>https://svn.apache.org/repos/infra/websites/production/commons/content/sandbox/commons-monitoring</commons.scmPubUrl>
+  </properties>
+
   <modules>
     <module>core</module>
     <module>jdbc</module>
@@ -91,6 +100,11 @@
             </dependency>
           </dependencies>
         </plugin>
+        <plugin>
+          <groupId>org.apache.tomcat.maven</groupId>
+          <artifactId>tomcat7-maven-plugin</artifactId>
+          <version>2.1</version>
+        </plugin>
       </plugins>
     </pluginManagement>
     <plugins>
@@ -131,14 +145,6 @@
       <url>scp://people.apache.org/www/commons.apache.org/sandbox/monitoring/</url>
     </site>
   </distributionManagement>
-
-  <!-- Compiler source and target JVM (see parent pom) -->
-  <properties>
-    <maven.compile.source>1.6</maven.compile.source>
-    <maven.compile.target>1.6</maven.compile.target>
-    <commons.componentid>monitoring</commons.componentid>
-    <commons.jira.componentid>12312100</commons.jira.componentid>
-  </properties>
 
   <dependencyManagement>
     <dependencies>
