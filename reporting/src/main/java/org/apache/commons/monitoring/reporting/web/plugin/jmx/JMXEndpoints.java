@@ -28,11 +28,12 @@ import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanInfo;
 import javax.management.MBeanOperationInfo;
 import javax.management.MBeanParameterInfo;
-import javax.management.MBeanServer;
+import javax.management.MBeanServerConnection;
 import javax.management.ObjectInstance;
 import javax.management.ObjectName;
 import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.TabularData;
+import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -45,7 +46,6 @@ import java.util.Map;
 import java.util.Set;
 
 public class JMXEndpoints {
-    private static final MBeanServer SERVER = ManagementFactory.getPlatformMBeanServer();
     private static final boolean METHOD_INVOCATION_ALLOWED = Configuration.is(Configuration.COMMONS_MONITORING_PREFIX + "jmx.method.allowed", true);
 
     private static final Map<String, Class<?>> WRAPPERS = new HashMap<String, Class<?>>();
@@ -62,8 +62,14 @@ public class JMXEndpoints {
         }
     }
 
+    protected final MBeanServerConnection server;
+
+    public JMXEndpoints() {
+        this.server = ManagementFactory.getPlatformMBeanServer();
+    }
+
     @Regex("")
-    public Template home() {
+    public Template home() throws IOException {
         return new Template("jmx/main.vm", new MapBuilder<String, Object>().set("jmxTree", buildJmxTree()).build());
     }
 
@@ -75,7 +81,7 @@ public class JMXEndpoints {
 
         try {
             final ObjectName name = new ObjectName(new String(Base64.decodeBase64(objectNameBase64)));
-            final MBeanInfo info = SERVER.getMBeanInfo(name);
+            final MBeanInfo info = server.getMBeanInfo(name);
             for (final MBeanOperationInfo op : info.getOperations()) {
                 if (op.getName().equals(method)) {
                     final MBeanParameterInfo[] signature = op.getSignature();
@@ -83,7 +89,7 @@ public class JMXEndpoints {
                     for (int i = 0; i < sign.length; i++) {
                         sign[i] = signature[i].getType();
                     }
-                    final Object result = SERVER.invoke(name, method, convertParams(signature, parameters), sign);
+                    final Object result = server.invoke(name, method, convertParams(signature, parameters), sign);
                     return "<div>Method was invoked and returned:</div>" + value(result);
                 }
             }
@@ -100,7 +106,7 @@ public class JMXEndpoints {
     public Template mbean(final String objectNameBase64) {
         try {
             final ObjectName name = new ObjectName(new String(Base64.decodeBase64(objectNameBase64)));
-            final MBeanInfo info = SERVER.getMBeanInfo(name);
+            final MBeanInfo info = server.getMBeanInfo(name);
             return new Template("templates/jmx/mbean.vm",
                 new MapBuilder<String, Object>()
                     .set("objectname", name.toString())
@@ -115,10 +121,10 @@ public class JMXEndpoints {
         }
     }
 
-    private static JMXNode buildJmxTree() {
+    private JMXNode buildJmxTree() throws IOException {
         final JMXNode root = new JMXNode("/");
 
-        for (final ObjectInstance instance : SERVER.queryMBeans(null, null)) {
+        for (final ObjectInstance instance : server.queryMBeans(null, null)) {
             final ObjectName objectName = instance.getObjectName();
             JMXNode.addNode(root, objectName.getDomain(), objectName.getKeyPropertyListString());
         }
@@ -216,7 +222,7 @@ public class JMXEndpoints {
         for (final MBeanAttributeInfo attribute : info.getAttributes()) {
             Object value;
             try {
-                value = SERVER.getAttribute(name, attribute.getName());
+                value = server.getAttribute(name, attribute.getName());
             } catch (final Exception e) {
                 value = "<div class=\"alert-error\">" + e.getMessage() + "</div>";
             }
