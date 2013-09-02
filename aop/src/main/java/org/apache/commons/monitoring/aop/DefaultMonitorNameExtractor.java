@@ -31,7 +31,11 @@ public class DefaultMonitorNameExtractor implements MonitorNameExtractor {
     }
 
     public String getMonitorName(final Object instance, final Method method) {
-        return instance.getClass().getName() + "." + method.getName();
+        if (instance == null) { // static method
+            return method.getDeclaringClass().getName() + "." + method.getName();
+        } else {
+            return instance.getClass().getName() + "." + method.getName();
+        }
     }
 
 }
