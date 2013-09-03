@@ -24,6 +24,7 @@ import org.apache.commons.monitoring.gauges.Gauge;
 import org.apache.commons.monitoring.stopwatches.CounterStopWatch;
 import org.apache.commons.monitoring.stopwatches.StopWatch;
 import org.apache.commons.monitoring.store.DataStore;
+import org.apache.commons.monitoring.store.GaugeValuesRequest;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -64,7 +65,7 @@ public class DefaultRepository implements Repository {
 
     @Override
     public Map<Long, Double> getGaugeValues(final long start, final long end, final Role role) {
-        return dataStore.getGaugeValues(start, end, role);
+        return dataStore.getGaugeValues(new GaugeValuesRequest(start, end, role));
     }
 
     @Override

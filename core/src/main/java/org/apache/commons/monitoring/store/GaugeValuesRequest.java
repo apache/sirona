@@ -17,19 +17,58 @@
 package org.apache.commons.monitoring.store;
 
 import org.apache.commons.monitoring.Role;
-import org.apache.commons.monitoring.counters.Counter;
-import org.apache.commons.monitoring.gauges.Gauge;
 
-import java.util.Collection;
-import java.util.Map;
+/**
+ * @author Olivier Lamy
+ */
+public class GaugeValuesRequest
+{
 
-public interface DataStore {
-    Counter getOrCreateCounter(Counter.Key key);
-    void clearCounters();
-    Collection<Counter> getCounters();
-    void addToCounter(Counter defaultCounter, double delta);  // sensitive method which need to be thread safe
+    private long start;
 
-    Map<Long,Double> getGaugeValues(GaugeValuesRequest gaugeValuesRequest);
-    void createOrNoopGauge(Role role);
-    void addToGauge(Gauge gauge, long time, double value);
+    private long end;
+
+    private Role role;
+
+    public GaugeValuesRequest()
+    {
+        // no op
+    }
+
+    public GaugeValuesRequest( long start, long end, Role role )
+    {
+        this.start = start;
+        this.end = end;
+        this.role = role;
+    }
+
+    public long getStart()
+    {
+        return start;
+    }
+
+    public void setStart( long start )
+    {
+        this.start = start;
+    }
+
+    public long getEnd()
+    {
+        return end;
+    }
+
+    public void setEnd( long end )
+    {
+        this.end = end;
+    }
+
+    public Role getRole()
+    {
+        return role;
+    }
+
+    public void setRole( Role role )
+    {
+        this.role = role;
+    }
 }

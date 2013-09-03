@@ -75,19 +75,18 @@ public class DefaultDataStore implements DataStore {
     }
 
     @Override
-    public Map<Long, Double> getGaugeValues(final long start, final long end, final Role role) {
-        final Map<Long, Double> map = gauges.get(role);
+    public Map<Long, Double> getGaugeValues(GaugeValuesRequest gaugeValuesRequest) {
+        final Map<Long, Double> map = gauges.get(gaugeValuesRequest.getRole());
         if (map == null) {
             return Collections.emptyMap();
         }
 
-        final Map<Long, Double> copy = new TreeMap<Long, Double>();
-        copy.putAll(map);
+        final Map<Long, Double> copy = new TreeMap<Long, Double>( map );
 
         final Map<Long, Double> out = new TreeMap<Long, Double>();
         for (final Map.Entry<Long, Double> entry : copy.entrySet()) {
             final long time = entry.getKey();
-            if (time >= start && time <= end) {
+            if (time >= gaugeValuesRequest.getStart() && time <= gaugeValuesRequest.getEnd()) {
                 out.put(time, entry.getValue());
             }
         }
