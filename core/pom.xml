@@ -57,6 +57,7 @@
               <goal>shade</goal>
             </goals>
             <configuration>
+              <dependencyReducedPomLocation>${project.build.directory}/dependency-reduced-pom.xml</dependencyReducedPomLocation>
               <relocations>
                 <relocation>
                   <pattern>org.apache.commons.math</pattern>
