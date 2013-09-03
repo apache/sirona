@@ -33,8 +33,8 @@
   <dependencies>
     <dependency>
       <groupId>org.apache.commons</groupId>
-      <artifactId>commons-math</artifactId>
-      <version>2.0</version>
+      <artifactId>commons-math3</artifactId>
+      <version>3.2</version>
     </dependency>
 
     <dependency>
@@ -60,7 +60,7 @@
               <dependencyReducedPomLocation>${project.build.directory}/dependency-reduced-pom.xml</dependencyReducedPomLocation>
               <relocations>
                 <relocation>
-                  <pattern>org.apache.commons.math</pattern>
+                  <pattern>org.apache.commons.math3</pattern>
                   <shadedPattern>org.apache.commons.monitoring.math</shadedPattern>
                 </relocation>
               </relocations>
