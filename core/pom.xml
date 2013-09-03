@@ -61,7 +61,7 @@
               <relocations>
                 <relocation>
                   <pattern>org.apache.commons.math3</pattern>
-                  <shadedPattern>org.apache.commons.monitoring.math</shadedPattern>
+                  <shadedPattern>org.apache.commons.monitoring.math3</shadedPattern>
                 </relocation>
               </relocations>
             </configuration>
