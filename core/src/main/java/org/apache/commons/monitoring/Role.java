@@ -83,9 +83,8 @@ public class Role implements Comparable<Role> {
         if (getClass() != obj.getClass())
             return false;
         final Role other = (Role) obj;
-        if (name == null) {
-            if (other.name != null)
-                return false;
+        if (name == null && other.name != null) {
+            return false;
         } else if (!name.equals(other.name)) {
             return false;
         }
