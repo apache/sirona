@@ -34,11 +34,10 @@ public class Role implements Comparable<Role> {
     public static final Role PERFORMANCES = new Role("performances", NANOSECOND);
     public static final Role FAILURES = new Role("failures", Unit.UNARY);
 
-    private String name;
-    private Unit unit;
+    private final String name;
+    private final Unit unit;
 
     public Role(String name, Unit unit) {
-        super();
         if (name == null) {
             throw new IllegalArgumentException("A role name is required");
         }
@@ -71,23 +70,25 @@ public class Role implements Comparable<Role> {
         return name.hashCode();
     }
 
-    /**
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
+    public boolean equals( Object o )
+    {
+        if ( this == o )
+        {
             return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        final Role other = (Role) obj;
-        if (name == null && other.name != null) {
-            return false;
-        } else if (!name.equals(other.name)) {
+        }
+        if ( o == null || getClass() != o.getClass() )
+        {
             return false;
         }
+
+        Role role = (Role) o;
+
+        if ( !name.equals( role.name ) )
+        {
+            return false;
+        }
+
         return true;
     }
 
@@ -99,7 +100,12 @@ public class Role implements Comparable<Role> {
     }
 
     @Override
-    public String toString() {
-        return name;
+    public String toString()
+    {
+        final StringBuilder sb = new StringBuilder( "Role{" );
+        sb.append( "name='" ).append( name ).append( '\'' );
+        sb.append( ", unit=" ).append( unit );
+        sb.append( '}' );
+        return sb.toString();
     }
 }
