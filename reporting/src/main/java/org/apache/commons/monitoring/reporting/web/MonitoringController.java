@@ -44,11 +44,12 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class MonitoringController implements Filter {
-    private final Map<String, byte[]> cachedResources = new HashMap<String, byte[]>();
+    private final Map<String, byte[]> cachedResources = new ConcurrentHashMap<String, byte[]>();
     private final Map<Pattern, Invoker> invokers = new HashMap<Pattern, Invoker>();
     private String mapping;
     private ClassLoader classloader;
