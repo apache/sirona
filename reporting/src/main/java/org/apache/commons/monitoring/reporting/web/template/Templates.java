@@ -16,6 +16,7 @@
  */
 package org.apache.commons.monitoring.reporting.web.template;
 
+import org.apache.commons.monitoring.configuration.Configuration;
 import org.apache.commons.monitoring.reporting.web.plugin.PluginRepository;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -41,7 +42,7 @@ public final class Templates {
         velocityConfiguration.setProperty(RuntimeConstants.RUNTIME_REFERENCES_STRICT_ESCAPE, Boolean.TRUE.toString());
         velocityConfiguration.setProperty(RuntimeConstants.RESOURCE_LOADER, "monitoring");
         velocityConfiguration.setProperty(RuntimeConstants.VM_LIBRARY, "/templates/macro.vm");
-        velocityConfiguration.setProperty("monitoring." + RuntimeConstants.RESOURCE_LOADER + ".class", ClasspathResourceLoader.class.getName());
+        velocityConfiguration.setProperty("monitoring." + RuntimeConstants.RESOURCE_LOADER + ".class", Configuration.getProperty(Configuration.COMMONS_MONITORING_PREFIX + "reporting.resource-loader", ClasspathResourceLoader.class.getName()));
         Velocity.init(velocityConfiguration);
 
         if (filterMapping.isEmpty()) {
