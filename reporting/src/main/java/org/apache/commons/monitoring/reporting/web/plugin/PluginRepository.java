@@ -35,7 +35,7 @@ public final class PluginRepository {
             if (name == null) {
                 throw new IllegalArgumentException("plugin name can't be null");
             }
-            if (!Configuration.is(name + "activated", true)) {
+            if (!Configuration.is(name + ".activated", true)) {
                 continue;
             }
 
