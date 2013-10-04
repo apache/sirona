@@ -31,9 +31,9 @@ public class GaugeDiscoveryListener implements ServletContextListener {
         if (prefixesStr != null) {
             prefixes = prefixesStr.split(",");
         } else {
-            prefixes = new String[0];
+            prefixes = null;
         }
-        helper = new Gauge.LoaderHelper("true".equals(sce.getServletContext().getInitParameter("monitoring.discovery.exclude-parent")), prefixes);
+        helper = ge.LoaderHelper("true".equals(sce.getServletContext().getInitParameter("monitoring.discovery.exclude-parent")), prefixes);
     }
 
     @Override

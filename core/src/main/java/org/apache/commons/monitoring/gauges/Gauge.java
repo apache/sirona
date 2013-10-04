@@ -47,11 +47,14 @@ public interface Gauge {
             final Class<? extends Gauge> gaugeClass = g.getClass();
             if (!excludeParent || gaugeClass.getClassLoader() == classLoader) {
                 if (prefixes != null) {
+                    boolean found = false;
                     for (final String p : prefixes) {
-                        if (!gaugeClass.getName().startsWith(p.trim())) {
-                            return;
+                        if (gaugeClass.getName().startsWith(p.trim())) {
+                            found = true;
+                            break;
                         }
                     }
+                    if (!found) return;
                 }
                 Repository.INSTANCE.addGauge(g);
                 gauges.add(g);
