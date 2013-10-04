@@ -48,7 +48,7 @@ public interface Gauge {
             if (!excludeParent || gaugeClass.getClassLoader() == classLoader) {
                 if (prefixes != null) {
                     for (final String p : prefixes) {
-                        if (!gaugeClass.getName().startsWith(p)) {
+                        if (!gaugeClass.getName().startsWith(p.trim())) {
                             return;
                         }
                     }
