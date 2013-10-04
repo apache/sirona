@@ -18,6 +18,8 @@ package org.apache.commons.monitoring.reporting.web.handler.api;
 
 import org.apache.commons.monitoring.reporting.web.template.MapBuilder;
 import org.apache.commons.monitoring.reporting.web.template.Templates;
+import org.apache.velocity.app.Velocity;
+import org.apache.velocity.runtime.RuntimeSingleton;
 
 import java.io.PrintWriter;
 import java.util.Collections;

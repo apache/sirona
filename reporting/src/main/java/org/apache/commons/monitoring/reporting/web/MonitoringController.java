@@ -28,6 +28,7 @@ import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
@@ -59,8 +60,8 @@ public class MonitoringController implements Filter {
     public void init(final FilterConfig config) throws ServletException {
         classloader = Thread.currentThread().getContextClassLoader();
         initMapping(config);
-        initHandlers();
         Templates.init(config.getServletContext().getContextPath(), mapping);
+        initHandlers();
     }
 
     private void initHandlers() {
@@ -101,7 +102,9 @@ public class MonitoringController implements Filter {
         final HttpServletRequest httpRequest = HttpServletRequest.class.cast(request);
         final HttpServletResponse httpResponse = HttpServletResponse.class.cast(response);
 
-        String path = httpRequest.getRequestURI().substring(httpRequest.getContextPath().length() + mapping.length());
+        final String baseUri = httpRequest.getContextPath() + mapping;
+        request.setAttribute("baseUri", baseUri);
+        String path = httpRequest.getRequestURI().substring(baseUri.length() + 1);
         if (!path.startsWith("/")) {
             path = "/" + path;
         }
@@ -113,7 +116,9 @@ public class MonitoringController implements Filter {
             matcher = entry.getKey().matcher(path);
             if (matcher.matches()) {
                 invoker = entry.getValue();
-                break;
+                if (!entry.getKey().pattern().endsWith(".*")) {
+                    break;
+                }
             }
         }
 
@@ -140,10 +145,13 @@ public class MonitoringController implements Filter {
                 }
 
                 if (is != null) {
-                    final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    int i;
-                    while ((i = is.read()) != -1) {
-                        baos.write(i);
+                    ByteArrayOutputStream baos = ByteArrayOutputStream.class.cast(request.getAttribute("resourceCache"));
+                    if (baos == null) {
+                        baos = new ByteArrayOutputStream();
+                        int i;
+                        while ((i = is.read()) != -1) {
+                            baos.write(i);
+                        }
                     }
 
                     bytes = baos.toByteArray();
@@ -151,7 +159,11 @@ public class MonitoringController implements Filter {
                 }
             }
             if (bytes != null) {
-                httpResponse.getOutputStream().write(bytes);
+                if (bytes.length == 0) {
+                    httpResponse.setStatus(404);
+                } else {
+                    httpResponse.getOutputStream().write(bytes);
+                }
                 return;
             }
         }

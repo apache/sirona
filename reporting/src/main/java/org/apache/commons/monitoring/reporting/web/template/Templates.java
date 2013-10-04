@@ -30,6 +30,8 @@ import java.util.Map;
 import java.util.Properties;
 
 public final class Templates {
+    public static final String RESOURCE_LOADER_KEY = "monitoring." + RuntimeConstants.RESOURCE_LOADER + ".class";
+
     private static String mapping;
 
     public static void init(final String context, final String filterMapping) {
@@ -42,7 +44,7 @@ public final class Templates {
         velocityConfiguration.setProperty(RuntimeConstants.RUNTIME_REFERENCES_STRICT_ESCAPE, Boolean.TRUE.toString());
         velocityConfiguration.setProperty(RuntimeConstants.RESOURCE_LOADER, "monitoring");
         velocityConfiguration.setProperty(RuntimeConstants.VM_LIBRARY, "/templates/macro.vm");
-        velocityConfiguration.setProperty("monitoring." + RuntimeConstants.RESOURCE_LOADER + ".class", Configuration.getProperty(Configuration.COMMONS_MONITORING_PREFIX + "reporting.resource-loader", ClasspathResourceLoader.class.getName()));
+        velocityConfiguration.setProperty(RESOURCE_LOADER_KEY, Configuration.getProperty(Configuration.COMMONS_MONITORING_PREFIX + "reporting.resource-loader", ClasspathResourceLoader.class.getName()));
         Velocity.init(velocityConfiguration);
 
         if (filterMapping.isEmpty()) {

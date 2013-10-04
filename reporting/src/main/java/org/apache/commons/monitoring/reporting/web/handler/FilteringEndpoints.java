@@ -18,10 +18,33 @@ package org.apache.commons.monitoring.reporting.web.handler;
 
 import org.apache.commons.monitoring.reporting.web.handler.api.Regex;
 import org.apache.commons.monitoring.reporting.web.handler.api.TemplateHelper;
+import org.apache.commons.monitoring.reporting.web.template.Templates;
+import org.apache.velocity.exception.ResourceNotFoundException;
+import org.apache.velocity.runtime.RuntimeSingleton;
+import org.apache.velocity.runtime.resource.loader.ResourceLoader;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 
 public class FilteringEndpoints {
     private static final String BOOTSTRAP_CSS = "/resources/css/bootstrap.min.css";
     private static final String MONITORING_CSS = "/resources/css/monitoring.css";
+
+    private ResourceLoader rl;
+
+    public FilteringEndpoints() {
+        try {
+            rl = ResourceLoader.class.cast(FilteringEndpoints.class.getClassLoader().loadClass((String) RuntimeSingleton.getProperty(Templates.RESOURCE_LOADER_KEY)).newInstance());
+        } catch (final Exception e) {
+            throw new IllegalStateException(e);
+        }
+    }
 
     @Regex(MONITORING_CSS)
     public void filterCss(final TemplateHelper helper) {
@@ -31,5 +54,33 @@ public class FilteringEndpoints {
     @Regex(BOOTSTRAP_CSS)
     public void filterBootstrapCss(final TemplateHelper helper) {
         helper.renderPlain(BOOTSTRAP_CSS);
+    }
+
+    @Regex("/resources/.*")
+    public void filterOtherResources(final HttpServletRequest req, final HttpServletResponse resp) {
+        final InputStream is;
+        try {
+            is = rl.getResourceStream(req.getRequestURI().substring(((String) req.getAttribute("baseUri")).length()));
+        } catch (final ResourceNotFoundException rnfe) {
+            return;
+        }
+
+        try {
+            byte[] buffer = new byte[1024];
+            final ByteArrayOutputStream os = new ByteArrayOutputStream();
+            int length;
+            while ((length = is.read(buffer)) != -1) {
+                os.write(buffer, 0, length);
+            }
+            req.setAttribute("resourceCache", os);
+        } catch (final IOException ioe) {
+            throw new IllegalStateException(ioe);
+        } finally {
+            try {
+                is.close();
+            } catch (final IOException e) {
+                // no-op
+            }
+        }
     }
 }
