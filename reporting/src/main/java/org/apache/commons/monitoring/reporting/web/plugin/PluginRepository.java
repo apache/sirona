@@ -29,13 +29,18 @@ import java.util.regex.Pattern;
 public final class PluginRepository {
     public static Collection<PluginInfo> PLUGIN_INFO = new CopyOnWriteArrayList<PluginInfo>();
 
+    /** This flag is used to activate a plugin by its name [plugin.name]. The default value is true which means that
+     * every plugin discovered will be used.
+     */
+    public static final String ACTIVATED_FLAG = ".activated";
+
     static {
         for (final Plugin plugin : ServiceLoader.load(Plugin.class, Plugin.class.getClassLoader())) {
             final String name = plugin.name();
             if (name == null) {
                 throw new IllegalArgumentException("plugin name can't be null");
             }
-            if (!Configuration.is(name + ".activated", true)) {
+            if (!Configuration.is(name + ACTIVATED_FLAG, true)) {
                 continue;
             }
 
