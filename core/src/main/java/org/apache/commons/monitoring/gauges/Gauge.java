@@ -46,7 +46,7 @@ public interface Gauge {
         private void addGaugeIfNecessary(final ClassLoader classLoader, final Gauge g, final boolean excludeParent, final String... prefixes) {
             final Class<? extends Gauge> gaugeClass = g.getClass();
             if (!excludeParent || gaugeClass.getClassLoader() == classLoader) {
-                if (prefixes != null) {
+                if (prefixes != null && prefixes.length > 0) {
                     boolean found = false;
                     for (final String p : prefixes) {
                         if (gaugeClass.getName().startsWith(p.trim())) {
@@ -54,7 +54,9 @@ public interface Gauge {
                             break;
                         }
                     }
-                    if (!found) return;
+                    if (!found) {
+                        return;
+                    }
                 }
                 Repository.INSTANCE.addGauge(g);
                 gauges.add(g);
