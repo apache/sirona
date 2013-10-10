@@ -17,6 +17,7 @@
 package org.apache.commons.monitoring.gauges;
 
 import org.apache.commons.monitoring.Role;
+import org.apache.commons.monitoring.configuration.Configuration;
 import org.apache.commons.monitoring.store.DataStore;
 
 import java.util.Map;
@@ -26,6 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public final class DefaultGaugeManager implements GaugeManager {
     private final Map<Role, Timer> timers = new ConcurrentHashMap<Role, Timer>();
+    private final GaugeObserver[] observers = Configuration.newInstances(GaugeObserver.class);
     private final DataStore store;
 
     public DefaultGaugeManager(final DataStore dataStore) {
@@ -56,21 +58,33 @@ public final class DefaultGaugeManager implements GaugeManager {
 
         final Timer timer = new Timer("gauge-" + role.getName() + "-timer", true);
         timers.put(role, timer);
-        timer.scheduleAtFixedRate(new GaugeTask(store, gauge), 0, gauge.period());
+        timer.scheduleAtFixedRate(new GaugeTask(store, gauge, observers), 0, gauge.period());
     }
 
     private static class GaugeTask extends TimerTask {
         private final Gauge gauge;
         private final DataStore store;
+        private final GaugeObserver[] observers; // acceptable since gauges are not fast update entities
 
-        public GaugeTask(final DataStore store, final Gauge gauge) {
+        public GaugeTask(final DataStore store, final Gauge gauge, final GaugeObserver[] observers) {
             this.store = store;
             this.gauge = gauge;
+            this.observers = observers;
         }
 
         @Override
         public void run() {
-            store.addToGauge(gauge, System.currentTimeMillis(), gauge.value());
+            final long time = System.currentTimeMillis();
+            final double value = gauge.value();
+
+            store.addToGauge(gauge, time, value);
+            for (final GaugeObserver observer : observers) {
+                try {
+                    observer.observe(gauge, time, value);
+                } catch (final Exception e) {
+                    // no-op: don't make the thread failling because of an observer
+                }
+            }
         }
     }
 }

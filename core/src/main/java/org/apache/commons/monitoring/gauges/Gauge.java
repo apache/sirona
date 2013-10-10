@@ -67,6 +67,7 @@ public interface Gauge {
             for (final Gauge gauge : gauges) {
                 Repository.INSTANCE.stopGauge(gauge.role());
             }
+            gauges.clear();
         }
     }
 }

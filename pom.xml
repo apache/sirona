@@ -55,6 +55,7 @@
     <module>jta</module>
     <module>web</module>
     <module>reporting</module>
+    <module>graphite</module>
   </modules>
 
   <developers>

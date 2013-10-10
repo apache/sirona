@@ -17,6 +17,7 @@
 
 package org.apache.commons.monitoring.reporting.web.plugin.report.format;
 
+import org.apache.commons.monitoring.counters.MetricData;
 import org.apache.commons.monitoring.reporting.web.handler.api.Template;
 import org.apache.commons.monitoring.reporting.web.template.MapBuilder;
 import org.apache.commons.monitoring.repositories.Repository;

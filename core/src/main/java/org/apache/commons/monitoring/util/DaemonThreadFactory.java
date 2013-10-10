@@ -36,6 +36,7 @@ public final class DaemonThreadFactory implements ThreadFactory {
         if (thread.getPriority() != Thread.NORM_PRIORITY) {
             thread.setPriority(Thread.NORM_PRIORITY);
         }
+        thread.setContextClassLoader(DaemonThreadFactory.class.getClassLoader());
         return thread;
     }
 }
