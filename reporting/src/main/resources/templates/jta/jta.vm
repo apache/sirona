@@ -21,7 +21,7 @@
     </div>
 
     <div id="${name}-graph" class="plot"></div>
-    #dateForm('$name')
+    #dateForm($name)
 </div>
 #end
 
@@ -83,8 +83,8 @@
 
         // update diagram when clicking on update buttons
         #foreach ($item in $parts )
-        $('#update-$item').submit(function () {
-            updateGraph($item, extractTime($('#${item}-datetimepicker-start')), extractTime($('#${item}-datetimepicker-end')), options);
+        $("#update-$item").submit(function () {
+            updateGraph("$item", extractTime($("#${item}-datetimepicker-start")), extractTime($("#${item}-datetimepicker-end")), options);
             return false;
         });
         #end

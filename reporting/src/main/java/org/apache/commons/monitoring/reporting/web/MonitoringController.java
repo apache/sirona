@@ -28,7 +28,6 @@ import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
@@ -122,6 +121,19 @@ public class MonitoringController implements Filter {
                     break;
                 }
             }
+        }
+
+        // handle Content-Type, we could use a map but this is more efficient ATM and can still be overriden
+        if (requestURI.endsWith(".css")) {
+            httpResponse.setHeader("Content-Type", "text/css");
+        } else if (requestURI.endsWith(".js")) {
+            httpResponse.setHeader("Content-Type", "application/javascript");
+        } else if (requestURI.endsWith(".png")) {
+            httpResponse.setHeader("Content-Type", "image/png");
+        } else if (requestURI.endsWith(".gif")) {
+            httpResponse.setHeader("Content-Type", "image/gif");
+        } else if (requestURI.endsWith(".jpg")) {
+            httpResponse.setHeader("Content-Type", "image/jpeg");
         }
 
         // resource, they are in the classloader and not in the webapp to ease the embedded case

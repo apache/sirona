@@ -19,7 +19,7 @@
     <label for="$id">$label</label>
     <input data-format="dd/MM/yyyy hh:mm:ss" type="text">
     <span class="add-on">
-      <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
+      <i data-time-icon="icon-time" data-date-icon="icon-calendar" class="icon-calendar"></i>
     </span>
 </div>
 #end

@@ -23,14 +23,11 @@ import org.apache.velocity.exception.ResourceNotFoundException;
 import org.apache.velocity.runtime.RuntimeSingleton;
 import org.apache.velocity.runtime.resource.loader.ResourceLoader;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
 
 public class FilteringEndpoints {
     private static final String BOOTSTRAP_CSS = "/resources/css/bootstrap.min.css";
@@ -58,9 +55,11 @@ public class FilteringEndpoints {
 
     @Regex("/resources/.*")
     public void filterOtherResources(final HttpServletRequest req, final HttpServletResponse resp) {
+        final String requestURI = req.getRequestURI();
+
         final InputStream is;
         try {
-            is = rl.getResourceStream(req.getRequestURI().substring(((String) req.getAttribute("baseUri")).length()));
+            is = rl.getResourceStream(requestURI.substring(((String) req.getAttribute("baseUri")).length()));
         } catch (final ResourceNotFoundException rnfe) {
             return;
         }
