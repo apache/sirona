@@ -42,7 +42,7 @@ public class GraphiteDataStore extends BatchCounterDataStore {
     private static final char SPACE = ' ';
 
     @Override
-    protected void pushCountersByBatch(final Repository instance) {
+    protected synchronized void pushCountersByBatch(final Repository instance) {
         try {
             GRAPHITE.open();
 
