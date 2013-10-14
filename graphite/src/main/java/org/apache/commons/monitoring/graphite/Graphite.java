@@ -62,6 +62,14 @@ public class Graphite implements Closeable {
         this(factory, InetAddress.getByName(address), port, charset);
     }
 
+    public InetAddress getAddress() {
+        return address;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
     public void open() throws IOException {
         socket = factory.createSocket(address, port);
         writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), charset));

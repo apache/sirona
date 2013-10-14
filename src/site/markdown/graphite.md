@@ -32,24 +32,26 @@ For instance your `commons-monitoring.properties` can look like:
 org.apache.commons.monitoring.graphite.GraphiteBuilder.address = localhost
 org.apache.commons.monitoring.graphite.GraphiteBuilder.port = 1234
 ```
+## DataStore
 
-## Counters
+To push metrics (Gauges + Counters) to Graphite you can use the dedicated `DataStore`: `org.apache.commons.monitoring.graphite.GraphiteDataStore`.
 
-To push counters just add the `ServletContextListener` dedicated
-to Graphite integration: `org.apache.commons.monitoring.graphite.lifecycle.GraphiteLifecycle`.
+Simply add to `commons-monitoring.properties` the line:
 
-The available configuration is:
+```
+org.apache.commons.monitoring.store.DataStore = org.apache.commons.monitoring.graphite.GraphiteDataStore
+```
+
+### Counters
+
+Note: when deployed in a webapp you'll need to add the `ServletContextListener` dedicated
+to Graphite integration to release correctly resources
+when the webapp is undeployed: `org.apache.commons.monitoring.graphite.lifecycle.GraphiteLifecycle`.
+
+You can also configure the period used to flush counters values:
 
 * `org.apache.commons.monitoring.graphite.period`: which period to use to push counters data to Graphite (default to 1mn).
 
-Note: if you are not in a web application you'll need to use `Graphites.scheduleReport` methods.
+## Limitations
 
-## Gauges
-
-To push gauges to a Graphite instance just add the Graphite `GaugeObserver`: `org.apache.commons.monitoring.graphite.GraphiteGaugeObserver`.
-
-To do so just add in `commons-monitoring.properties`:
-
-```
-org.apache.commons.monitoring.gauges.GaugeObserver = org.apache.commons.monitoring.graphite.GraphiteGaugeObserver
-```
+When using GraphiteDataStore you cannot retrieve locally gauges values (you are expected to use Graphite for it).

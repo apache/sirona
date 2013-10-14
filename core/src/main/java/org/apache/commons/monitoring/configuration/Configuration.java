@@ -33,13 +33,16 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public final class Configuration {
     private static final Logger LOGGER = Logger.getLogger(Configuration.class.getName());
 
+    private static final Map<Class<?>, Object> SINGLETONS = new ConcurrentHashMap<Class<?>, Object>();
     private static final Collection<ToDestroy> INSTANCES = new ArrayList<ToDestroy>();
 
     public static final String COMMONS_MONITORING_PREFIX = "org.apache.commons.monitoring.";
@@ -96,7 +99,9 @@ public final class Configuration {
                 }
             }
 
-            return newInstance(clazz, config);
+            final T t = newInstance(clazz, config);
+            SINGLETONS.put(clazz, t);
+            return t;
         } catch (final Exception e) {
             throw new MonitoringException(e);
         }
@@ -154,6 +159,10 @@ public final class Configuration {
         return clazz.cast(instance);
     }
 
+    public static <T> T getInstance(final Class<T> clazz) {
+        return clazz.cast(SINGLETONS.get(clazz));
+    }
+
     public static boolean is(final String key, final boolean defaultValue) {
         return Boolean.parseBoolean(getProperty(key, Boolean.toString(defaultValue)));
     }
@@ -171,6 +180,7 @@ public final class Configuration {
             c.destroy();
         }
         INSTANCES.clear();
+        SINGLETONS.clear();
     }
 
     private Configuration() {

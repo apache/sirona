@@ -16,21 +16,25 @@
  */
 package org.apache.commons.monitoring.graphite.lifecycle;
 
-import org.apache.commons.monitoring.graphite.Graphites;
+import org.apache.commons.monitoring.configuration.Configuration;
+import org.apache.commons.monitoring.graphite.GraphiteDataStore;
+import org.apache.commons.monitoring.store.DataStore;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 public class GraphiteLifecycle implements ServletContextListener {
-    private Graphites.GraphiteFuture handler;
-
     @Override
     public void contextInitialized(final ServletContextEvent servletContextEvent) {
-        handler = Graphites.scheduleReport();
+        // no-op
     }
 
     @Override
     public void contextDestroyed(final ServletContextEvent servletContextEvent) {
-        handler.done();
+        final DataStore instance = Configuration.getInstance(DataStore.class);
+        if (GraphiteDataStore.class.isInstance(instance)
+            && instance.getClass().getClassLoader() == Thread.currentThread().getContextClassLoader()) {
+            GraphiteDataStore.class.cast(instance).shutdown();
+        }
     }
 }

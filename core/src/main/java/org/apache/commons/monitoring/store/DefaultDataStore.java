@@ -18,61 +18,16 @@ package org.apache.commons.monitoring.store;
 
 import org.apache.commons.monitoring.Role;
 import org.apache.commons.monitoring.configuration.Configuration;
-import org.apache.commons.monitoring.counters.Counter;
-import org.apache.commons.monitoring.counters.DefaultCounter;
 import org.apache.commons.monitoring.gauges.Gauge;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentSkipListMap;
-import java.util.concurrent.locks.Lock;
 
-public class DefaultDataStore implements DataStore {
-    private final ConcurrentMap<Counter.Key, Counter> counters = new ConcurrentHashMap<Counter.Key, Counter>(50);
+public class DefaultDataStore extends InMemoryCounterBaseStore {
     private final Map<Role, Map<Long, Double>> gauges = new ConcurrentHashMap<Role, Map<Long, Double>>();
-
-    @Override
-    public Counter getOrCreateCounter(final Counter.Key key) {
-        Counter counter = counters.get(key);
-        if (counter == null) {
-            counter = new DefaultCounter(key, this);
-            final Counter previous = counters.putIfAbsent(key, counter);
-            if (previous != null) {
-                counter = previous;
-            }
-        }
-        return counter;
-    }
-
-    @Override
-    public void clearCounters() {
-        counters.clear();
-    }
-
-    @Override
-    public Collection<Counter> getCounters() {
-        return counters.values();
-    }
-
-    @Override
-    public void addToCounter(final Counter counter, final double delta) {
-        if (!DefaultCounter.class.isInstance(counter)) {
-            throw new IllegalArgumentException(DefaultDataStore.class.getName() + " only supports " + DefaultCounter.class.getName());
-        }
-
-        final DefaultCounter defaultCounter = DefaultCounter.class.cast(counter);
-        final Lock lock = defaultCounter.getLock();
-        lock.lock();
-        try {
-            defaultCounter.addInternal(delta);
-        } finally {
-            lock.unlock();
-        }
-    }
 
     @Override
     public Map<Long, Double> getGaugeValues(GaugeValuesRequest gaugeValuesRequest) {

@@ -17,6 +17,7 @@
 package org.apache.commons.monitoring.graphite;
 
 import org.apache.commons.monitoring.gauges.Gauge;
+import org.apache.commons.monitoring.graphite.lifecycle.GraphiteLifecycle;
 import org.apache.commons.monitoring.graphite.server.GraphiteMockServer;
 import org.apache.commons.monitoring.repositories.Repository;
 import org.junit.After;
@@ -29,7 +30,6 @@ import java.util.Collection;
 
 public abstract class GraphiteTestBase {
     private GraphiteMockServer server;
-    private Graphites.GraphiteFuture future;
     private Gauge.LoaderHelper gauges;
 
     @BeforeClass
@@ -41,13 +41,12 @@ public abstract class GraphiteTestBase {
     @Before
     public void startGraphite() throws IOException {
         server = new GraphiteMockServer(1234).start();
-        future = Graphites.scheduleReport();
         gauges = new Gauge.LoaderHelper(false);
     }
 
     @After
     public void shutdownGraphite() throws IOException {
-        future.done();
+        new GraphiteLifecycle().contextDestroyed(null);
         gauges.destroy();
         server.stop();
     }
