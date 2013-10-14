@@ -38,6 +38,8 @@ public class GraphiteDataStore extends BatchCounterDataStore {
     private static final String GAUGE_PREFIX = "gauge-";
     private static final String COUNTER_PREFIX = "counter-";
     private static final char SEP = '-';
+    private static final char SPACE_REPLACEMENT_CHAR = '_';
+    private static final char SPACE = ' ';
 
     @Override
     protected void pushCountersByBatch(final Repository instance) {
@@ -48,7 +50,7 @@ public class GraphiteDataStore extends BatchCounterDataStore {
 
             for (final Counter counter : instance) {
                 final Counter.Key key = counter.getKey();
-                final String prefix = COUNTER_PREFIX + key.getRole().getName() + SEP + key.getName() + SEP;
+                final String prefix = noSpace(COUNTER_PREFIX + key.getRole().getName() + SEP + key.getName() + SEP);
 
                 for (final MetricData data : MetricData.values()) {
                     GRAPHITE.push(
@@ -67,10 +69,14 @@ public class GraphiteDataStore extends BatchCounterDataStore {
     @Override
     public void addToGauge(final Gauge gauge, final long time, final double value) {
         try {
-            GRAPHITE.simplePush(GAUGE_PREFIX + gauge.role().getName(), value, time);
+            GRAPHITE.simplePush(GAUGE_PREFIX + noSpace(gauge.role().getName()), value, time);
         } catch (final IOException e) {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
         }
+    }
+
+    private static String noSpace(final String s) {
+        return s.replace(SPACE, SPACE_REPLACEMENT_CHAR);
     }
 
     @Override
