@@ -104,7 +104,9 @@ public class MonitoringController implements Filter {
 
         final String baseUri = httpRequest.getContextPath() + mapping;
         request.setAttribute("baseUri", baseUri);
-        String path = httpRequest.getRequestURI().substring(baseUri.length() + 1);
+
+        final String requestURI = httpRequest.getRequestURI();
+        String path = requestURI.substring(Math.max(baseUri.length() + 1, requestURI.length()));
         if (!path.startsWith("/")) {
             path = "/" + path;
         }
