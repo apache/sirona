@@ -69,7 +69,7 @@ public class GraphiteDataStore extends BatchCounterDataStore {
         try {
             GRAPHITE.simplePush(GAUGE_PREFIX + gauge.role().getName(), value, time);
         } catch (final IOException e) {
-            // no-op
+            LOGGER.log(Level.SEVERE, e.getMessage(), e);
         }
     }
 
