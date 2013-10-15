@@ -29,7 +29,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public abstract class MapFormat {
     protected static final Collection<String> ATTRIBUTES_ORDERED_LIST = buildMetricDataHeader();
-    private static final DecimalFormat NUMBER_FORMATTER = new DecimalFormat("###,###,###,##0.00###E0");
+    private static final DecimalFormat NUMBER_FORMATTER = new DecimalFormat("###,###,###,##0.00");
 
     protected static Collection<String> buildMetricDataHeader() {
         final Collection<String> list = new CopyOnWriteArrayList<String>();
