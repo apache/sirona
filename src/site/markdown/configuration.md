@@ -38,15 +38,37 @@ you'll need to either configure the `javax.servlet.ServletContextListener`
 `org.apache.commons.monitoring.web.lifecycle.CommonsMonitoringLifecycle` from reporting module
 or to call manually `Configuration.shutdown()` method.
 
-### Main configuration keys
+### Main configuration keys (by module)
 
+#### Core
+
+* org.apache.commons.monitoring.configuration: the configuration file path if not using the default
 * org.apache.commons.monitoring.shutdown.hook: boolean, true by default. Should be set to false when deploying commons-monitoring-core in an application (see Utilities part).
-* [plugin name].activated: boolean, true by default. Should the plugin referenced by [plugin.name] be used.
-* org.apache.commons.monitoring.jmx.method.allowed: boolean, true by default. Are JMX method invocation allowed.
 * org.apache.commons.monitoring.gauge.max-size: int, 100 by default. Number of gauge measures to keep in memory when not persistent.
 * org.apache.commons.monitoring.gauge.memory.period: int, 4000 (ms) by default. Period for memory gauge.
 * org.apache.commons.monitoring.gauge.cpu.period: int, 4000 (ms) by default. Period for CPU gauge.
-* org.apache.commons.monitoring.gauge.csv.separator: char, ';' by default. CSV separator for CSV report.
-* org.apache.commons.proxy.ProxyFactory: qualified class name. ProxyFactory to use for client aop.
 * org.apache.commons.monitoring.store.DataStore: qualified class name, default `org.apache.commons.monitoring.store.DefaultDataStore`. DataStore to use.
 * org.apache.commons.monitoring.repositories.Repository: qualified class name, default `org.apache.commons.monitoring.repositories.DefaultRepository`. Repository to use.
+* org.apache.commons.monitoring.<name>.period: the period to use to flush counters for a batch data store (like graphite one)
+
+#### Reporting
+
+* org.apache.commons.proxy.ProxyFactory: qualified class name. ProxyFactory to use for client aop.
+* [plugin name].activated: boolean, true by default. Should the plugin referenced by [plugin.name] be used.
+* org.apache.commons.monitoring.jmx.method.allowed: boolean, true by default. Are JMX method invocation allowed.
+* org.apache.commons.monitoring.gauge.csv.separator: char, ';' by default. CSV separator for CSV report.
+* org.apache.commons.monitoring.gauge.jta.period: jta gauge period
+* org.apache.commons.monitoring.gauge.memory.period: memory gauge period
+* org.apache.commons.monitoring.gauge.cpu.period: cpu gauge period
+* org.apache.commons.monitoring.reporting.activated: if auto deployment of reporting module is activated
+* org.apache.commons.monitoring.reporting.mapping: the mapping of monitoring GUI
+
+#### Web
+
+* org.apache.commons.monitoring.web.activated: if auto deployment of web module is activated
+* org.apache.commons.monitoring.web.monitored-urls: the mapping of monitored urls
+* org.apache.commons.monitoring.gauge.sessions.period: the gauge period for sessions number monitoring
+
+#### CDI
+
+* org.apache.commons.monitoring.cdi.enabled: a boolean to activate/deactivate CDI interceptors config

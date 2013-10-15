@@ -43,6 +43,13 @@ public class WebMonitoringInitializer implements ServletContainerInitializer {
         if (monitoredUrls == null) {
             monitoredUrls = "/*";
         }
-        ctx.addFilter("monitoring-filter", MonitoringFilter.class).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), false, monitoredUrls);
+        if (monitoredUrls.contains(",")) {
+            final String[] split = monitoredUrls.split(",");
+            for (int i = 0; i < split.length; i++) {
+                ctx.addFilter("monitoring-filter-" + i, MonitoringFilter.class).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), false, split[i]);
+            }
+        } else {
+            ctx.addFilter("monitoring-filter", MonitoringFilter.class).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), false, monitoredUrls);
+        }
     }
 }

@@ -42,10 +42,11 @@ import java.util.logging.Logger;
 public final class Configuration {
     private static final Logger LOGGER = Logger.getLogger(Configuration.class.getName());
 
+    public static final String COMMONS_MONITORING_PREFIX = "org.apache.commons.monitoring.";
+
     private static final Map<Class<?>, Object> SINGLETONS = new ConcurrentHashMap<Class<?>, Object>();
     private static final Collection<ToDestroy> INSTANCES = new ArrayList<ToDestroy>();
 
-    public static final String COMMONS_MONITORING_PREFIX = "org.apache.commons.monitoring.";
     private static final String DEFAULT_CONFIGURATION_FILE = "commons-monitoring.properties";
 
     private static Thread shutdownHook = null;
