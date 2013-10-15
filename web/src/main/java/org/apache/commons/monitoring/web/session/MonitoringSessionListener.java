@@ -54,7 +54,7 @@ public class MonitoringSessionListener implements HttpSessionListener, ServletCo
         if (contextPath == null || contextPath.isEmpty()) {
             contextPath = "/";
         }
-        counter = Repository.INSTANCE.getCounter(new Counter.Key(new Role("sessions-" + contextPath, Unit.UNARY), "session"));
+        counter = Repository.INSTANCE.getCounter(new Counter.Key(new Role("sessions", Unit.UNARY), "sessions-" + contextPath));
     }
 
     @Override
