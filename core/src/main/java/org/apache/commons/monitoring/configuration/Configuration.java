@@ -88,6 +88,14 @@ public final class Configuration {
         return array;
     }
 
+    public static synchronized <T> T findOrCreateInstance(final Class<T> clazz) {
+        final T t = clazz.cast(SINGLETONS.get(clazz));
+        if (t != null) {
+            return t;
+        }
+        return newInstance(clazz);
+    }
+
     public static synchronized <T> T newInstance(final Class<T> clazz) {
         try {
             String config = PROPERTIES.getProperty(clazz.getName());

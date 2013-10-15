@@ -26,7 +26,7 @@ import org.apache.commons.monitoring.stopwatches.StopWatch;
 import java.util.Map;
 
 public interface Repository extends Iterable<Counter> {
-    static final Repository INSTANCE = Configuration.newInstance(Repository.class);
+    Repository INSTANCE = Configuration.findOrCreateInstance(Repository.class);
 
     Counter getCounter(Counter.Key key);
     void clear();

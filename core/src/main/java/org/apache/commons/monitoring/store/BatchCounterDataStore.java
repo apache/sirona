@@ -40,6 +40,7 @@ public abstract class BatchCounterDataStore extends InMemoryCounterBaseStore {
         scheduledTask = new BatchFuture(ses, future);
     }
 
+    @Configuration.Destroying
     public void shutdown() {
         scheduledTask.done();
     }

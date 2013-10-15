@@ -30,11 +30,20 @@ import static org.junit.Assert.assertTrue;
 public class GraphiteTest extends GraphiteTestBase {
     @Test
     public void checkCountersAndGauges() throws InterruptedException {
-        forceSomeData();
+        { // force some counter data
+            final Counter counter = Repository.INSTANCE.getCounter(new Counter.Key(Role.PERFORMANCES, "test"));
+            counter.add(1.4);
+            counter.add(1.6);
+            Thread.sleep(150);
+            counter.add(2.3);
+            counter.add(2.9);
+            Thread.sleep(150);
+        }
 
-        final Collection<String> counters = new ArrayList<String>(messages().size());
-        final Collection<String> gauges = new ArrayList<String>(messages().size());
-        for (final String msg : messages()) {
+        final Collection<String> messages = messages();
+        final Collection<String> counters = new ArrayList<String>(messages.size());
+        final Collection<String> gauges = new ArrayList<String>(messages.size());
+        for (final String msg : messages) {
             final String substring = msg.substring(0, msg.lastIndexOf(" "));
             if (msg.startsWith("counter")) {
                 counters.add(substring);
@@ -60,15 +69,5 @@ public class GraphiteTest extends GraphiteTestBase {
             assertTrue(gauges.contains("gauge-mock 2.00"));
             assertTrue(gauges.contains("gauge-mock 3.00"));
         }
-    }
-
-    private void forceSomeData() throws InterruptedException {
-        final Counter counter = Repository.INSTANCE.getCounter(new Counter.Key(Role.PERFORMANCES, "test"));
-        counter.add(1.4);
-        counter.add(1.6);
-        Thread.sleep(150);
-        counter.add(2.3);
-        counter.add(2.9);
-        Thread.sleep(150);
     }
 }

@@ -25,10 +25,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public final class MonitoringProxyFactory {
-    private static final ProxyFactory PROXY_FACTORY = Configuration.newInstance(ProxyFactory.class);
-
     public static <T> T monitor(final Class<T> clazz, final Object instance) {
-        return clazz.cast(PROXY_FACTORY.createInvokerProxy(ClassLoaders.current(), new MonitoringHandler(instance), new Class<?>[]{clazz}));
+        return clazz.cast(
+            Configuration.findOrCreateInstance(ProxyFactory.class)
+                .createInvokerProxy(ClassLoaders.current(), new MonitoringHandler(instance), new Class<?>[]{clazz}));
     }
 
     private MonitoringProxyFactory() {

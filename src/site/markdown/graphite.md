@@ -44,10 +44,6 @@ org.apache.commons.monitoring.store.DataStore = org.apache.commons.monitoring.gr
 
 ### Counters
 
-Note: when deployed in a webapp you'll need to add the `ServletContextListener` dedicated
-to Graphite integration to release correctly resources
-when the webapp is undeployed: `org.apache.commons.monitoring.graphite.lifecycle.GraphiteLifecycle`.
-
 You can also configure the period used to flush counters values:
 
 * `org.apache.commons.monitoring.graphite.period`: which period to use to push counters data to Graphite (default to 1mn).

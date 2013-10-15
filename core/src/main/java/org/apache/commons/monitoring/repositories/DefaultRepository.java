@@ -34,7 +34,7 @@ public class DefaultRepository implements Repository {
     private final DefaultGaugeManager gaugeManager;
 
     public DefaultRepository() {
-        this.dataStore = Configuration.newInstance(DataStore.class);
+        this.dataStore = Configuration.findOrCreateInstance(DataStore.class);
         this.gaugeManager = new DefaultGaugeManager(dataStore);
     }
 

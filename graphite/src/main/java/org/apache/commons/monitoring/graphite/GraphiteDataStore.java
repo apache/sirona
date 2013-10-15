@@ -33,18 +33,18 @@ import java.util.logging.Logger;
 public class GraphiteDataStore extends BatchCounterDataStore {
     private static final Logger LOGGER = Logger.getLogger(GraphiteDataStore.class.getName());
 
-    private static final Graphite GRAPHITE = Configuration.newInstance(GraphiteBuilder.class).build();
-
     private static final String GAUGE_PREFIX = "gauge-";
     private static final String COUNTER_PREFIX = "counter-";
     private static final char SEP = '-';
     private static final char SPACE_REPLACEMENT_CHAR = '_';
     private static final char SPACE = ' ';
 
+    private final Graphite graphite = Configuration.findOrCreateInstance(GraphiteBuilder.class).build();
+
     @Override
     protected synchronized void pushCountersByBatch(final Repository instance) {
         try {
-            GRAPHITE.open();
+            graphite.open();
 
             final long ts = System.currentTimeMillis();
 
@@ -53,7 +53,7 @@ public class GraphiteDataStore extends BatchCounterDataStore {
                 final String prefix = noSpace(COUNTER_PREFIX + key.getRole().getName() + SEP + key.getName() + SEP);
 
                 for (final MetricData data : MetricData.values()) {
-                    GRAPHITE.push(
+                    graphite.push(
                         prefix + data.name(),
                         data.value(counter),
                         ts);
@@ -62,14 +62,14 @@ public class GraphiteDataStore extends BatchCounterDataStore {
         } catch (final IOException e) {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
         } finally {
-            GRAPHITE.close();
+            graphite.close();
         }
     }
 
     @Override
     public void addToGauge(final Gauge gauge, final long time, final double value) {
         try {
-            GRAPHITE.simplePush(GAUGE_PREFIX + noSpace(gauge.role().getName()), value, time);
+            graphite.simplePush(GAUGE_PREFIX + noSpace(gauge.role().getName()), value, time);
         } catch (final IOException e) {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
         }

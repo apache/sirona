@@ -16,14 +16,12 @@
  */
 package org.apache.commons.monitoring.graphite;
 
+import org.apache.commons.monitoring.configuration.Configuration;
 import org.apache.commons.monitoring.gauges.Gauge;
-import org.apache.commons.monitoring.graphite.lifecycle.GraphiteLifecycle;
 import org.apache.commons.monitoring.graphite.server.GraphiteMockServer;
 import org.apache.commons.monitoring.repositories.Repository;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -32,23 +30,19 @@ public abstract class GraphiteTestBase {
     private GraphiteMockServer server;
     private Gauge.LoaderHelper gauges;
 
-    @BeforeClass
-    @AfterClass
-    public static void reset() {
-        Repository.INSTANCE.clear();
-    }
-
     @Before
     public void startGraphite() throws IOException {
+        Repository.INSTANCE.clear();
         server = new GraphiteMockServer(1234).start();
         gauges = new Gauge.LoaderHelper(false);
     }
 
     @After
     public void shutdownGraphite() throws IOException {
-        new GraphiteLifecycle().contextDestroyed(null);
+        Configuration.shutdown();
         gauges.destroy();
         server.stop();
+        Repository.INSTANCE.clear();
     }
 
     protected Collection<String> messages() {
