@@ -22,6 +22,7 @@ import org.apache.commons.monitoring.repositories.Repository;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 import static org.junit.Assert.assertEquals;
@@ -53,7 +54,7 @@ public class GraphiteTest extends GraphiteTestBase {
         }
 
         { // counters
-            assertEquals(13, counters.size());
+            assertEquals(39, counters.size());
             assertTrue(counters.contains("counter-performances-test-Hits 2.00"));
             assertTrue(counters.contains("counter-performances-test-Max 1.60"));
             assertTrue(counters.contains("counter-performances-test-Mean 1.50"));

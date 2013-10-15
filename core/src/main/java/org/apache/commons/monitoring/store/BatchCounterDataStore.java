@@ -35,8 +35,7 @@ public abstract class BatchCounterDataStore extends InMemoryCounterBaseStore {
         final long period = Configuration.getInteger(Configuration.COMMONS_MONITORING_PREFIX + name + ".period", 60000);
 
         final ScheduledExecutorService ses = Executors.newSingleThreadScheduledExecutor(new DaemonThreadFactory(name + "-schedule-"));
-        final ScheduledFuture<?> future = ses.schedule(new BatchPushCountersTask(), period, TimeUnit.MILLISECONDS);
-        ses.shutdown(); // don't add anything more now
+        final ScheduledFuture<?> future = ses.scheduleAtFixedRate(new BatchPushCountersTask(), period, period, TimeUnit.MILLISECONDS);
         scheduledTask = new BatchFuture(ses, future);
     }
 
@@ -70,6 +69,7 @@ public abstract class BatchCounterDataStore extends InMemoryCounterBaseStore {
 
         public void done() {
             try {
+                executor.shutdown(); // don't add anything more now
                 task.cancel(false);
                 executor.awaitTermination(1, TimeUnit.MINUTES);
                 if (!task.isDone()) {
