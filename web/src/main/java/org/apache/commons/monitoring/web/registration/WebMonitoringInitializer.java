@@ -36,8 +36,8 @@ public class WebMonitoringInitializer implements ServletContainerInitializer {
             return;
         }
 
-        ctx.addListener(GaugeDiscoveryListener.class);
         ctx.addListener(MonitoringSessionListener.class);
+        ctx.addListener(GaugeDiscoveryListener.class);
 
         String monitoredUrls = ctx.getInitParameter(Configuration.COMMONS_MONITORING_PREFIX + "web.monitored-urls");
         if (monitoredUrls == null) {

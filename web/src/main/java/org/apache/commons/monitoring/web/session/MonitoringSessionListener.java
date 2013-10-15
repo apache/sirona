@@ -28,16 +28,21 @@ import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class MonitoringSessionListener implements HttpSessionListener, ServletContextListener {
     private final Map<String, StopWatch> watches = new ConcurrentHashMap<String, StopWatch>();
 
+    private final AtomicLong sessionNumber = new AtomicLong(0);
+
     private Counter counter;
+    private SessionGauge gauge;
 
     @Override
     public void sessionCreated(final HttpSessionEvent httpSessionEvent) {
         final StopWatch watch = Repository.INSTANCE.start(counter);
         watches.put(httpSessionEvent.getSession().getId(), watch);
+        sessionNumber.incrementAndGet();
     }
 
     @Override
@@ -46,6 +51,7 @@ public class MonitoringSessionListener implements HttpSessionListener, ServletCo
         if (watch != null) {
             watch.stop();
         }
+        sessionNumber.decrementAndGet();
     }
 
     @Override
@@ -54,11 +60,14 @@ public class MonitoringSessionListener implements HttpSessionListener, ServletCo
         if (contextPath == null || contextPath.isEmpty()) {
             contextPath = "/";
         }
-        counter = Repository.INSTANCE.getCounter(new Counter.Key(new Role("sessions", Unit.UNARY), "sessions-" + contextPath));
+        counter = Repository.INSTANCE.getCounter(new Counter.Key(new Role("session-durations", Unit.Time.NANOSECOND), "session-durations-" + contextPath));
+
+        gauge = new SessionGauge(contextPath, sessionNumber);
+        Repository.INSTANCE.addGauge(gauge);
     }
 
     @Override
     public void contextDestroyed(final ServletContextEvent sce) {
-        // no-op
+        Repository.INSTANCE.stopGauge(gauge.role());
     }
 }
