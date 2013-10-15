@@ -22,19 +22,17 @@ import org.apache.commons.monitoring.counters.Unit;
 import org.apache.commons.monitoring.repositories.Repository;
 import org.apache.commons.monitoring.stopwatches.StopWatch;
 
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class MonitoringSessionListener implements HttpSessionListener {
+public class MonitoringSessionListener implements HttpSessionListener, ServletContextListener {
     private final Map<String, StopWatch> watches = new ConcurrentHashMap<String, StopWatch>();
 
-    private final Counter counter;
-
-    public MonitoringSessionListener() {
-        counter = Repository.INSTANCE.getCounter(new Counter.Key(new Role("session", Unit.UNARY), "session"));
-    }
+    private Counter counter;
 
     @Override
     public void sessionCreated(final HttpSessionEvent httpSessionEvent) {
@@ -48,5 +46,19 @@ public class MonitoringSessionListener implements HttpSessionListener {
         if (watch != null) {
             watch.stop();
         }
+    }
+
+    @Override
+    public void contextInitialized(final ServletContextEvent sce) {
+        String contextPath = sce.getServletContext().getContextPath();
+        if (contextPath == null || contextPath.isEmpty()) {
+            contextPath = "/";
+        }
+        counter = Repository.INSTANCE.getCounter(new Counter.Key(new Role("sessions-" + contextPath, Unit.UNARY), "session"));
+    }
+
+    @Override
+    public void contextDestroyed(final ServletContextEvent sce) {
+        // no-op
     }
 }

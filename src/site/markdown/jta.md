@@ -35,6 +35,7 @@ to add `commons-monitoring-web` to your webapp and register the listener `org.ap
     </web-app>
 
 Note: you can register it manually using `org.apache.commons.monitoring.gauges.Gauge$LoaderHelper` or `org.apache.commons.monitoring.repositories.Repository#addGauge`.
+Note 2: in a servlet 3 container it is done automatically if `org.apache.commons.monitoring.web.activated` is true (by default)
 
 Then you need to add on the beans which can be enrolled in transactions you want to monitor the annotation
 `org.apache.commons.monitoring.jta.JTAMonitored` (CDI beans) or the interceptor `org.apache.commons.monitoring.jta.JTAInterceptor`

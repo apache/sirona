@@ -37,14 +37,19 @@ Simply add the filter `org.apache.commons.monitoring.web.servlet.MonitoringFilte
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
+Note: in a servlet 3 container you can simply configure `org.apache.commons.monitoring.web.monitored-urls` to the
+servlet pattern you want to match. If you want to register the `MonitoringFilter` yourself just set the
+init parameter `org.apache.commons.monitoring.web.activated` to false.
+
 ## Monitor sessions
 
 Simply add the listener `org.apache.commons.monitoring.web.servlet.MonitoringFilter`:
 
     <listener>
-      <listener-class>org.apache.commons.monitoring.web.servlet.MonitoringFilter</listener-class>
+      <listener-class>org.apache.commons.monitoring.web.session.MonitoringSessionListener</listener-class>
     </listener>
 
+Note: in a servlet 3 container and if `org.apache.commons.monitoring.web.activated` is not set to false it is added by default.
 
 ## Accessing results
 
