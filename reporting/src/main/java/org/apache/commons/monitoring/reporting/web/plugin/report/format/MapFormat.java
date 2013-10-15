@@ -21,6 +21,7 @@ import org.apache.commons.monitoring.counters.MetricData;
 import org.apache.commons.monitoring.counters.Unit;
 import org.apache.commons.monitoring.repositories.Repository;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
@@ -28,6 +29,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public abstract class MapFormat {
     protected static final Collection<String> ATTRIBUTES_ORDERED_LIST = buildMetricDataHeader();
+    private static final DecimalFormat NUMBER_FORMATTER = new DecimalFormat("###,###,###,##0.00###E0");
 
     protected static Collection<String> buildMetricDataHeader() {
         final Collection<String> list = new CopyOnWriteArrayList<String>();
@@ -83,7 +85,11 @@ public abstract class MapFormat {
                 if (md.isTime() && compatible && timeUnit != counterUnit) {
                     value = timeUnit.convert(value, counterUnit);
                 }
-                line.add(Double.toString(value));
+                if (!Double.isNaN(value) && !Double.isInfinite(value)) {
+                    line.add(NUMBER_FORMATTER.format(value));
+                } else {
+                    line.add(Double.toString(value));
+                }
             }
         }
         return data;
