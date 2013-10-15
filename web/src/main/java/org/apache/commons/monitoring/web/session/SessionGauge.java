@@ -21,15 +21,28 @@ import org.apache.commons.monitoring.configuration.Configuration;
 import org.apache.commons.monitoring.counters.Unit;
 import org.apache.commons.monitoring.gauges.Gauge;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class SessionGauge implements Gauge {
+    private static final WeakHashMap<Role, SessionGauge> GAUGES = new WeakHashMap<Role, SessionGauge>();
+
+    public static Map<Role, SessionGauge> gauges() {
+        return new HashMap<Role, SessionGauge>(GAUGES);
+    }
+
     private final Role role;
     private final AtomicLong counter;
 
     public SessionGauge(final String ctx, final AtomicLong counter) {
         this.role = new Role("sessions-" + ctx, Unit.UNARY);
         this.counter = counter;
+
+        synchronized (GAUGES) {
+            GAUGES.put(role, this);
+        }
     }
 
     @Override

@@ -1,0 +1,78 @@
+#*
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+*#
+#set ( $parts = ["Commits", "Rollbacks", "Actives"])
+
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="page-header">
+            <h2>Sessions</h2>
+        </div>
+
+        <div id="sessions-graph" class="plot"></div>
+        #dateForm("sessions")
+    </div>
+</div>
+
+<script type="text/javascript" src="$mapping/resources/js/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript" src="$mapping/resources/js/jquery.flot.min.js"></script>
+<script type="text/javascript" src="$mapping/resources/js/jquery.flot.time.min.js"></script>
+<script type="text/javascript">
+    $(function() {
+        $('#sessions-datetimepicker-start').datetimepicker();
+        $('#sessions-datetimepicker-end').datetimepicker();
+
+        var options = {
+            canvas: true,
+            series: { lines: { show: true }, points: { show: true } },
+            grid: { hoverable: true, clickable: true },
+            xaxes: [ { mode: "time", timezone: "browser" } ],
+            yaxes: [ { min: 0 } ]
+        };
+
+        var updateGraph = function (start, end, options) {
+            $.ajax({
+                url: "$mapping/web/sessions/" + start + "/" + end,
+                type: "GET",
+                dataType: "json",
+                success: function (data) {
+                    $.plot("#sessions-graph", [ data ], options);
+                }
+            });
+        };
+
+        var extractTime = function (picker) {
+            return picker.data('datetimepicker').getLocalDate().getTime();
+        };
+
+        (function () { // init
+            var now = new Date();
+            var yesterday = new Date();
+            yesterday.setMinutes(now.getMinutes() - 10);
+
+            var start = yesterday.getTime();
+            var end = now.getTime();
+
+            updateGraph(start, end, options);
+        })();
+
+        // update diagram when clicking on update buttons
+        $("#update-sessions").submit(function () {
+            updateGraph(extractTime($("#sessions-datetimepicker-start")), extractTime($("#sessions-datetimepicker-end")), options);
+            return false;
+        });
+    });
+</script>
