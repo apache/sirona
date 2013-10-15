@@ -51,14 +51,14 @@ import java.util.regex.Pattern;
 public class MonitoringController implements Filter {
     private final Map<String, byte[]> cachedResources = new ConcurrentHashMap<String, byte[]>();
     private final Map<Pattern, Invoker> invokers = new HashMap<Pattern, Invoker>();
-    private String mapping;
+    private String mapping = null;
     private ClassLoader classloader;
     private Invoker defaultInvoker;
 
     @Override
     public void init(final FilterConfig config) throws ServletException {
         classloader = Thread.currentThread().getContextClassLoader();
-        initMapping(config);
+        initMapping(config.getInitParameter("monitoring-mapping"));
         Templates.init(config.getServletContext().getContextPath(), mapping);
         initHandlers();
     }
@@ -79,13 +79,23 @@ public class MonitoringController implements Filter {
         }
     }
 
-    private void initMapping(FilterConfig config) {
-        mapping = config.getInitParameter("monitoring-mapping");
-        if (mapping == null) {
-            mapping = "";
-        } else if (!mapping.startsWith("/")) {
-            mapping = "/" + mapping;
+    public void setMapping(final String mapping) {
+        initMapping(mapping);
+    }
+
+    private void initMapping(final String value) {
+        if (mapping != null) { // already done, surely the initializer
+            return;
         }
+
+        if (value == null) {
+            mapping = "";
+        } else if (!value.startsWith("/")) {
+            mapping = "/" + mapping;
+        } else {
+            mapping = value;
+        }
+
         if (mapping.endsWith("/")) {
             mapping = mapping.substring(0, mapping.length() - 1);
         }

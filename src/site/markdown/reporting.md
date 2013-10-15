@@ -58,6 +58,11 @@ you can embed it. You'll need to update your web.xml to declare the monitoring f
 
     </web-app>
 
+Note: in a servlet 3.0 container you can just configure it through init parameters:
+
+* `org.apache.commons.monitoring.reporting.activated`: boolean activating/deactivating the reporting GUI
+* `org.apache.commons.monitoring.reporting.mapping`: the url mapping of the GUI
+
 ## Usage
 
 Once started you'll arrive on the home page which should look like:
