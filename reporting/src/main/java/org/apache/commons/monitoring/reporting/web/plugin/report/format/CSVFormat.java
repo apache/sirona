@@ -35,7 +35,7 @@ public class CSVFormat extends MapFormat implements Format {
                         new MapBuilder<String, Object>()
                         .set("headers", HEADER)
                         .set("separator", SEPARATOR)
-                        .set("lines", snapshot(timeUnit))
+                        .set("lines", snapshot(timeUnit, format(params, null)))
                         .build(), false);
     }
 

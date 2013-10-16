@@ -23,6 +23,8 @@ import org.apache.commons.monitoring.reporting.web.template.MapBuilder;
 import java.util.Map;
 
 public class HTMLFormat extends MapFormat implements Format {
+    private static final String NUMBER_FORMAT = "###,###,###,##0.00"; // DecimalFormat is not thread safe so don't init it statically
+
     @Override
     public Template render(final Map<String, ?> params) {
         final Unit timeUnit = timeUnit(params);
@@ -30,7 +32,7 @@ public class HTMLFormat extends MapFormat implements Format {
             new MapBuilder<String, Object>()
                 .set(Map.class.cast(params))
                 .set("headers", ATTRIBUTES_ORDERED_LIST)
-                .set("data", snapshot(timeUnit))
+                .set("data", snapshot(timeUnit, format(params, NUMBER_FORMAT)))
                 .build());
     }
 

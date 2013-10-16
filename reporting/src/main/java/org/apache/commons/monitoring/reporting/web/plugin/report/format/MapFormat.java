@@ -21,6 +21,8 @@ import org.apache.commons.monitoring.counters.MetricData;
 import org.apache.commons.monitoring.counters.Unit;
 import org.apache.commons.monitoring.repositories.Repository;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,7 +31,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public abstract class MapFormat {
     protected static final Collection<String> ATTRIBUTES_ORDERED_LIST = buildMetricDataHeader();
-    private static final DecimalFormat NUMBER_FORMATTER = new DecimalFormat("###,###,###,##0.00");
 
     protected static Collection<String> buildMetricDataHeader() {
         final Collection<String> list = new CopyOnWriteArrayList<String>();
@@ -39,6 +40,29 @@ public abstract class MapFormat {
             list.add(md.name());
         }
         return list;
+    }
+
+    protected static String format(final Map<String, ?> params, final String defaultValue) {
+        final Object format = params.get("format");
+        if (format != null) {
+            if (String.class.isInstance(format)) {
+                final String strFormat = String.class.cast(format);
+                return decode(strFormat);
+            }
+            if (String[].class.isInstance(format)) {
+                final String[] array = String[].class.cast(format);
+                return decode(array[0]);
+            }
+        }
+        return defaultValue;
+    }
+
+    private static String decode(String strFormat) {
+        try {
+            return URLDecoder.decode(strFormat, "UTF-8");
+        } catch (final UnsupportedEncodingException e) {
+            return strFormat;
+        }
     }
 
     protected static Unit timeUnit(final Map<String, ?> params) {
@@ -63,7 +87,7 @@ public abstract class MapFormat {
         return Unit.Time.MILLISECOND;
     }
 
-    protected static Collection<Collection<String>> snapshot(final Unit timeUnit) {
+    protected static Collection<Collection<String>> snapshot(final Unit timeUnit, final String format) {
         final Collection<Collection<String>> data = new ArrayList<Collection<String>>();
         for (final Counter counter : Repository.INSTANCE) {
             final Unit counterUnit = counter.getKey().getRole().getUnit();
@@ -80,13 +104,20 @@ public abstract class MapFormat {
                 line.add(counter.getKey().getRole().getName() + " (" + counterUnit.getName() + ")");
             }
 
+            final DecimalFormat formatter;
+            if (format != null) {
+                formatter = new DecimalFormat(format);
+            } else {
+                formatter = null;
+            }
+
             for (final MetricData md : MetricData.values()) {
                 double value = md.value(counter);
                 if (md.isTime() && compatible && timeUnit != counterUnit) {
                     value = timeUnit.convert(value, counterUnit);
                 }
-                if (!Double.isNaN(value) && !Double.isInfinite(value)) {
-                    line.add(NUMBER_FORMATTER.format(value));
+                if (formatter != null && !Double.isNaN(value) && !Double.isInfinite(value)) {
+                    line.add(formatter.format(value));
                 } else {
                     line.add(Double.toString(value));
                 }
