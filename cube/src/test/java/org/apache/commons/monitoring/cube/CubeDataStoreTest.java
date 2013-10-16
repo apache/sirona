@@ -39,7 +39,7 @@ public class CubeDataStoreTest {
 
     @Before
     public void startCube() throws IOException {
-        server = new CubeServer("localhost", 1234).start();
+        server = new CubeServer("localhost", 1080).start();
         Repository.INSTANCE.clear();
         gauges = new Gauge.LoaderHelper(false);
     }
@@ -81,6 +81,7 @@ public class CubeDataStoreTest {
         assertTrue(gauges.contains("[{\"type\": \"gauge\",\"time\": \"-\",\"data\": {\"unit\":\"u\",\"value\":2.0,\"role\":\"mock\"}}]"));
         assertTrue(gauges.contains("[{\"type\": \"gauge\",\"time\": \"-\",\"data\": {\"unit\":\"u\",\"value\":3.0,\"role\":\"mock\"}}]"));
 
+        assertTrue(counters >= 3);
         assertNotNull(aCounterMessage);
         assertThat(aCounterMessage, containsString("Variance"));
         assertThat(aCounterMessage, containsString("Value"));
