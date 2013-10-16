@@ -56,6 +56,7 @@
     <module>web</module>
     <module>reporting</module>
     <module>graphite</module>
+    <module>cube</module>
   </modules>
 
   <developers>
