@@ -65,8 +65,11 @@ public class MonitoringFilter implements Filter {
     }
 
     protected String getRequestedUri(final HttpServletRequest request) {
+        return request.getRequestURI();
+        /* if we want to remove webapp context we could do (but a bad idea in an app server since you can get multiple contexts):
         final String uri = request.getRequestURI();
         final String context = request.getContextPath();
         return uri.substring(context.length());
+        */
     }
 }
