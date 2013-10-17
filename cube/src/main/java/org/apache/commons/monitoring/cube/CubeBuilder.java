@@ -18,13 +18,27 @@ package org.apache.commons.monitoring.cube;
 
 import org.apache.commons.monitoring.configuration.Configuration;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 @Configuration.AutoSet
 public class CubeBuilder {
+    private static final String DEFAULT_MARKER = "sirona";
+
     private String proxyHost;
     private int proxyPort;
     private String collector;
+    private String marker;
 
     public Cube build() {
+        if (marker == null) {
+            try {
+                marker = InetAddress.getLocalHost().getHostName();
+            } catch (final UnknownHostException e) {
+                marker = DEFAULT_MARKER;
+            }
+        }
+
         return new Cube(this);
     }
 
@@ -38,6 +52,10 @@ public class CubeBuilder {
 
     public String getCollector() {
         return collector;
+    }
+
+    public String getMarker() {
+        return marker;
     }
 
     @Override

@@ -21,19 +21,38 @@ import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.Map;
+import java.util.TimeZone;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Cube {
     private static final Logger LOGGER = Logger.getLogger(Cube.class.getName());
 
+    private static final String JSON_BASE = "{" +
+        "\"type\": \"%s\"," +
+        "\"time\": \"%s\"," +
+        "\"data\": %s" +
+        "}";
+
     private static final String POST = "POST";
     private static final String CONTENT_TYPE = "Content-Type";
     private static final String CONTENT_LENGTH = "Content-Length";
     private static final String APPLICATION_JSON = "application/json";
 
+    private static final String JS_ISO_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+    private static final String UTC = "UTC";
+
     private final CubeBuilder config;
     private final Proxy proxy;
+
+    private final BlockingQueue<DateFormat> isoDateFormatters;
 
     public Cube(final CubeBuilder cubeBuilder) {
         config = cubeBuilder;
@@ -42,9 +61,25 @@ public class Cube {
         } else {
             proxy = Proxy.NO_PROXY;
         }
+
+        final int maxConcurrency = 2 * Runtime.getRuntime().availableProcessors();
+        isoDateFormatters = new ArrayBlockingQueue<DateFormat>(maxConcurrency);
+        for (int i = 0; i < maxConcurrency; i++) {
+            isoDateFormatters.add(newIsoDateFormatter());
+        }
     }
 
-    public void post(final String payload) {
+    public StringBuilder newEventStream() {
+        return new StringBuilder();
+    }
+
+    public void post(final StringBuilder payload) {
+        if (payload.length() > 0) {
+            doPost(finalPayload(payload.substring(0, payload.length() - 1)));
+        }
+    }
+
+    private void doPost(final String payload) {
         try {
             final URL url = new URL(config.getCollector());
 
@@ -80,4 +115,54 @@ public class Cube {
             LOGGER.log(Level.WARNING, "Can't post data to collector", e);
         }
     }
+
+    public static String finalPayload(final String events) {
+        return '[' + events.toString() + ']';
+    }
+
+    public StringBuilder buildEvent(final StringBuilder builder, final String type, final long time, final Map<String, Object> data) {
+        data.put("marker", config.getMarker());
+        return builder.append(String.format(JSON_BASE, type, isoDate(time), buildData(data))).append(',');
+    }
+
+    private String isoDate(final long time) {
+        final Date date = new Date(time);
+
+        DateFormat formatter = null;
+        try {
+            formatter = isoDateFormatters.take();
+            return formatter.format(date);
+        } catch (final InterruptedException e) {
+            return newIsoDateFormatter().format(date);
+        } finally {
+            if (formatter != null) {
+                isoDateFormatters.add(formatter);
+            }
+        }
+    }
+
+    private static String buildData(final Map<String, Object> data) {
+        final StringBuilder builder = new StringBuilder().append("{");
+        for (final Map.Entry<String, Object> entry : data.entrySet()) {
+            builder.append('\"').append(entry.getKey()).append('\"').append(':');
+
+            final Object value = entry.getValue();
+            if (String.class.isInstance(value)) {
+                builder.append('\"').append(value).append('\"');
+            } else {
+                builder.append(value);
+            }
+
+            builder.append(',');
+        }
+        builder.setLength(builder.length() - 1);
+        return builder.append("}").toString();
+    }
+
+    private static DateFormat newIsoDateFormatter() {
+        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(JS_ISO_FORMAT, Locale.ENGLISH);
+        simpleDateFormat.setTimeZone(TimeZone.getTimeZone(UTC));
+        return simpleDateFormat;
+    }
+
 }

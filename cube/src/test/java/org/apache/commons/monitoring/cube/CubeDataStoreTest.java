@@ -25,6 +25,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -39,7 +41,7 @@ public class CubeDataStoreTest {
 
     @Before
     public void startCube() throws IOException {
-        server = new CubeServer("localhost", 1080).start();
+        server = new CubeServer("localhost", 1234).start();
         Repository.INSTANCE.clear();
         gauges = new Gauge.LoaderHelper(false);
     }
@@ -52,7 +54,7 @@ public class CubeDataStoreTest {
     }
 
     @Test
-    public void store() throws InterruptedException {
+    public void store() throws InterruptedException, UnknownHostException {
         { // force some counter data
             final Counter counter = Repository.INSTANCE.getCounter(new Counter.Key(Role.PERFORMANCES, "test"));
             counter.add(1.4);
@@ -76,10 +78,11 @@ public class CubeDataStoreTest {
             }
         }
 
-        assertTrue(gauges.contains("[{\"type\": \"gauge\",\"time\": \"-\",\"data\": {\"unit\":\"u\",\"value\":0.0,\"role\":\"mock\"}}]"));
-        assertTrue(gauges.contains("[{\"type\": \"gauge\",\"time\": \"-\",\"data\": {\"unit\":\"u\",\"value\":1.0,\"role\":\"mock\"}}]"));
-        assertTrue(gauges.contains("[{\"type\": \"gauge\",\"time\": \"-\",\"data\": {\"unit\":\"u\",\"value\":2.0,\"role\":\"mock\"}}]"));
-        assertTrue(gauges.contains("[{\"type\": \"gauge\",\"time\": \"-\",\"data\": {\"unit\":\"u\",\"value\":3.0,\"role\":\"mock\"}}]"));
+        final String host = InetAddress.getLocalHost().getHostName();
+        assertTrue(gauges.contains("[{\"type\": \"gauge\",\"time\": \"-\",\"data\": {\"unit\":\"u\",\"marker\":\"" + host + "\",\"value\":0.0,\"role\":\"mock\"}}]"));
+        assertTrue(gauges.contains("[{\"type\": \"gauge\",\"time\": \"-\",\"data\": {\"unit\":\"u\",\"marker\":\"" + host + "\",\"value\":1.0,\"role\":\"mock\"}}]"));
+        assertTrue(gauges.contains("[{\"type\": \"gauge\",\"time\": \"-\",\"data\": {\"unit\":\"u\",\"marker\":\"" + host + "\",\"value\":2.0,\"role\":\"mock\"}}]"));
+        assertTrue(gauges.contains("[{\"type\": \"gauge\",\"time\": \"-\",\"data\": {\"unit\":\"u\",\"marker\":\"" + host + "\",\"value\":3.0,\"role\":\"mock\"}}]"));
 
         assertTrue(counters >= 3);
         assertNotNull(aCounterMessage);
@@ -87,5 +90,6 @@ public class CubeDataStoreTest {
         assertThat(aCounterMessage, containsString("Value"));
         assertThat(aCounterMessage, containsString("Hits"));
         assertThat(aCounterMessage, containsString("Sum"));
+        assertThat(aCounterMessage, containsString("marker"));
     }
 }
