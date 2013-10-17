@@ -117,7 +117,7 @@ public class Cube {
     }
 
     public static String finalPayload(final String events) {
-        return '[' + events.toString() + ']';
+        return '[' + events + ']';
     }
 
     public StringBuilder buildEvent(final StringBuilder builder, final String type, final long time, final Map<String, Object> data) {
