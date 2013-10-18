@@ -14,14 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.commons.monitoring.gauges;
+package org.apache.commons.monitoring.store;
 
 import org.apache.commons.monitoring.Role;
+import org.apache.commons.monitoring.gauges.Gauge;
 
-public interface GaugeManager {
-    void stop();
+import java.util.Map;
 
-    void addGauge(Gauge gauge);
+public interface GaugeDataStore {
+    Map<Long, Double> getGaugeValues(GaugeValuesRequest gaugeValuesRequest);
 
-    void stopGauge(Role role);
+    void createOrNoopGauge(Role role);
+
+    void addToGauge(Gauge gauge, long time, double value);
 }

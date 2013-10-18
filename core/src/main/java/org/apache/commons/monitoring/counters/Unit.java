@@ -67,7 +67,7 @@ public class Unit implements Comparable<Unit> {
      * Binary data units
      */
     public static class Binary
-        extends Unit {
+            extends Unit {
 
         public static final Unit BYTE = new Unit("b");
 

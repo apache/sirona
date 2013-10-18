@@ -14,29 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.commons.monitoring.cube;
 
-package org.apache.commons.monitoring.repositories;
-
-import org.apache.commons.monitoring.Role;
-import org.apache.commons.monitoring.configuration.Configuration;
-import org.apache.commons.monitoring.counters.Counter;
-import org.apache.commons.monitoring.gauges.Gauge;
-import org.apache.commons.monitoring.stopwatches.StopWatch;
-
+import java.util.HashMap;
 import java.util.Map;
 
-public interface Repository extends Iterable<Counter> {
-    Repository INSTANCE = Configuration.findOrCreateInstance(Repository.class);
+public class MapBuilder {
+    private final Map<String, Object> map = new HashMap<String, Object>();
 
-    Counter getCounter(Counter.Key key);
+    public MapBuilder add(final String key, final Object value) {
+        map.put(key, value);
+        return this;
+    }
 
-    void clear();
-
-    StopWatch start(Counter counter);
-
-    void addGauge(final Gauge gauge);
-
-    void stopGauge(Role role);
-
-    Map<Long, Double> getGaugeValues(long start, long end, Role role);
+    public Map<String, Object> map() {
+        return map;
+    }
 }

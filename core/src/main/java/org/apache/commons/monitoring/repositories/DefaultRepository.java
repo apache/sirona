@@ -16,6 +16,7 @@
  */
 package org.apache.commons.monitoring.repositories;
 
+import org.apache.commons.monitoring.MonitoringException;
 import org.apache.commons.monitoring.Role;
 import org.apache.commons.monitoring.configuration.Configuration;
 import org.apache.commons.monitoring.counters.Counter;
@@ -23,19 +24,42 @@ import org.apache.commons.monitoring.gauges.DefaultGaugeManager;
 import org.apache.commons.monitoring.gauges.Gauge;
 import org.apache.commons.monitoring.stopwatches.CounterStopWatch;
 import org.apache.commons.monitoring.stopwatches.StopWatch;
-import org.apache.commons.monitoring.store.DataStore;
+import org.apache.commons.monitoring.store.CounterDataStore;
+import org.apache.commons.monitoring.store.DataStoreFactory;
+import org.apache.commons.monitoring.store.GaugeDataStore;
 import org.apache.commons.monitoring.store.GaugeValuesRequest;
 
 import java.util.Iterator;
 import java.util.Map;
 
 public class DefaultRepository implements Repository {
-    private final DataStore dataStore;
+    private final CounterDataStore counterDataStore;
+    private final GaugeDataStore gaugeDataStore;
     private final DefaultGaugeManager gaugeManager;
 
     public DefaultRepository() {
-        this.dataStore = Configuration.findOrCreateInstance(DataStore.class);
-        this.gaugeManager = new DefaultGaugeManager(dataStore);
+        CounterDataStore counter = null;
+        try {
+            counter = Configuration.findOrCreateInstance(CounterDataStore.class);
+        } catch (MonitoringException e) {
+        }
+
+        GaugeDataStore gauge = null;
+        try {
+            gauge = Configuration.findOrCreateInstance(GaugeDataStore.class);
+        } catch (MonitoringException e) {
+        }
+
+        if (counter == null) {
+            counter = Configuration.findOrCreateInstance(DataStoreFactory.class).getCounterDataStore();
+        }
+
+        if (gauge == null) {
+            gauge = Configuration.findOrCreateInstance(DataStoreFactory.class).getGaugeDataStore();
+        }
+        this.counterDataStore = counter;
+        this.gaugeDataStore = gauge;
+        this.gaugeManager = new DefaultGaugeManager(this.gaugeDataStore);
     }
 
     @Configuration.Destroying
@@ -45,12 +69,12 @@ public class DefaultRepository implements Repository {
 
     @Override
     public Counter getCounter(final Counter.Key key) {
-        return dataStore.getOrCreateCounter(key);
+        return counterDataStore.getOrCreateCounter(key);
     }
 
     @Override
     public void clear() {
-        dataStore.clearCounters();
+        counterDataStore.clearCounters();
     }
 
     @Override
@@ -60,12 +84,12 @@ public class DefaultRepository implements Repository {
 
     @Override
     public Iterator<Counter> iterator() {
-        return dataStore.getCounters().iterator();
+        return counterDataStore.getCounters().iterator();
     }
 
     @Override
     public Map<Long, Double> getGaugeValues(final long start, final long end, final Role role) {
-        return dataStore.getGaugeValues(new GaugeValuesRequest(start, end, role));
+        return gaugeDataStore.getGaugeValues(new GaugeValuesRequest(start, end, role));
     }
 
     @Override

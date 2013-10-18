@@ -24,7 +24,9 @@ import java.util.ServiceLoader;
 
 public interface Gauge {
     Role role();
+
     double value();
+
     long period();
 
     public static class LoaderHelper {

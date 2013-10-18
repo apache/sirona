@@ -53,6 +53,7 @@ public final class Configuration {
     private static Thread shutdownHook = null;
 
     private static final Properties PROPERTIES = new Properties(System.getProperties());
+
     static {
         try {
             final InputStream is = findConfiguration();
@@ -63,6 +64,7 @@ public final class Configuration {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
         }
     }
+
     private static InputStream findConfiguration() throws FileNotFoundException {
         final String filename = System.getProperty(COMMONS_MONITORING_PREFIX + "configuration", DEFAULT_CONFIGURATION_FILE);
         if (new File(filename).exists()) {

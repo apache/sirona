@@ -21,8 +21,7 @@ import org.apache.commons.monitoring.Role;
 /**
  * @author Olivier Lamy
  */
-public class GaugeValuesRequest
-{
+public class GaugeValuesRequest {
 
     private long start;
 
@@ -30,45 +29,37 @@ public class GaugeValuesRequest
 
     private Role role;
 
-    public GaugeValuesRequest()
-    {
+    public GaugeValuesRequest() {
         // no op
     }
 
-    public GaugeValuesRequest( long start, long end, Role role )
-    {
+    public GaugeValuesRequest(long start, long end, Role role) {
         this.start = start;
         this.end = end;
         this.role = role;
     }
 
-    public long getStart()
-    {
+    public long getStart() {
         return start;
     }
 
-    public void setStart( long start )
-    {
+    public void setStart(long start) {
         this.start = start;
     }
 
-    public long getEnd()
-    {
+    public long getEnd() {
         return end;
     }
 
-    public void setEnd( long end )
-    {
+    public void setEnd(long end) {
         this.end = end;
     }
 
-    public Role getRole()
-    {
+    public Role getRole() {
         return role;
     }
 
-    public void setRole( Role role )
-    {
+    public void setRole(Role role) {
         this.role = role;
     }
 }

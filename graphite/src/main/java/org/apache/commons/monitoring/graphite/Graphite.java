@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
 
 public class Graphite implements Closeable {
     private static final char LN = '\n';
-    private static final char SPACE = ' ';
+    private static final String SPACE = " ";
     private static final Charset UTF_8 = Charset.forName("UTF-8");
     private static final Pattern WHITESPACE = Pattern.compile("[\\s]+");
     private static final String SPACE_REPLACEMENT = "_";
@@ -80,10 +80,10 @@ public class Graphite implements Closeable {
      */
     public void push(final String metricPath, final double metricValue, final long metricTimeStamp) throws IOException {
         writer.write(
-            WHITESPACE.matcher(metricPath).replaceAll(SPACE_REPLACEMENT) + SPACE
-            + String.format(Locale.US, VALUE_FORMAT, metricValue) + SPACE
-            + metricTimeStamp
-            + LN);
+                WHITESPACE.matcher(noSpace(metricPath)).replaceAll(SPACE_REPLACEMENT) + SPACE
+                        + String.format(Locale.US, VALUE_FORMAT, metricValue) + SPACE
+                        + metricTimeStamp
+                        + LN);
     }
 
     /**
@@ -120,4 +120,9 @@ public class Graphite implements Closeable {
         writer = null;
         socket = null;
     }
+
+    private static String noSpace(final String s) {
+        return s.replace(SPACE, SPACE_REPLACEMENT);
+    }
+
 }

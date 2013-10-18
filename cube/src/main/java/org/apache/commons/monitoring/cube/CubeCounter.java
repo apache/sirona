@@ -18,7 +18,7 @@ package org.apache.commons.monitoring.cube;
 
 import org.apache.commons.monitoring.counters.Counter;
 import org.apache.commons.monitoring.counters.Unit;
-import org.apache.commons.monitoring.store.DataStore;
+import org.apache.commons.monitoring.store.CounterDataStore;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
@@ -31,9 +31,9 @@ public class CubeCounter implements Counter {
     private final AtomicInteger concurrency = new AtomicInteger(0);
     private volatile int maxConcurrency = 0;
     private Lock lock = new ReentrantLock();
-    private final DataStore dataStore;
+    private final CounterDataStore dataStore;
 
-    public CubeCounter(final Key key, final DataStore store) {
+    public CubeCounter(final Key key, final CounterDataStore store) {
         this.key = key;
         this.dataStore = store;
     }

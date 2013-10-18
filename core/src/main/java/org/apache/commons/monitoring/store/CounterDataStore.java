@@ -16,20 +16,16 @@
  */
 package org.apache.commons.monitoring.store;
 
-import org.apache.commons.monitoring.Role;
 import org.apache.commons.monitoring.counters.Counter;
-import org.apache.commons.monitoring.gauges.Gauge;
 
 import java.util.Collection;
-import java.util.Map;
 
-public interface DataStore {
+public interface CounterDataStore {
     Counter getOrCreateCounter(Counter.Key key);
-    void clearCounters();
-    Collection<Counter> getCounters();
-    void addToCounter(Counter defaultCounter, double delta);  // sensitive method which need to be thread safe
 
-    Map<Long,Double> getGaugeValues(GaugeValuesRequest gaugeValuesRequest);
-    void createOrNoopGauge(Role role);
-    void addToGauge(Gauge gauge, long time, double value);
+    void clearCounters();
+
+    Collection<Counter> getCounters();
+
+    void addToCounter(Counter defaultCounter, double delta);  // sensitive method which need to be thread safe
 }

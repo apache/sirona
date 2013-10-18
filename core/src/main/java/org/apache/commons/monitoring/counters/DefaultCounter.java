@@ -17,7 +17,7 @@
 package org.apache.commons.monitoring.counters;
 
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
-import org.apache.commons.monitoring.store.DataStore;
+import org.apache.commons.monitoring.store.CounterDataStore;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
@@ -26,12 +26,12 @@ import java.util.concurrent.locks.ReentrantLock;
 public class DefaultCounter implements Counter {
     private final AtomicInteger concurrency = new AtomicInteger(0);
     private final Key key;
-    private final DataStore dataStore;
+    private final CounterDataStore dataStore;
     private volatile int maxConcurrency = 0;
     private SummaryStatistics statistics;
     private Lock lock = new ReentrantLock();
 
-    public DefaultCounter(final Key key, final DataStore store) {
+    public DefaultCounter(final Key key, final CounterDataStore store) {
         this.key = key;
         this.statistics = new SummaryStatistics();
         this.dataStore = store;

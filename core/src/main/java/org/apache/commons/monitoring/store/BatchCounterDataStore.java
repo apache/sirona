@@ -16,26 +16,21 @@
  */
 package org.apache.commons.monitoring.store;
 
-import org.apache.commons.monitoring.Role;
 import org.apache.commons.monitoring.configuration.Configuration;
-import org.apache.commons.monitoring.counters.Counter;
-import org.apache.commons.monitoring.counters.DefaultCounter;
 import org.apache.commons.monitoring.repositories.Repository;
 import org.apache.commons.monitoring.util.DaemonThreadFactory;
 
-import java.util.Collections;
 import java.util.Locale;
-import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-public abstract class BatchCounterDataStore extends InMemoryCounterBaseStore {
+public abstract class BatchCounterDataStore extends InMemoryCounterDataStore {
     protected final BatchFuture scheduledTask;
 
     protected BatchCounterDataStore() {
-        final String name = getClass().getSimpleName().toLowerCase(Locale.ENGLISH).replace("datastore", "");
+        final String name = getClass().getSimpleName().toLowerCase(Locale.ENGLISH).replace("counterdatastore", "");
         final long period = Configuration.getInteger(Configuration.COMMONS_MONITORING_PREFIX + name + ".period", 60000);
 
         final ScheduledExecutorService ses = Executors.newSingleThreadScheduledExecutor(new DaemonThreadFactory(name + "-schedule-"));
@@ -46,33 +41,6 @@ public abstract class BatchCounterDataStore extends InMemoryCounterBaseStore {
     @Configuration.Destroying
     public void shutdown() {
         scheduledTask.done();
-    }
-
-    @Override
-    public Counter getOrCreateCounter(final Counter.Key key) {
-        Counter counter = counters.get(key);
-        if (counter == null) {
-            counter = newCounter(key);
-            final Counter previous = counters.putIfAbsent(key, counter);
-            if (previous != null) {
-                counter = previous;
-            }
-        }
-        return counter;
-    }
-
-    protected Counter newCounter(final Counter.Key key) {
-        return new DefaultCounter(key, this);
-    }
-
-    @Override
-    public void createOrNoopGauge(final Role role) {
-        // no-op
-    }
-
-    @Override
-    public Map<Long, Double> getGaugeValues(final GaugeValuesRequest gaugeValuesRequest) {
-        return Collections.emptyMap(); // often we use another aggregator/visualisator in this case
     }
 
     protected abstract void pushCountersByBatch(final Repository instance);

@@ -71,21 +71,17 @@ public class Role implements Comparable<Role> {
     }
 
     @Override
-    public boolean equals( Object o )
-    {
-        if ( this == o )
-        {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if ( o == null || getClass() != o.getClass() )
-        {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
 
         Role role = (Role) o;
 
-        if ( !name.equals( role.name ) )
-        {
+        if (!name.equals(role.name)) {
             return false;
         }
 
@@ -100,12 +96,11 @@ public class Role implements Comparable<Role> {
     }
 
     @Override
-    public String toString()
-    {
-        final StringBuilder sb = new StringBuilder( "Role{" );
-        sb.append( "name='" ).append( name ).append( '\'' );
-        sb.append( ", unit=" ).append( unit );
-        sb.append( '}' );
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Role{");
+        sb.append("name='").append(name).append('\'');
+        sb.append(", unit=").append(unit);
+        sb.append('}');
         return sb.toString();
     }
 }

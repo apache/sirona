@@ -14,29 +14,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.commons.monitoring.store;
 
-package org.apache.commons.monitoring.repositories;
+public class DelegateDataStoreFactory implements DataStoreFactory {
 
-import org.apache.commons.monitoring.Role;
-import org.apache.commons.monitoring.configuration.Configuration;
-import org.apache.commons.monitoring.counters.Counter;
-import org.apache.commons.monitoring.gauges.Gauge;
-import org.apache.commons.monitoring.stopwatches.StopWatch;
+    private final CounterDataStore counterDataStore;
+    private final GaugeDataStore gaugeDataStore;
 
-import java.util.Map;
+    public DelegateDataStoreFactory(CounterDataStore counterDataStore, GaugeDataStore gaugeDataStore) {
+        this.counterDataStore = counterDataStore;
+        this.gaugeDataStore = gaugeDataStore;
+    }
 
-public interface Repository extends Iterable<Counter> {
-    Repository INSTANCE = Configuration.findOrCreateInstance(Repository.class);
+    @Override
+    public CounterDataStore getCounterDataStore() {
+        return counterDataStore;
+    }
 
-    Counter getCounter(Counter.Key key);
+    @Override
+    public GaugeDataStore getGaugeDataStore() {
+        return gaugeDataStore;
+    }
 
-    void clear();
 
-    StopWatch start(Counter counter);
-
-    void addGauge(final Gauge gauge);
-
-    void stopGauge(Role role);
-
-    Map<Long, Double> getGaugeValues(long start, long end, Role role);
 }

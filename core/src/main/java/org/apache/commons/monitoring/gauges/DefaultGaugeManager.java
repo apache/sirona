@@ -17,7 +17,7 @@
 package org.apache.commons.monitoring.gauges;
 
 import org.apache.commons.monitoring.Role;
-import org.apache.commons.monitoring.store.DataStore;
+import org.apache.commons.monitoring.store.GaugeDataStore;
 
 import java.util.Map;
 import java.util.Timer;
@@ -26,9 +26,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public final class DefaultGaugeManager implements GaugeManager {
     private final Map<Role, Timer> timers = new ConcurrentHashMap<Role, Timer>();
-    private final DataStore store;
+    private final GaugeDataStore store;
 
-    public DefaultGaugeManager(final DataStore dataStore) {
+    public DefaultGaugeManager(final GaugeDataStore dataStore) {
         store = dataStore;
     }
 
@@ -61,9 +61,9 @@ public final class DefaultGaugeManager implements GaugeManager {
 
     private static class GaugeTask extends TimerTask {
         private final Gauge gauge;
-        private final DataStore store;
+        private final GaugeDataStore store;
 
-        public GaugeTask(final DataStore store, final Gauge gauge) {
+        public GaugeTask(final GaugeDataStore store, final Gauge gauge) {
             this.store = store;
             this.gauge = gauge;
         }

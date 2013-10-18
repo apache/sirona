@@ -17,7 +17,7 @@
 package org.apache.commons.monitoring.counters;
 
 import org.apache.commons.monitoring.Role;
-import org.apache.commons.monitoring.store.DefaultDataStore;
+import org.apache.commons.monitoring.store.InMemoryCounterDataStore;
 import org.junit.Test;
 
 import java.util.concurrent.ExecutorService;
@@ -36,7 +36,7 @@ public class CounterBench implements Runnable {
     @Test
     public void defaultCounter() throws Exception {
         mode = "RentrantLockCounter";
-        counter = new DefaultCounter(new Counter.Key(Role.FAILURES, mode), new DefaultDataStore());
+        counter = new DefaultCounter(new Counter.Key(Role.FAILURES, mode), new InMemoryCounterDataStore());
         runConcurrent();
     }
 

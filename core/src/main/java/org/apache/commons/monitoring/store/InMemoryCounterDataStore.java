@@ -24,14 +24,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.locks.Lock;
 
-public abstract class InMemoryCounterBaseStore implements DataStore {
+public class InMemoryCounterDataStore implements CounterDataStore {
     protected final ConcurrentMap<Counter.Key, Counter> counters = new ConcurrentHashMap<Counter.Key, Counter>(50);
 
     @Override
     public Counter getOrCreateCounter(final Counter.Key key) {
         Counter counter = counters.get(key);
         if (counter == null) {
-            counter = new DefaultCounter(key, this);
+            counter = newCounter(key);
             final Counter previous = counters.putIfAbsent(key, counter);
             if (previous != null) {
                 counter = previous;
@@ -50,10 +50,14 @@ public abstract class InMemoryCounterBaseStore implements DataStore {
         return counters.values();
     }
 
+    protected Counter newCounter(final Counter.Key key) {
+        return new DefaultCounter(key, this);
+    }
+
     @Override
     public void addToCounter(final Counter counter, final double delta) {
         if (!DefaultCounter.class.isInstance(counter)) {
-            throw new IllegalArgumentException(DefaultDataStore.class.getName() + " only supports " + DefaultCounter.class.getName());
+            throw new IllegalArgumentException(getClass().getName() + " only supports " + DefaultCounter.class.getName());
         }
 
         final DefaultCounter defaultCounter = DefaultCounter.class.cast(counter);

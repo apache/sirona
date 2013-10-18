@@ -14,14 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.commons.monitoring.gauges;
+package org.apache.commons.monitoring.cube;
 
-import org.apache.commons.monitoring.Role;
+import org.apache.commons.monitoring.store.CounterDataStore;
+import org.apache.commons.monitoring.store.DataStoreFactory;
+import org.apache.commons.monitoring.store.DelegateDataStoreFactory;
+import org.apache.commons.monitoring.store.GaugeDataStore;
 
-public interface GaugeManager {
-    void stop();
+public class CubeDataStoreFactory extends DelegateDataStoreFactory {
 
-    void addGauge(Gauge gauge);
-
-    void stopGauge(Role role);
+    public CubeDataStoreFactory() {
+        super(new CubeCounterDataStore(), new CubeGaugeDataStore());
+    }
 }

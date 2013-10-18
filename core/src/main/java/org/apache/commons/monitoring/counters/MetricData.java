@@ -177,5 +177,6 @@ public enum MetricData {
     };
 
     public abstract double value(Counter counter);
+
     public abstract boolean isTime();
 }

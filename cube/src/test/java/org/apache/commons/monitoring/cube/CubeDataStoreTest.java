@@ -39,6 +39,7 @@ public class CubeDataStoreTest {
     private CubeServer server;
     private Gauge.LoaderHelper gauges;
 
+
     @Before
     public void startCube() throws IOException {
         server = new CubeServer("localhost", 1234).start();
@@ -53,6 +54,7 @@ public class CubeDataStoreTest {
         server.stop();
     }
 
+
     @Test
     public void store() throws InterruptedException, UnknownHostException {
         { // force some counter data
@@ -62,7 +64,7 @@ public class CubeDataStoreTest {
             Thread.sleep(150);
             counter.add(2.3);
             counter.add(2.9);
-            Thread.sleep(150);
+            Thread.sleep(1500);
         }
 
         final Collection<String> messages = server.getMessages();
