@@ -23,11 +23,11 @@ import org.apache.commons.monitoring.counters.MetricData;
 import org.apache.commons.monitoring.gauges.Gauge;
 import org.apache.commons.monitoring.repositories.Repository;
 import org.apache.commons.monitoring.store.BatchCounterDataStore;
-import org.apache.commons.monitoring.store.GaugeValuesRequest;
+import org.apache.commons.monitoring.store.DefaultDataStore;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.locks.Lock;
 
 public class CubeDataStore extends BatchCounterDataStore {
     private static final String GAUGE_TYPE = "gauge";
@@ -36,22 +36,40 @@ public class CubeDataStore extends BatchCounterDataStore {
     private final Cube cube = Configuration.findOrCreateInstance(CubeBuilder.class).build();
 
     @Override
+    protected Counter newCounter(final Counter.Key key) {
+        return new CubeCounter(key, this);
+    }
+
+    @Override
+    public void addToCounter(final Counter counter, final double delta) {
+        if (!CubeCounter.class.isInstance(counter)) {
+            throw new IllegalArgumentException(DefaultDataStore.class.getName() + " only supports " + CubeCounter.class.getName());
+        }
+
+        final CubeCounter cubeCounter = CubeCounter.class.cast(counter);
+        final Lock lock = cubeCounter.getLock();
+        lock.lock();
+        try {
+            cubeCounter.addInternal(delta);
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    @Override
     protected synchronized void pushCountersByBatch(final Repository instance) {
         final long ts = System.currentTimeMillis();
         final StringBuilder events = cube.newEventStream();
         for (final Counter counter : instance) {
-            final MapBuilder data = new MapBuilder()
+            cube.buildEvent(events, COUNTER_TYPE, ts, new MapBuilder()
                 .add("name", counter.getKey().getName())
-                .add("role", counter.getKey().getRole().getName());
-
-            for (final MetricData metric : MetricData.values()) {
-                final double value = metric.value(counter);
-                if (!Double.isNaN(value) && !Double.isInfinite(value)) {
-                    data.add(metric.name(), value);
-                }
-            }
-
-            cube.buildEvent(events, COUNTER_TYPE, ts, data.map());
+                .add("role", counter.getKey().getRole().getName())
+                // other metrics are not handled by CubeCounter and useless since cube re-aggregate
+                // so to reduce overhead we just store it locally
+                .add("concurrency", MetricData.Concurrency.value(counter))
+                .add("sum", MetricData.Sum.value(counter))
+                .add("hits", MetricData.Hits.value(counter))
+                .map());
         }
         cube.post(events);
     }
@@ -67,11 +85,6 @@ public class CubeDataStore extends BatchCounterDataStore {
                     .add("role", role.getName())
                     .add("unit", role.getUnit().getName())
                     .map()));
-    }
-
-    @Override
-    public Map<Long, Double> getGaugeValues(final GaugeValuesRequest gaugeValuesRequest) {
-        return Collections.emptyMap(); // TODO: maybe query cube?
     }
 
     private static class MapBuilder {

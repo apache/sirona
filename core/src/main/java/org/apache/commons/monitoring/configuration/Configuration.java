@@ -31,6 +31,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
@@ -146,6 +147,10 @@ public final class Configuration {
             Class<?> current = loadedClass;
             while (current != null && !current.isInterface() && !Object.class.equals(current)) {
                 for (final Field field : loadedClass.getDeclaredFields()) {
+                    if (Modifier.isFinal(field.getModifiers())) {
+                        continue;
+                    }
+
                     final String value = PROPERTIES.getProperty(loadedClass.getName() + "." + field.getName());
                     if (value != null) {
                         final boolean acc = field.isAccessible();

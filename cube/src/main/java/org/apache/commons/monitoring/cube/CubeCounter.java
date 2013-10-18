@@ -14,31 +14,59 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.commons.monitoring.counters;
+package org.apache.commons.monitoring.cube;
 
-import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
+import org.apache.commons.monitoring.counters.Counter;
+import org.apache.commons.monitoring.counters.Unit;
 import org.apache.commons.monitoring.store.DataStore;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class DefaultCounter implements Counter {
-    private final AtomicInteger concurrency = new AtomicInteger(0);
+public class CubeCounter implements Counter {
     private final Key key;
-    private final DataStore dataStore;
+    private volatile long hits = 0;
+    private volatile double sum = 0;
+    private final AtomicInteger concurrency = new AtomicInteger(0);
     private volatile int maxConcurrency = 0;
-    private SummaryStatistics statistics;
     private Lock lock = new ReentrantLock();
+    private final DataStore dataStore;
 
-    public DefaultCounter(final Key key, final DataStore store) {
+    public CubeCounter(final Key key, final DataStore store) {
         this.key = key;
-        this.statistics = new SummaryStatistics();
         this.dataStore = store;
     }
 
+    @Override
+    public Key getKey() {
+        return key;
+    }
+
+    @Override
+    public void reset() {
+        sum = 0;
+        hits = 0;
+    }
+
+    @Override
+    public void add(final double delta) {
+        dataStore.addToCounter(this, delta);
+    }
+
     public void addInternal(final double delta) { // should be called from a thread safe environment
-        statistics.addValue(delta);
+        sum += delta;
+        hits++;
+    }
+
+    @Override
+    public void add(final double delta, final Unit unit) {
+        add(key.getRole().getUnit().convert(delta, unit));
+    }
+
+    @Override
+    public AtomicInteger currentConcurrency() {
+        return concurrency;
     }
 
     @Override
@@ -54,82 +82,56 @@ public class DefaultCounter implements Counter {
     }
 
     @Override
-    public AtomicInteger currentConcurrency() {
-        return concurrency;
-    }
-
-    @Override
-    public Key getKey() {
-        return key;
-    }
-
-    @Override
-    public void reset() {
-        statistics.clear();
-        concurrency.set(0);
-    }
-
-    @Override
-    public void add(final double delta) {
-        dataStore.addToCounter(this, delta);
-    }
-
-    @Override
-    public void add(final double delta, final Unit deltaUnit) {
-        add(key.getRole().getUnit().convert(delta, deltaUnit));
-    }
-
-    @Override
-    public double getMax() {
-        return statistics.getMax();
-    }
-
-    @Override
-    public double getMin() {
-        return statistics.getMin();
+    public long getHits() {
+        return hits;
     }
 
     @Override
     public double getSum() {
-        return statistics.getSum();
-    }
-
-    @Override
-    public double getStandardDeviation() {
-        return statistics.getStandardDeviation();
-    }
-
-    @Override
-    public double getVariance() {
-        return statistics.getVariance();
-    }
-
-    @Override
-    public double getMean() {
-        return statistics.getMean();
-    }
-
-    @Override
-    public double getGeometricMean() {
-        return statistics.getGeometricMean();
-    }
-
-    @Override
-    public double getSumOfLogs() {
-        return statistics.getSumOfLogs();
-    }
-
-    @Override
-    public double getSumOfSquares() {
-        return statistics.getSumOfLogs();
-    }
-
-    @Override
-    public long getHits() {
-        return statistics.getN();
+        return sum;
     }
 
     public Lock getLock() {
         return lock;
+    }
+
+    @Override
+    public double getMax() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public double getMin() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public double getStandardDeviation() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public double getVariance() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public double getMean() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public double getGeometricMean() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public double getSumOfLogs() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public double getSumOfSquares() {
+        throw new UnsupportedOperationException();
     }
 }

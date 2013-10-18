@@ -82,14 +82,14 @@ public class CubeDataStoreTest {
         assertTrue(gauges.contains("[{\"type\": \"gauge\",\"time\": \"-\",\"data\": {\"unit\":\"u\",\"marker\":\"" + host + "\",\"value\":0.0,\"role\":\"mock\"}}]"));
         assertTrue(gauges.contains("[{\"type\": \"gauge\",\"time\": \"-\",\"data\": {\"unit\":\"u\",\"marker\":\"" + host + "\",\"value\":1.0,\"role\":\"mock\"}}]"));
         assertTrue(gauges.contains("[{\"type\": \"gauge\",\"time\": \"-\",\"data\": {\"unit\":\"u\",\"marker\":\"" + host + "\",\"value\":2.0,\"role\":\"mock\"}}]"));
-        assertTrue(gauges.contains("[{\"type\": \"gauge\",\"time\": \"-\",\"data\": {\"unit\":\"u\",\"marker\":\"" + host + "\",\"value\":3.0,\"role\":\"mock\"}}]"));
 
         assertTrue(counters >= 3);
         assertNotNull(aCounterMessage);
-        assertThat(aCounterMessage, containsString("Variance"));
-        assertThat(aCounterMessage, containsString("Value"));
-        assertThat(aCounterMessage, containsString("Hits"));
-        assertThat(aCounterMessage, containsString("Sum"));
+        assertThat(aCounterMessage, containsString("name"));
+        assertThat(aCounterMessage, containsString("role"));
+        assertThat(aCounterMessage, containsString("hits"));
+        assertThat(aCounterMessage, containsString("sum"));
+        assertThat(aCounterMessage, containsString("concurrency"));
         assertThat(aCounterMessage, containsString("marker"));
     }
 }
