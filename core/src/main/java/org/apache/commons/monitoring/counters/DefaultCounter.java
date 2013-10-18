@@ -28,8 +28,8 @@ public class DefaultCounter implements Counter {
     private final Key key;
     private final CounterDataStore dataStore;
     private volatile int maxConcurrency = 0;
-    private SummaryStatistics statistics;
-    private Lock lock = new ReentrantLock();
+    protected SummaryStatistics statistics;
+    protected Lock lock = new ReentrantLock();
 
     public DefaultCounter(final Key key, final CounterDataStore store) {
         this.key = key;

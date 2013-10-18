@@ -41,13 +41,15 @@ public class DefaultRepository implements Repository {
         CounterDataStore counter = null;
         try {
             counter = Configuration.findOrCreateInstance(CounterDataStore.class);
-        } catch (MonitoringException e) {
+        } catch (final MonitoringException e) {
+            // no-op
         }
 
         GaugeDataStore gauge = null;
         try {
             gauge = Configuration.findOrCreateInstance(GaugeDataStore.class);
-        } catch (MonitoringException e) {
+        } catch (final MonitoringException e) {
+            // no-op
         }
 
         if (counter == null) {

@@ -27,7 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 
 public class InMemoryGaugeDataStore implements GaugeDataStore {
-    private final Map<Role, Map<Long, Double>> gauges = new ConcurrentHashMap<Role, Map<Long, Double>>();
+    protected final Map<Role, Map<Long, Double>> gauges = new ConcurrentHashMap<Role, Map<Long, Double>>();
 
     @Override
     public Map<Long, Double> getGaugeValues(GaugeValuesRequest gaugeValuesRequest) {
@@ -53,9 +53,13 @@ public class InMemoryGaugeDataStore implements GaugeDataStore {
         gauges.put(role, new FixedSizedMap());
     }
 
+    public void addToGauge(final Role role, final long time, final double value) {
+        gauges.get(role).put(time, value);
+    }
+
     @Override
     public void addToGauge(final Gauge gauge, final long time, final double value) {
-        gauges.get(gauge.role()).put(time, value);
+        addToGauge(gauge.role(), time, value);
     }
 
     // no perf issues here normally since add is called not that often

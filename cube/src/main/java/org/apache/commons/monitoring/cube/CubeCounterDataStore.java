@@ -58,6 +58,7 @@ public class CubeCounterDataStore extends BatchCounterDataStore {
             cube.buildEvent(events, COUNTER_TYPE, ts, new MapBuilder()
                     .add("name", counter.getKey().getName())
                     .add("role", counter.getKey().getRole().getName())
+                    .add("unit", counter.getKey().getRole().getUnit())
                             // other metrics are not handled by CubeCounter and useless since cube re-aggregate
                             // so to reduce overhead we just store it locally
                     .add("concurrency", MetricData.Concurrency.value(counter))
