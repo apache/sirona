@@ -22,33 +22,22 @@ import org.apache.commons.monitoring.counters.MetricData;
 import org.apache.commons.monitoring.repositories.Repository;
 import org.apache.commons.monitoring.store.BatchCounterDataStore;
 
-import java.util.concurrent.locks.Lock;
-
 public class CubeCounterDataStore extends BatchCounterDataStore {
     private static final String COUNTER_TYPE = "counter";
 
+    private static final String NAME = "name";
+    private static final String ROLE = "role";
+    private static final String UNIT = "unit";
+    private static final String CONCURRENCY = "concurrency";
+    private static final String MEAN = "mean";
+    private static final String VARIANCE = "variance";
+    private static final String HITS = "hits";
+    private static final String MAX = "max";
+    private static final String MIN = "min";
+    private static final String SUM = "sum";
+    private static final String M_2 = "m2";
+
     private final Cube cube = Configuration.findOrCreateInstance(CubeBuilder.class).build();
-
-    @Override
-    protected Counter newCounter(final Counter.Key key) {
-        return new CubeCounter(key, this);
-    }
-
-    @Override
-    public void addToCounter(final Counter counter, final double delta) {
-        if (!CubeCounter.class.isInstance(counter)) {
-            throw new IllegalArgumentException(getClass().getName() + " only supports " + CubeCounter.class.getName());
-        }
-
-        final CubeCounter cubeCounter = CubeCounter.class.cast(counter);
-        final Lock lock = cubeCounter.getLock();
-        lock.lock();
-        try {
-            cubeCounter.addInternal(delta);
-        } finally {
-            lock.unlock();
-        }
-    }
 
     @Override
     protected synchronized void pushCountersByBatch(final Repository instance) {
@@ -56,14 +45,18 @@ public class CubeCounterDataStore extends BatchCounterDataStore {
         final StringBuilder events = cube.newEventStream();
         for (final Counter counter : instance) {
             cube.buildEvent(events, COUNTER_TYPE, ts, new MapBuilder()
-                    .add("name", counter.getKey().getName())
-                    .add("role", counter.getKey().getRole().getName())
-                    .add("unit", counter.getKey().getRole().getUnit())
-                            // other metrics are not handled by CubeCounter and useless since cube re-aggregate
-                            // so to reduce overhead we just store it locally
-                    .add("concurrency", MetricData.Concurrency.value(counter))
-                    .add("sum", MetricData.Sum.value(counter))
-                    .add("hits", MetricData.Hits.value(counter))
+                    .add(NAME, counter.getKey().getName())
+                    .add(ROLE, counter.getKey().getRole().getName())
+                    .add(UNIT, counter.getKey().getRole().getUnit().getName())
+                    // minimum metrics to be able to aggregate counters later
+                    .add(CONCURRENCY, counter.currentConcurrency().intValue())
+                    .add(MEAN, counter.getMean())
+                    .add(VARIANCE, counter.getVariance())
+                    .add(HITS, counter.getHits())
+                    .add(MAX, counter.getMax())
+                    .add(MIN, counter.getMin())
+                    .add(SUM, counter.getSum())
+                    .add(M_2, counter.getSecondMoment())
                     .map());
         }
         cube.post(events);

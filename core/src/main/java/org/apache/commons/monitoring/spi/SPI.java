@@ -14,13 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.commons.monitoring.collector.rest.store;
+package org.apache.commons.monitoring.spi;
 
-import org.apache.commons.monitoring.store.DelegateDataStoreFactory;
-import org.apache.commons.monitoring.store.InMemoryGaugeDataStore;
+import org.apache.commons.monitoring.configuration.Configuration;
 
-public class CollectorDataStoreFactory extends DelegateDataStoreFactory {
-    public CollectorDataStoreFactory() {
-        super(new CollectorCounterStore(), new InMemoryGaugeDataStore());
-    }
+// ServiceLoader is sometimes just wrong
+public interface SPI {
+    SPI INSTANCE = Configuration.findOrCreateInstance(SPI.class);
+
+    <T> Iterable<T> find(Class<T> api, ClassLoader loader);
 }

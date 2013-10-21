@@ -59,8 +59,8 @@ public class FormatsTest {
         helper.renderPlain(template.getTemplate(), template.getUserParams());
 
         assertEquals("<?xml version=\"1.0\"?> <repository> " +
-            "<counter name=\"RendererTest\" role=\"failures\" unit=\"u\" Hits=\"1.0\" Max=\"1.0\" Mean=\"1.0\" Min=\"1.0\" StandardDeviation=\"0.0\" Sum=\"1.0\" " +
-            "SumOfLogs=\"0.0\" SumOfSquares=\"0.0\" Variance=\"0.0\" GeometricMean=\"1.0\" Value=\"1.0\" Concurrency=\"0.0\" MaxConcurrency=\"1.0\" />" +
+            "<counter name=\"RendererTest\" role=\"failures\" unit=\"u\" Hits=\"1.0\" Max=\"1.0\" Mean=\"1.0\" Min=\"1.0\" " +
+            "StandardDeviation=\"0.0\" Sum=\"1.0\" Variance=\"0.0\" Value=\"1.0\" Concurrency=\"0.0\" MaxConcurrency=\"1.0\" />" +
             " </repository>", inline(out));
     }
 
@@ -73,8 +73,8 @@ public class FormatsTest {
 
         assertEquals("{\"counters\":[" +
             " {\"name\":\"RendererTest\", \"role\":\"failures\",\"unit\":\"u\",\"Hits\":\"1.0\",\"Max\":\"1.0\",\"Mean\":\"1.0\",\"Min\":\"1.0\"," +
-            "\"StandardDeviation\":\"0.0\",\"Sum\":\"1.0\",\"SumOfLogs\":\"0.0\",\"SumOfSquares\":\"0.0\",\"Variance\":\"0.0\"," +
-            "\"GeometricMean\":\"1.0\",\"Value\":\"1.0\",\"Concurrency\":\"0.0\",\"MaxConcurrency\":\"1.0\"} ]}", inline(out));
+            "\"StandardDeviation\":\"0.0\",\"Sum\":\"1.0\",\"Variance\":\"0.0\"," +
+            "\"Value\":\"1.0\",\"Concurrency\":\"0.0\",\"MaxConcurrency\":\"1.0\"} ]}", inline(out));
     }
 
     @Test
@@ -85,7 +85,7 @@ public class FormatsTest {
         helper.renderPlain(template.getTemplate(), template.getUserParams());
 
         assertEquals(CSVFormat.HEADER +
-            "RendererTest;failures (u);1.0;1.0;1.0;1.0;0.0;1.0;0.0;0.0;0.0;1.0;1.0;0.0;1.0\n",
+            "RendererTest;failures (u);1.0;1.0;1.0;1.0;0.0;1.0;0.0;1.0;0.0;1.0\n",
             out.toString());
     }
 

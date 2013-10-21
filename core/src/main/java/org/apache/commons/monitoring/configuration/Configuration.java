@@ -17,6 +17,7 @@
 package org.apache.commons.monitoring.configuration;
 
 import org.apache.commons.monitoring.MonitoringException;
+import org.apache.commons.monitoring.store.GaugeDataStore;
 import org.apache.commons.monitoring.util.ClassLoaders;
 
 import java.io.File;
@@ -173,6 +174,10 @@ public final class Configuration {
         }
 
         return clazz.cast(instance);
+    }
+
+    public static void setSingletonInstance(final Class<?> clazz, final Object instance) {
+        SINGLETONS.put(clazz, instance);
     }
 
     public static <T> T getInstance(final Class<T> clazz) {

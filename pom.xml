@@ -152,6 +152,11 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-math3</artifactId>
+        <version>3.2</version>
+      </dependency>
+      <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
         <version>4.11</version>
@@ -182,6 +187,12 @@
         <groupId>org.apache.commons.monitoring</groupId>
         <artifactId>commons-monitoring-web</artifactId>
         <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-codec-http</artifactId>
+        <version>4.0.11.Final</version>
+        <scope>test</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>

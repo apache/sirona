@@ -14,14 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.commons.monitoring.collector.rest.store;
+package org.apache.commons.monitoring.collector.server.store.counter;
 
+import org.apache.commons.monitoring.collector.server.math.M2AwareStatisticalSummary;
 import org.apache.commons.monitoring.counters.Counter;
-import org.apache.commons.monitoring.store.InMemoryCounterDataStore;
+import org.apache.commons.monitoring.store.CounterDataStore;
 
-public class CollectorCounterStore extends InMemoryCounterDataStore {
-    @Override
-    protected Counter newCounter(final Counter.Key key) {
-        return new CollectorCounter(key, this);
-    }
+import java.util.Collection;
+
+public interface CollectorCounterStore extends CounterDataStore {
+    void update(Counter.Key key, String marker, M2AwareStatisticalSummary stats, int concurrency);
+    Collection<String> markers();
+    Collection<? extends Counter> getCounters(String marker);
+    LeafCollectorCounter getOrCreateCounter(Counter.Key key, final String marker);
 }

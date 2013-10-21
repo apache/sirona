@@ -18,9 +18,9 @@ package org.apache.commons.monitoring.gauges;
 
 import org.apache.commons.monitoring.Role;
 import org.apache.commons.monitoring.repositories.Repository;
+import org.apache.commons.monitoring.spi.SPI;
 
 import java.util.LinkedList;
-import java.util.ServiceLoader;
 
 public interface Gauge {
     Role role();
@@ -35,10 +35,10 @@ public interface Gauge {
         public LoaderHelper(final boolean excludeParent, final String... includedPrefixes) {
             final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
-            for (final Gauge g : ServiceLoader.load(Gauge.class, classLoader)) {
+            for (final Gauge g : SPI.INSTANCE.find(Gauge.class, classLoader)) {
                 addGaugeIfNecessary(classLoader, g, excludeParent, includedPrefixes);
             }
-            for (final GaugeFactory gf : ServiceLoader.load(GaugeFactory.class, classLoader)) {
+            for (final GaugeFactory gf : SPI.INSTANCE.find(GaugeFactory.class, classLoader)) {
                 for (final Gauge g : gf.gauges()) {
                     addGaugeIfNecessary(classLoader, g, excludeParent, includedPrefixes);
                 }

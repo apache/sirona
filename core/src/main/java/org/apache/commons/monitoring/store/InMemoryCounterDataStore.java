@@ -25,7 +25,15 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.locks.Lock;
 
 public class InMemoryCounterDataStore implements CounterDataStore {
-    protected final ConcurrentMap<Counter.Key, Counter> counters = new ConcurrentHashMap<Counter.Key, Counter>(50);
+    protected final ConcurrentMap<Counter.Key, Counter> counters = newCounterMap();
+
+    protected ConcurrentMap<Counter.Key, Counter> newCounterMap() {
+        return new ConcurrentHashMap<Counter.Key, Counter>(50);
+    }
+
+    protected Counter newCounter(final Counter.Key key) {
+        return new DefaultCounter(key, this);
+    }
 
     @Override
     public Counter getOrCreateCounter(final Counter.Key key) {
@@ -50,10 +58,6 @@ public class InMemoryCounterDataStore implements CounterDataStore {
         return counters.values();
     }
 
-    protected Counter newCounter(final Counter.Key key) {
-        return new DefaultCounter(key, this);
-    }
-
     @Override
     public void addToCounter(final Counter counter, final double delta) {
         if (!DefaultCounter.class.isInstance(counter)) {
@@ -61,7 +65,7 @@ public class InMemoryCounterDataStore implements CounterDataStore {
         }
 
         final DefaultCounter defaultCounter = DefaultCounter.class.cast(counter);
-        final Lock lock = defaultCounter.getLock();
+        final Lock lock = defaultCounter.getLock().writeLock();
         lock.lock();
         try {
             defaultCounter.addInternal(delta);

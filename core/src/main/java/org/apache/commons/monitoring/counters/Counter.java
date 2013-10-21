@@ -58,11 +58,7 @@ public interface Counter {
 
     double getMean();
 
-    double getGeometricMean();
-
-    double getSumOfLogs();
-
-    double getSumOfSquares();
+    double getSecondMoment(); // here for aggregation etc but not (yet?) a human metric so not in MetricData
 
     public static class Key {
         private final String name;

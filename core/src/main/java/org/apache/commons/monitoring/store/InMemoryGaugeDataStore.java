@@ -18,7 +18,6 @@ package org.apache.commons.monitoring.store;
 
 import org.apache.commons.monitoring.Role;
 import org.apache.commons.monitoring.configuration.Configuration;
-import org.apache.commons.monitoring.gauges.Gauge;
 
 import java.util.Collections;
 import java.util.Map;
@@ -53,13 +52,9 @@ public class InMemoryGaugeDataStore implements GaugeDataStore {
         gauges.put(role, new FixedSizedMap());
     }
 
+    @Override
     public void addToGauge(final Role role, final long time, final double value) {
         gauges.get(role).put(time, value);
-    }
-
-    @Override
-    public void addToGauge(final Gauge gauge, final long time, final double value) {
-        addToGauge(gauge.role(), time, value);
     }
 
     // no perf issues here normally since add is called not that often

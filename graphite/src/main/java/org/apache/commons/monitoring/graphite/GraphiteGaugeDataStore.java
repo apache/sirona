@@ -18,7 +18,6 @@ package org.apache.commons.monitoring.graphite;
 
 import org.apache.commons.monitoring.Role;
 import org.apache.commons.monitoring.configuration.Configuration;
-import org.apache.commons.monitoring.gauges.Gauge;
 import org.apache.commons.monitoring.store.GaugeDataStore;
 import org.apache.commons.monitoring.store.GaugeValuesRequest;
 
@@ -35,9 +34,9 @@ public class GraphiteGaugeDataStore implements GaugeDataStore {
     private final Graphite graphite = Configuration.findOrCreateInstance(GraphiteBuilder.class).build();
 
     @Override
-    public void addToGauge(final Gauge gauge, final long time, final double value) {
+    public void addToGauge(final Role role, final long time, final double value) {
         try {
-            graphite.simplePush(GAUGE_PREFIX + gauge.role().getName(), value, time);
+            graphite.simplePush(GAUGE_PREFIX + role.getName(), value, time);
         } catch (final IOException e) {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
         }

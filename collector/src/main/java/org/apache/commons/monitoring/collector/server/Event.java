@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.commons.monitoring.collector.rest;
+package org.apache.commons.monitoring.collector.server;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -25,7 +25,6 @@ import java.util.Map;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Event {
     private String type;
-    private String marker; // ?? how to map it in our store ??
     private Map<String, Object> data;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
@@ -37,14 +36,6 @@ public class Event {
 
     public void setType(final String type) {
         this.type = type;
-    }
-
-    public String getMarker() {
-        return marker;
-    }
-
-    public void setMarker(final String marker) {
-        this.marker = marker;
     }
 
     public Date getTime() {

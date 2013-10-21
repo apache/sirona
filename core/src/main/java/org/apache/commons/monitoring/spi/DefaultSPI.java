@@ -14,12 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.commons.monitoring.cube;
+package org.apache.commons.monitoring.spi;
 
-import org.apache.commons.monitoring.store.DelegateDataStoreFactory;
+import java.util.ServiceLoader;
 
-public class CubeDataStoreFactory extends DelegateDataStoreFactory {
-    public CubeDataStoreFactory() {
-        super(new CubeCounterDataStore(), new CubeGaugeDataStore());
+public class DefaultSPI implements SPI {
+    @Override
+    public <T> Iterable<T> find(final Class<T> api, final ClassLoader loader) {
+        return ServiceLoader.load(api, loader);
     }
 }

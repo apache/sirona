@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.commons.monitoring.cube;
+package org.apache.commons.monitoring.collector.server;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -32,31 +32,36 @@ import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpRequestDecoder;
-import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseEncoder;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.stream.ChunkedWriteHandler;
 
+import javax.servlet.ServletInputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.net.ServerSocket;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class CubeServer {
-    private static final Logger LOGGER = Logger.getLogger(CubeServer.class.getName());
+public class CollectorServer {
+    private static final Logger LOGGER = Logger.getLogger(CollectorServer.class.getName());
 
     private final String host;
     private final int port;
 
     private NioEventLoopGroup workerGroup;
-    private final Collection<String> messages = new LinkedList<String>();
 
-    public CubeServer(final String host, final int port) {
+    public CollectorServer(final String host, final int port) {
         this.host = host;
         if (port <= 0) { // generate a port
             this.port = findNextAvailablePort();
@@ -64,13 +69,6 @@ public class CubeServer {
             this.port = port;
         }
     }
-
-    public Collection<String> getMessages() {
-        synchronized (messages) {
-            return new ArrayList<String>(messages);
-        }
-    }
-
     public int getPort() {
         return port;
     }
@@ -94,7 +92,7 @@ public class CubeServer {
         return 0;
     }
 
-    public CubeServer start() {
+    public CollectorServer start() {
         workerGroup = new NioEventLoopGroup(8);
 
         try {
@@ -105,7 +103,7 @@ public class CubeServer {
                 .option(ChannelOption.TCP_NODELAY, true)
                 .group(workerGroup)
                 .channel(NioServerSocketChannel.class)
-                .childHandler(new Initializer(messages))
+                .childHandler(new Initializer())
                 .bind(host, port).addListener(new ChannelFutureListener() {
                 @Override
                 public void operationComplete(final ChannelFuture future) throws Exception {
@@ -131,12 +129,6 @@ public class CubeServer {
     }
 
     private static class Initializer extends ChannelInitializer<SocketChannel> {
-        private final Collection<String> messages;
-
-        private Initializer(final Collection<String> messages) {
-            this.messages = messages;
-        }
-
         @Override
         protected void initChannel(final SocketChannel ch) throws Exception {
             final ChannelPipeline pipeline = ch.pipeline();
@@ -146,25 +138,67 @@ public class CubeServer {
                 .addLast("aggregator", new HttpObjectAggregator(Integer.MAX_VALUE))
                 .addLast("encoder", new HttpResponseEncoder())
                 .addLast("chunked-writer", new ChunkedWriteHandler())
-                .addLast("featured-mock-server", new RequestHandler(messages));
+                .addLast("featured-mock-server", new RequestHandler());
         }
     }
 
     private static class RequestHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
-        private final Collection<String> messages;
+        private final Collector collector;
 
-        private RequestHandler(final Collection<String> messages) {
-            this.messages = messages;
+        private RequestHandler() {
+            collector = new Collector();
+            collector.init();
         }
 
         @Override
         protected void channelRead0(final ChannelHandlerContext ctx, final FullHttpRequest fullHttpRequest) throws Exception {
             final ChannelFuture future;
             if (HttpMethod.POST.equals(fullHttpRequest.getMethod())) {
-                synchronized (messages) {
-                    messages.add(fullHttpRequest.content().toString(Charset.defaultCharset()));
-                }
-                final HttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
+                final InputStream is = new ByteArrayInputStream(fullHttpRequest.content().toString(Charset.defaultCharset()).getBytes());
+
+                final DefaultFullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
+                final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                final PrintWriter writer = new PrintWriter(baos);
+
+                collector.doPost(HttpServletRequest.class.cast(Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), new Class<?>[]{HttpServletRequest.class}, new InvocationHandler() {
+                    @Override
+                    public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
+                        if (Object.class.equals(method.getDeclaringClass())) {
+                            return method.invoke(this, args);
+                        }
+
+                        if ("getInputStream".equals(method.getName())) {
+                            return new ServletInputStream() {
+                                @Override
+                                public int read() throws IOException {
+                                    return is.read();
+                                }
+                            };
+                        }
+
+                        throw new UnsupportedOperationException("not implemented");
+                    }
+                })),
+                HttpServletResponse.class.cast(Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), new Class<?>[] { HttpServletResponse.class}, new InvocationHandler() {
+                    @Override
+                    public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
+                        if (Object.class.equals(method.getDeclaringClass())) {
+                            return method.invoke(this, args);
+                        }
+
+                        final String name = method.getName();
+                        if ("setStatus".equals(name)) {
+                            response.setStatus(HttpResponseStatus.valueOf(Integer.class.cast(args[0])));
+                            return null;
+                        } else if ("getWriter".equals(name)) {
+                            return writer;
+                        }
+
+                        throw new UnsupportedOperationException("not implemented");
+                    }
+                })));
+
+                response.content().writeBytes(baos.toByteArray());
                 future = ctx.writeAndFlush(response);
             } else {
                 LOGGER.warning("Received " + fullHttpRequest.getMethod());

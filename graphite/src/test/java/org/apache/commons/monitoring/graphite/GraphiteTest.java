@@ -54,7 +54,7 @@ public class GraphiteTest extends GraphiteTestBase {
         }
 
         { // counters
-            assertEquals(39, counters.size());
+            assertEquals(30, counters.size());
             assertTrue(counters.contains("counter-performances-test-Hits 2.00"));
             assertTrue(counters.contains("counter-performances-test-Max 1.60"));
             assertTrue(counters.contains("counter-performances-test-Mean 1.50"));

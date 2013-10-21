@@ -14,12 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.commons.monitoring.cube;
+package org.apache.commons.monitoring.collector.server.store;
 
+import org.apache.commons.monitoring.collector.server.store.counter.InMemoryCollectorCounterStore;
+import org.apache.commons.monitoring.collector.server.store.gauge.CollectorGaugeStore;
 import org.apache.commons.monitoring.store.DelegateDataStoreFactory;
 
-public class CubeDataStoreFactory extends DelegateDataStoreFactory {
-    public CubeDataStoreFactory() {
-        super(new CubeCounterDataStore(), new CubeGaugeDataStore());
+public class CollectorDataStoreFactory extends DelegateDataStoreFactory {
+    public CollectorDataStoreFactory() {
+        super(new InMemoryCollectorCounterStore(), new CollectorGaugeStore());
     }
 }

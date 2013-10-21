@@ -42,4 +42,6 @@ How to start?
 
 [See Cube](./cube.html)
 
+[See Collector](./collector.html)
+
 

@@ -18,7 +18,6 @@ package org.apache.commons.monitoring.cube;
 
 import org.apache.commons.monitoring.Role;
 import org.apache.commons.monitoring.configuration.Configuration;
-import org.apache.commons.monitoring.gauges.Gauge;
 import org.apache.commons.monitoring.store.GaugeDataStore;
 import org.apache.commons.monitoring.store.GaugeValuesRequest;
 
@@ -41,9 +40,7 @@ public class CubeGaugeDataStore implements GaugeDataStore {
     }
 
     @Override
-    public void addToGauge(final Gauge gauge, final long time, final double value) {
-        final Role role = gauge.role();
-
+    public void addToGauge(final Role role, final long time, final double value) {
         cube.post(
                 cube.buildEvent(new StringBuilder(), GAUGE_TYPE, time,
                         new MapBuilder()

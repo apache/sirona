@@ -19,6 +19,7 @@ package org.apache.commons.monitoring.reporting.web.plugin;
 import org.apache.commons.monitoring.configuration.Configuration;
 import org.apache.commons.monitoring.reporting.web.handler.internal.EndpointInfo;
 import org.apache.commons.monitoring.reporting.web.handler.internal.Invoker;
+import org.apache.commons.monitoring.spi.SPI;
 
 import java.util.Collection;
 import java.util.Map;
@@ -35,7 +36,7 @@ public final class PluginRepository {
     public static final String ACTIVATED_FLAG = ".activated";
 
     static {
-        for (final Plugin plugin : ServiceLoader.load(Plugin.class, Plugin.class.getClassLoader())) {
+        for (final Plugin plugin : SPI.INSTANCE.find(Plugin.class, Plugin.class.getClassLoader())) {
             final String name = plugin.name();
             if (name == null) {
                 throw new IllegalArgumentException("plugin name can't be null");

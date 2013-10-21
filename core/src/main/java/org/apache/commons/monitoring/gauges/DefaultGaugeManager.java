@@ -73,7 +73,8 @@ public final class DefaultGaugeManager implements GaugeManager {
             final long time = System.currentTimeMillis();
             final double value = gauge.value();
 
-            store.addToGauge(gauge, time, value);
+            // role could be dynamic...even if not advised
+            store.addToGauge(gauge.role(), time, value);
         }
     }
 }

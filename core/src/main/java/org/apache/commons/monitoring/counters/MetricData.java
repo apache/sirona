@@ -98,43 +98,10 @@ public enum MetricData {
             return true;
         }
     },
-    SumOfLogs {
-        @Override
-        public double value(final Counter counter) {
-            return counter.getSumOfLogs();
-        }
-
-        @Override
-        public boolean isTime() {
-            return false;
-        }
-    },
-    SumOfSquares {
-        @Override
-        public double value(final Counter counter) {
-            return counter.getSumOfSquares();
-        }
-
-        @Override
-        public boolean isTime() {
-            return false;
-        }
-    },
     Variance {
         @Override
         public double value(final Counter counter) {
             return counter.getVariance();
-        }
-
-        @Override
-        public boolean isTime() {
-            return false;
-        }
-    },
-    GeometricMean {
-        @Override
-        public double value(final Counter counter) {
-            return counter.getGeometricMean();
         }
 
         @Override

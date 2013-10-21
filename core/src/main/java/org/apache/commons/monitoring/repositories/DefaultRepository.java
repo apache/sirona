@@ -54,10 +54,12 @@ public class DefaultRepository implements Repository {
 
         if (counter == null) {
             counter = Configuration.findOrCreateInstance(DataStoreFactory.class).getCounterDataStore();
+            Configuration.setSingletonInstance(CounterDataStore.class, counter);
         }
 
         if (gauge == null) {
             gauge = Configuration.findOrCreateInstance(DataStoreFactory.class).getGaugeDataStore();
+            Configuration.setSingletonInstance(GaugeDataStore.class, gauge);
         }
         this.counterDataStore = counter;
         this.gaugeDataStore = gauge;

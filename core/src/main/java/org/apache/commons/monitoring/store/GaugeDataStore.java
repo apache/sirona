@@ -26,5 +26,5 @@ public interface GaugeDataStore {
 
     void createOrNoopGauge(Role role);
 
-    void addToGauge(Gauge gauge, long time, double value);
+    void addToGauge(Role role, long time, double value);
 }

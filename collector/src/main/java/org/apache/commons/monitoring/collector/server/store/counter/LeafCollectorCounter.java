@@ -14,12 +14,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.commons.monitoring.cube;
+package org.apache.commons.monitoring.collector.server.store.counter;
 
-import org.apache.commons.monitoring.store.DelegateDataStoreFactory;
+import org.apache.commons.monitoring.collector.server.math.M2AwareStatisticalSummary;
+import org.apache.commons.monitoring.counters.Counter;
 
-public class CubeDataStoreFactory extends DelegateDataStoreFactory {
-    public CubeDataStoreFactory() {
-        super(new CubeCounterDataStore(), new CubeGaugeDataStore());
+import java.util.concurrent.locks.Lock;
+
+public class LeafCollectorCounter extends CollectorCounter {
+    public LeafCollectorCounter(final Counter.Key key) {
+        super(key);
+    }
+
+    public void update(final M2AwareStatisticalSummary newStats, final int newConcurrency) {
+        final Lock workLock = lock.writeLock();
+        workLock.lock();
+        try {
+            concurrency.set(newConcurrency);
+            updateConcurrency(newConcurrency);
+            statistics = newStats;
+        } finally {
+            workLock.unlock();
+        }
     }
 }

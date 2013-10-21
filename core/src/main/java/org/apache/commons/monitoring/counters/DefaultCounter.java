@@ -21,7 +21,8 @@ import org.apache.commons.monitoring.store.CounterDataStore;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class DefaultCounter implements Counter {
     private final AtomicInteger concurrency = new AtomicInteger(0);
@@ -29,7 +30,7 @@ public class DefaultCounter implements Counter {
     private final CounterDataStore dataStore;
     private volatile int maxConcurrency = 0;
     protected SummaryStatistics statistics;
-    protected Lock lock = new ReentrantLock();
+    protected ReadWriteLock lock = new ReentrantReadWriteLock();
 
     public DefaultCounter(final Key key, final CounterDataStore store) {
         this.key = key;
@@ -81,55 +82,93 @@ public class DefaultCounter implements Counter {
 
     @Override
     public double getMax() {
-        return statistics.getMax();
+        final Lock rl = lock.readLock();
+        rl.lock();
+        try {
+            return statistics.getMax();
+        } finally {
+            rl.unlock();
+        }
     }
 
     @Override
     public double getMin() {
-        return statistics.getMin();
+        final Lock rl = lock.readLock();
+        rl.lock();
+        try {
+            return statistics.getMin();
+        } finally {
+            rl.unlock();
+        }
     }
 
     @Override
     public double getSum() {
-        return statistics.getSum();
+        final Lock rl = lock.readLock();
+        rl.lock();
+        try {
+            return statistics.getSum();
+        } finally {
+            rl.unlock();
+        }
     }
 
     @Override
     public double getStandardDeviation() {
-        return statistics.getStandardDeviation();
+        final Lock rl = lock.readLock();
+        rl.lock();
+        try {
+            return statistics.getStandardDeviation();
+        } finally {
+            rl.unlock();
+        }
     }
 
     @Override
     public double getVariance() {
-        return statistics.getVariance();
+        final Lock rl = lock.readLock();
+        rl.lock();
+        try {
+            return statistics.getVariance();
+        } finally {
+            rl.unlock();
+        }
     }
 
     @Override
     public double getMean() {
-        return statistics.getMean();
+        final Lock rl = lock.readLock();
+        rl.lock();
+        try {
+            return statistics.getMean();
+        } finally {
+            rl.unlock();
+        }
     }
 
     @Override
-    public double getGeometricMean() {
-        return statistics.getGeometricMean();
-    }
-
-    @Override
-    public double getSumOfLogs() {
-        return statistics.getSumOfLogs();
-    }
-
-    @Override
-    public double getSumOfSquares() {
-        return statistics.getSumOfLogs();
+    public double getSecondMoment() {
+        final Lock rl = lock.readLock();
+        rl.lock();
+        try {
+            return statistics.getSecondMoment();
+        } finally {
+            rl.unlock();
+        }
     }
 
     @Override
     public long getHits() {
-        return statistics.getN();
+        final Lock rl = lock.readLock();
+        rl.lock();
+        try {
+            return statistics.getN();
+        } finally {
+            rl.unlock();
+        }
     }
 
-    public Lock getLock() {
+    public ReadWriteLock getLock() {
         return lock;
     }
 }

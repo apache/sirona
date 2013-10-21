@@ -39,7 +39,6 @@ public class CubeDataStoreTest {
     private CubeServer server;
     private Gauge.LoaderHelper gauges;
 
-
     @Before
     public void startCube() throws IOException {
         server = new CubeServer("localhost", 1234).start();
