@@ -17,13 +17,16 @@
 package org.apache.commons.monitoring.collector.server.store.counter;
 
 import org.apache.commons.monitoring.collector.server.math.Aggregators;
+import org.apache.commons.monitoring.counters.AggregatedCounter;
+import org.apache.commons.monitoring.counters.Counter;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.locks.Lock;
 
-public class AggregatedCollectorCounter extends CollectorCounter {
+public class AggregatedCollectorCounter extends CollectorCounter implements AggregatedCounter {
     private final ConcurrentMap<String, LeafCollectorCounter> aggregation = new ConcurrentHashMap<String, LeafCollectorCounter>(50);
 
     public AggregatedCollectorCounter(Key key) {
@@ -53,5 +56,10 @@ public class AggregatedCollectorCounter extends CollectorCounter {
             i += counter.currentConcurrency().get();
         }
         return i;
+    }
+
+    @Override
+    public Map<String, ? extends Counter> aggregated() {
+        return aggregation;
     }
 }

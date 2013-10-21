@@ -17,19 +17,60 @@
 package org.apache.commons.monitoring.reporting.web.plugin.report;
 
 import org.apache.commons.monitoring.MonitoringException;
+import org.apache.commons.monitoring.Role;
+import org.apache.commons.monitoring.counters.AggregatedCounter;
+import org.apache.commons.monitoring.counters.Counter;
+import org.apache.commons.monitoring.counters.Unit;
 import org.apache.commons.monitoring.reporting.web.handler.api.Regex;
 import org.apache.commons.monitoring.reporting.web.handler.api.Template;
 import org.apache.commons.monitoring.reporting.web.plugin.report.format.Format;
+import org.apache.commons.monitoring.reporting.web.plugin.report.format.HTMLFormat;
+import org.apache.commons.monitoring.reporting.web.plugin.report.format.MapFormat;
+import org.apache.commons.monitoring.reporting.web.template.MapBuilder;
 import org.apache.commons.monitoring.repositories.Repository;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.Collection;
+import java.util.Map;
+import java.util.TreeMap;
+
+import static org.apache.commons.monitoring.reporting.web.plugin.report.format.MapFormat.format;
+import static org.apache.commons.monitoring.reporting.web.plugin.report.format.MapFormat.generateLine;
+import static org.apache.commons.monitoring.reporting.web.plugin.report.format.MapFormat.timeUnit;
 
 public class ReportEndpoints {
     @Regex
     public Template html(final HttpServletRequest request, final HttpServletResponse response) {
         return renderFormat(request, response, Format.Defaults.HTML);
+    }
+
+    @Regex("/counter/([^/]*)/([^/]*)/([^/]*)")
+    public Template counterDetail(final String role, final String unit, final String name, final HttpServletRequest request) {
+        final Counter counter = Repository.INSTANCE.getCounter(new Counter.Key(new Role(decode(role), Unit.get(unit)), decode(name)));
+
+        final Map<String, String[]> params = request.getParameterMap();
+        final Unit timeUnit = timeUnit(params);
+        final String format = format(params, HTMLFormat.NUMBER_FORMAT);
+
+        final Map<String, Collection<String>> counters = new TreeMap<String, Collection<String>>();
+        if (AggregatedCounter.class.isInstance(counter)) {
+            for (final Map.Entry<String, ? extends Counter> marker : AggregatedCounter.class.cast(counter).aggregated().entrySet()) {
+                counters.put(marker.getKey(), generateLine(marker.getValue(), timeUnit, format));
+            }
+        } else {
+            counters.put("", generateLine(counter, timeUnit, format));
+        }
+
+        return new Template("report/counter.vm",
+            new MapBuilder<String, Object>()
+                .set("headers", HTMLFormat.ATTRIBUTES_ORDERED_LIST)
+                .set("counter", counter)
+                .set("counters", counters)
+                .build());
     }
 
     @Regex(".csv")
@@ -60,5 +101,13 @@ public class ReportEndpoints {
     private Template renderFormat(final HttpServletRequest request, final HttpServletResponse response, final Format format) {
         response.setContentType(format.type());
         return format.render(request.getParameterMap());
+    }
+
+    private static String decode(final String role) {
+        try {
+            return URLDecoder.decode(role, MapFormat.ENCODING);
+        } catch (final UnsupportedEncodingException e) {
+            throw new IllegalStateException(e);
+        }
     }
 }

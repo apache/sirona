@@ -16,6 +16,7 @@
  */
 package org.apache.commons.monitoring.reporting.web.plugin.report.format;
 
+import org.apache.commons.monitoring.Role;
 import org.apache.commons.monitoring.counters.Counter;
 import org.apache.commons.monitoring.counters.MetricData;
 import org.apache.commons.monitoring.counters.Unit;
@@ -23,14 +24,18 @@ import org.apache.commons.monitoring.repositories.Repository;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public abstract class MapFormat {
-    protected static final Collection<String> ATTRIBUTES_ORDERED_LIST = buildMetricDataHeader();
+    public static final String ENCODING = "UTF-8";
+
+    public static final Collection<String> ATTRIBUTES_ORDERED_LIST = buildMetricDataHeader();
 
     protected static Collection<String> buildMetricDataHeader() {
         final Collection<String> list = new CopyOnWriteArrayList<String>();
@@ -42,7 +47,11 @@ public abstract class MapFormat {
         return list;
     }
 
-    protected static String format(final Map<String, ?> params, final String defaultValue) {
+    public static String format(final Map<String, ?> params, final String defaultValue) {
+        if (params == null) {
+            return defaultValue;
+        }
+
         final Object format = params.get("format");
         if (format != null) {
             if (String.class.isInstance(format)) {
@@ -65,7 +74,11 @@ public abstract class MapFormat {
         }
     }
 
-    protected static Unit timeUnit(final Map<String, ?> params) {
+    public static Unit timeUnit(final Map<String, ?> params) {
+        if (params == null) {
+            return Unit.Time.MILLISECOND;
+        }
+
         final Object u = params.get("unit");
         if (u != null) {
             if (String.class.isInstance(u)) {
@@ -87,42 +100,69 @@ public abstract class MapFormat {
         return Unit.Time.MILLISECOND;
     }
 
+    protected static Map<String, Collection<String>> snapshotByPath(final Unit timeUnit, final String format) {
+        final Map<String, Collection<String>> data = new TreeMap<String, Collection<String>>();
+        for (final Counter counter : Repository.INSTANCE) {
+            final Counter.Key key = counter.getKey();
+            data.put(generateCounterKeyString(key), generateLine(counter, timeUnit, format));
+        }
+        return data;
+    }
+
+    public static String generateCounterKeyString(final Counter.Key key) {
+        final Role role = key.getRole();
+        try {
+            return encode(role.getName()) + '/' + role.getUnit().getName() + '/' + encode(key.getName());
+        } catch (final UnsupportedEncodingException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
     protected static Collection<Collection<String>> snapshot(final Unit timeUnit, final String format) {
         final Collection<Collection<String>> data = new ArrayList<Collection<String>>();
         for (final Counter counter : Repository.INSTANCE) {
-            final Unit counterUnit = counter.getKey().getRole().getUnit();
-            final boolean compatible = timeUnit.isCompatible(counterUnit);
-
-            final Collection<String> line = new ArrayList<String>();
-            data.add(line);
-
-            line.add(counter.getKey().getName());
-
-            if (compatible) {
-                line.add(counter.getKey().getRole().getName() + " (" + timeUnit.getName() + ")");
-            } else {
-                line.add(counter.getKey().getRole().getName() + " (" + counterUnit.getName() + ")");
-            }
-
-            final DecimalFormat formatter;
-            if (format != null) {
-                formatter = new DecimalFormat(format);
-            } else {
-                formatter = null;
-            }
-
-            for (final MetricData md : MetricData.values()) {
-                double value = md.value(counter);
-                if (md.isTime() && compatible && timeUnit != counterUnit) {
-                    value = timeUnit.convert(value, counterUnit);
-                }
-                if (formatter != null && !Double.isNaN(value) && !Double.isInfinite(value)) {
-                    line.add(formatter.format(value));
-                } else {
-                    line.add(Double.toString(value));
-                }
-            }
+            data.add(generateLine(counter, timeUnit, format));
         }
         return data;
+    }
+
+    public static Collection<String> generateLine(final Counter counter, final Unit timeUnit, final String format) {
+        final Unit counterUnit = counter.getKey().getRole().getUnit();
+        final boolean compatible = timeUnit.isCompatible(counterUnit);
+
+        final Collection<String> line = new ArrayList<String>();
+
+        line.add(counter.getKey().getName());
+
+        if (compatible) {
+            line.add(counter.getKey().getRole().getName() + " (" + timeUnit.getName() + ")");
+        } else {
+            line.add(counter.getKey().getRole().getName() + " (" + counterUnit.getName() + ")");
+        }
+
+        final DecimalFormat formatter;
+        if (format != null) {
+            formatter = new DecimalFormat(format);
+        } else {
+            formatter = null;
+        }
+
+        for (final MetricData md : MetricData.values()) {
+            double value = md.value(counter);
+            if (md.isTime() && compatible && timeUnit != counterUnit) {
+                value = timeUnit.convert(value, counterUnit);
+            }
+            if (formatter != null && !Double.isNaN(value) && !Double.isInfinite(value)) {
+                line.add(formatter.format(value));
+            } else {
+                line.add(Double.toString(value));
+            }
+        }
+
+        return line;
+    }
+
+    private static String encode(final String value) throws UnsupportedEncodingException {
+        return URLEncoder.encode(value, ENCODING);
     }
 }

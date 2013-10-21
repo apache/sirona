@@ -56,10 +56,16 @@
         </tr>
     </thead>
     <tbody>
-        #foreach( $line in $data )
+        #foreach( $line in $data.entrySet() )
             <tr>
-                #foreach( $item in $line )
-                    <td>$item</td>
+                #foreach( $item in $line.getValue() )
+                    <td>
+                        #if ($foreach.isFirst())
+                            <a href="$mapping/report/counter/$line.getKey()">$item</a>
+                        #else
+                            $item
+                        #end
+                    </td>
                 #end
             </tr>
         #end
