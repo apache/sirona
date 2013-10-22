@@ -28,7 +28,7 @@
 
   <groupId>org.apache.sirona</groupId>
   <artifactId>sirona</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>0.1-incubating-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Apache Sirona Incubator</name>
   <url>http://sirona.incubator.apache.org</url>

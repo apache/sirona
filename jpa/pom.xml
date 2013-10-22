@@ -22,11 +22,11 @@
   <parent>
     <artifactId>sirona</artifactId>
     <groupId>org.apache.sirona</groupId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.1-incubating-SNAPSHOT</version>
   </parent>
 
   <artifactId>sirona-jpa</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>0.1-incubating-SNAPSHOT</version>
   <name>Apache Sirona Incubator :: JPA</name>
 
   <dependencies>
