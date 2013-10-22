@@ -68,7 +68,7 @@ public class MonitoringProxyFactoryTest {
             try {
                 Thread.sleep(ms);
             } catch (final InterruptedException e) {
-                // no-ôp
+                // no-op
             }
         }
 

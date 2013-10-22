@@ -49,7 +49,7 @@ or to call manually `Configuration.shutdown()` method.
 * org.apache.sirona.gauge.cpu.period: int, 4000 (ms) by default. Period for CPU gauge.
 * org.apache.sirona.store.DataStore: qualified class name, default `org.apache.sirona.store.DefaultDataStore`. DataStore to use.
 * org.apache.sirona.repositories.Repository: qualified class name, default `org.apache.sirona.repositories.DefaultRepository`. Repository to use.
-* org.apache.sirona.<name>.period: the period to use to flush counters for a batch data store (like graphite one)
+* org.apache.sirona.\<name>.period: the period to use to flush counters for a batch data store (like graphite one)
 
 #### Reporting
 
