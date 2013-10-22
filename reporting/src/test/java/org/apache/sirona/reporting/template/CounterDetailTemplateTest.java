@@ -16,9 +16,14 @@
  */
 package org.apache.sirona.reporting.template;
 
-import com.gargoylesoftware.htmlunit.WebAssert;
-import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import static org.junit.Assert.assertEquals;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.Locale;
+
+import javax.servlet.ServletContainerInitializer;
+
 import org.apache.catalina.startup.Constants;
 import org.apache.sirona.Role;
 import org.apache.sirona.counters.Counter;
@@ -37,15 +42,15 @@ import org.jboss.shrinkwrap.api.asset.ClassLoaderAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.servlet.ServletContainerInitializer;
-import java.io.IOException;
-import java.net.URL;
-
-import static org.junit.Assert.assertEquals;
+import com.gargoylesoftware.htmlunit.WebAssert;
+import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 @RunWith(Arquillian.class)
 public class CounterDetailTemplateTest {
@@ -71,6 +76,8 @@ public class CounterDetailTemplateTest {
     private URL base;
 
     private Counter.Key key;
+    
+    private static Locale oldLocale;
 
     @Before
     public void init() {
@@ -84,6 +91,17 @@ public class CounterDetailTemplateTest {
         Repository.INSTANCE.clear();
     }
 
+    @BeforeClass
+    public static void setDefaultLocale() {
+        oldLocale = Locale.getDefault();
+        Locale.setDefault(Locale.ENGLISH);
+    }
+
+    @AfterClass
+    public static void restoreLocale() {
+        Locale.setDefault(oldLocale);
+    }
+
     @Test
     public void generalList() throws IOException {
         final WebClient client = newClient();
@@ -91,7 +109,7 @@ public class CounterDetailTemplateTest {
         WebAssert.assertElementPresent(page, "report-table");
 
         final String text = page.getElementById("report-table").asText();
-        assertEquals("Counter\tRole\tHits\tMax\tMean\tMin\tStandardDeviation\tSum\tVariance\tValue\tConcurrency\tMaxConcurrency\n" +
+        assertEquals("Counter\tRole\tHits\tMax\tMean\tMin\tStandardDeviation\tSum\tVariance\tValue\tConcurrency\tMaxConcurrency" + System.lineSeparator() +
             "counter \t role (u) \t 1.00 \t 55.00 \t 55.00 \t 55.00 \t 0.00 \t 55.00 \t 0.00 \t 55.00 \t 0.00 \t 0.00", text);
     }
 
@@ -102,7 +120,7 @@ public class CounterDetailTemplateTest {
         WebAssert.assertElementPresent(page, "counter");
 
         final String text = page.getElementById("counter").asText();
-        assertEquals("Counter\tRole\tHits\tMax\tMean\tMin\tStandardDeviation\tSum\tVariance\tValue\tConcurrency\tMaxConcurrency\n" +
+        assertEquals("Counter\tRole\tHits\tMax\tMean\tMin\tStandardDeviation\tSum\tVariance\tValue\tConcurrency\tMaxConcurrency" + System.lineSeparator() +
             "counter\trole (u)\t1.00\t55.00\t55.00\t55.00\t0.00\t55.00\t0.00\t55.00\t0.00\t0.00", text);
     }
 
