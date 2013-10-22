@@ -36,6 +36,8 @@ How to start?
 
 [See Jta](./jta.html)
 
+[See JPA](./jpa.html)
+
 [See Web](./web.html)
 
 [See Graphite](./graphite.html)

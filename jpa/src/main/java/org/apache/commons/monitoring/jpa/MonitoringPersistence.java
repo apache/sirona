@@ -35,8 +35,9 @@ import static org.apache.commons.monitoring.jpa.JPAProxyFactory.monitor;
 public class MonitoringPersistence implements PersistenceProvider {
     public static final Role ROLE = new Role("jpa", Unit.Time.NANOSECOND);
 
-    private static final Class<?>[] PROXY_API = new Class<?>[] { EntityManagerFactory.class, Serializable.class};
     private static final String DELEGATE_PROVIDER_KEY = Configuration.COMMONS_MONITORING_PREFIX + "jpa.provider";
+    private static final String DEFAULT_PROVIDER = System.getProperty(DELEGATE_PROVIDER_KEY);
+    private static final Class<?>[] PROXY_API = new Class<?>[] { EntityManagerFactory.class, Serializable.class};
 
     private static final String[] PROVIDERS = {
         "org.apache.openjpa.persistence.PersistenceProviderImpl",
@@ -103,14 +104,22 @@ public class MonitoringPersistence implements PersistenceProvider {
             synchronized (this) {
                 if (delegate == null) {
                     if (name == null) {
-                        for (final String provider : PROVIDERS) {
+                        if (DEFAULT_PROVIDER != null) {
                             try {
-                                delegate = newPersistence(provider);
-                                if (delegate != null) {
-                                    break;
+                                delegate = newPersistence(DEFAULT_PROVIDER);
+                            } catch (final Exception e) {
+                                throw new IllegalStateException(new ClassNotFoundException("Can't instantiate '" + DEFAULT_PROVIDER + "'"));
+                            }
+                        } else {
+                            for (final String provider : PROVIDERS) {
+                                try {
+                                    delegate = newPersistence(provider);
+                                    if (delegate != null) {
+                                        break;
+                                    }
+                                } catch (final Throwable th2) {
+                                    // no-op
                                 }
-                            } catch (final Throwable th2) {
-                                // no-op
                             }
                         }
 
