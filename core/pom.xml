@@ -22,7 +22,7 @@
 
   <parent>
     <groupId>org.apache.sirona</groupId>
-    <artifactId>sirona-parent</artifactId>
+    <artifactId>sirona</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
 
