@@ -20,9 +20,9 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-  <bean id="service" class="org.apache.commons.monitoring.spring.service.MyService" />
+  <bean id="service" class="org.apache.sirona.spring.service.MyService" />
 
-  <bean class="org.apache.commons.monitoring.spring.BeanNameMonitoringAutoProxyCreator">
+  <bean class="org.apache.sirona.spring.BeanNameMonitoringAutoProxyCreator">
     <property name="beanNames">
       <list>
         <value>service</value>

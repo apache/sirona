@@ -23,10 +23,10 @@ This module aims to monitor JPA invocations.
 ## Installation
 
 To use this module and get execution time of queries creation (`createNamedQuery`, ...) set
-as JPA provider `org.apache.commons.monitoring.jpa.MonitoringPersistence`.
+as JPA provider `org.apache.sirona.jpa.MonitoringPersistence`.
 
 If you have in your environment a single "real" JPA provider it should be found automatically but if that's not the
-case of if you want to force the implementation set the property `org.apache.commons.monitoring.jpa.provider`
+case of if you want to force the implementation set the property `org.apache.sirona.jpa.provider`
 to the real implementation you want. For instance:
 
 ```xml
@@ -39,7 +39,7 @@ to the real implementation you want. For instance:
   <persistence-unit name="my-unit">
     ...
     <properties>
-      <property name="org.apache.commons.monitoring.jpa.provider"
+      <property name="org.apache.sirona.jpa.provider"
                 value="org.apache.openjpa.persistence.PersistenceProviderImpl"/>
       ...
     </properties>

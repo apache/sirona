@@ -20,15 +20,15 @@ under the License.
 
 There are several kind of plugins:
 
-* `org.apache.commons.monitoring.gauges.Gauge` and `org.apache.commons.monitoring.gauges.GaugeFactory`: you can add your own gauges
-* `org.apache.commons.monitoring.reporting.web.plugin.Plugin`: add feature to the web GUI
+* `org.apache.sirona.gauges.Gauge` and `org.apache.sirona.gauges.GaugeFactory`: you can add your own gauges
+* `org.apache.sirona.reporting.web.plugin.Plugin`: add feature to the web GUI
 
 ## Write your own gauge
 
 To add your own Gauge you have two main solutions:
 
-* simply implement a `org.apache.commons.monitoring.gauges.Gauge` and register it using ServiceLoader mecanism (META-INF/services/org.apache.commons.monitoring.gauges.Gauge)
-* implement a `org.apache.commons.monitoring.gauges.GaugeFactory` which is registered it using ServiceLoader mecanism (META-INF/services/org.apache.commons.monitoring.gauges.GaugeFactory) and return the gauges you want to register
+* simply implement a `org.apache.sirona.gauges.Gauge` and register it using ServiceLoader mecanism (META-INF/services/org.apache.sirona.gauges.Gauge)
+* implement a `org.apache.sirona.gauges.GaugeFactory` which is registered it using ServiceLoader mecanism (META-INF/services/org.apache.sirona.gauges.GaugeFactory) and return the gauges you want to register
 
 What is GaugeFactory designed for? Imagine a custom gauge is parameterized. You'll surely want to register it
 several times with different parameters. If you use Gauge SPI you'll need to do N implementations (which makes the parameters useless).
@@ -43,7 +43,7 @@ With GaugeFactory you just need to return the built instances:
 
 ## Extend the reporting GUI
 
-To extend the reporting GUI just write your own `org.apache.commons.monitoring.reporting.web.plugin.Plugin`. Here too it
+To extend the reporting GUI just write your own `org.apache.sirona.reporting.web.plugin.Plugin`. Here too it
 relies on java ServiceLoader (SPI) mecanism.
 
 Here is the Plugin interface:
@@ -80,7 +80,7 @@ So first we define our HelloPlugin:
 
 ### Define the endpoints
 
-The `HelloEndpoints` class defines all the urls accessible for the hello plugin. It uses the `org.apache.commons.monitoring.reporting.web.handler.api.Regex`
+The `HelloEndpoints` class defines all the urls accessible for the hello plugin. It uses the `org.apache.sirona.reporting.web.handler.api.Regex`
 annotation:
 
 

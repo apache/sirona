@@ -22,31 +22,31 @@ Graphite module allows to push counters and gauges to a graphite instance.
 
 ## Configuration
 
-* `org.apache.commons.monitoring.graphite.GraphiteBuilder.address`: the graphite instance host/IP
-* `org.apache.commons.monitoring.graphite.GraphiteBuilder.port`: the graphite instance port
-* `org.apache.commons.monitoring.graphite.GraphiteBuilder.charset`: the charset to use with this Graphite instance
+* `org.apache.sirona.graphite.GraphiteBuilder.address`: the graphite instance host/IP
+* `org.apache.sirona.graphite.GraphiteBuilder.port`: the graphite instance port
+* `org.apache.sirona.graphite.GraphiteBuilder.charset`: the charset to use with this Graphite instance
 
 For instance your `commons-monitoring.properties` can look like:
 
 ```
-org.apache.commons.monitoring.graphite.GraphiteBuilder.address = localhost
-org.apache.commons.monitoring.graphite.GraphiteBuilder.port = 1234
+org.apache.sirona.graphite.GraphiteBuilder.address = localhost
+org.apache.sirona.graphite.GraphiteBuilder.port = 1234
 ```
 ## DataStore
 
-To push metrics (Gauges + Counters) to Graphite you can use the dedicated `DataStore`: `org.apache.commons.monitoring.graphite.GraphiteDataStore`.
+To push metrics (Gauges + Counters) to Graphite you can use the dedicated `DataStore`: `org.apache.sirona.graphite.GraphiteDataStore`.
 
 Simply add to `commons-monitoring.properties` the line:
 
 ```
-org.apache.commons.monitoring.store.DataStore = org.apache.commons.monitoring.graphite.GraphiteDataStore
+org.apache.sirona.store.DataStore = org.apache.sirona.graphite.GraphiteDataStore
 ```
 
 ### Counters
 
 You can also configure the period used to flush counters values:
 
-* `org.apache.commons.monitoring.graphite.period`: which period to use to push counters data to Graphite (default to 1mn).
+* `org.apache.sirona.graphite.period`: which period to use to push counters data to Graphite (default to 1mn).
 
 ## Limitations
 

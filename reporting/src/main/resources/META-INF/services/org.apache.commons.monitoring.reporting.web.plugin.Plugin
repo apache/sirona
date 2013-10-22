@@ -1,6 +1,0 @@
-org.apache.commons.monitoring.reporting.web.plugin.report.ReportPlugin
-org.apache.commons.monitoring.reporting.web.plugin.jmx.JMXPlugin
-org.apache.commons.monitoring.reporting.web.plugin.jvm.JVMPlugin
-org.apache.commons.monitoring.reporting.web.plugin.jta.JTAPlugin
-org.apache.commons.monitoring.reporting.web.plugin.thread.ThreadPlugin
-org.apache.commons.monitoring.reporting.web.plugin.web.WebPlugin

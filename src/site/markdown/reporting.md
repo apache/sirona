@@ -39,12 +39,12 @@ you can embed it. You'll need to update your web.xml to declare the monitoring f
              version="2.5">
 
       <listener>
-        <listener-class>org.apache.commons.monitoring.reporting.web.listener.MonitoringListener</listener-class>
+        <listener-class>org.apache.sirona.reporting.web.listener.MonitoringListener</listener-class>
       </listener>
 
       <filter>
         <filter-name>Monitoring</filter-name>
-        <filter-class>org.apache.commons.monitoring.reporting.web.MonitoringController</filter-class>
+        <filter-class>org.apache.sirona.reporting.web.MonitoringController</filter-class>
         <init-param> <!-- should match your filter mapping base -->
           <param-name>monitoring-mapping</param-name>
           <param-value>/monitoring/</param-value>
@@ -60,8 +60,8 @@ you can embed it. You'll need to update your web.xml to declare the monitoring f
 
 Note: in a servlet 3.0 container you can just configure it through init parameters:
 
-* `org.apache.commons.monitoring.reporting.activated`: boolean activating/deactivating the reporting GUI
-* `org.apache.commons.monitoring.reporting.mapping`: the url mapping of the GUI
+* `org.apache.sirona.reporting.activated`: boolean activating/deactivating the reporting GUI
+* `org.apache.sirona.reporting.mapping`: the url mapping of the GUI
 
 ## Usage
 

@@ -21,9 +21,9 @@
              xsi:schemaLocation="http://java.sun.com/xml/ns/persistence
                        http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
   <persistence-unit name="test-jse" transaction-type="RESOURCE_LOCAL">
-    <provider>org.apache.commons.monitoring.jpa.MonitoringPersistence</provider>
-    <class>org.apache.commons.monitoring.jpa.entity.Person</class>
-    <class>org.apache.commons.monitoring.jpa.entity.Address</class>
+    <provider>org.apache.sirona.jpa.MonitoringPersistence</provider>
+    <class>org.apache.sirona.jpa.entity.Person</class>
+    <class>org.apache.sirona.jpa.entity.Address</class>
     <properties>
       <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)"/>
       <property name="openjpa.ConnectionURL" value="jdbc:hsqldb:mem:jpa;create=true"/>
@@ -34,9 +34,9 @@
     </properties>
   </persistence-unit>
   <persistence-unit name="test-jta">
-    <provider>org.apache.commons.monitoring.jpa.MonitoringPersistence</provider>
-    <class>org.apache.commons.monitoring.jpa.entity.Person</class>
-    <class>org.apache.commons.monitoring.jpa.entity.Address</class>
+    <provider>org.apache.sirona.jpa.MonitoringPersistence</provider>
+    <class>org.apache.sirona.jpa.entity.Person</class>
+    <class>org.apache.sirona.jpa.entity.Address</class>
     <properties>
       <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)"/>
       <property name="openjpa.ConnectionURL" value="jdbc:hsqldb:mem:jpa;create=true"/>

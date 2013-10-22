@@ -26,26 +26,26 @@ Default implementation only store data in memory.
 
 ## Configuration
 
-Just use the collector `DataStoreFactory`: `org.apache.commons.monitoring.collector.server.store.CollectorDataStoreFactory`.
+Just use the collector `DataStoreFactory`: `org.apache.sirona.collector.server.store.CollectorDataStoreFactory`.
 
 For instance your `commons-monitoring.properties` can look like:
 
 ```
-org.apache.commons.monitoring.store.DataStore = org.apache.commons.monitoring.collector.server.store.CollectorDataStoreFactory
+org.apache.sirona.store.DataStore = org.apache.sirona.collector.server.store.CollectorDataStoreFactory
 ```
 
-The `GaugeDataStore` can be configured through `org.apache.commons.monitoring.collector.gauge.store-class` property.
+The `GaugeDataStore` can be configured through `org.apache.sirona.collector.gauge.store-class` property.
 By default it uses the in memory implementation but you can set your own one if you want.
 
 Note: if your `GaugeDataStore` has a constructor with a `String`, the marker of the store will be passed to the `GaugeDataStore`.
 
-The `CounterDataStore` needs to be an instance of `org.apache.commons.monitoring.collector.server.store.counter.CollectorCounterStore`.
+The `CounterDataStore` needs to be an instance of `org.apache.sirona.collector.server.store.counter.CollectorCounterStore`.
 By default it is in memory too but it is easily extensible to be persisted if needed.
 
 ## Installing the collector
 
 To setup the collector you just need to configure the `DataStoreFactory` (see configuration part) and configure the
-servlet `org.apache.commons.monitoring.collector.server.Collector`.
+servlet `org.apache.sirona.collector.server.Collector`.
 
 ## Pushing data
 

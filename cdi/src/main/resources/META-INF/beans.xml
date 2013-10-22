@@ -21,6 +21,6 @@
        xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
                             http://java.sun.com/xml/ns/javaee/beans_1_0.xsd">
   <interceptors>
-    <class>org.apache.commons.monitoring.cdi.CommonsMonitoringInterceptor</class>
+    <class>org.apache.sirona.cdi.CommonsMonitoringInterceptor</class>
   </interceptors>
 </beans>

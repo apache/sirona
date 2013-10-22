@@ -22,16 +22,16 @@
 
   <context-param> <!-- only register this webapp gauges -->
     <param-name>monitoring.discovery.packages</param-name>
-    <param-value>org.apache.commons.monitoring.reporting.web.plugin</param-value>
+    <param-value>org.apache.sirona.reporting.web.plugin</param-value>
   </context-param>
 
   <listener>
-    <listener-class>org.apache.commons.monitoring.web.discovery.GaugeDiscoveryListener</listener-class>
+    <listener-class>org.apache.sirona.web.discovery.GaugeDiscoveryListener</listener-class>
   </listener>
 
   <filter>
     <filter-name>Monitoring</filter-name>
-    <filter-class>org.apache.commons.monitoring.reporting.web.MonitoringController</filter-class>
+    <filter-class>org.apache.sirona.reporting.web.MonitoringController</filter-class>
   </filter>
 
   <filter-mapping>

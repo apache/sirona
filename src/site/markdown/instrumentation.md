@@ -19,7 +19,7 @@ under the License.
 # Manually (clients)
 
 To handle manually the interception you need to import commons-monitoring-aop.
-Then you can rely on `org.apache.commons.monitoring.aop.MonitoringProxyFactory`.
+Then you can rely on `org.apache.sirona.aop.MonitoringProxyFactory`.
 
 `org.apache.commons.proxy.ProxyFactory` key defines the proxy factory to use to create proxies For instance
 to use javassist you set it to `org.apache.commons.proxy.factory.javassist.JavassistProxyFactory`
@@ -31,7 +31,7 @@ Then the API is quite simple:
 
 # CDI
 
-You just need to decorate your CDI bean/method with the interceptor binding `org.apache.commons.monitoring.cdi.Monitored`.
+You just need to decorate your CDI bean/method with the interceptor binding `org.apache.sirona.cdi.Monitored`.
 
 For instance:
 
@@ -44,16 +44,16 @@ For instance:
         }
     }
 
-Note: in some (old) CDI implementation you'll need to activate the monitoring interceptor: `org.apache.commons.monitoring.cdi.CommonsMonitoringInterceptor`.
+Note: in some (old) CDI implementation you'll need to activate the monitoring interceptor: `org.apache.sirona.cdi.CommonsMonitoringInterceptor`.
 
 Note: we are working to make it configurable.
 
 # Spring
 
-Using `org.apache.commons.monitoring.spring.BeanNameMonitoringAutoProxyCreator` you can automatically
+Using `org.apache.sirona.spring.BeanNameMonitoringAutoProxyCreator` you can automatically
 add monitoring to selected beans.
 
-    <bean class="org.apache.commons.monitoring.spring.BeanNameMonitoringAutoProxyCreator">
+    <bean class="org.apache.sirona.spring.BeanNameMonitoringAutoProxyCreator">
       <property name="beanNames">
         <list>
           <value>*Service</value>
@@ -61,7 +61,7 @@ add monitoring to selected beans.
       </property>
     </bean>
 
-An alternative is to use `org.apache.commons.monitoring.spring.PointcutMonitoringAutoProxyCreator` which uses
+An alternative is to use `org.apache.sirona.spring.PointcutMonitoringAutoProxyCreator` which uses
 a `org.springframework.aop.Pointcut` to select beans to monitor.
 
 # AspectJ
@@ -72,13 +72,13 @@ concrete aspect defining the pointcut to monitor:
     <aspectj>
       <aspects>
         <concrete-aspect name="org.apache.commons.aspectj.MyMonitoringAspectJ"
-                         extends="org.apache.commons.monitoring.aspectj.CommonsMonitoringAspect">
-          <pointcut name="pointcut" expression="execution(* org.apache.commons.monitoring.aspectj.AspectJMonitoringTest$MonitorMe.*(..))"/>
+                         extends="org.apache.sirona.aspectj.CommonsMonitoringAspect">
+          <pointcut name="pointcut" expression="execution(* org.apache.sirona.aspectj.AspectJMonitoringTest$MonitorMe.*(..))"/>
         </concrete-aspect>
       </aspects>
 
       <weaver>
-        <include within="org.apache.commons.monitoring.aspectj.AspectJMonitoringTest$MonitorMe"/>
+        <include within="org.apache.sirona.aspectj.AspectJMonitoringTest$MonitorMe"/>
       </weaver>
     </aspectj>
 

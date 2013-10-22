@@ -1,1 +1,1 @@
-org.apache.commons.monitoring.web.registration.WebMonitoringInitializer
+org.apache.sirona.web.registration.WebMonitoringInitializer

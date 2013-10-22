@@ -58,7 +58,7 @@ Gauges values are retrieved by interval:
 
 ## Monitor JDBC
 
-To monitor JDBC just configure your DataSource replacing its `java.sql.Driver` by `org.apache.commons.monitoring.jdbc.MonitoringDriver`
+To monitor JDBC just configure your DataSource replacing its `java.sql.Driver` by `org.apache.sirona.jdbc.MonitoringDriver`
 and updating its jdbc url from `jdbc:foo:bar` to `jdbc:monitoring:foo:bar?delegateDriver=xxxxx`.
 
 Note: delegateDriver needs to be the last parameter (if there are several).

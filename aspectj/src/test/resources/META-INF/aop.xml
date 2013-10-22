@@ -17,13 +17,13 @@
 -->
 <aspectj>
   <aspects>
-    <concrete-aspect name="org.apache.commons.aspectj.MyMonitoringAspectJ"
-                     extends="org.apache.commons.monitoring.aspectj.CommonsMonitoringAspect">
-      <pointcut name="pointcut" expression="execution(* org.apache.commons.monitoring.aspectj.AspectJMonitoringTest$MonitorMe.*(..))"/>
+    <concrete-aspect name="org.apache.sirona.aspectj.MyMonitoringAspectJ"
+                     extends="org.apache.sirona.aspectj.CommonsMonitoringAspect">
+      <pointcut name="pointcut" expression="execution(* org.apache.sirona.aspectj.AspectJMonitoringTest$MonitorMe.*(..))"/>
     </concrete-aspect>
   </aspects>
 
   <weaver>
-    <include within="org.apache.commons.monitoring.aspectj.AspectJMonitoringTest$MonitorMe"/>
+    <include within="org.apache.sirona.aspectj.AspectJMonitoringTest$MonitorMe"/>
   </weaver>
 </aspectj>
