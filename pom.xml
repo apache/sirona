@@ -125,6 +125,16 @@
     <url>http://svn.apache.org/viewvc/incubator/sirona/trunk/</url>
   </scm>
 
+  <ciManagement>
+    <system>jenkins</system>
+    <url>https://builds.apache.org/job/sirona/</url>
+  </ciManagement>
+
+  <issueManagement>
+    <system>jira</system>
+    <url>https://issues.apache.org/jira/browse/SIRONA</url>
+  </issueManagement>
+
   <build>
     <pluginManagement>
       <plugins>
