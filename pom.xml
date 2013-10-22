@@ -19,30 +19,38 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                     http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
   <parent>
-    <groupId>org.apache.commons</groupId>
-    <artifactId>commons-sandbox-parent</artifactId>
-    <version>10</version>
+    <groupId>org.apache</groupId>
+    <artifactId>apache</artifactId>
+    <version>13</version>
   </parent>
+
   <groupId>org.apache.sirona</groupId>
   <artifactId>sirona-parent</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>Commons Monitoring (Sandbox)</name>
-  <url>http://commons.apache.org/sandbox/monitoring/</url>
+  <name>Apache Sirona (Incubator)</name>
+  <url>http://sirona.incubator.apache.org</url>
   <inceptionYear>2008</inceptionYear>
   <description>
-    Monitoring provides a simple, lightweight toolkit to instrument java application monitoring capabilities, including
+    Sirona provides a simple, lightweight toolkit to instrument java application monitoring capabilities, including
     performances and thread concurrency.
   </description>
 
   <!-- Compiler source and target JVM (see parent pom) -->
   <properties>
-    <maven.compile.source>1.6</maven.compile.source>
-    <maven.compile.target>1.6</maven.compile.target>
-    <commons.componentid>monitoring</commons.componentid>
-    <commons.jira.componentid>12312100</commons.jira.componentid>
-    <commons.scmPubUrl>https://svn.apache.org/repos/infra/websites/production/commons/content/sandbox/commons-monitoring</commons.scmPubUrl>
+    <sirona.scmPubUrl>https://svn.apache.org/repos/asf/incubator/sirona/site-content/</sirona.scmPubUrl>
+    <sirona.scmPubCheckoutDirectory>${user.home}/sirona-site</sirona.scmPubCheckoutDirectory>
+
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.build.resourceEncoding>UTF-8</project.build.resourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+    <sonar.host.url>https://analysis.apache.org/</sonar.host.url>
+    <maven.compiler.source>1.6</maven.compiler.source>
+    <maven.compiler.target>1.6</maven.compiler.target>
+
   </properties>
 
   <modules>
@@ -78,10 +86,43 @@
     </developer>
   </developers>
 
+  <mailingLists>
+    <mailingList>
+      <name>Users</name>
+      <post>user@sirona.incubator.apache.org</post>
+      <subscribe>user-subscribe@sirona.incubator.apache.org</subscribe>
+      <unsubscribe>user-unsubscribe@sirona.incubator.apache.org</unsubscribe>
+      <archive>http://mail-archives.apache.org/mod_mbox/sirona-user/</archive>
+      <otherArchives>
+        <otherArchive>http://sirona-user.markmail.org/</otherArchive>
+      </otherArchives>
+    </mailingList>
+    <mailingList>
+      <name>Dev</name>
+      <post>dev@sirona.incubator.apache.org</post>
+      <subscribe>dev-subscribe@sirona.incubator.apache.org</subscribe>
+      <unsubscribe>dev-unsubscribe@sirona.incubator.apache.org</unsubscribe>
+      <archive>http://mail-archives.apache.org/mod_mbox/sirona-dev/</archive>
+      <otherArchives>
+        <otherArchive>http://sirona-dev.markmail.org/</otherArchive>
+      </otherArchives>
+    </mailingList>
+    <mailingList>
+      <name>Commits</name>
+      <post>commits@sirona.incubator.apache.org</post>
+      <subscribe>commits-subscribe@sirona.incubator.apache.org</subscribe>
+      <unsubscribe>commits-unsubscribe@sirona.incubator.apache.org</unsubscribe>
+      <archive>http://mail-archives.apache.org/mod_mbox/sirona-commits/</archive>
+      <otherArchives>
+        <otherArchive>http://sirona-commits.markmail.org/</otherArchive>
+      </otherArchives>
+    </mailingList>
+  </mailingLists>
+
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/commons/sandbox/monitoring/trunk/</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/commons/sandboxmonitoring/trunk/</developerConnection>
-    <url>http://svn.apache.org/viewvc/commons/sandbox/monitoring/trunk/</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/sirona/trunk/</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/sirona/trunk/</developerConnection>
+    <url>http://svn.apache.org/viewvc/incubator/sirona/trunk/</url>
   </scm>
 
   <build>
@@ -90,7 +131,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.15</version>
+          <version>2.16</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -105,10 +146,54 @@
           </dependencies>
         </plugin>
         <plugin>
-          <groupId>org.apache.tomcat.maven</groupId>
-          <artifactId>tomcat7-maven-plugin</artifactId>
-          <version>2.1</version>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>2.9.1</version>
+          <configuration>
+            <notimestamp>true</notimestamp>
+          </configuration>
         </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-release-plugin</artifactId>
+          <version>2.3.2</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.1</version>
+          <configuration>
+            <source>${maven.compiler.source}</source>
+            <target>${maven.compiler.target}</target>
+          </configuration>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-source-plugin</artifactId>
+          <version>2.2.1</version>
+          <configuration>
+            <archive>
+              <manifest>
+                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+              </manifest>
+            </archive>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>2.16</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.felix</groupId>
+          <artifactId>maven-bundle-plugin</artifactId>
+          <version>2.3.7</version>
+          <inherited>true</inherited>
+        </plugin>
+
       </plugins>
     </pluginManagement>
     <plugins>
@@ -139,16 +224,34 @@
           </execution>
         </executions>
       </plugin>
+
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-scm-publish-plugin</artifactId>
+        <version>1.0-beta-2</version>
+        <configuration>
+          <content>${project.reporting.outputDirectory}</content>
+          <pubScmUrl>scm:svn:${sirona.scmPubUrl}</pubScmUrl>
+          <checkoutDirectory>${sirona.scmPubCheckoutDirectory}</checkoutDirectory>
+          <tryUpdate>true</tryUpdate>
+        </configuration>
+        <executions>
+          <execution>
+            <id>scm-publish</id>
+            <phase>site-deploy</phase><!-- deploy site with maven-scm-publish-plugin -->
+            <goals>
+              <goal>publish-scm</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+
     </plugins>
   </build>
 
-  <distributionManagement>
-    <site>
-      <id>website</id>
-      <name>Apache Website</name>
-      <url>scp://people.apache.org/www/commons.apache.org/sandbox/monitoring/</url>
-    </site>
-  </distributionManagement>
+
 
   <dependencyManagement>
     <dependencies>
