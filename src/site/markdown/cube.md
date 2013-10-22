@@ -37,7 +37,7 @@ org.apache.sirona.cube.CubeBuilder.collector = http://localhost:1234/collector/1
 
 ## DataStore
 
-To push metrics (Gauges + Counters) to Graphite you can use the dedicated `DataStore`: `org.apache.sirona.cube.CubeDataStore`.
+To push metrics (Gauges + Counters) to Cube you can use the dedicated `DataStore`: `org.apache.sirona.cube.CubeDataStore`.
 
 Simply add to `commons-monitoring.properties` the line:
 
@@ -49,7 +49,7 @@ org.apache.sirona.store.DataStore = org.apache.sirona.cube.CubeDataStore
 
 You can also configure the period used to flush counters values:
 
-* `org.apache.sirona.cube.period`: which period to use to push counters data to Graphite (default to 1mn).
+* `org.apache.sirona.cube.period`: which period to use to push counters data to Cube (default to 1mn).
 
 ## Limitations (ATM)
 
