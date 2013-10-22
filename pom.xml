@@ -25,7 +25,7 @@
     <version>10</version>
   </parent>
   <groupId>org.apache.sirona</groupId>
-  <artifactId>commons-monitoring-parent</artifactId>
+  <artifactId>sirona-parent</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Commons Monitoring (Sandbox)</name>
@@ -177,22 +177,22 @@
       </dependency>
       <dependency>
         <groupId>org.apache.sirona</groupId>
-        <artifactId>commons-monitoring-core</artifactId>
+        <artifactId>sirona-core</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.sirona</groupId>
-        <artifactId>commons-monitoring-aop</artifactId>
+        <artifactId>sirona-aop</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.sirona</groupId>
-        <artifactId>commons-monitoring-instrumentation</artifactId>
+        <artifactId>sirona-instrumentation</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.sirona</groupId>
-        <artifactId>commons-monitoring-web</artifactId>
+        <artifactId>sirona-web</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

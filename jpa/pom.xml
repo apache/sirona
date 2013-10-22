@@ -20,12 +20,12 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <artifactId>commons-monitoring-parent</artifactId>
+    <artifactId>sirona-parent</artifactId>
     <groupId>org.apache.sirona</groupId>
     <version>1.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>commons-monitoring-jpa</artifactId>
+  <artifactId>sirona-jpa</artifactId>
   <version>1.0-SNAPSHOT</version>
   <name>Commons Monitoring (Sandbox) :: JPA</name>
 
@@ -38,11 +38,11 @@
     </dependency>
     <dependency>
       <groupId>org.apache.sirona</groupId>
-      <artifactId>commons-monitoring-core</artifactId>
+      <artifactId>sirona-core</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.sirona</groupId>
-      <artifactId>commons-monitoring-aop</artifactId>
+      <artifactId>sirona-aop</artifactId>
       <exclusions>
         <exclusion>
           <groupId>org.apache.commons</groupId>

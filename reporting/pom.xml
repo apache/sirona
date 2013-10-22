@@ -20,12 +20,12 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <artifactId>commons-monitoring-parent</artifactId>
+    <artifactId>sirona-parent</artifactId>
     <groupId>org.apache.sirona</groupId>
     <version>1.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>commons-monitoring-reporting</artifactId>
+  <artifactId>sirona-reporting</artifactId>
   <name>Commons Monitoring (Sandbox) :: Reporting</name>
   <packaging>war</packaging>
 
@@ -44,12 +44,12 @@
     </dependency>
     <dependency>
       <groupId>org.apache.sirona</groupId>
-      <artifactId>commons-monitoring-core</artifactId>
+      <artifactId>sirona-core</artifactId>
       <scope>provided</scope> <!-- using to put it in the container to get JDBC monitoring and deploy the webapp -->
     </dependency>
     <dependency>
       <groupId>org.apache.sirona</groupId>
-      <artifactId>commons-monitoring-web</artifactId>
+      <artifactId>sirona-web</artifactId>
     </dependency>
 
     <dependency>
@@ -156,7 +156,7 @@
         <dependencies>
           <dependency>
             <groupId>org.apache.sirona</groupId>
-            <artifactId>commons-monitoring-core</artifactId>
+            <artifactId>sirona-core</artifactId>
             <version>${project.version}</version>
           </dependency>
         </dependencies>

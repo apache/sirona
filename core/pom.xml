@@ -22,11 +22,11 @@
 
   <parent>
     <groupId>org.apache.sirona</groupId>
-    <artifactId>commons-monitoring-parent</artifactId>
+    <artifactId>sirona-parent</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>commons-monitoring-core</artifactId>
+  <artifactId>sirona-core</artifactId>
   <packaging>jar</packaging>
   <name>Commons Monitoring (Sandbox) :: Core</name>
 

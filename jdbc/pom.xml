@@ -18,12 +18,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
-    <artifactId>commons-monitoring-parent</artifactId>
+    <artifactId>sirona-parent</artifactId>
     <groupId>org.apache.sirona</groupId>
     <version>1.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>commons-monitoring-jdbc</artifactId>
+  <artifactId>sirona-jdbc</artifactId>
   <version>1.0-SNAPSHOT</version>
   <name>Commons Monitoring (Sandbox) :: JDBC</name>
 
@@ -36,7 +36,7 @@
   <dependencies>
     <dependency>
       <groupId>org.apache.sirona</groupId>
-      <artifactId>commons-monitoring-core</artifactId>
+      <artifactId>sirona-core</artifactId>
     </dependency>
 
     <dependency>
