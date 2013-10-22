@@ -21,7 +21,7 @@
 
   <parent>
     <artifactId>commons-monitoring-parent</artifactId>
-    <groupId>org.apache.commons.monitoring</groupId>
+    <groupId>org.apache.sirona</groupId>
     <version>1.0-SNAPSHOT</version>
   </parent>
 
@@ -43,12 +43,12 @@
       <artifactId>geronimo-servlet_3.0_spec</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.commons.monitoring</groupId>
+      <groupId>org.apache.sirona</groupId>
       <artifactId>commons-monitoring-core</artifactId>
       <scope>provided</scope> <!-- using to put it in the container to get JDBC monitoring and deploy the webapp -->
     </dependency>
     <dependency>
-      <groupId>org.apache.commons.monitoring</groupId>
+      <groupId>org.apache.sirona</groupId>
       <artifactId>commons-monitoring-web</artifactId>
     </dependency>
 
@@ -155,7 +155,7 @@
         </configuration>
         <dependencies>
           <dependency>
-            <groupId>org.apache.commons.monitoring</groupId>
+            <groupId>org.apache.sirona</groupId>
             <artifactId>commons-monitoring-core</artifactId>
             <version>${project.version}</version>
           </dependency>
