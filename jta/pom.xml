@@ -27,7 +27,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>sirona-jta</artifactId>
-  <name>Commons Monitoring (Sandbox) :: JTA</name>
+  <name>Apache Sirona Incubator :: JTA</name>
 
   <dependencies>
     <dependency>

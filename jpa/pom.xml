@@ -27,7 +27,7 @@
 
   <artifactId>sirona-jpa</artifactId>
   <version>1.0-SNAPSHOT</version>
-  <name>Commons Monitoring (Sandbox) :: JPA</name>
+  <name>Apache Sirona Incubator :: JPA</name>
 
   <dependencies>
     <dependency>

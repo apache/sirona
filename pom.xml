@@ -30,7 +30,7 @@
   <artifactId>sirona</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>Apache Sirona (Incubator)</name>
+  <name>Apache Sirona Incubator</name>
   <url>http://sirona.incubator.apache.org</url>
   <inceptionYear>2008</inceptionYear>
   <description>

@@ -27,7 +27,7 @@
 
   <artifactId>sirona-aop</artifactId>
   <version>1.0-SNAPSHOT</version>
-  <name>Commons Monitoring (Sandbox) :: AOP</name>
+  <name>Apache Sirona Incubator :: AOP</name>
 
   <dependencies>
     <dependency>

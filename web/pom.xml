@@ -27,7 +27,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>sirona-web</artifactId>
-  <name>Commons Monitoring (Sandbox) :: Web</name>
+  <name>Apache Sirona Incubator :: Web</name>
 
   <dependencies>
     <dependency>

@@ -27,7 +27,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>sirona-aspectj</artifactId>
-  <name>Commons Monitoring (Sandbox) :: AspectJ Integration</name>
+  <name>Apache Sirona Incubator :: AspectJ Integration</name>
 
   <properties>
     <aspectj.version>1.7.3</aspectj.version>

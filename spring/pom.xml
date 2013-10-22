@@ -24,7 +24,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>sirona-spring</artifactId>
-  <name>Commons Monitoring (Sandbox) :: Spring Integration</name>
+  <name>Apache Sirona Incubator :: Spring Integration</name>
 
   <properties>
     <spring.version>3.2.3.RELEASE</spring.version>

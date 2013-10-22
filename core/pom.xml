@@ -28,7 +28,7 @@
 
   <artifactId>sirona-core</artifactId>
   <packaging>jar</packaging>
-  <name>Commons Monitoring (Sandbox) :: Core</name>
+  <name>Apache Sirona Incubator :: Core</name>
 
   <dependencies>
     <dependency>
