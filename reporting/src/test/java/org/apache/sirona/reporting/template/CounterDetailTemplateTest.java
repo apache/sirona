@@ -78,6 +78,7 @@ public class CounterDetailTemplateTest {
     private Counter.Key key;
     
     private static Locale oldLocale;
+    private static final String lineSeparator = System.getProperty("line.separator");
 
     @Before
     public void init() {
@@ -109,7 +110,7 @@ public class CounterDetailTemplateTest {
         WebAssert.assertElementPresent(page, "report-table");
 
         final String text = page.getElementById("report-table").asText();
-        assertEquals("Counter\tRole\tHits\tMax\tMean\tMin\tStandardDeviation\tSum\tVariance\tValue\tConcurrency\tMaxConcurrency" + System.lineSeparator() +
+        assertEquals("Counter\tRole\tHits\tMax\tMean\tMin\tStandardDeviation\tSum\tVariance\tValue\tConcurrency\tMaxConcurrency" + lineSeparator +
             "counter \t role (u) \t 1.00 \t 55.00 \t 55.00 \t 55.00 \t 0.00 \t 55.00 \t 0.00 \t 55.00 \t 0.00 \t 0.00", text);
     }
 
@@ -120,7 +121,7 @@ public class CounterDetailTemplateTest {
         WebAssert.assertElementPresent(page, "counter");
 
         final String text = page.getElementById("counter").asText();
-        assertEquals("Counter\tRole\tHits\tMax\tMean\tMin\tStandardDeviation\tSum\tVariance\tValue\tConcurrency\tMaxConcurrency" + System.lineSeparator() +
+        assertEquals("Counter\tRole\tHits\tMax\tMean\tMin\tStandardDeviation\tSum\tVariance\tValue\tConcurrency\tMaxConcurrency" + lineSeparator +
             "counter\trole (u)\t1.00\t55.00\t55.00\t55.00\t0.00\t55.00\t0.00\t55.00\t0.00\t0.00", text);
     }
 
