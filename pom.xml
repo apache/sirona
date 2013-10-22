@@ -58,6 +58,7 @@
     <module>graphite</module>
     <module>cube</module>
     <module>collector</module>
+    <module>jpa</module>
   </modules>
 
   <developers>
@@ -160,6 +161,12 @@
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
         <version>4.11</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.hsqldb</groupId>
+        <artifactId>hsqldb</artifactId>
+        <version>2.2.9</version>
         <scope>test</scope>
       </dependency>
       <dependency>

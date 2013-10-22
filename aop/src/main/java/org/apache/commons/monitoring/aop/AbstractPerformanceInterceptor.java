@@ -51,7 +51,7 @@ public abstract class AbstractPerformanceInterceptor<T> {
             return proceed(invocation);
         }
 
-        final Counter monitor = Repository.INSTANCE.getCounter(new Counter.Key(Role.PERFORMANCES, name));
+        final Counter monitor = Repository.INSTANCE.getCounter(new Counter.Key(getRole(), name));
         final StopWatch stopwatch = Repository.INSTANCE.start(monitor);
         Throwable error = null;
         try {
@@ -67,6 +67,10 @@ public abstract class AbstractPerformanceInterceptor<T> {
                 Repository.INSTANCE.getCounter(new Counter.Key(Role.FAILURES, writer.toString())).add(stopwatch.getElapsedTime());
             }
         }
+    }
+
+    protected Role getRole() {
+        return Role.PERFORMANCES;
     }
 
     protected abstract Object proceed(T invocation) throws Throwable;

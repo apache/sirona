@@ -171,4 +171,15 @@ public class DefaultCounter implements Counter {
     public ReadWriteLock getLock() {
         return lock;
     }
+
+    @Override
+    public String toString() {
+        return "DefaultCounter{" +
+            "concurrency=" + concurrency +
+            ", key=" + key +
+            ", dataStore=" + dataStore +
+            ", maxConcurrency=" + maxConcurrency +
+            ", statistics=" + statistics +
+            '}';
+    }
 }
