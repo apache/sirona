@@ -46,7 +46,15 @@ For instance:
 
 Note: in some (old) CDI implementation you'll need to activate the monitoring interceptor: `org.apache.sirona.cdi.CommonsMonitoringInterceptor`.
 
-Note: we are working to make it configurable.
+You can configure it (without adding the `@Monitored` annotation) using <class|package>.cdi = performance
+
+For instance:
+
+```
+org.superbiz.MyService.cdi = performance
+# or for the whole package (recursive)
+org.superbiz.cdi = performance
+```
 
 # Spring
 

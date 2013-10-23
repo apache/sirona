@@ -18,9 +18,9 @@ under the License.
 -->
 ## Configuration features
 ### Location
-Configuration relies on `commons-monitoring.properties` file which should be found in the commons-monitoring-core classloader.
+Configuration relies on `sirona.properties` file which should be found in the commons-monitoring-core classloader.
 
-Note: you can change the file name using org.apache.sirona.configuration system property.
+Note: you can change the file name using `org.apache.sirona.configuration` system property.
 
 ### Utilities
 

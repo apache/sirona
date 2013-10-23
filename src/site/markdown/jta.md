@@ -41,4 +41,16 @@ Then you need to add on the beans which can be enrolled in transactions you want
 `org.apache.sirona.jta.JTAMonitored` (CDI beans) or the interceptor `org.apache.sirona.jta.JTAInterceptor`
 (for EJB for instance it can be done through configuration, see ejb-jar.xml).
 
-Note: we are working to make it configurable - same note as for CDI module.
+To configure it and not modify your code you can use the `cdi` module and just add the `jta` in the list of values:
+
+You can configure it (without adding the `@Monitored` annotation) using <class|package>.cdi = performance
+
+For instance:
+
+```
+org.superbiz.MyService.cdi = jta
+# or for the whole package (recursive)
+org.superbiz.cdi = jta
+# and if you want both jta and performances:
+org.superbiz.MyService.cdi = performance,jta
+```

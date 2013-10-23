@@ -46,7 +46,7 @@ public class Unit implements Comparable<Unit> {
      */
     public static class Time extends Unit {
         public static final Unit NANOSECOND = new Unit("ns");
-        public static final Unit MICROSECOND = new Unit("µs", NANOSECOND, 1000);
+        public static final Unit MICROSECOND = new Unit("us", NANOSECOND, 1000);
         public static final Unit MILLISECOND = new Unit("ms", MICROSECOND, 1000);
         public static final Unit SECOND = new Unit("s", MILLISECOND, 1000);
         public static final Unit MINUTE = new Unit("min", SECOND, 60);

@@ -36,7 +36,7 @@ public class TemplateHelper {
         renderHtml(template, Collections.<String, Object>emptyMap());
     }
 
-    public void renderHtml(final String template, final Map<String, ?> userParams) {
+    public void renderHtml(final String template, final Map<String, ? extends Object> userParams) {
         Templates.htmlRender(writer, template, new MapBuilder<String, Object>().set(Map.class.cast(params)).set(Map.class.cast(userParams)).build());
     }
 

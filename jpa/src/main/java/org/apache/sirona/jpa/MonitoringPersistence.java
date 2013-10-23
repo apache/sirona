@@ -35,7 +35,7 @@ import static org.apache.sirona.jpa.JPAProxyFactory.monitor;
 public class MonitoringPersistence implements PersistenceProvider {
     public static final Role ROLE = new Role("jpa", Unit.Time.NANOSECOND);
 
-    private static final String DELEGATE_PROVIDER_KEY = Configuration.COMMONS_MONITORING_PREFIX + "jpa.provider";
+    private static final String DELEGATE_PROVIDER_KEY = Configuration.CONFIG_PROPERTY_PREFIX + "jpa.provider";
     private static final String DEFAULT_PROVIDER = System.getProperty(DELEGATE_PROVIDER_KEY);
     private static final Class<?>[] PROXY_API = new Class<?>[] { EntityManagerFactory.class, Serializable.class};
 

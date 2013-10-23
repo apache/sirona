@@ -31,7 +31,7 @@ public abstract class BatchCounterDataStore extends InMemoryCounterDataStore {
 
     protected BatchCounterDataStore() {
         final String name = getClass().getSimpleName().toLowerCase(Locale.ENGLISH).replace("counterdatastore", "");
-        final long period = Configuration.getInteger(Configuration.COMMONS_MONITORING_PREFIX + name + ".period", 60000);
+        final long period = Configuration.getInteger(Configuration.CONFIG_PROPERTY_PREFIX + name + ".period", 60000);
 
         final ScheduledExecutorService ses = Executors.newSingleThreadScheduledExecutor(new DaemonThreadFactory(name + "-schedule-"));
         final ScheduledFuture<?> future = ses.scheduleAtFixedRate(new BatchPushCountersTask(), period, period, TimeUnit.MILLISECONDS);

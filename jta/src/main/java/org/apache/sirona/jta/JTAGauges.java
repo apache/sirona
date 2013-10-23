@@ -35,7 +35,7 @@ public class JTAGauges implements GaugeFactory {
 
     @Override
     public Gauge[] gauges() {
-        final long period = Configuration.getInteger(Configuration.COMMONS_MONITORING_PREFIX + "gauge.jta.period", 4000);
+        final long period = Configuration.getInteger(Configuration.CONFIG_PROPERTY_PREFIX + "gauge.jta.period", 4000);
         return new Gauge[] {
             new JTAGauge(JTA_COMMITED, COMMITTED, period),
             new JTAGauge(JTA_ROLLBACKED, ROLLBACKED, period),

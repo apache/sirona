@@ -41,7 +41,7 @@ public class CommonsMonitoringPerformanceExtension implements Extension {
 
     private static final String PERFORMANCE_MARKER = "performance";
 
-    private final boolean enabled = Configuration.is(Configuration.COMMONS_MONITORING_PREFIX + "cdi.enabled", true);
+    private final boolean enabled = Configuration.is(Configuration.CONFIG_PROPERTY_PREFIX + "cdi.enabled", true);
     private final Monitored binding = newAnnotation(Monitored.class);
     private final Map<Class<? extends Annotation>, Annotation> otherBindings = new HashMap<Class<? extends Annotation>, Annotation>();
 

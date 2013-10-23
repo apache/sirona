@@ -43,12 +43,12 @@ import java.util.logging.Logger;
 public final class Configuration {
     private static final Logger LOGGER = Logger.getLogger(Configuration.class.getName());
 
-    public static final String COMMONS_MONITORING_PREFIX = "org.apache.sirona.";
+    public static final String CONFIG_PROPERTY_PREFIX = "org.apache.sirona.";
 
     private static final Map<Class<?>, Object> SINGLETONS = new ConcurrentHashMap<Class<?>, Object>();
     private static final Collection<ToDestroy> INSTANCES = new ArrayList<ToDestroy>();
 
-    private static final String DEFAULT_CONFIGURATION_FILE = "commons-monitoring.properties";
+    private static final String DEFAULT_CONFIGURATION_FILE = "sirona.properties";
 
     private static Thread shutdownHook = null;
 
@@ -66,12 +66,13 @@ public final class Configuration {
     }
 
     private static InputStream findConfiguration() throws FileNotFoundException {
-        final String filename = System.getProperty(COMMONS_MONITORING_PREFIX + "configuration", DEFAULT_CONFIGURATION_FILE);
+        final String filename = System.getProperty(CONFIG_PROPERTY_PREFIX + "configuration", DEFAULT_CONFIGURATION_FILE);
         if (new File(filename).exists()) {
             return new FileInputStream(filename);
         }
 
-        return ClassLoaders.current().getResourceAsStream(filename);
+        // use core classloader and not TCCL to avoid to use app loader to load config
+        return Configuration.class.getClassLoader().getResourceAsStream(filename);
     }
 
     public static <T> T[] newInstances(final Class<T> api) {
@@ -132,7 +133,7 @@ public final class Configuration {
             if (m.getAnnotation(Created.class) != null) {
                 m.invoke(instance);
             } else if (m.getAnnotation(Destroying.class) != null) {
-                if (shutdownHook == null == is(COMMONS_MONITORING_PREFIX + "shutdown.hook", true)) {
+                if (shutdownHook == null == is(CONFIG_PROPERTY_PREFIX + "shutdown.hook", true)) {
                     shutdownHook = new Thread() {
                         @Override
                         public void run() {

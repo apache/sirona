@@ -29,12 +29,12 @@ import java.util.Set;
 public class MonitoringReportingInitializer implements ServletContainerInitializer {
     @Override
     public void onStartup(final Set<Class<?>> classes, final ServletContext ctx) throws ServletException {
-        final String activated = ctx.getInitParameter(Configuration.COMMONS_MONITORING_PREFIX + "reporting.activated");
+        final String activated = ctx.getInitParameter(Configuration.CONFIG_PROPERTY_PREFIX + "reporting.activated");
         if ("false".equalsIgnoreCase(activated)) {
             return;
         }
 
-        String mapping = ctx.getInitParameter(Configuration.COMMONS_MONITORING_PREFIX + "reporting.mapping");
+        String mapping = ctx.getInitParameter(Configuration.CONFIG_PROPERTY_PREFIX + "reporting.mapping");
         if (mapping == null) {
             mapping = "/monitoring";
         }

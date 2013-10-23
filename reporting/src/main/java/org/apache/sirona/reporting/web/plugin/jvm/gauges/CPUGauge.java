@@ -41,6 +41,6 @@ public class CPUGauge implements Gauge {
 
     @Override
     public long period() {
-        return Configuration.getInteger(Configuration.COMMONS_MONITORING_PREFIX + "gauge.cpu.period", 4000);
+        return Configuration.getInteger(Configuration.CONFIG_PROPERTY_PREFIX + "gauge.cpu.period", 4000);
     }
 }

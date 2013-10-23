@@ -59,7 +59,7 @@ public class InMemoryGaugeDataStore implements GaugeDataStore {
 
     // no perf issues here normally since add is called not that often
     protected static class FixedSizedMap extends ConcurrentSkipListMap<Long, Double> {
-        private static final int MAX_SIZE = Configuration.getInteger(Configuration.COMMONS_MONITORING_PREFIX + "gauge.max-size", 100);
+        private static final int MAX_SIZE = Configuration.getInteger(Configuration.CONFIG_PROPERTY_PREFIX + "gauge.max-size", 100);
 
         protected FixedSizedMap() {
             // no-op

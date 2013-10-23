@@ -57,6 +57,6 @@ public class SessionGauge implements Gauge {
 
     @Override
     public long period() {
-        return Configuration.getInteger(Configuration.COMMONS_MONITORING_PREFIX + "gauge.sessions.period", 4000);
+        return Configuration.getInteger(Configuration.CONFIG_PROPERTY_PREFIX + "gauge.sessions.period", 4000);
     }
 }

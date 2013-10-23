@@ -46,7 +46,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class JMXEndpoints {
-    private static final boolean METHOD_INVOCATION_ALLOWED = Configuration.is(Configuration.COMMONS_MONITORING_PREFIX + "jmx.method.allowed", true);
+    private static final boolean METHOD_INVOCATION_ALLOWED = Configuration.is(Configuration.CONFIG_PROPERTY_PREFIX + "jmx.method.allowed", true);
 
     private static final Map<String, Class<?>> WRAPPERS = new HashMap<String, Class<?>>();
 

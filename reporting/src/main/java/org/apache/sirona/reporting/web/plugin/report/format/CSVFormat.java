@@ -25,7 +25,7 @@ import java.util.Collection;
 import java.util.Map;
 
 public class CSVFormat extends MapFormat implements Format {
-    private static final String SEPARATOR = Configuration.getProperty(Configuration.COMMONS_MONITORING_PREFIX + "csv.separator", ";");
+    private static final String SEPARATOR = Configuration.getProperty(Configuration.CONFIG_PROPERTY_PREFIX + "csv.separator", ";");
     public static final String HEADER = "Monitor" + SEPARATOR + "Role" + SEPARATOR + toCsv(ATTRIBUTES_ORDERED_LIST);
 
     @Override

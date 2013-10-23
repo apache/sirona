@@ -34,7 +34,7 @@ public class UnitTest {
     public void derived() {
         assertEquals(NANOSECOND, HOUR.getPrimary());
         assertEquals(NANOSECOND, NANOSECOND.getDerived("ns"));
-        assertEquals(MICROSECOND, NANOSECOND.getDerived("µs"));
+        assertEquals(MICROSECOND, NANOSECOND.getDerived("us"));
         assertEquals(MILLISECOND, NANOSECOND.getDerived("ms"));
         assertEquals(SECOND, NANOSECOND.getDerived("s"));
     }

@@ -31,7 +31,7 @@ import java.util.Set;
 public class WebMonitoringInitializer implements ServletContainerInitializer {
     @Override
     public void onStartup(final Set<Class<?>> classes, final ServletContext ctx) throws ServletException {
-        final String activated = ctx.getInitParameter(Configuration.COMMONS_MONITORING_PREFIX + "web.activated");
+        final String activated = ctx.getInitParameter(Configuration.CONFIG_PROPERTY_PREFIX + "web.activated");
         if ("false".equalsIgnoreCase(activated)) {
             return;
         }
@@ -39,7 +39,7 @@ public class WebMonitoringInitializer implements ServletContainerInitializer {
         ctx.addListener(MonitoringSessionListener.class);
         ctx.addListener(GaugeDiscoveryListener.class);
 
-        String monitoredUrls = ctx.getInitParameter(Configuration.COMMONS_MONITORING_PREFIX + "web.monitored-urls");
+        String monitoredUrls = ctx.getInitParameter(Configuration.CONFIG_PROPERTY_PREFIX + "web.monitored-urls");
         if (monitoredUrls == null) {
             monitoredUrls = "/*";
         }
