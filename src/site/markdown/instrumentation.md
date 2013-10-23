@@ -98,7 +98,7 @@ See [AspectJ documentation](http://eclipse.org/aspectj/doc/next/progguide/langua
 
 Few global configuration (`sirona.properties`) is available for all interceptors:
 
-* `org.apache.sirona.performance.adaptive`: if this boolean is set to true the following parameter are taken into account
+* `org.apache.sirona.performance.adaptive`: if this boolean is set to true the following parameters are taken into account
 * `org.apache.sirona.performance.threshold`: if > 0 it is the duration under which calls are skipped (no more monitored). Note: the format supports <duration> <TimeUnit name> too. For instance `100 MILLISECONDS` is valid.
 * `org.apache.sirona.performance.forced-iteration`: the number of iterations a deactivated interceptor (because of threshold rule) will wait before forcing a measure to see if the monitoring should be activated back.
 
