@@ -22,7 +22,7 @@ This module aims to monitor commits/rollbacks and active transaction number.
 
 ## Installation
 
-`commons-monitoring-jta` should be added to your webapp. You need to register the jta gauges. To do it the easiest is
+`sirona-jta` should be added to your webapp. You need to register the jta gauges. To do it the easiest is
 to add `commons-monitoring-web` to your webapp and register the listener `org.apache.sirona.web.discovery.GaugeDiscoveryListener`:
 
     <web-app xmlns="http://java.sun.com/xml/ns/javaee"
@@ -43,14 +43,11 @@ Then you need to add on the beans which can be enrolled in transactions you want
 
 To configure it and not modify your code you can use the `cdi` module and just add the `jta` in the list of values:
 
-You can configure it (without adding the `@Monitored` annotation) using <class|package>.cdi = performance
+You can configure it (without adding the `@JTAMonitored` annotation) using `org.apache.sirona.cdi.jta` key
+and listing predicates as values (see CDI for details). This feature needs cdi module.
 
 For instance:
 
 ```
-org.superbiz.MyService.cdi = jta
-# or for the whole package (recursive)
-org.superbiz.cdi = jta
-# and if you want both jta and performances:
-org.superbiz.MyService.cdi = performance,jta
+org.apache.sirona.cdi.jta = prefix:org.superbiz.MyService,regex:.*Bean
 ```

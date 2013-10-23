@@ -48,14 +48,13 @@ For instance:
 
 Note: in some (old) CDI implementation you'll need to activate the monitoring interceptor: `org.apache.sirona.cdi.CommonsMonitoringInterceptor`.
 
-You can configure it (without adding the `@Monitored` annotation) using <class|package>.cdi = performance
+You can configure it (without adding the `@Monitored` annotation) using `org.apache.sirona.cdi.performance` key. The
+value is a list of predicate (`regex:<regex>`, `prefix:<prefix>`, `suffix:<suffix>`).
 
 For instance:
 
 ```
-org.superbiz.MyService.cdi = performance
-# or for the whole package (recursive)
-org.superbiz.cdi = performance
+org.apache.sirona.cdi.performance = prefix:org.superbiz.MyService,regex:.*Bean
 ```
 
 # Spring

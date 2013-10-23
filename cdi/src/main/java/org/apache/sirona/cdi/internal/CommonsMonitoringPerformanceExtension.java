@@ -18,9 +18,10 @@ package org.apache.sirona.cdi.internal;
 
 import org.apache.sirona.cdi.Monitored;
 import org.apache.sirona.configuration.Configuration;
-import org.apache.sirona.util.ClassLoaders;
+import org.apache.sirona.configuration.predicate.PredicateEvaluator;
 
 import javax.enterprise.event.Observes;
+import javax.enterprise.inject.spi.BeforeBeanDiscovery;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
 import java.io.Serializable;
@@ -28,12 +29,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class CommonsMonitoringPerformanceExtension implements Extension {
@@ -42,8 +39,21 @@ public class CommonsMonitoringPerformanceExtension implements Extension {
     private static final String PERFORMANCE_MARKER = "performance";
 
     private final boolean enabled = Configuration.is(Configuration.CONFIG_PROPERTY_PREFIX + "cdi.enabled", true);
-    private final Monitored binding = newAnnotation(Monitored.class);
+    private final Monitored performanceBinding = newAnnotation(Monitored.class);
+    private final Annotation jtaBinding = tryNewAnnotation("org.apache.sirona.jta.JTAMonitored");
     private final Map<Class<? extends Annotation>, Annotation> otherBindings = new HashMap<Class<? extends Annotation>, Annotation>();
+
+    private PredicateEvaluator performaceEvaluator;
+    private PredicateEvaluator jtaEvaluator;
+
+    void init(final @Observes BeforeBeanDiscovery beforeBeanDiscovery) {
+        if (!enabled) {
+            return;
+        }
+
+        performaceEvaluator = new PredicateEvaluator(Configuration.getProperty(Configuration.CONFIG_PROPERTY_PREFIX + "cdi.performance", null), ",");
+        jtaEvaluator = new PredicateEvaluator(Configuration.getProperty(Configuration.CONFIG_PROPERTY_PREFIX + "cdi.jta", null), ",");
+    }
 
     <A> void processAnnotatedType(final @Observes ProcessAnnotatedType<A> pat) {
         if (!enabled) {
@@ -51,34 +61,22 @@ public class CommonsMonitoringPerformanceExtension implements Extension {
         }
 
         final String beanClassName = pat.getAnnotatedType().getJavaClass().getName();
-        final String configuration = findConfiguration(beanClassName);
-        if (configuration == null) {
-            return;
-        }
+        final boolean addPerf = performaceEvaluator.matches(beanClassName);
+        final boolean addJta = jtaEvaluator.matches(beanClassName);
 
-        final Collection<String> configForThisBean = Arrays.asList(configuration.split(","));
-        if (!configForThisBean.isEmpty()) {
-            final WrappedAnnotatedType<A> wrapper = new WrappedAnnotatedType<A>(pat.getAnnotatedType());
-            for (final String rawConfig : configForThisBean) {
-                final String config = rawConfig.trim();
-
-                if (PERFORMANCE_MARKER.equals(config)) {
-                    wrapper.getAnnotations().add(binding);
-                } else { // convention is from <name> the binding is org.apache.sirona.<lowercase(name)>.<uppercase(name)>Monitored, ex: jta
-                    final String deducedName = "org.apache.sirona." + config.toLowerCase(Locale.ENGLISH) + "." + config.toUpperCase(Locale.ENGLISH) + "Monitored";
-                    try {
-                        final Class<? extends Annotation> annotationType = Class.class.cast(ClassLoaders.current().loadClass(deducedName));
-                        Annotation instance = otherBindings.get(annotationType);
-                        if (instance == null) {
-                            instance = newAnnotation(annotationType);
-                            otherBindings.put(annotationType, instance);
-                        }
-                        wrapper.getAnnotations().add(instance);
-                    } catch (final ClassNotFoundException e) {
-                        LOGGER.log(Level.SEVERE, e.getMessage(), e);
-                    }
-                }
+        final WrappedAnnotatedType<A> wrapper;
+        if (addPerf || addJta) {
+            wrapper = new WrappedAnnotatedType<A>(pat.getAnnotatedType());
+            if (addPerf) {
+                wrapper.getAnnotations().add(performanceBinding);
             }
+            if (addJta) {
+                wrapper.getAnnotations().add(jtaBinding);
+            }
+        } else {
+            wrapper = null;
+        }
+        if (wrapper != null) {
             pat.setAnnotatedType(wrapper);
         }
     }
@@ -99,6 +97,15 @@ public class CommonsMonitoringPerformanceExtension implements Extension {
         return property;
     }
 
+    private static Annotation tryNewAnnotation(final String clazz) {
+        try {
+            return newAnnotation(Class.class.cast(Thread.currentThread().getContextClassLoader().loadClass(clazz)));
+        } catch (final ClassNotFoundException e) {
+            return null;
+        } catch (final NoClassDefFoundError e) {
+            return null;
+        }
+    }
     private static <T extends Annotation> T newAnnotation(final Class<T> clazz) {
         return clazz.cast(
                 Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(),
