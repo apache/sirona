@@ -60,6 +60,11 @@ public final class MonitoringProxyFactory {
         protected String getCounterName(final Invocation invocation) {
             return getCounterName(invocation.target, invocation.method);
         }
+
+        @Override
+        protected Object extractContextKey(final Invocation invocation) {
+            return new SerializableMethod(invocation.method);
+        }
     }
 
     private static class Invocation {

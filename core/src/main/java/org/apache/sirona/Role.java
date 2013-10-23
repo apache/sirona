@@ -19,6 +19,8 @@ package org.apache.sirona;
 
 import org.apache.sirona.counters.Unit;
 
+import java.io.Serializable;
+
 import static org.apache.sirona.counters.Unit.Time.NANOSECOND;
 
 /**
@@ -27,7 +29,7 @@ import static org.apache.sirona.counters.Unit.Time.NANOSECOND;
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public class Role implements Comparable<Role> {
+public class Role implements Comparable<Role>, Serializable {
     public static final Role WEB = new Role("web", NANOSECOND);
     public static final Role JSP = new Role("jsp", NANOSECOND);
     public static final Role JDBC = new Role("jdbc", NANOSECOND);

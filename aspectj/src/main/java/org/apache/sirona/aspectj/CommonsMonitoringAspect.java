@@ -49,6 +49,11 @@ public abstract class CommonsMonitoringAspect extends AbstractPerformanceInterce
         return invocation.getSignature().toLongString();
     }
 
+    @Override
+    protected Object extractContextKey(final ProceedingJoinPoint invocation) {
+        return new SerializableMethod(findMethod(invocation.getSignature()));
+    }
+
     private static Method findMethod(final Signature signature) {
         if ("org.aspectj.runtime.reflect.MethodSignatureImpl".equals(signature.getClass().getName())) {
             try {

@@ -22,6 +22,7 @@ import javax.interceptor.AroundInvoke;
 import javax.interceptor.AroundTimeout;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
+import java.lang.reflect.Method;
 
 @Interceptor
 @Monitored
@@ -40,5 +41,10 @@ public class CommonsMonitoringInterceptor extends AbstractPerformanceInterceptor
     @Override
     protected String getCounterName(final InvocationContext invocation) {
         return getCounterName(invocation.getTarget(), invocation.getMethod());
+    }
+
+    @Override
+    protected Object extractContextKey(final InvocationContext invocation) {
+        return new SerializableMethod(invocation.getMethod());
     }
 }

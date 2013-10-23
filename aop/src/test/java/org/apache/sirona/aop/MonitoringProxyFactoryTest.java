@@ -19,6 +19,8 @@ package org.apache.sirona.aop;
 import org.apache.sirona.Role;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.repositories.Repository;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.concurrent.TimeUnit;
@@ -28,6 +30,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 public class MonitoringProxyFactoryTest {
+    @Before
+    @After
+    public void reset() {
+        Repository.INSTANCE.clear();
+    }
+
     @Test
     public void test() {
         final Foo foo = MonitoringProxyFactory.monitor(Foo.class, new FooImpl());

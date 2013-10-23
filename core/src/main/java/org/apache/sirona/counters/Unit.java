@@ -17,6 +17,7 @@
 
 package org.apache.sirona.counters;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -38,7 +39,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public class Unit implements Comparable<Unit> {
+public class Unit implements Comparable<Unit>, Serializable {
     private static final Map<String, Unit> UNITS = new ConcurrentHashMap<String, Unit>();
 
     /**

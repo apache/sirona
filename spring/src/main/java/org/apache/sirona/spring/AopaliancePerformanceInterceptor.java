@@ -21,6 +21,8 @@ import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.apache.sirona.aop.AbstractPerformanceInterceptor;
 
+import java.lang.reflect.Method;
+
 /**
  * Spring-aop implementation of PerformanceInterceptor.
  *
@@ -42,4 +44,8 @@ public class AopaliancePerformanceInterceptor extends AbstractPerformanceInterce
         return invocation.proceed();
     }
 
+    @Override
+    protected Object extractContextKey(final MethodInvocation invocation) {
+        return new SerializableMethod(invocation.getMethod());
+    }
 }

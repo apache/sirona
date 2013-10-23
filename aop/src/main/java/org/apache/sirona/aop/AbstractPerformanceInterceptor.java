@@ -17,14 +17,22 @@
 
 package org.apache.sirona.aop;
 
+import org.apache.sirona.MonitoringException;
 import org.apache.sirona.Role;
+import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.repositories.Repository;
 import org.apache.sirona.stopwatches.StopWatch;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.io.Serializable;
 import java.lang.reflect.Method;
+import java.util.Locale;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * A method interceptor that compute method invocation performances.
@@ -34,7 +42,27 @@ import java.lang.reflect.Method;
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
-public abstract class AbstractPerformanceInterceptor<T> {
+public abstract class AbstractPerformanceInterceptor<T> implements Serializable {
+    // static for performances reasons, all these values are read through getXXX so it is overridable
+    private static final boolean ADAPTIVE = Configuration.is(Configuration.CONFIG_PROPERTY_PREFIX + "performance.adaptive", false);
+    private static final long FORCED_ITERATION = Configuration.getInteger(Configuration.CONFIG_PROPERTY_PREFIX + "performance.forced-iteration", 0);
+    private static final long THRESHOLD = duration(Configuration.getProperty(Configuration.CONFIG_PROPERTY_PREFIX + "performance.threshold", null));
+    private static final ActivationContext ALWAYS_ACTIVE_CONTEXT = new ActivationContext(true, 0, 0);
+
+    protected static final ConcurrentMap<Object, ActivationContext> CONTEXTS = new ConcurrentHashMap<Object, ActivationContext>();
+
+    private static long duration(final String duration) {
+        if (duration == null) {
+            return 0;
+        }
+        final String[] parts = duration.split(" ");
+        if (parts.length == 1) {
+            return Long.parseLong(duration.trim());
+        } else if (parts.length == 2) {
+            return TimeUnit.valueOf(parts[2].trim().toUpperCase(Locale.ENGLISH)).toNanos(Long.parseLong(parts[0].trim()));
+        }
+        return 0;
+    }
 
     protected MonitorNameExtractor monitorNameExtractor;
 
@@ -51,8 +79,16 @@ public abstract class AbstractPerformanceInterceptor<T> {
             return proceed(invocation);
         }
 
-        final Counter monitor = Repository.INSTANCE.getCounter(new Counter.Key(getRole(), name));
-        final StopWatch stopwatch = Repository.INSTANCE.start(monitor);
+        final ActivationContext context = doFindContext(invocation);
+
+        final StopWatch stopwatch;
+        if (context.isActive() || context.isForcedIteration()) {
+            final Counter monitor = Repository.INSTANCE.getCounter(new Counter.Key(getRole(), name));
+            stopwatch = Repository.INSTANCE.start(monitor);
+        } else {
+            stopwatch = null;
+        }
+
         Throwable error = null;
         try {
             return proceed(invocation);
@@ -60,13 +96,65 @@ public abstract class AbstractPerformanceInterceptor<T> {
             error = t;
             throw t;
         } finally {
-            stopwatch.stop();
-            if (error != null) {
-                final ByteArrayOutputStream writer = new ByteArrayOutputStream();
-                error.printStackTrace(new PrintStream(writer));
-                Repository.INSTANCE.getCounter(new Counter.Key(Role.FAILURES, writer.toString())).add(stopwatch.getElapsedTime());
+            if (stopwatch != null) {
+                stopwatch.stop();
+
+                final long elapsedTime = stopwatch.getElapsedTime();
+
+                if (error != null) {
+                    final ByteArrayOutputStream writer = new ByteArrayOutputStream();
+                    error.printStackTrace(new PrintStream(writer));
+                    Repository.INSTANCE.getCounter(new Counter.Key(Role.FAILURES, writer.toString())).add(elapsedTime);
+                }
+
+                if (context.isThresholdActive() && elapsedTime < context.getThreshold()) {
+                    context.reset();
+                }
             }
         }
+    }
+
+    protected boolean isAdaptive() {
+        return ADAPTIVE;
+    }
+
+    protected Object extractContextKey(final T invocation) {
+        return null;
+    }
+
+    protected ActivationContext getOrCreateContext(final Object m) {
+        final ActivationContext c = CONTEXTS.get(m);
+        if (c == null) {
+            final String counterName;
+            if (SerializableMethod.class.isInstance(m)) {
+                counterName = getCounterName(null, SerializableMethod.class.cast(m).method());
+            } else {
+                counterName = m.toString();
+            }
+            return putAndGetActivationContext(m, new ActivationContext(true, counterName));
+        }
+        return c;
+    }
+
+    protected ActivationContext putAndGetActivationContext(Object m, ActivationContext newCtx) {
+        final ActivationContext old = CONTEXTS.putIfAbsent(m, newCtx);
+        if (old != null) {
+            newCtx = old;
+        }
+        return newCtx;
+    }
+
+    protected ActivationContext doFindContext(final T invocation) {
+        if (!isAdaptive()) {
+            return ALWAYS_ACTIVE_CONTEXT;
+        }
+
+        final Object m = extractContextKey(invocation);
+        if (m != null) {
+            return getOrCreateContext(m);
+        }
+
+        return ALWAYS_ACTIVE_CONTEXT;
     }
 
     protected Role getRole() {
@@ -89,5 +177,95 @@ public abstract class AbstractPerformanceInterceptor<T> {
 
     public void setMonitorNameExtractor(final MonitorNameExtractor monitorNameExtractor) {
         this.monitorNameExtractor = monitorNameExtractor;
+    }
+
+    protected static class SerializableMethod implements Serializable {
+        protected final String clazz;
+        protected final String method;
+        protected Method realMethod;
+
+        public SerializableMethod(final String clazz, final String method, final Method reflectMethod) {
+            this.clazz = clazz;
+            this.method = method;
+            this.realMethod = reflectMethod;
+        }
+
+        public SerializableMethod(final Method m) {
+            this(m.getDeclaringClass().getName(), m.getName(), m);
+        }
+
+        public Method method() {
+            if (realMethod == null) { // try to find it
+                try {
+                    Class<?> declaring = Thread.currentThread().getContextClassLoader().loadClass(clazz);
+                    while (declaring != null) {
+                        for (final Method m : declaring.getDeclaredMethods()) {
+                            if (m.getName().equals(method)) {
+                                realMethod = m;
+                                return realMethod;
+                            }
+                        }
+                        declaring = declaring.getSuperclass();
+                    }
+                } catch (final ClassNotFoundException e) {
+                    throw new MonitoringException(e);
+                }
+            }
+            return realMethod;
+        }
+    }
+
+    protected static class ActivationContext implements Serializable {
+        protected final long forceIteration;
+        protected final long threshold;
+        protected final boolean thresholdActive;
+
+        protected volatile boolean active = true;
+        protected volatile AtomicInteger iteration = new AtomicInteger(0);
+
+        public ActivationContext(final boolean active, final long th, final long it) {
+            this.active = active;
+
+            if (it >= 0) {
+                forceIteration = it;
+            } else {
+                forceIteration = FORCED_ITERATION;
+            }
+
+            if (th >= 0) {
+                threshold = th;
+            } else {
+                threshold = THRESHOLD;
+            }
+
+            this.thresholdActive = this.threshold > 0;
+        }
+
+        public ActivationContext(final boolean active, final String name) {
+            this(active,
+                duration(Configuration.getProperty(Configuration.CONFIG_PROPERTY_PREFIX + "performance." + name + ".threshold", null)),
+                Configuration.getInteger(Configuration.CONFIG_PROPERTY_PREFIX + "performance." + name + ".forced-iteration", -1));
+        }
+
+        public boolean isForcedIteration() {
+            return iteration.incrementAndGet() > forceIteration;
+        }
+
+        protected long getThreshold() {
+            return threshold;
+        }
+
+        protected boolean isThresholdActive() {
+            return thresholdActive;
+        }
+
+        public boolean isActive() {
+            return active;
+        }
+
+        public void reset() {
+            active = false;
+            iteration.set(0);
+        }
     }
 }

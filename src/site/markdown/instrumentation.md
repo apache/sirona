@@ -27,7 +27,9 @@ to use javassist you set it to `org.apache.commons.proxy.factory.javassist.Javas
 
 Then the API is quite simple:
 
-    final MyClient client = MonitoringProxyFactory.monitor(MyClient.class, getMyClientInstance());
+```java
+final MyClient client = MonitoringProxyFactory.monitor(MyClient.class, getMyClientInstance());
+```
 
 # CDI
 
@@ -91,3 +93,38 @@ concrete aspect defining the pointcut to monitor:
     </aspectj>
 
 See [AspectJ documentation](http://eclipse.org/aspectj/doc/next/progguide/language-joinPoints.html) for more information.
+
+# Note on interceptor configuration (experimental)
+
+Few global configuration (`sirona.properties`) is available for all interceptors:
+
+* `org.apache.sirona.performance.adaptive`: if this boolean is set to true the following parameter are taken into account
+* `org.apache.sirona.performance.threshold`: if > 0 it is the duration under which calls are skipped (no more monitored). Note: the format supports <duration> <TimeUnit name> too. For instance `100 MILLISECONDS` is valid.
+* `org.apache.sirona.performance.forced-iteration`: the number of iterations a deactivated interceptor (because of threshold rule) will wait before forcing a measure to see if the monitoring should be activated back.
+
+Note: `threshold` and `forced-iteration` parameters can be specialized appending to `org.apache.sirona.` the method qualified name.
+
+Here a sample of the behavior associated with these properties. Let say you configured `forced-iteration` to 5 and
+ `threshold` to 100 milliseconds. If `xxx ms` represent an invocation of xxx milliseconds and `*` represent a call
+ which was measured, here is an invocation sequence:
+
+ ```
+ 500 ms*
+ 5 ms*
+ 500 ms
+ 500 ms
+ 500 ms
+ 500 ms
+ 500 ms
+ 20 ms*
+ 200 ms
+ 200 ms
+ 200 ms
+ 200 ms
+ 200 ms
+ 500 ms*
+ 500 ms*
+ ```
+
+Note: the idea is to reduce the overhead of the interception. This is pretty efficient in general but particularly with AspectJ.
+Note 2: if your invocations are pretty unstable this is not really usable since since you'll not get a good threshold value.
