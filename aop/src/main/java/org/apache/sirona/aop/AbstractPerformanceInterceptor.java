@@ -183,11 +183,13 @@ public abstract class AbstractPerformanceInterceptor<T> implements Serializable 
         protected final String clazz;
         protected final String method;
         protected Method realMethod;
+        protected final int hashCode;
 
         public SerializableMethod(final String clazz, final String method, final Method reflectMethod) {
             this.clazz = clazz;
             this.method = method;
             this.realMethod = reflectMethod;
+            this.hashCode = reflectMethod.hashCode();
         }
 
         public SerializableMethod(final Method m) {
@@ -212,6 +214,27 @@ public abstract class AbstractPerformanceInterceptor<T> implements Serializable 
                 }
             }
             return realMethod;
+        }
+
+        @Override
+        public boolean equals(final Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+
+            final SerializableMethod that = SerializableMethod.class.cast(o);
+            if (method != null && that.method != null) {
+                return method.equals(that.method);
+            }
+            return hashCode == that.hashCode;
+        }
+
+        @Override
+        public int hashCode() {
+            return hashCode;
         }
     }
 

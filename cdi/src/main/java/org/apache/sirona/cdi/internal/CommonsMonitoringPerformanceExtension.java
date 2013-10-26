@@ -29,19 +29,11 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Logger;
 
 public class CommonsMonitoringPerformanceExtension implements Extension {
-    private static final Logger LOGGER = Logger.getLogger(CommonsMonitoringPerformanceExtension.class.getName());
-
-    private static final String PERFORMANCE_MARKER = "performance";
-
     private final boolean enabled = Configuration.is(Configuration.CONFIG_PROPERTY_PREFIX + "cdi.enabled", true);
     private final Monitored performanceBinding = newAnnotation(Monitored.class);
     private final Annotation jtaBinding = tryNewAnnotation("org.apache.sirona.jta.JTAMonitored");
-    private final Map<Class<? extends Annotation>, Annotation> otherBindings = new HashMap<Class<? extends Annotation>, Annotation>();
 
     private PredicateEvaluator performaceEvaluator;
     private PredicateEvaluator jtaEvaluator;
