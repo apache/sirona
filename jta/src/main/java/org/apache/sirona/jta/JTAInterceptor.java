@@ -23,6 +23,7 @@ import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
 import javax.transaction.Status;
 import javax.transaction.Synchronization;
+import javax.transaction.Transaction;
 import javax.transaction.TransactionSynchronizationRegistry;
 
 @Interceptor
@@ -36,7 +37,8 @@ public class JTAInterceptor {
     @AroundInvoke
     @AroundTimeout
     public Object jta(final InvocationContext invocationContext) throws Throwable {
-        if (transactionSynchronizationRegistry.getResource(RESOURCE_KEY) == null) {
+        if (transactionSynchronizationRegistry.getTransactionStatus() == Status.STATUS_ACTIVE
+                && transactionSynchronizationRegistry.getResource(RESOURCE_KEY) == null) {
             JTAGauges.ACTIVE.incrementAndGet();
             transactionSynchronizationRegistry.putResource(RESOURCE_KEY, Boolean.TRUE);
             transactionSynchronizationRegistry.registerInterposedSynchronization(new JTACounterSynchronization());

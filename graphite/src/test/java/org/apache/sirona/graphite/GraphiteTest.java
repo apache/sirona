@@ -67,9 +67,9 @@ public class GraphiteTest extends GraphiteTestBase {
 
             final String message = gauges.toString();
             // graphite store uses an aggregated gauge store
-            assertTrue(message, gauges.contains("gauge-mock 0.50"));
-            assertTrue(message, gauges.contains("gauge-mock 2.00"));
-            assertTrue(message, gauges.contains("gauge-mock 3.00"));
+            assertTrue("0.5 " + message, gauges.contains("gauge-mock 0.50"));
+            assertTrue("2.0 " + message, gauges.contains("gauge-mock 2.00"));
+            assertTrue("3.0 " + message, gauges.contains("gauge-mock 3.00"));
         }
     }
 }
