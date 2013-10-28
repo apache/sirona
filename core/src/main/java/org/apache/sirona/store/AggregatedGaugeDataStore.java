@@ -16,7 +16,6 @@
  */
 package org.apache.sirona.store;
 
-import org.apache.commons.math3.stat.descriptive.StatisticalSummary;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import org.apache.sirona.Role;
 import org.apache.sirona.configuration.Configuration;
