@@ -37,7 +37,7 @@ public class GraphiteTest extends GraphiteTestBase {
             Thread.sleep(150);
             counter.add(2.3);
             counter.add(2.9);
-            Thread.sleep(150);
+            Thread.sleep(200);
         }
 
         final Collection<String> messages = messages();
@@ -63,11 +63,13 @@ public class GraphiteTest extends GraphiteTestBase {
             assertTrue(counters.contains("counter-performances-test-Value 3.00"));
         }
         { // gauges
-            assertEquals(4, gauges.size());
-            assertTrue(gauges.contains("gauge-mock 0.00"));
-            assertTrue(gauges.contains("gauge-mock 1.00"));
-            assertTrue(gauges.contains("gauge-mock 2.00"));
-            assertTrue(gauges.contains("gauge-mock 3.00"));
+            assertEquals(3, gauges.size());
+
+            final String message = gauges.toString();
+            // graphite store uses an aggregated gauge store
+            assertTrue(message, gauges.contains("gauge-mock 0.50"));
+            assertTrue(message, gauges.contains("gauge-mock 2.00"));
+            assertTrue(message, gauges.contains("gauge-mock 3.00"));
         }
     }
 }

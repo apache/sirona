@@ -18,37 +18,35 @@ package org.apache.sirona.graphite;
 
 import org.apache.sirona.Role;
 import org.apache.sirona.configuration.Configuration;
-import org.apache.sirona.store.GaugeDataStore;
-import org.apache.sirona.store.GaugeValuesRequest;
+import org.apache.sirona.store.AggregatedGaugeDataStore;
+import org.apache.sirona.store.Value;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class GraphiteGaugeDataStore implements GaugeDataStore {
+public class GraphiteGaugeDataStore extends AggregatedGaugeDataStore {
     private static final Logger LOGGER = Logger.getLogger(GraphiteGaugeDataStore.class.getName());
 
     private static final String GAUGE_PREFIX = "gauge-";
+
     private final Graphite graphite = Configuration.findOrCreateInstance(GraphiteBuilder.class).build();
 
     @Override
-    public void addToGauge(final Role role, final long time, final double value) {
+    protected void pushGauges(final Map<Role, Value> gauges) {
         try {
-            graphite.simplePush(GAUGE_PREFIX + role.getName(), value, time);
+            graphite.open();
+
+            final long ts = System.currentTimeMillis();
+
+            for (final Map.Entry<Role, Value> gauge : gauges.entrySet()) {
+                graphite.push(GAUGE_PREFIX + gauge.getKey().getName(), gauge.getValue().getMean(), ts);
+            }
         } catch (final IOException e) {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
+        } finally {
+            graphite.close();
         }
-    }
-
-    @Override
-    public Map<Long, Double> getGaugeValues(final GaugeValuesRequest gaugeValuesRequest) {
-        return Collections.emptyMap(); // when using graphite we expect the user to use Graphite to render metrics
-    }
-
-    @Override
-    public void createOrNoopGauge(Role role) {
-        // no-op
     }
 }

@@ -86,20 +86,6 @@ public class Graphite implements Closeable {
                         + LN);
     }
 
-    /**
-     * this method allows to do a push recreating a Graphite instance
-     * to not care about thread safety issues.
-     */
-    public void simplePush(final String metricPath, final double metricValue, final long metricTimeStamp) throws IOException {
-        final Graphite copy = new Graphite(factory, address, port, charset);
-        copy.open();
-        try {
-            copy.push(metricPath, metricValue, metricTimeStamp);
-        } finally {
-            copy.close();
-        }
-    }
-
     @Override
     public void close() {
         try {

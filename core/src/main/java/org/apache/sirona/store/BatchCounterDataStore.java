@@ -31,11 +31,16 @@ public abstract class BatchCounterDataStore extends InMemoryCounterDataStore {
 
     protected BatchCounterDataStore() {
         final String name = getClass().getSimpleName().toLowerCase(Locale.ENGLISH).replace("counterdatastore", "");
-        final long period = Configuration.getInteger(Configuration.CONFIG_PROPERTY_PREFIX + name + ".period", 60000);
+        final long period = getPeriod(name);
 
-        final ScheduledExecutorService ses = Executors.newSingleThreadScheduledExecutor(new DaemonThreadFactory(name + "-schedule-"));
+        final ScheduledExecutorService ses = Executors.newSingleThreadScheduledExecutor(new DaemonThreadFactory(name + "-counter-schedule-"));
         final ScheduledFuture<?> future = ses.scheduleAtFixedRate(new BatchPushCountersTask(), period, period, TimeUnit.MILLISECONDS);
         scheduledTask = new BatchFuture(ses, future);
+    }
+
+    protected int getPeriod(final String name) {
+        return Configuration.getInteger(Configuration.CONFIG_PROPERTY_PREFIX + name + ".counter.period",
+            Configuration.getInteger(Configuration.CONFIG_PROPERTY_PREFIX + name + ".period", 60000));
     }
 
     @Configuration.Destroying
@@ -49,29 +54,6 @@ public abstract class BatchCounterDataStore extends InMemoryCounterDataStore {
         @Override
         public void run() {
             pushCountersByBatch(Repository.INSTANCE);
-        }
-    }
-
-    public static class BatchFuture {
-        private final ScheduledExecutorService executor;
-        private final ScheduledFuture<?> task;
-
-        public BatchFuture(final ScheduledExecutorService ses, final ScheduledFuture<?> future) {
-            this.executor = ses;
-            this.task = future;
-        }
-
-        public void done() {
-            try {
-                executor.shutdown(); // don't add anything more now
-                task.cancel(false);
-                executor.awaitTermination(1, TimeUnit.MINUTES);
-                if (!task.isDone()) {
-                    task.cancel(true);
-                }
-            } catch (final InterruptedException e) {
-                // no-op
-            }
         }
     }
 }
