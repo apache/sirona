@@ -46,7 +46,7 @@ For instance:
         }
     }
 
-Note: in some (old) CDI implementation you'll need to activate the monitoring interceptor: `org.apache.sirona.cdi.CommonsMonitoringInterceptor`.
+Note: in some (old) CDI implementation you'll need to activate the monitoring interceptor: `org.apache.sirona.cdi.SironaInterceptor`.
 
 You can configure it (without adding the `@Monitored` annotation) using `org.apache.sirona.cdi.performance` key. The
 value is a list of predicate (`regex:<regex>`, `prefix:<prefix>`, `suffix:<suffix>`).
@@ -81,7 +81,7 @@ concrete aspect defining the pointcut to monitor:
     <aspectj>
       <aspects>
         <concrete-aspect name="org.apache.commons.aspectj.MyMonitoringAspectJ"
-                         extends="org.apache.sirona.aspectj.CommonsMonitoringAspect">
+                         extends="org.apache.sirona.aspectj.SironaAspect">
           <pointcut name="pointcut" expression="execution(* org.apache.sirona.aspectj.AspectJMonitoringTest$MonitorMe.*(..))"/>
         </concrete-aspect>
       </aspects>

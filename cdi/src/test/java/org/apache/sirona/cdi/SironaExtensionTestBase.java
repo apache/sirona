@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-public abstract class CommonsMonitoringExtensionTestBase {
+public abstract class SironaExtensionTestBase {
     @Test
     public void checkMeasures() throws Exception {
         final CdiTestContainer container = CdiTestContainerLoader.getCdiContainer();

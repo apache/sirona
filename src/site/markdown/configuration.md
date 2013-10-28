@@ -35,7 +35,7 @@ and `org.apache.sirona.configuration.Configuration.Destroying` to get lifecycle 
 `Destroying` is called when the monitoring is stopped. Generally since commons-monitoring-core is deployed in the
 container or JVM classloader it is with the JVM but sometimes you can deploy it in your application. In this case
 you'll need to either configure the `javax.servlet.ServletContextListener`
-`org.apache.sirona.web.lifecycle.CommonsMonitoringLifecycle` from reporting module
+`org.apache.sirona.web.lifecycle.SironaLifecycle` from reporting module
 or to call manually `Configuration.shutdown()` method.
 
 ### Main configuration keys (by module)

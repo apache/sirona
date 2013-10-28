@@ -18,7 +18,7 @@
 <aspectj>
   <aspects>
     <concrete-aspect name="org.apache.sirona.aspectj.MyMonitoringAspectJ"
-                     extends="org.apache.sirona.aspectj.CommonsMonitoringAspect">
+                     extends="org.apache.sirona.aspectj.SironaAspect">
       <pointcut name="pointcut" expression="execution(* org.apache.sirona.aspectj.AspectJMonitoringTest$MonitorMe.*(..))"/>
     </concrete-aspect>
   </aspects>

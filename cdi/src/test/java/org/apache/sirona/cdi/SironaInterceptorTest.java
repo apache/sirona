@@ -18,14 +18,15 @@ package org.apache.sirona.cdi;
 
 import javax.enterprise.context.ApplicationScoped;
 
-public class CommonsMonitoringExtensionTest extends CommonsMonitoringExtensionTestBase {
+public class SironaInterceptorTest extends SironaExtensionTestBase {
     @Override
     protected Class<? extends TwoSeconds> type() {
-        return AutoMonitoredBean.class;
+        return MonitoredBean.class;
     }
 
+    @Monitored
     @ApplicationScoped
-    public static class AutoMonitoredBean implements TwoSeconds {
+    public static class MonitoredBean implements TwoSeconds {
         public void twoSeconds() {
             try {
                 Thread.sleep(2000);

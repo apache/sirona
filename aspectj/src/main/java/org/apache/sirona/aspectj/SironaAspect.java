@@ -26,7 +26,7 @@ import org.aspectj.lang.annotation.Pointcut;
 import java.lang.reflect.Method;
 
 @Aspect
-public abstract class CommonsMonitoringAspect extends AbstractPerformanceInterceptor<ProceedingJoinPoint> {
+public abstract class SironaAspect extends AbstractPerformanceInterceptor<ProceedingJoinPoint> {
     @Pointcut
     protected abstract void pointcut();
 

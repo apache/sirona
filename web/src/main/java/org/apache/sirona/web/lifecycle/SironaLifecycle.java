@@ -22,7 +22,7 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 // needs to be activate when commons-monitoring-core is in a webapp
-public class CommonsMonitoringLifecycle implements ServletContextListener {
+public class SironaLifecycle implements ServletContextListener {
     @Override
     public void contextInitialized(final ServletContextEvent sce) {
         // no-op

@@ -26,7 +26,7 @@ import java.lang.reflect.Method;
 
 @Interceptor
 @Monitored
-public class CommonsMonitoringInterceptor extends AbstractPerformanceInterceptor<InvocationContext> {
+public class SironaInterceptor extends AbstractPerformanceInterceptor<InvocationContext> {
     @AroundInvoke
     @AroundTimeout
     public Object monitor(final InvocationContext invocationContext) throws Throwable {

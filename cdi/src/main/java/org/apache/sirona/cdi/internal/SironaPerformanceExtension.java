@@ -30,7 +30,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
-public class CommonsMonitoringPerformanceExtension implements Extension {
+public class SironaPerformanceExtension implements Extension {
     private final boolean enabled = Configuration.is(Configuration.CONFIG_PROPERTY_PREFIX + "cdi.enabled", true);
     private final Monitored performanceBinding = newAnnotation(Monitored.class);
     private final Annotation jtaBinding = tryNewAnnotation("org.apache.sirona.jta.JTAMonitored");
