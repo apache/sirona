@@ -17,11 +17,14 @@
 package org.apache.sirona.web.registration;
 
 import org.apache.sirona.configuration.Configuration;
+import org.apache.sirona.repositories.Repository;
 import org.apache.sirona.web.discovery.GaugeDiscoveryListener;
+import org.apache.sirona.web.lifecycle.SironaLifecycle;
 import org.apache.sirona.web.servlet.MonitoringFilter;
 import org.apache.sirona.web.session.MonitoringSessionListener;
 
 import javax.servlet.DispatcherType;
+import javax.servlet.FilterRegistration;
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -38,18 +41,28 @@ public class WebMonitoringInitializer implements ServletContainerInitializer {
 
         ctx.addListener(MonitoringSessionListener.class);
         ctx.addListener(GaugeDiscoveryListener.class);
-
-        String monitoredUrls = ctx.getInitParameter(Configuration.CONFIG_PROPERTY_PREFIX + "web.monitored-urls");
-        if (monitoredUrls == null) {
-            monitoredUrls = "/*";
+        if (ctx.getClassLoader().equals(Repository.class.getClassLoader())) {
+            ctx.addListener(SironaLifecycle.class);
         }
-        if (monitoredUrls.contains(",")) {
-            final String[] split = monitoredUrls.split(",");
-            for (int i = 0; i < split.length; i++) {
-                ctx.addFilter("monitoring-filter-" + i, MonitoringFilter.class).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), false, split[i]);
+
+        final String monStatus = Boolean.toString(!"false".equalsIgnoreCase(ctx.getInitParameter(MonitoringFilter.MONITOR_STATUS)));
+        String monitoredUrls = ctx.getInitParameter(Configuration.CONFIG_PROPERTY_PREFIX + "web.monitored-urls");
+        if (!"false".equalsIgnoreCase(monitoredUrls)) {
+            if (monitoredUrls == null) {
+                monitoredUrls = "/*";
             }
-        } else {
-            ctx.addFilter("monitoring-filter", MonitoringFilter.class).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), false, monitoredUrls);
+            if (monitoredUrls.contains(",")) {
+                final String[] split = monitoredUrls.split(",");
+                for (int i = 0; i < split.length; i++) {
+                    final FilterRegistration.Dynamic filter = ctx.addFilter("monitoring-filter-" + i, MonitoringFilter.class);
+                    filter.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), false, split[i]);
+                    filter.setInitParameter(MonitoringFilter.MONITOR_STATUS, monStatus);
+                }
+            } else {
+                final FilterRegistration.Dynamic filter = ctx.addFilter("monitoring-filter", MonitoringFilter.class);
+                filter.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), false, monitoredUrls);
+                filter.setInitParameter(MonitoringFilter.MONITOR_STATUS, monStatus);
+            }
         }
     }
 }

@@ -82,7 +82,7 @@ public abstract class AbstractPerformanceInterceptor<T> implements Serializable 
         final ActivationContext context = doFindContext(invocation);
 
         final StopWatch stopwatch;
-        if (context.isActive() || context.isForcedIteration()) {
+        if (context.shouldExecute()) {
             final Counter monitor = Repository.INSTANCE.getCounter(new Counter.Key(getRole(), name));
             stopwatch = Repository.INSTANCE.start(monitor);
         } else {
@@ -107,9 +107,7 @@ public abstract class AbstractPerformanceInterceptor<T> implements Serializable 
                     Repository.INSTANCE.getCounter(new Counter.Key(Role.FAILURES, writer.toString())).add(elapsedTime);
                 }
 
-                if (context.isThresholdActive() && elapsedTime < context.getThreshold()) {
-                    context.reset();
-                }
+                context.elapsedTime(elapsedTime);
             }
         }
     }
@@ -289,6 +287,16 @@ public abstract class AbstractPerformanceInterceptor<T> implements Serializable 
         public void reset() {
             active = false;
             iteration.set(0);
+        }
+
+        public boolean shouldExecute() {
+            return isActive() || isForcedIteration();
+        }
+
+        public void elapsedTime(final long elapsedTime) {
+            if (isThresholdActive() && elapsedTime < getThreshold()) {
+                reset();
+            }
         }
     }
 }

@@ -17,6 +17,8 @@
 package org.apache.sirona.web.servlet;
 
 import org.apache.sirona.Role;
+import org.apache.sirona.aop.AbstractPerformanceInterceptor;
+import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.repositories.Repository;
 import org.apache.sirona.stopwatches.StopWatch;
@@ -30,11 +32,37 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.net.HttpURLConnection;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
-public class MonitoringFilter implements Filter {
+public class MonitoringFilter extends AbstractPerformanceInterceptor<MonitoringFilter.Invocation> implements Filter {
+    public static final String MONITOR_STATUS = Configuration.CONFIG_PROPERTY_PREFIX + "web.monitored-status";
+
+    private static final ConcurrentMap<Integer, Counter.Key> STATUS_KEYS = new ConcurrentHashMap<Integer, Counter.Key>();
+
+    private boolean monitorStatus;
+
     @Override
     public void init(final FilterConfig filterConfig) throws ServletException {
-        // no-op
+        final String monStatus = filterConfig.getInitParameter(MONITOR_STATUS);
+        monitorStatus = monStatus == null || "true".equalsIgnoreCase(monStatus);
+
+        for (final Field f : HttpURLConnection.class.getDeclaredFields()) {
+            final int modifiers = f.getModifiers();
+            if (f.getName().startsWith("HTTP_")
+                && Modifier.isStatic(modifiers) && Modifier.isPublic(modifiers) && Modifier.isFinal(modifiers)) {
+                try {
+                    final int status = (Integer) f.get(null);
+                    STATUS_KEYS.put(status, statusKey((Integer) f.get(null)));
+                } catch (final IllegalAccessException e) {
+                    // no-op
+                }
+            }
+        }
     }
 
     @Override
@@ -42,7 +70,22 @@ public class MonitoringFilter implements Filter {
         if (HttpServletRequest.class.isInstance(request)) {
             final HttpServletRequest httpRequest = HttpServletRequest.class.cast(request);
             final HttpServletResponse httpResponse = HttpServletResponse.class.cast(response);
-            doFilter(httpRequest, httpResponse, chain);
+            try {
+                doInvoke(new Invocation(httpRequest, httpResponse, chain));
+            } catch (final Throwable throwable) {
+                if (IOException.class.isInstance(throwable)) {
+                    throw IOException.class.cast(throwable);
+                }
+                if (ServletException.class.isInstance(throwable)) {
+                    throw ServletException.class.cast(throwable);
+                }
+                throw new IOException(throwable);
+            } finally {
+                if (monitorStatus) {
+                    final int status = httpResponse.getStatus();
+                    Repository.INSTANCE.getCounter(statusKey(status)).add(1);
+                }
+            }
         } else {
             // Not an HTTP request...
             chain.doFilter(request, response);
@@ -50,26 +93,53 @@ public class MonitoringFilter implements Filter {
     }
 
     @Override
+    protected Object proceed(final Invocation invocation) throws Throwable {
+        invocation.proceed();
+        return null;
+    }
+
+    @Override
+    protected String getCounterName(final Invocation invocation) {
+        return invocation.request.getRequestURI();
+    }
+
+    @Override
+    protected Role getRole() {
+        return Role.WEB;
+    }
+
+    @Override
     public void destroy() {
         // no-op
     }
 
-    protected void doFilter(final HttpServletRequest request, final HttpServletResponse response, final FilterChain chain) throws IOException, ServletException {
-        final String uri = getRequestedUri(request);
-        final StopWatch stopWatch = Repository.INSTANCE.start(Repository.INSTANCE.getCounter(new Counter.Key(Role.WEB, uri)));
-        try {
-            chain.doFilter(request, response);
-        } finally {
-            stopWatch.stop();
+    private static Counter.Key statusKey(final int status) {
+        final Counter.Key key = STATUS_KEYS.get(status);
+        if (key != null) {
+            return key;
         }
+
+        final Counter.Key newKey = new Counter.Key(Role.WEB, "HTTP-" + Integer.toString(status));
+        final Counter.Key old = STATUS_KEYS.putIfAbsent(status, newKey);
+        if (old != null) {
+            return old;
+        }
+        return newKey;
     }
 
-    protected String getRequestedUri(final HttpServletRequest request) {
-        return request.getRequestURI();
-        /* if we want to remove webapp context we could do (but a bad idea in an app server since you can get multiple contexts):
-        final String uri = request.getRequestURI();
-        final String context = request.getContextPath();
-        return uri.substring(context.length());
-        */
+    protected static class Invocation {
+        protected final HttpServletRequest request;
+        protected final HttpServletResponse response;
+        protected final FilterChain chain;
+
+        public Invocation(final HttpServletRequest request, final HttpServletResponse response, final FilterChain chain) {
+            this.request = request;
+            this.response = response;
+            this.chain = chain;
+        }
+
+        public void proceed() throws IOException, ServletException {
+            chain.doFilter(request, response);
+        }
     }
 }
