@@ -16,18 +16,16 @@
  */
 package org.apache.sirona.reporting.template;
 
+import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
+import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import org.apache.catalina.startup.Constants;
-import org.apache.sirona.reporting.web.plugin.Plugin;
-import org.apache.sirona.reporting.web.plugin.report.ReportPlugin;
 import org.apache.sirona.reporting.web.registration.MonitoringReportingInitializer;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.ClassLoaderAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.runner.RunWith;
@@ -60,8 +58,8 @@ public abstract class SironaReportingTestBase {
     @ArquillianResource
     protected URL base;
 
-    protected HtmlPage page(final String path) throws IOException {
-        return newClient().getPage(base.toExternalForm() + "/monitoring/" + path);
+    protected <P extends Page> P page(final String path) throws IOException {
+        return newClient().getPage(base.toExternalForm() + "monitoring/" + path);
     }
 
     protected static WebClient newClient() {
@@ -69,6 +67,7 @@ public abstract class SironaReportingTestBase {
         webClient.getOptions().setJavaScriptEnabled(false);
         webClient.getOptions().setCssEnabled(false);
         webClient.getOptions().setAppletEnabled(false);
+        webClient.setAjaxController(new NicelyResynchronizingAjaxController());
         return webClient;
     }
 }
