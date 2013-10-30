@@ -131,12 +131,12 @@ public class MonitoringController implements Filter {
 
         for (final Map.Entry<Pattern, Invoker> entry : invokers.entrySet()) {
             final Pattern pattern = entry.getKey();
-            if (pattern.matcher(path).matches()) {
+            if ((matcher = pattern.matcher(path)).matches()) {
                 invoker = entry.getValue();
                 if (!entry.getKey().pattern().endsWith(".*")) {
                     break;
                 }
-            } else if (pattern.matcher(pathWithoutParams).matches()) {
+            } else if ((matcher = pattern.matcher(pathWithoutParams)).matches()) {
                 invoker = entry.getValue(); // continue since that's a not perfect matching
             }
         }
