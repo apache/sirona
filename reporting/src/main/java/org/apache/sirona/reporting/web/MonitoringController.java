@@ -122,18 +122,22 @@ public class MonitoringController implements Filter {
         request.setAttribute("baseUri", baseUri);
 
         final String requestURI = httpRequest.getRequestURI();
-        final String path = buildMatchablePath(httpRequest, baseUri, requestURI);
+        final String path = buildMatchablePath(httpRequest, baseUri, requestURI, true);
+        final String pathWithoutParams = buildMatchablePath(httpRequest, baseUri, requestURI, false);
 
         // find the matching invoker
         Invoker invoker = defaultInvoker;
         Matcher matcher = null;
+
         for (final Map.Entry<Pattern, Invoker> entry : invokers.entrySet()) {
-            matcher = entry.getKey().matcher(path);
-            if (matcher.matches()) {
+            final Pattern pattern = entry.getKey();
+            if (pattern.matcher(path).matches()) {
                 invoker = entry.getValue();
                 if (!entry.getKey().pattern().endsWith(".*")) {
                     break;
                 }
+            } else if (pattern.matcher(pathWithoutParams).matches()) {
+                invoker = entry.getValue(); // continue since that's a not perfect matching
             }
         }
 
@@ -151,14 +155,14 @@ public class MonitoringController implements Filter {
         }
 
         // resource, they are in the classloader and not in the webapp to ease the embedded case
-        if (path.startsWith("/resources/")) {
-            byte[] bytes = cachedResources.get(path);
+        if (pathWithoutParams.startsWith("/resources/")) {
+            byte[] bytes = cachedResources.get(pathWithoutParams);
             if (bytes == null) {
                 final InputStream is;
                 if (invoker != defaultInvoker) { // resource is filtered so filtering it before caching it
                     final StringWriter writer = new StringWriter();
                     final PrintWriter printWriter = new PrintWriter(writer);
-                    invoker.invoke(httpRequest, HttpServletResponse.class.cast(Proxy.newProxyInstance(classloader, new Class<?>[] { HttpServletResponse.class }, new InvocationHandler() {
+                    invoker.invoke(httpRequest, HttpServletResponse.class.cast(Proxy.newProxyInstance(classloader, new Class<?>[]{HttpServletResponse.class}, new InvocationHandler() {
                         @Override
                         public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
                             if ("getWriter".equals(method.getName())) {
@@ -169,7 +173,7 @@ public class MonitoringController implements Filter {
                     })), null);
                     is = new ByteArrayInputStream(writer.toString().getBytes());
                 } else {
-                    is = classloader.getResourceAsStream(path.substring(1));
+                    is = classloader.getResourceAsStream(pathWithoutParams.substring(1));
                 }
 
                 if (is != null) {
@@ -183,7 +187,7 @@ public class MonitoringController implements Filter {
                     }
 
                     bytes = baos.toByteArray();
-                    cachedResources.put(path, bytes);
+                    cachedResources.put(pathWithoutParams, bytes);
                 }
             }
             if (bytes != null) {
@@ -208,10 +212,14 @@ public class MonitoringController implements Filter {
         }
     }
 
-    private static String buildMatchablePath(final HttpServletRequest httpRequest, final String baseUri, final String requestURI) {
+    private static String buildMatchablePath(final HttpServletRequest httpRequest, final String baseUri, final String requestURI, final boolean withParams) {
         String path = requestURI.substring(Math.min(baseUri.length() + 1, requestURI.length()));
         if (!path.startsWith("/")) {
             path = "/" + path;
+        }
+
+        if (!withParams) {
+            return path;
         }
 
         // sort keys to be able to match it deterministicly

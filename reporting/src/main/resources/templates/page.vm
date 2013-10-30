@@ -24,27 +24,22 @@
 
     <title>Sirona</title>
 
-    <!-- Bootstrap core CSS -->
     <link href="$mapping/resources/css/bootstrap.css" rel="stylesheet">
-
-    <!-- Add custom CSS here -->
     <link href="$mapping/resources/css/sb-admin.css" rel="stylesheet">
     <link rel="stylesheet" href="$mapping/resources/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="$mapping/resources/css/sirona.css">
-    <!-- Page Specific CSS -->
-    <link rel="stylesheet" href="http://cdn.oesmith.co.uk/morris-0.4.3.min.css">
 
-    <!-- js shared accross pages -->
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    #* js shared accross pages so we need to put it in <head /> if content pages uses it in $()) *#
+    <script src="$mapping/resources/js/jquery.min.js"></script>
+    <script src="$mapping/resources/js/bootstrap.js"></script>
 </head>
 
 <body>
 
 <div id="wrapper">
 
-<!-- Sidebar -->
+#* Sidebar *#
 <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-    <!-- Brand and toggle get grouped for better mobile display -->
     <div class="navbar-header">
         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
             <span class="sr-only">Toggle navigation</span>
@@ -55,7 +50,7 @@
         <a class="navbar-brand" href="http://sirona.incubator.apache.org/">Sirona</a>
     </div>
 
-    <!-- Collect the nav links, forms, and other content for toggling -->
+    #* Plugin links *#
     <div class="collapse navbar-collapse navbar-ex1-collapse">
         <ul class="nav navbar-nav side-nav" id="plugins">
             #if ( $templateId == "home")
@@ -79,22 +74,15 @@
         <ul class="nav navbar-nav navbar-right navbar-user">
             <li><a href="http://www.apache.org/">Apache Software Foundation</a></li>
         </ul>
-    </div><!-- /.navbar-collapse -->
+    </div>
 </nav>
 
+#* Content *#
 <div id="page-wrapper">
     #parse( "/templates/$currentTemplate" )
-</div><!-- /#page-wrapper -->
+</div>
 
-</div><!-- /#wrapper -->
+</div>
 
-<!-- Bootstrap core JavaScript -->
-<script src="$mapping/resources/js/bootstrap.js"></script>
-<!-- Page Specific Plugins -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
-<script src="http://cdn.oesmith.co.uk/morris-0.4.3.min.js"></script>
-<script src="$mapping/resources/js/morris/chart-data-morris.js"></script>
-<script src="$mapping/resources/js/tablesorter/jquery.tablesorter.js"></script>
-<script src="$mapping/resources/js/tablesorter/tables.js"></script>
 </body>
 </html>

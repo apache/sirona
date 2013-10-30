@@ -18,31 +18,25 @@
 
 <ul class="nav nav-pills">
     <li class="dropdown">
-        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-            Actions <b class="caret"></b>
-        </a>
-        <ul class="dropdown-menu">
-            <li><a href="$mapping/report/clear">Clear</a></li>
+        <a id="actions" role="button" data-toggle="dropdown" href="#">Actions <b class="caret"></b></a>
+        <ul id="actions-list" class="dropdown-menu" role="menu" aria-labelledby="actions">
+            <li role="presentation"><a role="menuitem" href="$mapping/report/clear">Clear</a></li>
         </ul>
     </li>
     <li class="dropdown">
-        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-            Formats <b class="caret"></b>
-        </a>
-        <ul class="dropdown-menu">
-            <li><a href="$mapping/report.xml">xml</a></li>
-            <li><a href="$mapping/report.csv">csv</a></li>
-            <li><a href="$mapping/report.json">json</a></li>
+        <a id="formats" role="button" data-toggle="dropdown" href="#">Formats <b class="caret"></b></a>
+        <ul id="formats-list" class="dropdown-menu" role="menu" aria-labelledby="formats">
+            <li role="presentation"><a role="menuitem" href="$mapping/report.xml">xml</a></li>
+            <li role="presentation"><a role="menuitem" href="$mapping/report.csv">csv</a></li>
+            <li role="presentation"><a role="menuitem" href="$mapping/report.json">json</a></li>
         </ul>
     </li>
     <li class="dropdown">
-        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-            Time Unit <b class="caret"></b>
-        </a>
-        <ul class="dropdown-menu">
-            <li><a href="$mapping/report?unit=s">s</a></li>
-            <li><a href="$mapping/report?unit=ms">ms</a></li>
-            <li><a href="$mapping/report?unit=ns">ns</a></li>
+        <a id="units" role="button" data-toggle="dropdown" href="#">Units <b class="caret"></b></a>
+        <ul id="units-list" class="dropdown-menu" role="menu" aria-labelledby="units">
+            <li role="presentation"><a role="menuitem" href="$mapping/report?unit=s">s</a></li>
+            <li role="presentation"><a role="menuitem" href="$mapping/report?unit=ms">ms</a></li>
+            <li role="presentation"><a role="menuitem" href="$mapping/report?unit=ns">ns</a></li>
         </ul>
     </li>
 </ul>
@@ -72,7 +66,6 @@
     </tbody>
 </table>
 
-<script type="text/javascript" src="$mapping/resources/js/bootstrap-dropdown.js"></script>
 <script type="text/javascript" src="$mapping/resources/js/jquery.tablesorter.js"></script>
 <script type="text/javascript" src="$mapping/resources/js/jquery.tablesorter.widgets.js"></script>
 <script type="text/javascript">
