@@ -38,36 +38,7 @@
             yaxes: [ { min: 0 } ]
         };
 
-        var updateGraph = function (start, end, options) {
-            $.ajax({
-                url: "$mapping/web/sessions/" + start + "/" + end,
-                type: "GET",
-                dataType: "json",
-                success: function (data) {
-                    $.plot("#sessions-graph", [ data ], options);
-                }
-            });
-        };
-
-        var extractTime = function (picker) {
-            return picker.data('datetimepicker').getLocalDate().getTime();
-        };
-
-        (function () { // init
-            var now = new Date();
-            var yesterday = new Date();
-            yesterday.setMinutes(now.getMinutes() - 10);
-
-            var start = yesterday.getTime();
-            var end = now.getTime();
-
-            updateGraph(start, end, options);
-        })();
-
         // update diagram when clicking on update buttons
-        $("#update-sessions").submit(function () {
-            updateGraph(extractTime($("#sessions-datetimepicker-start")), extractTime($("#sessions-datetimepicker-end")), options);
-            return false;
-        });
+        Sirona.initGraph("$mapping", 'web', 'sessions', options);
     });
 </script>

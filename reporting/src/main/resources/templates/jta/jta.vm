@@ -48,40 +48,9 @@
             yaxes: [ { min: 0 } ]
         };
 
-        var updateGraph = function (graph, start, end, options) {
-            $.ajax({
-                url: "$mapping/jta/" + graph + "/" + start + "/" + end,
-                type: "GET",
-                dataType: "json",
-                success: function (data) {
-                    $.plot("#" + graph + "-graph", [ data ], options);
-                }
-            });
-        };
-
-        var extractTime = function (picker) {
-            return picker.data('datetimepicker').getLocalDate().getTime();
-        };
-
-        (function () { // init
-            var now = new Date();
-            var yesterday = new Date();
-            yesterday.setMinutes(now.getMinutes() - 10);
-
-            var start = yesterday.getTime();
-            var end = now.getTime();
-
-            #foreach ($item in $parts )
-                updateGraph("$item", start, end, options);
-            #end
-        })();
-
         // update diagram when clicking on update buttons
         #foreach ($item in $parts )
-        $("#update-$item").submit(function () {
-            updateGraph("$item", extractTime($("#${item}-datetimepicker-start")), extractTime($("#${item}-datetimepicker-end")), options);
-            return false;
-        });
+            Sirona.initGraph("$mapping", "jta", "$item", options);
         #end
     });
 </script>

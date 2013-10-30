@@ -111,41 +111,8 @@
             ]
         };
 
-        var updateGraph = function (graph, start, end, options) {
-            $.ajax({
-                url: "$mapping/jvm/" + graph + "/" + start + "/" + end,
-                type: "GET",
-                dataType: "json",
-                success: function (data) {
-                    $.plot("#" + graph + "-graph", [ data ], options);
-                }
-            });
-        };
-
-        var extractTime = function (picker) {
-            return picker.data('datetimepicker').getLocalDate().getTime();
-        };
-
-        (function () { // init
-            var now = new Date();
-            var yesterday = new Date();
-            yesterday.setMinutes(now.getMinutes() - 10);
-
-            var start = yesterday.getTime();
-            var end = now.getTime();
-
-            updateGraph('cpu', start, end, cpuOptions);
-            updateGraph('memory', start, end, memoryOptions);
-        })();
-
         // update diagram when clicking on update buttons
-        $('#update-cpu').submit(function () {
-            updateGraph('cpu', extractTime($('#cpu-datetimepicker-start')), extractTime($('#cpu-datetimepicker-end')), cpuOptions);
-            return false;
-        });
-        $('#update-memory').submit(function () {
-            updateGraph('memory', extractTime($('#memory-datetimepicker-start')), extractTime($('#memory-datetimepicker-end')), memoryOptions);
-            return false;
-        });
+        Sirona.initGraph("$mapping", 'jvm', 'cpu', cpuOptions);
+        Sirona.initGraph("$mapping", 'jvm', 'memory', memoryOptions);
     });
 </script>

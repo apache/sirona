@@ -32,6 +32,7 @@
     #* js shared accross pages so we need to put it in <head /> if content pages uses it in $()) *#
     <script src="$mapping/resources/js/jquery.min.js"></script>
     <script src="$mapping/resources/js/bootstrap.js"></script>
+    <script src="$mapping/resources/js/sirona.js"></script>
 </head>
 
 <body>
