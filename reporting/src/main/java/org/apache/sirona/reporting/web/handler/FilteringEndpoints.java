@@ -31,7 +31,7 @@ import java.io.InputStream;
 
 public class FilteringEndpoints {
     private static final String BOOTSTRAP_CSS = "/resources/css/bootstrap.min.css";
-    private static final String MONITORING_CSS = "/resources/css/monitoring.css";
+    private static final String MONITORING_CSS = "/resources/css/sirona.css";
 
     private ResourceLoader rl;
 

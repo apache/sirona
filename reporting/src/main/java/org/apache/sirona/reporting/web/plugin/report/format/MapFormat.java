@@ -112,7 +112,7 @@ public abstract class MapFormat {
     public static String generateCounterKeyString(final Counter.Key key) {
         final Role role = key.getRole();
         try {
-            return encode(role.getName()) + '/' + role.getUnit().getName() + '/' + encode(key.getName());
+            return encode(role.getName()) + '/' + role.getUnit().getName() + "?name=" + encode(key.getName());
         } catch (final UnsupportedEncodingException e) {
             throw new IllegalStateException(e);
         }

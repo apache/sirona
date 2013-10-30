@@ -46,22 +46,30 @@ public class WebMonitoringInitializer implements ServletContainerInitializer {
         }
 
         final String monStatus = Boolean.toString(!"false".equalsIgnoreCase(ctx.getInitParameter(MonitoringFilter.MONITOR_STATUS)));
+        String ignoredUrls = ctx.getInitParameter(MonitoringFilter.IGNORED_URLS);
         String monitoredUrls = ctx.getInitParameter(Configuration.CONFIG_PROPERTY_PREFIX + "web.monitored-urls");
         if (!"false".equalsIgnoreCase(monitoredUrls)) {
             if (monitoredUrls == null) {
                 monitoredUrls = "/*";
             }
+
+            if (ignoredUrls == null) {
+                ignoredUrls = Configuration.getProperty(MonitoringFilter.IGNORED_URLS, "/monitoring");
+            }
+
             if (monitoredUrls.contains(",")) {
                 final String[] split = monitoredUrls.split(",");
                 for (int i = 0; i < split.length; i++) {
                     final FilterRegistration.Dynamic filter = ctx.addFilter("monitoring-filter-" + i, MonitoringFilter.class);
                     filter.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), false, split[i]);
                     filter.setInitParameter(MonitoringFilter.MONITOR_STATUS, monStatus);
+                    filter.setInitParameter(MonitoringFilter.IGNORED_URLS, ignoredUrls);
                 }
             } else {
                 final FilterRegistration.Dynamic filter = ctx.addFilter("monitoring-filter", MonitoringFilter.class);
                 filter.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), false, monitoredUrls);
                 filter.setInitParameter(MonitoringFilter.MONITOR_STATUS, monStatus);
+                filter.setInitParameter(MonitoringFilter.IGNORED_URLS, ignoredUrls);
             }
         }
     }

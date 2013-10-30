@@ -44,6 +44,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -54,6 +55,7 @@ public class MonitoringController implements Filter {
     private String mapping = null;
     private ClassLoader classloader;
     private Invoker defaultInvoker;
+    private String ignoreInternal = "true";
 
     @Override
     public void init(final FilterConfig config) throws ServletException {
@@ -61,6 +63,11 @@ public class MonitoringController implements Filter {
         initMapping(config.getInitParameter("monitoring-mapping"));
         Templates.init(config.getServletContext().getContextPath(), mapping);
         initHandlers();
+
+        final String ignoreStr = config.getInitParameter("ignore-internal-urls");
+        if (ignoreStr != null) {
+            ignoreInternal = ignoreStr;
+        }
     }
 
     private void initHandlers() {
@@ -115,10 +122,7 @@ public class MonitoringController implements Filter {
         request.setAttribute("baseUri", baseUri);
 
         final String requestURI = httpRequest.getRequestURI();
-        String path = requestURI.substring(Math.min(baseUri.length() + 1, requestURI.length()));
-        if (!path.startsWith("/")) {
-            path = "/" + path;
-        }
+        final String path = buildMatchablePath(httpRequest, baseUri, requestURI);
 
         // find the matching invoker
         Invoker invoker = defaultInvoker;
@@ -202,6 +206,30 @@ public class MonitoringController implements Filter {
                 error(response, e);
             }
         }
+    }
+
+    private static String buildMatchablePath(final HttpServletRequest httpRequest, final String baseUri, final String requestURI) {
+        String path = requestURI.substring(Math.min(baseUri.length() + 1, requestURI.length()));
+        if (!path.startsWith("/")) {
+            path = "/" + path;
+        }
+
+        // sort keys to be able to match it deterministicly
+        final Map<String, String[]> params = new TreeMap<String, String[]>(httpRequest.getParameterMap());
+        boolean first = true;
+        for (final Map.Entry<String, String[]> param : params.entrySet()) {
+            final String[] value = param.getValue();
+            if (value != null && value.length >= 1) {
+                if (first) {
+                    path += "?";
+                    first = false;
+                } else {
+                    path += "&";
+                }
+                path += param.getKey() + "=" + value[0];
+            }
+        }
+        return path;
     }
 
     private void error(final ServletResponse response, final Exception e) throws IOException {

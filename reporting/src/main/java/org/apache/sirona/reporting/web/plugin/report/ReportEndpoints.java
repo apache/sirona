@@ -48,9 +48,9 @@ public class ReportEndpoints {
         return renderFormat(request, response, Format.Defaults.HTML);
     }
 
-    @Regex("/counter/([^/]*)/([^/]*)/([^/]*)")
+    @Regex("/counter/([^/]*)/([^/]*)\\?name=(.*)")
     public Template counterDetail(final String role, final String unit, final String name, final HttpServletRequest request) {
-        final Counter counter = Repository.INSTANCE.getCounter(new Counter.Key(new Role(decode(role), Unit.get(unit)), decode(name)));
+        final Counter counter = Repository.INSTANCE.getCounter(new Counter.Key(new Role(decode(role), Unit.get(unit)), name)); // name is already decoded by servlet container
 
         final Map<String, String[]> params = request.getParameterMap();
         final Unit timeUnit = timeUnit(params);

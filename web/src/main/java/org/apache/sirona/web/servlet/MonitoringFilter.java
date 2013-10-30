@@ -41,13 +41,21 @@ import java.util.concurrent.ConcurrentMap;
 
 public class MonitoringFilter extends AbstractPerformanceInterceptor<MonitoringFilter.Invocation> implements Filter {
     public static final String MONITOR_STATUS = Configuration.CONFIG_PROPERTY_PREFIX + "web.monitored-status";
+    public static final String IGNORED_URLS = Configuration.CONFIG_PROPERTY_PREFIX + "web.ignored-urls";
 
     private static final ConcurrentMap<Integer, Counter.Key> STATUS_KEYS = new ConcurrentHashMap<Integer, Counter.Key>();
 
     private boolean monitorStatus;
 
+    private String[] ignored = new String[0];
+
     @Override
     public void init(final FilterConfig filterConfig) throws ServletException {
+        final String ignoredUrls = filterConfig.getInitParameter(IGNORED_URLS);
+        if (ignoredUrls != null) {
+            ignored = ignoredUrls.split(",");
+        }
+
         final String monStatus = filterConfig.getInitParameter(MONITOR_STATUS);
         monitorStatus = monStatus == null || "true".equalsIgnoreCase(monStatus);
 
@@ -69,6 +77,15 @@ public class MonitoringFilter extends AbstractPerformanceInterceptor<MonitoringF
     public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain) throws IOException, ServletException {
         if (HttpServletRequest.class.isInstance(request)) {
             final HttpServletRequest httpRequest = HttpServletRequest.class.cast(request);
+
+            final String uri = getRequestedUri(httpRequest);
+            for (final String ignorable : ignored) {
+                if (uri.startsWith(ignorable)) {
+                    chain.doFilter(request, response);
+                    return;
+                }
+            }
+
             final HttpServletResponse httpResponse = HttpServletResponse.class.cast(response);
             try {
                 doInvoke(new Invocation(httpRequest, httpResponse, chain));
@@ -111,6 +128,15 @@ public class MonitoringFilter extends AbstractPerformanceInterceptor<MonitoringF
     @Override
     public void destroy() {
         // no-op
+    }
+
+    protected static String getRequestedUri(final HttpServletRequest request) {
+        final String uri = request.getRequestURI();
+        final String context = request.getContextPath();
+        if (uri.length() <= context.length()) {
+            return uri;
+        }
+        return uri.substring(context.length());
     }
 
     private static Counter.Key statusKey(final int status) {

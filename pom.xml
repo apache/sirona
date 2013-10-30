@@ -220,6 +220,7 @@
             <exclude>**/resources/js/*.js</exclude>
             <exclude>**/resources/css/*.css</exclude>
             <exclude>**/META-INF/services/*</exclude>
+            <exclude>**/resources/resources/**/*</exclude>
           </excludes>
         </configuration>
         <executions>
