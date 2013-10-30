@@ -41,11 +41,11 @@
     </li>
 </ul>
 
-<table id="report-table" class="table table-bordered table-striped table-hover">
+<table id="report-table" class="table table-bordered table-hover table-striped tablesorter">
     <thead>
         <tr>
             #foreach( $header in $headers )
-                <th>$header</th>
+                <th>$header <i class="icon-sort"></i></th>
             #end
         </tr>
     </thead>
@@ -94,6 +94,8 @@
             }
         });
 
-        $("table#report-table tr th div").addClass("blue");
+        // input search box shouldn't force the width of columns
+        $('input[type="search"].tablesorter-filter').addClass('col-lg-12')
+        $('input[type="search"].tablesorter-filter').addClass('smooth-box')
     });
 </script>

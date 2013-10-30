@@ -31,10 +31,10 @@
 
 <div class="container-fluid">
     <div class="row-fluid">
-        <div id="jmx-tree" class="span2">
+        <div id="jmx-tree" class="col-lg-2">
             #tree ( $jmxTree )
         </div>
-        <div id="jmx-info" class="span10">
+        <div id="jmx-info" class="col-lg-10">
             Click on the left tree to select a leaf to show the attributes of a MBean.
         </div>
     </div>

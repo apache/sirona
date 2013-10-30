@@ -20,15 +20,15 @@
 
 <div class="container-fluid">
     <div class="row-fluid">
-        <div class="span2" style="word-break: break-all; word-wrap: break-word;">
+        <div class="col-lg-2" style="word-break: break-all; word-wrap: break-word;">
             #foreach ($thread in $threads.entrySet())
                 <ul>
                     <li><a id="$thread.value" class="thread" href="#">$thread.key</a></li>
                 </ul>
             #end
         </div>
-        <div class="span6">
-            <div id="thread-info" class="span10">
+        <div class="col-lg-6 space">
+            <div id="thread-info" class="col-lg-10">
                 Click on the left list to select a thread to show.
             </div>
         </div>

@@ -72,7 +72,7 @@ public class ReportTest extends SironaReportingTestBase {
 
         final String text = page.getElementById("report-table").asText();
         assertEquals("Counter\tRole\tHits\tMax\tMean\tMin\tStandardDeviation\tSum\tVariance\tValue\tConcurrency\tMaxConcurrency" + lineSeparator +
-            "counter \t role (u) \t 1.00 \t 55.00 \t 55.00 \t 55.00 \t 0.00 \t 55.00 \t 0.00 \t 55.00 \t 0.00 \t 0.00", text);
+            "counter\trole(u)\t1.00\t55.00\t55.00\t55.00\t0.00\t55.00\t0.00\t55.00\t0.00\t0.00", text.replace(" ", ""));
     }
 
     @Test

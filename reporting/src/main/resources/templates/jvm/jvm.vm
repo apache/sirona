@@ -16,7 +16,7 @@
 *#
 <div class="container-fluid">
     <div class="row-fluid">
-        <div class="span6">
+        <div class="col-lg-6">
             <div class="page-header">
                 <h2>CPU</h2>
             </div>
@@ -34,7 +34,7 @@
                 </tbody>
             </table>
         </div>
-        <div class="span6">
+        <div class="col-lg-6">
             <div class="page-header">
                 <h2>Memory</h2>
             </div>

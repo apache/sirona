@@ -15,19 +15,19 @@
   limitations under the License.
 *#
 #macro ( datePicker $label $id )
-<div id="$id" class="input-append date">
-    <label for="$id">$label</label>
-    <input data-format="dd/MM/yyyy hh:mm:ss" type="text">
+<span id="$id" class="col-lg-6">
+    <label for="l$id">$label</label>
     <span class="add-on">
       <i data-time-icon="icon-time" data-date-icon="icon-calendar" class="icon-calendar"></i>
     </span>
-</div>
+    <input data-format="dd/MM/yyyy hh:mm:ss" type="text" class="form-control" id="l$id">
+</span>
 #end
 
 #macro (dateForm $id)
-<form class="form-inline" id="update-$id">
+<form class="form-inline" id="update-$id" role="form">
     #datePicker("From", "${id}-datetimepicker-start")
     #datePicker("To", "${id}-datetimepicker-end")
-    <button type="submit" class="btn btn-primary">Update</button>
+    <button type="submit" class="btn btn-primary col-lg-12">Update</button>
 </form>
 #end
