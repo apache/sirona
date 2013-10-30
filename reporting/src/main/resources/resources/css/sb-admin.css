@@ -89,7 +89,7 @@ table.tablesorter thead tr th:hover {
   /* Wrappers */
 
   #wrapper {
-	padding-left: 225px;
+	padding-left: 100px;
   }
 
   #page-wrapper {
@@ -115,7 +115,7 @@ table.tablesorter thead tr th:hover {
 
   .side-nav>li.dropdown>ul.dropdown-menu {
 	position: relative;
-	min-width: 225px;
+	min-width: 100px;
 	margin: 0;
 	padding: 0;
 	border: none;
@@ -138,7 +138,7 @@ table.tablesorter thead tr th:hover {
   }
 
   .side-nav>li>a {
-	width: 225px;
+	width: 100px;
   }
 
   .navbar-inverse .navbar-nav>li>a:hover,

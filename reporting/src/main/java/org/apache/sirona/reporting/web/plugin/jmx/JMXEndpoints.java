@@ -21,6 +21,7 @@ import org.apache.sirona.MonitoringException;
 import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.reporting.web.handler.api.Regex;
 import org.apache.sirona.reporting.web.handler.api.Template;
+import org.apache.sirona.reporting.web.handler.api.TemplateHelper;
 import org.apache.sirona.reporting.web.template.MapBuilder;
 import org.apache.sirona.util.ClassLoaders;
 
@@ -44,6 +45,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import static org.apache.sirona.reporting.web.handler.api.TemplateHelper.nullProtection;
 
 public class JMXEndpoints {
     private static final boolean METHOD_INVOCATION_ALLOWED = Configuration.is(Configuration.CONFIG_PROPERTY_PREFIX + "jmx.method.allowed", true);
@@ -226,7 +229,7 @@ public class JMXEndpoints {
             } catch (final Exception e) {
                 value = "<div class=\"alert-error\">" + e.getMessage() + "</div>";
             }
-            list.add(new MBeanAttribute(attribute.getName(), attribute.getType(), attribute.getDescription(), value(value)));
+            list.add(new MBeanAttribute(attribute.getName(), nullProtection(attribute.getType()), nullProtection(attribute.getDescription()), value(value)));
         }
         return list;
     }
@@ -234,7 +237,7 @@ public class JMXEndpoints {
     private static String value(final Object value) {
         try {
             if (value == null) {
-                return "";
+                return nullProtection(null);
             }
 
             if (value.getClass().isArray()) {

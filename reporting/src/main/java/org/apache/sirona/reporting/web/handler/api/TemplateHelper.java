@@ -24,6 +24,8 @@ import java.util.Collections;
 import java.util.Map;
 
 public class TemplateHelper {
+    private static final String EMPTY_STRING = "";
+
     private final PrintWriter writer;
     private final Map<String, ?> params;
 
@@ -50,5 +52,12 @@ public class TemplateHelper {
 
     public void write(final String message) {
         writer.write(message);
+    }
+
+    public static String nullProtection(final String value) {
+        if (value == null) {
+            return EMPTY_STRING;
+        }
+        return value;
     }
 }
