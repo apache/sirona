@@ -18,12 +18,7 @@
 
 <div class="container-fluid">
     <div class="row-fluid">
-        <div class="page-header">
-            <h2>Sessions</h2>
-        </div>
-
-        <div id="sessions-graph" class="plot"></div>
-        #dateForm("sessions")
+        #graphBlock("Sessions", "sessions")
     </div>
 </div>
 

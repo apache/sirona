@@ -31,3 +31,17 @@
     <button type="submit" class="btn btn-primary col-lg-12">Update</button>
 </form>
 #end
+
+#macro (graphBlock $title $name)
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        <h3 class="panel-title">
+            <i class="icon-bar-chart"></i>$title
+        </h3>
+    </div>
+    <div class="panel-body">
+        <div id="${name}-graph" class="plot"></div>
+        #dateForm($name)
+    </div>
+</div>
+#end

@@ -16,12 +16,7 @@
 *#
 #macro ( graph $name )
 <div class="col-lg-4">
-    <div class="page-header">
-        <h2>$name</h2>
-    </div>
-
-    <div id="${name}-graph" class="plot"></div>
-    #dateForm($name)
+    #graphBlock($name, $name)
 </div>
 #end
 

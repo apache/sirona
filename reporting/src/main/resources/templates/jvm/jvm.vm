@@ -17,38 +17,44 @@
 <div class="container-fluid">
     <div class="row-fluid">
         <div class="col-lg-6">
-            <div class="page-header">
-                <h2>CPU</h2>
+            #graphBlock("CPU", "cpu")
+
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <i class="icon-table"></i>Computer Info
+                    </h3>
+                </div>
+                <div class="panel-body">
+                    <table id="cpu-table" class="table table-bordered table-striped table-hover">
+                        <tbody>
+                            <tr><td>OS Name</td><td>$name</td></tr>
+                            <tr><td>Version</td><td>$version</td></tr>
+                            <tr><td>Architecture</td><td>$architecture</td></tr>
+                            <tr><td>Number of processors</td><td>$numberProcessor</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-
-            <div id="cpu-graph" class="plot"></div>
-
-            #dateForm('cpu')
-
-            <table id="cpu-table" class="table table-bordered table-striped table-hover">
-                <tbody>
-                    <tr><td>OS Name</td><td>$name</td></tr>
-                    <tr><td>Version</td><td>$version</td></tr>
-                    <tr><td>Architecture</td><td>$architecture</td></tr>
-                    <tr><td>Number of processors</td><td>$numberProcessor</td></tr>
-                </tbody>
-            </table>
         </div>
         <div class="col-lg-6">
-            <div class="page-header">
-                <h2>Memory</h2>
+            #graphBlock("Used Memory", "memory")
+
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <i class="icon-table"></i>Memory Status
+                    </h3>
+                </div>
+                <div class="panel-body">
+                    <table id="memory-table" class="table table-bordered table-striped table-hover">
+                        <tbody>
+                        <tr><td>Init</td><td>$initMemory</td></tr>
+                        <tr><td>Max</td><td>$maxMemory</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-
-            <div id="memory-graph" class="plot"></div>
-
-            #dateForm('memory')
-
-            <table id="memory-table" class="table table-bordered table-striped table-hover">
-                <tbody>
-                    <tr><td>Init</td><td>$initMemory</td></tr>
-                    <tr><td>Max</td><td>$maxMemory</td></tr>
-                </tbody>
-            </table>
         </div>
     </div>
 </div>
