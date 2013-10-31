@@ -31,6 +31,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Matcher;
 
 public class Invoker {
+    public static final String TEXT_HTML = "text/html";
     private final Object instance;
     private final Method method;
     private final String name;
@@ -53,6 +54,7 @@ public class Invoker {
                 final Template template = Template.class.cast(result);
                 final TemplateHelper helper = new TemplateHelperExtractor(name).extract(request, response, matcher);
                 if (template.isHtml()) {
+                    response.setContentType(TEXT_HTML);
                     helper.renderHtml(template.getTemplate(), template.getUserParams());
                 } else {
                     helper.renderPlain(template.getTemplate(), template.getUserParams());
