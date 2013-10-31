@@ -14,38 +14,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-(function (Sirona, $) {
+(function (Sirona, $, undefined) {
+    var dayDuration = 24 * 3600 * 1000;
+
     Sirona.extractTimeFromPicker = function (picker) {
         return picker.data('datetimepicker').getLocalDate().getTime();
     };
 
-    Sirona.updateGraph = function (mapping, plugin, graph, start, end, options) {
+    Sirona.updateGraph = function (mapping, plugin, graph, start, end, options, complete, timeout) {
         $.ajax({
             url: mapping + "/" + plugin + "/" + graph + "/" + start + "/" + end,
             type: "GET",
             dataType: "json",
             success: function (data) {
                 $.plot("#" + graph + "-graph", [ data ], options);
-            }
+            },
+            complete: complete,
+            timeout: timeout
         });
     };
 
     Sirona.initGraph = function(mapping, plugin, graph, options) {
-        var now = new Date();
         var yesterday = new Date();
-        yesterday.setMinutes(now.getMinutes() - 10);
+        yesterday.setTime(yesterday.getTime() - dayDuration);
 
-        var start = yesterday.getTime();
-        var end = now.getTime();
+        var tomorrow = new Date();
+        tomorrow.setTime(tomorrow.getTime() + dayDuration);
 
-        Sirona.updateGraph(mapping, plugin, graph, start, end, options);
+        $('#' + graph + '-datetimepicker-start').data('datetimepicker').setLocalDate(yesterday);
+        $('#' + graph + '-datetimepicker-end').data('datetimepicker').setLocalDate(tomorrow);
 
-        $('#update-' + graph).submit(function (e) {
+        (function doUpdateGraph() {
             Sirona.updateGraph(mapping, plugin, graph,
                 Sirona.extractTimeFromPicker($('#' + graph + '-datetimepicker-start')),
                 Sirona.extractTimeFromPicker($('#' + graph + '-datetimepicker-end')),
-                options);
-            return false;
-        });
+                options, doUpdateGraph, 4000); // refresh interval = 4s
+        })();
     };
 }(window.Sirona = window.Sirona || {}, jQuery));
