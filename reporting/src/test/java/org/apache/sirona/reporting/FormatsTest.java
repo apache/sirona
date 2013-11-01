@@ -84,7 +84,7 @@ public class FormatsTest {
         helper.renderPlain(template.getTemplate(), template.getUserParams());
 
         assertEquals(CSVFormat.HEADER +
-            "RendererTest;failures (u);1.0;1.0;1.0;1.0;0.0;1.0;0.0;1.0;0.0;1.0\n",
+            "RendererTest;failures (u);1.0;1.0;1.0;1.0;0.0;1.0;0.0;1.0;0.0;1.0" + System.getProperty("line.separator"),
             out.toString());
     }
 
