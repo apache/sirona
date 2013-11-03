@@ -18,6 +18,7 @@ package org.apache.sirona.collector.server.store.gauge;
 
 import org.apache.sirona.Role;
 import org.apache.sirona.counters.Unit;
+import org.apache.sirona.gauges.CollectorGaugeDataStore;
 import org.apache.sirona.repositories.Repository;
 import org.apache.sirona.store.GaugeValuesRequest;
 import org.junit.After;
@@ -40,7 +41,7 @@ public class CollectorGaugeTest {
     public void gaugeStore() {
         final Role role = new Role("gauge", Unit.UNARY);
 
-        final CollectorGaugeStore store = new CollectorGaugeStore();
+        final CollectorGaugeDataStore store = new DelegatedCollectorGaugeDataStore();
         store.addToGauge(role, 1234, 5678, "client1");
         store.addToGauge(role, 987, 654, "client2");
 

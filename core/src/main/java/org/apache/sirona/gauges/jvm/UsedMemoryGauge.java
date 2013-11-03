@@ -14,14 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.collector.server.store;
+package org.apache.sirona.gauges.jvm;
 
-import org.apache.sirona.collector.server.store.counter.InMemoryCollectorCounterStore;
-import org.apache.sirona.collector.server.store.gauge.DelegatedCollectorGaugeDataStore;
-import org.apache.sirona.store.DelegateDataStoreFactory;
+import org.apache.sirona.Role;
+import org.apache.sirona.counters.Unit;
 
-public class CollectorDataStoreFactory extends DelegateDataStoreFactory {
-    public CollectorDataStoreFactory() {
-        super(new InMemoryCollectorCounterStore(), new DelegatedCollectorGaugeDataStore());
+public class UsedMemoryGauge extends BaseMemoryGauge {
+    public static final Role USED_MEMORY = new Role("Used Memory", Unit.UNARY);
+
+    @Override
+    public Role role() {
+        return USED_MEMORY;
+    }
+
+    @Override
+    public double value() {
+        return MEMORY_MX_BEAN.getHeapMemoryUsage().getUsed();
     }
 }

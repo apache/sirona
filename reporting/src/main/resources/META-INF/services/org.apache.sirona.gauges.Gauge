@@ -1,2 +1,0 @@
-org.apache.sirona.reporting.web.plugin.jvm.gauges.CPUGauge
-org.apache.sirona.reporting.web.plugin.jvm.gauges.UsedMemoryGauge

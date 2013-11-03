@@ -17,6 +17,9 @@
 package org.apache.sirona.gauges;
 
 import org.apache.sirona.Role;
+import org.apache.sirona.configuration.Configuration;
+import org.apache.sirona.gauges.jvm.CPUGauge;
+import org.apache.sirona.gauges.jvm.UsedMemoryGauge;
 import org.apache.sirona.store.GaugeDataStore;
 
 import java.util.Map;
@@ -30,6 +33,10 @@ public final class DefaultGaugeManager implements GaugeManager {
 
     public DefaultGaugeManager(final GaugeDataStore dataStore) {
         store = dataStore;
+        if (Configuration.is(Configuration.CONFIG_PROPERTY_PREFIX + "core.gauge.activated", true)) {
+            addGauge(new CPUGauge());
+            addGauge(new UsedMemoryGauge());
+        }
     }
 
     @Override
@@ -54,9 +61,15 @@ public final class DefaultGaugeManager implements GaugeManager {
 
         this.store.createOrNoopGauge(role);
 
-        final Timer timer = new Timer("gauge-" + role.getName() + "-timer", true);
-        timers.put(role, timer);
-        timer.scheduleAtFixedRate(new GaugeTask(store, gauge), 0, gauge.period());
+        final ClassLoader old = Thread.currentThread().getContextClassLoader();
+        Thread.currentThread().setContextClassLoader(gauge.getClass().getClassLoader());
+        try {
+            final Timer timer = new Timer("gauge-" + role.getName() + "-timer", true); // this starts a thread so ensure the loader is the right one
+            timers.put(role, timer);
+            timer.scheduleAtFixedRate(new GaugeTask(store, gauge), 0, gauge.period());
+        } finally {
+            Thread.currentThread().setContextClassLoader(old);
+        }
     }
 
     private static class GaugeTask extends TimerTask {

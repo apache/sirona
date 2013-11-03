@@ -19,6 +19,7 @@ package org.apache.sirona.collector.server.store.gauge;
 import org.apache.sirona.MonitoringException;
 import org.apache.sirona.Role;
 import org.apache.sirona.configuration.Configuration;
+import org.apache.sirona.gauges.CollectorGaugeDataStore;
 import org.apache.sirona.store.GaugeDataStore;
 import org.apache.sirona.store.GaugeValuesRequest;
 import org.apache.sirona.store.InMemoryGaugeDataStore;
@@ -28,18 +29,19 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-public class CollectorGaugeStore implements GaugeDataStore {
+public class DelegatedCollectorGaugeDataStore implements CollectorGaugeDataStore {
     private final ConcurrentMap<String, GaugeDataStore> dataStores = new ConcurrentHashMap<String, GaugeDataStore>();
 
     private final Class<? extends GaugeDataStore> delegateClass;
 
-    public CollectorGaugeStore() {
+    public DelegatedCollectorGaugeDataStore() {
         try {
             delegateClass = Class.class.cast(
-                CollectorGaugeStore.class.getClassLoader().loadClass( // use this classloader and not TCCL to avoid issues
+                DelegatedCollectorGaugeDataStore.class.getClassLoader().loadClass( // use this classloader and not TCCL to avoid issues
                     Configuration.getProperty(Configuration.CONFIG_PROPERTY_PREFIX + "collector.gauge.store-class", InMemoryGaugeDataStore.class.getName())));
         } catch (final ClassNotFoundException e) {
             throw new MonitoringException(e);
@@ -91,7 +93,7 @@ public class CollectorGaugeStore implements GaugeDataStore {
 
     @Override
     public Map<Long, Double> getGaugeValues(final GaugeValuesRequest gaugeValuesRequest) {
-        final Map<Long, Double> values = new HashMap<Long, Double>();
+        final Map<Long, Double> values = new TreeMap<Long, Double>();
         for (final Map.Entry<String, GaugeDataStore> marker : dataStores.entrySet()) {
             final Map<Long, Double> gaugeValues = marker.getValue().getGaugeValues(gaugeValuesRequest);
             for (final Map.Entry<Long, Double> entry : gaugeValues.entrySet()) {

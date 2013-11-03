@@ -48,7 +48,7 @@ public final class Configuration {
     private static final Map<Class<?>, Object> SINGLETONS = new ConcurrentHashMap<Class<?>, Object>();
     private static final Collection<ToDestroy> INSTANCES = new ArrayList<ToDestroy>();
 
-    private static final String DEFAULT_CONFIGURATION_FILE = "sirona.properties";
+    private static final String[] DEFAULT_CONFIGURATION_FILES = new String[]{ "sirona.properties", "collector-sirona.properties" };
 
     private static Thread shutdownHook = null;
 
@@ -66,13 +66,19 @@ public final class Configuration {
     }
 
     private static InputStream findConfiguration() throws FileNotFoundException {
-        final String filename = System.getProperty(CONFIG_PROPERTY_PREFIX + "configuration", DEFAULT_CONFIGURATION_FILE);
-        if (new File(filename).exists()) {
-            return new FileInputStream(filename);
-        }
+        for (final String cf : DEFAULT_CONFIGURATION_FILES) {
+            final String filename = System.getProperty(CONFIG_PROPERTY_PREFIX + "configuration", cf);
+            if (new File(filename).exists()) {
+                return new FileInputStream(filename);
+            }
 
-        // use core classloader and not TCCL to avoid to use app loader to load config
-        return Configuration.class.getClassLoader().getResourceAsStream(filename);
+            // use core classloader and not TCCL to avoid to use app loader to load config
+            final InputStream stream = Configuration.class.getClassLoader().getResourceAsStream(filename);
+            if (stream != null) {
+                return stream;
+            }
+        }
+        return null;
     }
 
     public static <T> T[] newInstances(final Class<T> api) {

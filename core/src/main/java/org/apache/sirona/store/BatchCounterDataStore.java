@@ -25,8 +25,12 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public abstract class BatchCounterDataStore extends InMemoryCounterDataStore {
+    private static final Logger LOGGER = Logger.getLogger(BatchCounterDataStore.class.getName());
+
     protected final BatchFuture scheduledTask;
 
     protected BatchCounterDataStore() {
@@ -53,7 +57,11 @@ public abstract class BatchCounterDataStore extends InMemoryCounterDataStore {
     private class BatchPushCountersTask implements Runnable {
         @Override
         public void run() {
-            pushCountersByBatch(Repository.INSTANCE);
+            try {
+                pushCountersByBatch(Repository.INSTANCE);
+            } catch (final Exception e) {
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
+            }
         }
     }
 }

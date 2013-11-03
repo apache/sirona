@@ -14,17 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.collector.server.store.counter;
+package org.apache.sirona.gauges.jvm;
 
-import org.apache.sirona.collector.server.math.M2AwareStatisticalSummary;
-import org.apache.sirona.counters.Counter;
-import org.apache.sirona.store.CounterDataStore;
+import org.apache.sirona.configuration.Configuration;
+import org.apache.sirona.gauges.Gauge;
 
-import java.util.Collection;
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryMXBean;
 
-public interface CollectorCounterStore extends CounterDataStore {
-    void update(Counter.Key key, String marker, M2AwareStatisticalSummary stats, int concurrency);
-    Collection<String> markers();
-    Collection<? extends Counter> getCounters(String marker);
-    LeafCollectorCounter getOrCreateCounter(Counter.Key key, final String marker);
+public abstract class BaseMemoryGauge implements Gauge {
+    protected static final MemoryMXBean MEMORY_MX_BEAN = ManagementFactory.getMemoryMXBean();
+
+    @Override
+    public long period() {
+        return Configuration.getInteger(Configuration.CONFIG_PROPERTY_PREFIX + "gauge.memory.period", 4000);
+    }
 }

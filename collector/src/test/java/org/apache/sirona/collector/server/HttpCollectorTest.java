@@ -18,8 +18,7 @@ package org.apache.sirona.collector.server;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.sirona.Role;
-import org.apache.sirona.collector.server.Event;
-import org.apache.sirona.collector.server.store.counter.CollectorCounterStore;
+import org.apache.sirona.counters.CollectorCounterStore;
 import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.counters.Unit;

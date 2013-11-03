@@ -14,19 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.reporting.web.plugin.jvm.gauges;
+package org.apache.sirona.gauges;
 
-import org.apache.sirona.configuration.Configuration;
-import org.apache.sirona.gauges.Gauge;
+import org.apache.sirona.Role;
+import org.apache.sirona.store.GaugeDataStore;
+import org.apache.sirona.store.GaugeValuesRequest;
 
-import java.lang.management.ManagementFactory;
-import java.lang.management.MemoryMXBean;
+import java.util.Collection;
+import java.util.Map;
 
-public abstract class BaseMemoryGauge implements Gauge {
-    protected static final MemoryMXBean MEMORY_MX_BEAN = ManagementFactory.getMemoryMXBean();
-
-    @Override
-    public long period() {
-        return Configuration.getInteger(Configuration.CONFIG_PROPERTY_PREFIX + "gauge.memory.period", 4000);
-    }
+public interface CollectorGaugeDataStore extends GaugeDataStore {
+    Map<Long, Double> getGaugeValues(GaugeValuesRequest gaugeValuesRequest, String marker);
+    void createOrNoopGauge(Role role, String marker);
+    void addToGauge(Role role, long time, double value, String marker);
+    Collection<String> markers();
 }
