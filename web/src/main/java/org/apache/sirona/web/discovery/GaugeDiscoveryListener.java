@@ -38,6 +38,8 @@ public class GaugeDiscoveryListener implements ServletContextListener {
 
     @Override
     public void contextDestroyed(final ServletContextEvent sce) {
-        helper.destroy();
+        if (helper != null) {
+            helper.destroy();
+        }
     }
 }

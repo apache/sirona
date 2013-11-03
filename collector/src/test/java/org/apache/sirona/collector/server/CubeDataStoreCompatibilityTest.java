@@ -17,16 +17,23 @@
 package org.apache.sirona.collector.server;
 
 import org.apache.sirona.Role;
-import org.apache.sirona.collector.server.store.counter.CollectorCounterStore;
+import org.apache.sirona.counters.CollectorCounterStore;
 import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.counters.Counter;
+import org.apache.sirona.counters.DefaultCounter;
 import org.apache.sirona.counters.Unit;
 import org.apache.sirona.cube.CubeCounterDataStore;
+import org.apache.sirona.repositories.DefaultRepository;
 import org.apache.sirona.repositories.Repository;
 import org.apache.sirona.store.CounterDataStore;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.Iterator;
+
+import static org.junit.Assert.assertEquals;
 
 public class CubeDataStoreCompatibilityTest {
     private CollectorServer server;
@@ -45,19 +52,29 @@ public class CubeDataStoreCompatibilityTest {
 
     @Test
     public void cubeMe() {
-        Repository.INSTANCE.getCounter(new Counter.Key(new Role("cube", Unit.UNARY), "client")).add(50);
-        final SeeMyProtectedStuffStore ccds = new SeeMyProtectedStuffStore();
-        ccds.doPush();
+        new SeeMyProtectedStuffStore().doPush();
 
         final CollectorCounterStore store = CollectorCounterStore.class.cast(Configuration.getInstance(CounterDataStore.class));
         final Counter counter1 = store.getOrCreateCounter(new Counter.Key(new Role("cube", Unit.UNARY), "client"));
         final Counter counter1Client1 = store.getOrCreateCounter(new Counter.Key(new Role("cube", Unit.UNARY), "client"), "local");
 
+        assertEquals(50, counter1.getHits());
+        assertEquals(counter1.getHits(), counter1Client1.getHits());
     }
 
     private static class SeeMyProtectedStuffStore extends CubeCounterDataStore {
         public void doPush() {
-            pushCountersByBatch(Repository.INSTANCE);
+            pushCountersByBatch(new DefaultRepository() {
+                @Override
+                public Iterator<Counter> iterator() {
+                    return Arrays.<Counter>asList(new DefaultCounter(new Counter.Key(new Role("cube", Unit.UNARY), "client"), null) {
+                        @Override
+                        public long getHits() {
+                            return 50;
+                        }
+                    }).iterator();
+                }
+            });
         }
     }
 }

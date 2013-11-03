@@ -14,21 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.reporting.web.plugin.jvm.gauges;
+package org.apache.sirona.counters;
 
-import org.apache.sirona.Role;
-import org.apache.sirona.counters.Unit;
+import org.apache.sirona.math.M2AwareStatisticalSummary;
+import org.apache.sirona.store.CounterDataStore;
 
-public class UsedMemoryGauge extends BaseMemoryGauge {
-    public static final Role USED_MEMORY = new Role("Used Memory", Unit.UNARY);
+import java.util.Collection;
 
-    @Override
-    public Role role() {
-        return USED_MEMORY;
-    }
-
-    @Override
-    public double value() {
-        return MEMORY_MX_BEAN.getHeapMemoryUsage().getUsed();
-    }
+public interface CollectorCounterStore extends CounterDataStore {
+    void update(Counter.Key key, String marker, M2AwareStatisticalSummary stats, int concurrency);
+    Collection<String> markers();
+    Collection<? extends Counter> getCounters(String marker);
+    Counter getOrCreateCounter(Counter.Key key, final String marker);
 }

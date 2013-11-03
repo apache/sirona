@@ -32,10 +32,13 @@ import java.util.EnumSet;
 import java.util.Set;
 
 public class WebMonitoringInitializer implements ServletContainerInitializer {
+    private static final String ACTIVATED = Configuration.CONFIG_PROPERTY_PREFIX + "web.activated";
+    private static final String FALSE = Boolean.FALSE.toString();
+
     @Override
     public void onStartup(final Set<Class<?>> classes, final ServletContext ctx) throws ServletException {
-        final String activated = ctx.getInitParameter(Configuration.CONFIG_PROPERTY_PREFIX + "web.activated");
-        if ("false".equalsIgnoreCase(activated)) {
+        final String activated = ctx.getInitParameter(ACTIVATED);
+        if (FALSE.equalsIgnoreCase(Configuration.getProperty(ACTIVATED, activated))) {
             return;
         }
 
@@ -45,7 +48,7 @@ public class WebMonitoringInitializer implements ServletContainerInitializer {
             ctx.addListener(SironaLifecycle.class);
         }
 
-        final String monStatus = Boolean.toString(!"false".equalsIgnoreCase(ctx.getInitParameter(MonitoringFilter.MONITOR_STATUS)));
+        final String monStatus = Boolean.toString(!FALSE.equalsIgnoreCase(ctx.getInitParameter(MonitoringFilter.MONITOR_STATUS)));
         String ignoredUrls = ctx.getInitParameter(MonitoringFilter.IGNORED_URLS);
         String monitoredUrls = ctx.getInitParameter(Configuration.CONFIG_PROPERTY_PREFIX + "web.monitored-urls");
         if (!"false".equalsIgnoreCase(monitoredUrls)) {

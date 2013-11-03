@@ -19,8 +19,8 @@ package org.apache.sirona.reporting.web.plugin.jvm;
 import org.apache.sirona.reporting.web.handler.api.Regex;
 import org.apache.sirona.reporting.web.handler.api.Template;
 import org.apache.sirona.reporting.web.plugin.json.Jsons;
-import org.apache.sirona.reporting.web.plugin.jvm.gauges.CPUGauge;
-import org.apache.sirona.reporting.web.plugin.jvm.gauges.UsedMemoryGauge;
+import org.apache.sirona.gauges.jvm.CPUGauge;
+import org.apache.sirona.gauges.jvm.UsedMemoryGauge;
 import org.apache.sirona.reporting.web.template.MapBuilder;
 import org.apache.sirona.repositories.Repository;
 

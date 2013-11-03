@@ -20,12 +20,13 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.sirona.Role;
-import org.apache.sirona.collector.server.math.M2AwareStatisticalSummary;
-import org.apache.sirona.collector.server.store.counter.CollectorCounterStore;
-import org.apache.sirona.collector.server.store.gauge.CollectorGaugeStore;
+import org.apache.sirona.gauges.CollectorGaugeDataStore;
+import org.apache.sirona.math.M2AwareStatisticalSummary;
+import org.apache.sirona.counters.CollectorCounterStore;
 import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.counters.Unit;
+import org.apache.sirona.repositories.Repository;
 import org.apache.sirona.store.CounterDataStore;
 import org.apache.sirona.store.GaugeDataStore;
 
@@ -51,16 +52,18 @@ public class Collector extends HttpServlet {
     private final Map<String, Role> roles = new ConcurrentHashMap<String, Role>();
 
     private CollectorCounterStore counterDataStore = null;
-    private CollectorGaugeStore gaugeDataStore = null;
+    private CollectorGaugeDataStore gaugeDataStore = null;
     private ObjectMapper mapper;
 
     @Override
     public void init() {
+        Repository.INSTANCE.iterator(); // for init for next finds
+
         final GaugeDataStore gds = Configuration.findOrCreateInstance(GaugeDataStore.class);
-        if (!CollectorGaugeStore.class.isInstance(gds)) {
-            throw new IllegalStateException("Collector only works with " + CollectorGaugeStore.class.getName());
+        if (!CollectorGaugeDataStore.class.isInstance(gds)) {
+            throw new IllegalStateException("Collector only works with " + CollectorGaugeDataStore.class.getName());
         }
-        this.gaugeDataStore = CollectorGaugeStore.class.cast(gds);
+        this.gaugeDataStore = CollectorGaugeDataStore.class.cast(gds);
 
         final CounterDataStore cds = Configuration.findOrCreateInstance(CounterDataStore.class);
         if (!CollectorCounterStore.class.isInstance(cds)) {

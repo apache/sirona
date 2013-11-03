@@ -30,8 +30,12 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public abstract class AggregatedGaugeDataStore implements GaugeDataStore {
+    private static final Logger LOGGER = Logger.getLogger(AggregatedGaugeDataStore.class.getName());
+
     private final ConcurrentMap<Role, SummaryStatistics> gauges = new ConcurrentHashMap<Role, SummaryStatistics>();
 
     protected final BatchFuture scheduledTask;
@@ -95,7 +99,11 @@ public abstract class AggregatedGaugeDataStore implements GaugeDataStore {
     private class PushGaugesTask implements Runnable {
         @Override
         public void run() {
-            pushGauges(copyAndClearGauges());
+            try {
+                pushGauges(copyAndClearGauges());
+            } catch (final Exception e) {
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
+            }
         }
     }
 
@@ -129,6 +137,11 @@ public abstract class AggregatedGaugeDataStore implements GaugeDataStore {
         @Override
         public double getSum() {
             return delegate.getSum();
+        }
+
+        @Override
+        public String toString() {
+            return "ValueImpl{delegate=" + delegate + '}';
         }
     }
 }

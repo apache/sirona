@@ -23,8 +23,12 @@ import org.apache.sirona.store.GaugeValuesRequest;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class CubeGaugeDataStore implements GaugeDataStore {
+    private static final Logger LOGGER = Logger.getLogger(CubeGaugeDataStore.class.getName());
+
     private static final String GAUGE_TYPE = "gauge";
 
     private final Cube cube = Configuration.findOrCreateInstance(CubeBuilder.class).build();
@@ -41,12 +45,16 @@ public class CubeGaugeDataStore implements GaugeDataStore {
 
     @Override
     public void addToGauge(final Role role, final long time, final double value) {
-        cube.post(
+        try {
+            cube.post(
                 cube.buildEvent(new StringBuilder(), GAUGE_TYPE, time,
                         new MapBuilder()
                                 .add("value", value)
                                 .add("role", role.getName())
                                 .add("unit", role.getUnit().getName())
                                 .map()));
+        } catch (final Exception e) {
+            LOGGER.log(Level.SEVERE, e.getMessage(), e);
+        }
     }
 }

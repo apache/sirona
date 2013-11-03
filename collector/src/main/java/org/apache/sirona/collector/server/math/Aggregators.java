@@ -17,6 +17,7 @@
 package org.apache.sirona.collector.server.math;
 
 import org.apache.sirona.collector.server.store.counter.LeafCollectorCounter;
+import org.apache.sirona.math.M2AwareStatisticalSummary;
 
 import java.util.Collection;
 import java.util.Iterator;

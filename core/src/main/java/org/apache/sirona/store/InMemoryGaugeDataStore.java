@@ -23,10 +23,11 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 
 public class InMemoryGaugeDataStore implements GaugeDataStore {
-    protected final Map<Role, Map<Long, Double>> gauges = new ConcurrentHashMap<Role, Map<Long, Double>>();
+    protected final ConcurrentMap<Role, Map<Long, Double>> gauges = new ConcurrentHashMap<Role, Map<Long, Double>>();
 
     @Override
     public Map<Long, Double> getGaugeValues(GaugeValuesRequest gaugeValuesRequest) {
@@ -49,7 +50,7 @@ public class InMemoryGaugeDataStore implements GaugeDataStore {
 
     @Override
     public void createOrNoopGauge(final Role role) {
-        gauges.put(role, new FixedSizedMap());
+        gauges.putIfAbsent(role, new FixedSizedMap());
     }
 
     @Override

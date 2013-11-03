@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.reporting.web.plugin.jvm.gauges;
+package org.apache.sirona.gauges.jvm;
 
 import org.apache.sirona.Role;
 import org.apache.sirona.configuration.Configuration;
