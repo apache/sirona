@@ -19,13 +19,13 @@
         <div class="col-lg-6">
             #graphBlock("CPU", "cpu")
 
+            #if ($name)
             <div class="panel panel-primary">
                 <div class="panel-heading">
                     <h3 class="panel-title">
                         <i class="icon-table"></i>Computer Info
                     </h3>
                 </div>
-                #if ($name)
                 <div class="panel-body">
                     <table id="cpu-table" class="table table-bordered table-striped table-hover">
                         <tbody>
@@ -36,19 +36,19 @@
                         </tbody>
                     </table>
                 </div>
-                #end
             </div>
+            #end
         </div>
         <div class="col-lg-6">
             #graphBlock("Used Memory", "memory")
 
+            #if ($initMemory)
             <div class="panel panel-primary">
                 <div class="panel-heading">
                     <h3 class="panel-title">
                         <i class="icon-table"></i>Memory Status
                     </h3>
                 </div>
-                #if ($initMemory)
                 <div class="panel-body">
                     <table id="memory-table" class="table table-bordered table-striped table-hover">
                         <tbody>
@@ -57,8 +57,8 @@
                         </tbody>
                     </table>
                 </div>
-                #end
             </div>
+            #end
         </div>
     </div>
 </div>
