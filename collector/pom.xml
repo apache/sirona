@@ -43,6 +43,9 @@
     <dependency>
       <groupId>org.apache.sirona</groupId>
       <artifactId>sirona-reporting</artifactId>
+      <version>${project.version}</version>
+      <classifier>classes</classifier>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.jaxrs</groupId>

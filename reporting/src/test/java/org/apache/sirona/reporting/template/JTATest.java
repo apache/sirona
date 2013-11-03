@@ -36,7 +36,7 @@ public class JTATest extends SironaReportingTestBase {
     @Test
     public void checkJsonEndpoint() throws IOException {
         final String page = page("jta/Actives/0/" + System.currentTimeMillis()).getWebResponse().getContentAsString().replace(" ", "");
-        assertTrue(page.startsWith("{\"data\":["));
-        assertTrue(page.endsWith(",\"label\":\"Active\",\"color\":\"#317eac\"}"));
+        assertTrue(page.contains("\"data\":["));
+        assertTrue(page.startsWith("[{\"label\":\"Actives\",\"color\":\"#"));
     }
 }

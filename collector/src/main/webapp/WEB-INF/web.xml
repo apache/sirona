@@ -22,6 +22,7 @@
   <servlet>
     <servlet-name>collector</servlet-name>
     <servlet-class>org.apache.sirona.collector.server.Collector</servlet-class>
+    <load-on-startup>1</load-on-startup>
   </servlet>
   <servlet-mapping>
     <servlet-name>collector</servlet-name>

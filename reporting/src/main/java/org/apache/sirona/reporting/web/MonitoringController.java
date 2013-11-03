@@ -16,6 +16,7 @@
  */
 package org.apache.sirona.reporting.web;
 
+import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.reporting.web.handler.FilteringEndpoints;
 import org.apache.sirona.reporting.web.handler.HomeEndpoint;
 import org.apache.sirona.reporting.web.handler.internal.EndpointInfo;
@@ -23,6 +24,7 @@ import org.apache.sirona.reporting.web.handler.internal.Invoker;
 import org.apache.sirona.reporting.web.plugin.PluginRepository;
 import org.apache.sirona.reporting.web.template.MapBuilder;
 import org.apache.sirona.reporting.web.template.Templates;
+import org.apache.sirona.repositories.Repository;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -55,19 +57,15 @@ public class MonitoringController implements Filter {
     private String mapping = null;
     private ClassLoader classloader;
     private Invoker defaultInvoker;
-    private String ignoreInternal = "true";
 
     @Override
     public void init(final FilterConfig config) throws ServletException {
+        Configuration.findOrCreateInstance(Repository.class); // ensure datastore are loaded
+
         classloader = Thread.currentThread().getContextClassLoader();
         initMapping(config.getInitParameter("monitoring-mapping"));
         Templates.init(config.getServletContext().getContextPath(), mapping);
         initHandlers();
-
-        final String ignoreStr = config.getInitParameter("ignore-internal-urls");
-        if (ignoreStr != null) {
-            ignoreInternal = ignoreStr;
-        }
     }
 
     private void initHandlers() {

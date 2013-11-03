@@ -31,7 +31,7 @@ public class WebEndpoints {
 
     @Regex("/sessions/([0-9]*)/([0-9]*)")
     public String sessions(final long start, final long end) {
-        final StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder("[");
         for (final Role gauge : SessionGauge.gauges().keySet()) {
             builder.append("{ \"data\": ")
                 .append(Jsons.toJson(Repository.INSTANCE.getGaugeValues(start, end, gauge)))
@@ -40,9 +40,9 @@ public class WebEndpoints {
         }
 
         final int length = builder.length();
-        if (length > 0) {
-            return builder.toString().substring(0, length - 1);
+        if (length > 1) {
+            return builder.toString().substring(0, length - 1) + "]";
         }
-        return builder.toString();
+        return builder.append("]").toString();
     }
 }

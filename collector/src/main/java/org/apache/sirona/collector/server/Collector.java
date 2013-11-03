@@ -20,12 +20,12 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.sirona.Role;
-import org.apache.sirona.gauges.CollectorGaugeDataStore;
-import org.apache.sirona.math.M2AwareStatisticalSummary;
-import org.apache.sirona.counters.CollectorCounterStore;
 import org.apache.sirona.configuration.Configuration;
+import org.apache.sirona.counters.CollectorCounterStore;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.counters.Unit;
+import org.apache.sirona.gauges.CollectorGaugeDataStore;
+import org.apache.sirona.math.M2AwareStatisticalSummary;
 import org.apache.sirona.repositories.Repository;
 import org.apache.sirona.store.CounterDataStore;
 import org.apache.sirona.store.GaugeDataStore;
@@ -57,7 +57,8 @@ public class Collector extends HttpServlet {
 
     @Override
     public void init() {
-        Repository.INSTANCE.iterator(); // for init for next finds
+        // force init to ensure we have stores
+        Configuration.findOrCreateInstance(Repository.class);
 
         final GaugeDataStore gds = Configuration.findOrCreateInstance(GaugeDataStore.class);
         if (!CollectorGaugeDataStore.class.isInstance(gds)) {

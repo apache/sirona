@@ -27,9 +27,9 @@
             type: "GET",
             dataType: "json",
             success: function (data) {
-                $.plot("#" + graph + "-graph", [ data ], options);
+                $.plot("#" + graph + "-graph", data, options);
             },
-            complete: complete,
+            //complete: complete, // TODO: find a better way to refresh the plot
             timeout: timeout
         });
     };
