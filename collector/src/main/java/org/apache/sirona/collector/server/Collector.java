@@ -28,7 +28,6 @@ import org.apache.sirona.counters.Counter;
 import org.apache.sirona.counters.Unit;
 import org.apache.sirona.store.CounterDataStore;
 import org.apache.sirona.store.GaugeDataStore;
-import org.apache.sirona.store.InMemoryGaugeDataStore;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -59,7 +58,7 @@ public class Collector extends HttpServlet {
     public void init() {
         final GaugeDataStore gds = Configuration.findOrCreateInstance(GaugeDataStore.class);
         if (!CollectorGaugeStore.class.isInstance(gds)) {
-            throw new IllegalStateException("Collector only works with " + InMemoryGaugeDataStore.class.getName());
+            throw new IllegalStateException("Collector only works with " + CollectorGaugeStore.class.getName());
         }
         this.gaugeDataStore = CollectorGaugeStore.class.cast(gds);
 
