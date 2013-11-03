@@ -20,8 +20,8 @@ import org.apache.sirona.Role;
 import org.apache.sirona.counters.Unit;
 import org.apache.sirona.reporting.web.handler.api.Regex;
 import org.apache.sirona.reporting.web.handler.api.Template;
-import org.apache.sirona.reporting.web.plugin.json.Jsons;
-import org.apache.sirona.repositories.Repository;
+
+import static org.apache.sirona.reporting.web.graph.Line.generateReport;
 
 public class JTAEndpoints {
     // copied to avoid classloading issue depending on the deployment, see org.apache.sirona.jta.JTAGauges
@@ -36,16 +36,16 @@ public class JTAEndpoints {
 
     @Regex("/Commits/([0-9]*)/([0-9]*)")
     public String commit(final long start, final long end) {
-        return "{ \"data\": " + Jsons.toJson(Repository.INSTANCE.getGaugeValues(start, end, COMMITED)) + ", \"label\": \"Commits\", \"color\": \"#317eac\" }";
+        return generateReport("Commits", COMMITED, start, end);
     }
 
     @Regex("/Rollbacks/([0-9]*)/([0-9]*)")
     public String rollback(final long start, final long end) {
-        return "{ \"data\": " + Jsons.toJson(Repository.INSTANCE.getGaugeValues(start, end, ROLLBACKED)) + ", \"label\": \"Rollback\", \"color\": \"#317eac\" }";
+        return generateReport("Rollbacks", ROLLBACKED, start, end);
     }
 
     @Regex("/Actives/([0-9]*)/([0-9]*)")
     public String active(final long start, final long end) {
-        return "{ \"data\": " + Jsons.toJson(Repository.INSTANCE.getGaugeValues(start, end, ACTIVE)) + ", \"label\": \"Active\", \"color\": \"#317eac\" }";
+        return generateReport("Actives", ACTIVE, start, end);
     }
 }

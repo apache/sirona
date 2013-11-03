@@ -19,7 +19,9 @@ package org.apache.sirona.repositories;
 import org.apache.sirona.MonitoringException;
 import org.apache.sirona.Role;
 import org.apache.sirona.configuration.Configuration;
+import org.apache.sirona.counters.CollectorCounterStore;
 import org.apache.sirona.counters.Counter;
+import org.apache.sirona.gauges.CollectorGaugeDataStore;
 import org.apache.sirona.gauges.DefaultGaugeManager;
 import org.apache.sirona.gauges.Gauge;
 import org.apache.sirona.stopwatches.CounterStopWatch;
@@ -55,11 +57,17 @@ public class DefaultRepository implements Repository {
         if (counter == null) {
             counter = Configuration.findOrCreateInstance(DataStoreFactory.class).getCounterDataStore();
             Configuration.setSingletonInstance(CounterDataStore.class, counter);
+            if (CollectorCounterStore.class.isInstance(counter)) {
+                Configuration.setSingletonInstance(CollectorCounterStore.class, counter);
+            }
         }
 
         if (gauge == null) {
             gauge = Configuration.findOrCreateInstance(DataStoreFactory.class).getGaugeDataStore();
             Configuration.setSingletonInstance(GaugeDataStore.class, gauge);
+            if (CollectorGaugeDataStore.class.isInstance(gauge)) {
+                Configuration.setSingletonInstance(CollectorGaugeDataStore.class, gauge);
+            }
         }
         this.counterDataStore = counter;
         this.gaugeDataStore = gauge;

@@ -16,17 +16,19 @@
  */
 package org.apache.sirona.reporting.web.plugin.jvm;
 
-import org.apache.sirona.reporting.web.handler.api.Regex;
-import org.apache.sirona.reporting.web.handler.api.Template;
-import org.apache.sirona.reporting.web.plugin.json.Jsons;
 import org.apache.sirona.gauges.jvm.CPUGauge;
 import org.apache.sirona.gauges.jvm.UsedMemoryGauge;
-import org.apache.sirona.reporting.web.template.MapBuilder;
-import org.apache.sirona.repositories.Repository;
+import org.apache.sirona.reporting.web.handler.api.Regex;
+import org.apache.sirona.reporting.web.handler.api.Template;
+import org.apache.sirona.util.Environment;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.OperatingSystemMXBean;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.apache.sirona.reporting.web.graph.Line.generateReport;
 
 public class JVMEndpoints {
     @Regex
@@ -34,23 +36,25 @@ public class JVMEndpoints {
         final OperatingSystemMXBean os = ManagementFactory.getOperatingSystemMXBean();
         final MemoryMXBean memory = ManagementFactory.getMemoryMXBean();
 
-        return new Template("jvm/jvm.vm", new MapBuilder<String, Object>()
-            .set("architecture", os.getArch())
-            .set("name", os.getName())
-            .set("version", os.getVersion())
-            .set("numberProcessor", os.getAvailableProcessors())
-            .set("maxMemory", memory.getHeapMemoryUsage().getMax())
-            .set("initMemory", memory.getHeapMemoryUsage().getInit())
-            .build());
+        final Map<String,Object> params = new HashMap<String, Object>();
+        if (!Environment.isCollector()) {
+            params.put("architecture", os.getArch());
+            params.put("name", os.getName());
+            params.put("version", os.getVersion());
+            params.put("numberProcessor", os.getAvailableProcessors());
+            params.put("maxMemory", memory.getHeapMemoryUsage().getMax());
+            params.put("initMemory", memory.getHeapMemoryUsage().getInit());
+        }
+        return new Template("jvm/jvm.vm", params);
     }
 
     @Regex("/cpu/([0-9]*)/([0-9]*)")
     public String cpu(final long start, final long end) {
-        return "{ \"data\": " + Jsons.toJson(Repository.INSTANCE.getGaugeValues(start, end, CPUGauge.CPU)) + ", \"label\": \"CPU Usage\", \"color\": \"#317eac\" }";
+        return generateReport("CPU Usage", CPUGauge.CPU, start, end);
     }
 
     @Regex("/memory/([0-9]*)/([0-9]*)")
     public String memory(final long start, final long end) {
-        return "{ \"data\": " + Jsons.toJson(Repository.INSTANCE.getGaugeValues(start, end, UsedMemoryGauge.USED_MEMORY)) + ", \"label\": \"Used Memory\", \"color\": \"#317eac\" }";
+        return generateReport("Used Memory", UsedMemoryGauge.USED_MEMORY, start, end);
     }
 }

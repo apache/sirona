@@ -40,6 +40,6 @@ public class WebTest extends SironaReportingTestBase {
     @Test
     public void checkJsonEndpoint() throws IOException {
         final String page = page("web/sessions/0/" + System.currentTimeMillis()).getWebResponse().getContentAsString().replace(" ", "");
-        assertEquals("", page); // we don't deploy in this tests sessions gauges so we have nothing
+        assertEquals("[]", page); // we don't deploy in this tests sessions gauges so we have nothing
     }
 }
