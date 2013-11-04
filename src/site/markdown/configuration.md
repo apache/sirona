@@ -68,7 +68,9 @@ or to call manually `Configuration.shutdown()` method.
 
 * org.apache.sirona.web.activated: if auto deployment of web module is activated
 * org.apache.sirona.web.monitored-urls: the mapping of monitored urls
-* org.apache.sirona.gauge.sessions.period: the gauge period for sessions number monitoring
+* org.apache.sirona.web.gauge.sessions.period: the gauge period for sessions number monitoring
+* org.apache.sirona.web.gauge.status.period: when status monitoring is activated the period for status gauges
+* org.apache.sirona.web.monitored-statuses: the comma separated list of monitored statuses (if not a default list is used)
 
 #### CDI
 

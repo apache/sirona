@@ -17,12 +17,11 @@
 package org.apache.sirona.test.web;
 
 import com.gargoylesoftware.htmlunit.TextPage;
-import com.gargoylesoftware.htmlunit.WebAssert;
 import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import org.apache.catalina.startup.Constants;
 import org.apache.sirona.Role;
 import org.apache.sirona.counters.Counter;
+import org.apache.sirona.counters.Unit;
 import org.apache.sirona.repositories.Repository;
 import org.apache.sirona.web.registration.WebMonitoringInitializer;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -30,9 +29,9 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.jboss.shrinkwrap.impl.base.io.IOUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,9 +40,9 @@ import javax.servlet.ServletContainerInitializer;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 @RunWith(Arquillian.class)
 public class RequestPerformanceTest {
@@ -79,17 +78,21 @@ public class RequestPerformanceTest {
     }
 
     @Test
-    public void monitorStatus200() throws IOException {
+    public void knownStatusIsMonitored() throws IOException, InterruptedException {
+        final Role role = new Role("/sirona-test-HTTP-200", Unit.UNARY);
+        final int before = statusGaugeSum(role);
         final TextPage page = newClient().getPage(base.toExternalForm() + "hit");
         assertEquals(HttpURLConnection.HTTP_OK, page.getWebResponse().getStatusCode());
-        assertEquals(1, Repository.INSTANCE.getCounter(new Counter.Key(Role.WEB, "HTTP-200")).getHits());
+        Thread.sleep(1000);
+        assertEquals(1, statusGaugeSum(role) - before);
     }
 
     @Test
-    public void monitorStatus4567() throws IOException {
+    public void unknownStatusIsIgnored() throws IOException, InterruptedException {
         final TextPage page = newClient().getPage(base.toExternalForm() + "hit?status=4567");
         assertEquals(4567, page.getWebResponse().getStatusCode());
-        assertEquals(1, Repository.INSTANCE.getCounter(new Counter.Key(Role.WEB, "HTTP-4567")).getHits());
+        Thread.sleep(1000);
+        assertEquals(0, statusGaugeSum(new Role("/sirona-test-HTTP-4567", Unit.UNARY)));
     }
 
     private static WebClient newClient() {
@@ -99,5 +102,17 @@ public class RequestPerformanceTest {
         webClient.getOptions().setAppletEnabled(false);
         webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
         return webClient;
+    }
+
+    private static int statusGaugeSum(final Role role) {
+        return sum(Repository.INSTANCE.getGaugeValues(0, System.currentTimeMillis() + 1000, role));
+    }
+
+    private static int sum(final Map<Long, Double> gaugeValues) {
+        int sum = 0;
+        for (final Double d : gaugeValues.values()) {
+            sum += d.intValue();
+        }
+        return sum;
     }
 }

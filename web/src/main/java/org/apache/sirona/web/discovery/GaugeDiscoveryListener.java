@@ -16,16 +16,71 @@
  */
 package org.apache.sirona.web.discovery;
 
+import org.apache.sirona.Role;
+import org.apache.sirona.configuration.Configuration;
+import org.apache.sirona.counters.Unit;
 import org.apache.sirona.gauges.Gauge;
+import org.apache.sirona.web.servlet.MonitoringFilter;
+import org.apache.sirona.web.servlet.StatusGauge;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.net.HttpURLConnection;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public class GaugeDiscoveryListener implements ServletContextListener {
+    public static final String STATUS_GAUGES_ATTRIBUTE = "status-gauges";
+    private static final int[] DEFAULT_STATUSES = {
+        HttpURLConnection.HTTP_OK,
+        HttpURLConnection.HTTP_CREATED,
+        HttpURLConnection.HTTP_NO_CONTENT,
+        HttpURLConnection.HTTP_BAD_REQUEST,
+        HttpURLConnection.HTTP_MOVED_PERM,
+        HttpURLConnection.HTTP_MOVED_TEMP,
+        HttpURLConnection.HTTP_FORBIDDEN,
+        HttpURLConnection.HTTP_NOT_FOUND,
+        HttpURLConnection.HTTP_INTERNAL_ERROR
+    };
+
     private Gauge.LoaderHelper helper;
 
     @Override
     public void contextInitialized(final ServletContextEvent sce) {
+        // init status gauges
+        final ConcurrentMap<Integer, StatusGauge> gauges = new ConcurrentHashMap<Integer, StatusGauge>(35);
+        if ("true".equalsIgnoreCase((String) sce.getServletContext().getAttribute(MonitoringFilter.MONITOR_STATUS))) {
+            final String monitoredStatuses = sce.getServletContext().getInitParameter(Configuration.CONFIG_PROPERTY_PREFIX + "web.monitored-statuses");
+            if (monitoredStatuses == null) {
+                for (final int status : DEFAULT_STATUSES) {
+                    gauges.put(status, statusGauge(sce.getServletContext().getContextPath(), gauges, status));
+                }
+                /* we could use it but it defines 25 statuses, surely too much
+                for (final Field f : HttpURLConnection.class.getDeclaredFields()) {
+                    final int modifiers = f.getModifiers();
+                    if (f.getName().startsWith("HTTP_")
+                        && Modifier.isStatic(modifiers) && Modifier.isPublic(modifiers) && Modifier.isFinal(modifiers)) {
+                        try {
+                            final int status = (Integer) f.get(null);
+                            gauges.put(status, statusGauge(sce.getServletContext().getContextPath(), gauges, (Integer) f.get(null)));
+                        } catch (final IllegalAccessException e) {
+                            // no-op
+                        }
+                    }
+                }
+                */
+            } else {
+                for (final String status : monitoredStatuses.split(",")) {
+                    final int statusInt = Integer.parseInt(status.trim());
+                    gauges.put(statusInt, statusGauge(sce.getServletContext().getContextPath(), gauges, statusInt));
+                }
+            }
+            sce.getServletContext().setAttribute(STATUS_GAUGES_ATTRIBUTE, gauges);
+        }
+
+        // discovery registration
         final String prefixesStr = sce.getServletContext().getInitParameter("monitoring.discovery.packages");
         final String[] prefixes;
         if (prefixesStr != null) {
@@ -33,7 +88,7 @@ public class GaugeDiscoveryListener implements ServletContextListener {
         } else {
             prefixes = null;
         }
-        helper = new Gauge.LoaderHelper("true".equals(sce.getServletContext().getInitParameter("monitoring.discovery.exclude-parent")), prefixes);
+        helper = new Gauge.LoaderHelper("true".equals(sce.getServletContext().getInitParameter("monitoring.discovery.exclude-parent")), gauges.values(), prefixes);
     }
 
     @Override
@@ -41,5 +96,19 @@ public class GaugeDiscoveryListener implements ServletContextListener {
         if (helper != null) {
             helper.destroy();
         }
+    }
+
+    private static StatusGauge statusGauge(final String prefix, final ConcurrentMap<Integer, StatusGauge> gauges, final int status) {
+        final StatusGauge gauge = gauges.get(status);
+        if (gauge != null) {
+            return gauge;
+        }
+
+        final StatusGauge newGauge = new StatusGauge(new Role(prefix + "-HTTP-" + Integer.toString(status), Unit.UNARY));
+        final StatusGauge old = gauges.putIfAbsent(status, newGauge);
+        if (old != null) {
+            return old;
+        }
+        return newGauge;
     }
 }

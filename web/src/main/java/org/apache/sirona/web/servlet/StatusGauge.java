@@ -14,35 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.web.session;
+package org.apache.sirona.web.servlet;
 
 import org.apache.sirona.Role;
 import org.apache.sirona.configuration.Configuration;
-import org.apache.sirona.counters.Unit;
 import org.apache.sirona.gauges.Gauge;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class SessionGauge implements Gauge {
-    private static final WeakHashMap<Role, SessionGauge> GAUGES = new WeakHashMap<Role, SessionGauge>();
-
-    public static Map<Role, SessionGauge> gauges() {
-        return new HashMap<Role, SessionGauge>(GAUGES);
-    }
+public class StatusGauge implements Gauge {
+    private static final int PERIOD = Configuration.getInteger(Configuration.CONFIG_PROPERTY_PREFIX + "web.gauge.status.period", 4000);
 
     private final Role role;
-    private final AtomicLong counter;
+    private final AtomicLong count = new AtomicLong(0);
 
-    public SessionGauge(final String ctx, final AtomicLong counter) {
-        this.role = new Role("sessions-" + ctx, Unit.UNARY);
-        this.counter = counter;
-
-        synchronized (GAUGES) {
-            GAUGES.put(role, this);
-        }
+    public StatusGauge(final Role role) {
+        this.role = role;
     }
 
     @Override
@@ -52,11 +39,20 @@ public class SessionGauge implements Gauge {
 
     @Override
     public double value() {
-        return counter.get();
+        return count.getAndSet(0);
     }
 
     @Override
     public long period() {
-        return Configuration.getInteger(Configuration.CONFIG_PROPERTY_PREFIX + "web.gauge.sessions.period", 4000);
+        return PERIOD;
+    }
+
+    public void incr() {
+        count.incrementAndGet();
+    }
+
+    @Override
+    public String toString() {
+        return "StatusGauge{role=" + role + '}';
     }
 }
