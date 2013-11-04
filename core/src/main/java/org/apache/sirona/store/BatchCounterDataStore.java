@@ -17,9 +17,11 @@
 package org.apache.sirona.store;
 
 import org.apache.sirona.configuration.Configuration;
+import org.apache.sirona.counters.Counter;
 import org.apache.sirona.repositories.Repository;
 import org.apache.sirona.util.DaemonThreadFactory;
 
+import java.util.Collection;
 import java.util.Locale;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -52,13 +54,13 @@ public abstract class BatchCounterDataStore extends InMemoryCounterDataStore {
         scheduledTask.done();
     }
 
-    protected abstract void pushCountersByBatch(final Repository instance);
+    protected abstract void pushCountersByBatch(final Collection<Counter> instance);
 
     private class BatchPushCountersTask implements Runnable {
         @Override
         public void run() {
             try {
-                pushCountersByBatch(Repository.INSTANCE);
+                pushCountersByBatch(Repository.INSTANCE.counters());
             } catch (final Exception e) {
                 LOGGER.log(Level.SEVERE, e.getMessage(), e);
             }

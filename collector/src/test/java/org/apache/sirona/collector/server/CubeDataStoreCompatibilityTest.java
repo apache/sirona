@@ -17,13 +17,12 @@
 package org.apache.sirona.collector.server;
 
 import org.apache.sirona.Role;
-import org.apache.sirona.counters.CollectorCounterStore;
 import org.apache.sirona.configuration.Configuration;
+import org.apache.sirona.counters.CollectorCounterStore;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.counters.DefaultCounter;
 import org.apache.sirona.counters.Unit;
 import org.apache.sirona.cube.CubeCounterDataStore;
-import org.apache.sirona.repositories.DefaultRepository;
 import org.apache.sirona.repositories.Repository;
 import org.apache.sirona.store.CounterDataStore;
 import org.junit.After;
@@ -31,7 +30,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.Iterator;
 
 import static org.junit.Assert.assertEquals;
 
@@ -64,17 +62,14 @@ public class CubeDataStoreCompatibilityTest {
 
     private static class SeeMyProtectedStuffStore extends CubeCounterDataStore {
         public void doPush() {
-            pushCountersByBatch(new DefaultRepository() {
-                @Override
-                public Iterator<Counter> iterator() {
-                    return Arrays.<Counter>asList(new DefaultCounter(new Counter.Key(new Role("cube", Unit.UNARY), "client"), null) {
-                        @Override
-                        public long getHits() {
-                            return 50;
-                        }
-                    }).iterator();
-                }
-            });
+            pushCountersByBatch(Arrays.<Counter>asList(
+                new DefaultCounter(new Counter.Key(new Role("cube", Unit.UNARY), "client"), null) {
+                    @Override
+                    public long getHits() {
+                        return 50;
+                    }
+                })
+            );
         }
     }
 }

@@ -68,11 +68,6 @@
 <script type="text/javascript" src="$mapping/resources/js/jquery.flot.time.min.js"></script>
 <script type="text/javascript">
     $(function() {
-        $('#memory-datetimepicker-start').datetimepicker();
-        $('#memory-datetimepicker-end').datetimepicker();
-        $('#cpu-datetimepicker-start').datetimepicker();
-        $('#cpu-datetimepicker-end').datetimepicker();
-
         var cpuOptions = {
             canvas: true,
             series: { lines: { show: true }, points: { show: true } },

@@ -44,32 +44,32 @@ public class DynamicInterceptionTest {
     @Test
     public void playWithInterceptor() throws Throwable {
         final ConfigurablePerfInterceptor interceptor = new ConfigurablePerfInterceptor();
-        assertFalse(repository.iterator().hasNext());
+        assertFalse(repository.counters().iterator().hasNext());
 
         interceptor.invoke(THRESHOLD * 5);
-        assertTrue(repository.iterator().hasNext());
-        assertEquals(1, repository.iterator().next().getHits());
-        assertEquals("dynamic", repository.iterator().next().getKey().getName());
+        assertTrue(repository.counters().iterator().hasNext());
+        assertEquals(1, repository.counters().iterator().next().getHits());
+        assertEquals("dynamic", repository.counters().iterator().next().getKey().getName());
 
         interceptor.invoke(THRESHOLD / 20);
-        assertEquals(2, repository.iterator().next().getHits());
+        assertEquals(2, repository.counters().iterator().next().getHits());
 
         for (int i = 0; i < MAX_IT; i++) {
             interceptor.invoke(THRESHOLD * 5);
         }
-        assertEquals(2, repository.iterator().next().getHits());
+        assertEquals(2, repository.counters().iterator().next().getHits());
 
         interceptor.invoke(THRESHOLD / 5);
-        assertEquals(3, repository.iterator().next().getHits());
+        assertEquals(3, repository.counters().iterator().next().getHits());
 
         for (int i = 0; i < MAX_IT; i++) {
             interceptor.invoke(THRESHOLD * 2);
         }
-        assertEquals(3, repository.iterator().next().getHits());
+        assertEquals(3, repository.counters().iterator().next().getHits());
 
         interceptor.invoke(THRESHOLD * 5);
         interceptor.invoke(THRESHOLD * 5);
-        assertEquals(5, repository.iterator().next().getHits());
+        assertEquals(5, repository.counters().iterator().next().getHits());
     }
 
     public static class ConfigurablePerfInterceptor extends AbstractPerformanceInterceptor<Long> {

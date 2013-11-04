@@ -19,10 +19,10 @@ package org.apache.sirona.graphite;
 import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.counters.MetricData;
-import org.apache.sirona.repositories.Repository;
 import org.apache.sirona.store.BatchCounterDataStore;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,13 +35,13 @@ public class GraphiteCounterDataStore extends BatchCounterDataStore {
     private final Graphite graphite = Configuration.findOrCreateInstance(GraphiteBuilder.class).build();
 
     @Override
-    protected synchronized void pushCountersByBatch(final Repository instance) {
+    protected synchronized void pushCountersByBatch(final Collection<Counter> instances) {
         try {
             graphite.open();
 
             final long ts = System.currentTimeMillis();
 
-            for (final Counter counter : instance) {
+            for (final Counter counter : instances) {
                 final Counter.Key key = counter.getKey();
                 final String prefix = COUNTER_PREFIX + key.getRole().getName() + SEP + key.getName() + SEP;
 

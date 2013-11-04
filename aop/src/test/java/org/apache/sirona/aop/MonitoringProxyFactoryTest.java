@@ -52,7 +52,7 @@ public class MonitoringProxyFactoryTest {
         }
 
         Counter failures = null;
-        for (final Counter c : Repository.INSTANCE) {
+        for (final Counter c : Repository.INSTANCE.counters()) {
             if (c.getKey().getName().contains("UnsupportedOperationException")) {
                 if (failures != null) {
                     fail();

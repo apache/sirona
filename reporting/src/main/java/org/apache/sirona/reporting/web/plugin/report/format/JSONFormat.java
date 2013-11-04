@@ -30,7 +30,7 @@ public class JSONFormat implements Format {
         return new Template("/templates/report/report-json.vm",
             new MapBuilder<String, Object>()
                 .set("MetricData", MetricData.class)
-                .set("counters", Repository.INSTANCE.iterator())
+                .set("counters", Repository.INSTANCE.counters())
                 .build(), false);
     }
 

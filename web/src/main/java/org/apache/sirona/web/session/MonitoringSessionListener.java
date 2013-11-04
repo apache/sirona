@@ -68,6 +68,6 @@ public class MonitoringSessionListener implements HttpSessionListener, ServletCo
 
     @Override
     public void contextDestroyed(final ServletContextEvent sce) {
-        Repository.INSTANCE.stopGauge(gauge.role());
+        Repository.INSTANCE.stopGauge(gauge);
     }
 }
