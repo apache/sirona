@@ -19,7 +19,7 @@ package org.apache.sirona.collector.server.store.gauge;
 import org.apache.sirona.MonitoringException;
 import org.apache.sirona.Role;
 import org.apache.sirona.configuration.Configuration;
-import org.apache.sirona.gauges.CollectorGaugeDataStore;
+import org.apache.sirona.store.CollectorGaugeDataStore;
 import org.apache.sirona.store.GaugeDataStore;
 import org.apache.sirona.store.GaugeValuesRequest;
 import org.apache.sirona.store.InMemoryGaugeDataStore;
@@ -27,8 +27,9 @@ import org.apache.sirona.store.InMemoryGaugeDataStore;
 import java.lang.reflect.Constructor;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -62,6 +63,7 @@ public class DelegatedCollectorGaugeDataStore implements CollectorGaugeDataStore
         }
     }
 
+    @Override
     public Map<Long, Double> getGaugeValues(final GaugeValuesRequest gaugeValuesRequest, final String marker) {
         final GaugeDataStore gaugeDataStore = dataStores.get(marker);
         if (gaugeDataStore == null) {
@@ -70,6 +72,7 @@ public class DelegatedCollectorGaugeDataStore implements CollectorGaugeDataStore
         return gaugeDataStore.getGaugeValues(gaugeValuesRequest);
     }
 
+    @Override
     public void createOrNoopGauge(final Role role, final String marker) {
         GaugeDataStore gaugeDataStore = dataStores.get(marker);
         if (gaugeDataStore == null) {
@@ -82,11 +85,13 @@ public class DelegatedCollectorGaugeDataStore implements CollectorGaugeDataStore
         gaugeDataStore.createOrNoopGauge(role);
     }
 
+    @Override
     public void addToGauge(final Role role, final long time, final double value, final String marker) {
         createOrNoopGauge(role, marker); // this implementation doesn't mandates createOrNoopGauge call
         dataStores.get(marker).addToGauge(role, time, value);
     }
 
+    @Override
     public Collection<String> markers() {
         return dataStores.keySet();
     }
@@ -109,6 +114,33 @@ public class DelegatedCollectorGaugeDataStore implements CollectorGaugeDataStore
         }
 
         return values;
+    }
+
+    @Override
+    public Collection<Role> gauges() {
+        final Set<Role> roles = new HashSet<Role>();
+        for (final GaugeDataStore store : dataStores.values()) {
+            roles.addAll(store.gauges());
+        }
+        return roles;
+    }
+
+    @Override
+    public Role findGaugeRole(final String name) {
+        for (final GaugeDataStore store : dataStores.values()) {
+            final Role role = store.findGaugeRole(name);
+            if (role != null) {
+                return role;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public void gaugeStopped(final Role gauge) {
+        for (final GaugeDataStore store : dataStores.values()) {
+            store.gaugeStopped(gauge);
+        }
     }
 
     @Override

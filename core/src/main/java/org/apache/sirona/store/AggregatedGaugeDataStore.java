@@ -19,9 +19,9 @@ package org.apache.sirona.store;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import org.apache.sirona.Role;
 import org.apache.sirona.configuration.Configuration;
+import org.apache.sirona.gauges.RemoteGaugeDataStore;
 import org.apache.sirona.util.DaemonThreadFactory;
 
-import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public abstract class AggregatedGaugeDataStore implements GaugeDataStore {
+public abstract class AggregatedGaugeDataStore extends RemoteGaugeDataStore {
     private static final Logger LOGGER = Logger.getLogger(AggregatedGaugeDataStore.class.getName());
 
     private final ConcurrentMap<Role, SummaryStatistics> gauges = new ConcurrentHashMap<Role, SummaryStatistics>();
@@ -60,16 +60,6 @@ public abstract class AggregatedGaugeDataStore implements GaugeDataStore {
     }
 
     protected abstract void pushGauges(final Map<Role, Value> gauges);
-
-    @Override
-    public Map<Long, Double> getGaugeValues(final GaugeValuesRequest gaugeValuesRequest) {
-        return Collections.emptyMap(); // when using graphite we expect the user to use Graphite to render metrics
-    }
-
-    @Override
-    public void createOrNoopGauge(Role role) {
-        // no-op
-    }
 
     @Override
     public void addToGauge(final Role role, final long time, final double value) {

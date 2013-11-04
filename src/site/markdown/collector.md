@@ -39,7 +39,7 @@ By default it uses the in memory implementation but you can set your own one if 
 
 Note: if your `GaugeDataStore` has a constructor with a `String`, the marker of the store will be passed to the `GaugeDataStore`.
 
-The `CounterDataStore` needs to be an instance of `org.apache.sirona.counters.CollectorCounterStore`.
+The `CounterDataStore` needs to be an instance of `org.apache.sirona.store.CollectorCounterStore`.
 By default it is in memory too but it is easily extensible to be persisted if needed.
 
 ## Installing the collector

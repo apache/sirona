@@ -17,7 +17,7 @@
 package org.apache.sirona.reporting.web.plugin.gauge;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.sirona.gauges.Gauge;
+import org.apache.sirona.Role;
 import org.apache.sirona.reporting.web.handler.api.Regex;
 import org.apache.sirona.reporting.web.handler.api.Template;
 import org.apache.sirona.repositories.Repository;
@@ -70,10 +70,10 @@ public class GaugeEndpoints {
         }
     }
 
-    private static Map<String, String> sortNames(final Collection<Gauge> gauges) {
+    private static Map<String, String> sortNames(final Collection<Role> gauges) {
         final Map<String, String> names = new TreeMap<String, String>();
-        for (final Gauge gauge : gauges) {
-            final String name = gauge.role().getName();
+        for (final Role gauge : gauges) {
+            final String name = gauge.getName();
             names.put(name, encode(name));
         }
         return names;

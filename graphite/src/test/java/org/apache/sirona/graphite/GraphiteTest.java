@@ -32,13 +32,13 @@ public class GraphiteTest extends GraphiteTestBase {
     public void checkCountersAndGauges() throws InterruptedException {
         { // force some counter data
             final Counter counter = Repository.INSTANCE.getCounter(new Counter.Key(Role.PERFORMANCES, "test"));
-            Thread.sleep(160);
+            Thread.sleep(175);
             counter.add(1.4);
             counter.add(1.6);
             Thread.sleep(140);
             counter.add(2.3);
             counter.add(2.9);
-            Thread.sleep(50);
+            Thread.sleep(30);
         }
 
         final Collection<String> messages = messages();

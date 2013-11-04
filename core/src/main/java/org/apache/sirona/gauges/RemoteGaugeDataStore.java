@@ -21,11 +21,32 @@ import org.apache.sirona.store.GaugeDataStore;
 import org.apache.sirona.store.GaugeValuesRequest;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
-public interface CollectorGaugeDataStore extends GaugeDataStore {
-    Map<Long, Double> getGaugeValues(GaugeValuesRequest gaugeValuesRequest, String marker);
-    void createOrNoopGauge(Role role, String marker);
-    void addToGauge(Role role, long time, double value, String marker);
-    Collection<String> markers();
+public abstract class RemoteGaugeDataStore implements GaugeDataStore {
+    @Override
+    public Map<Long, Double> getGaugeValues(GaugeValuesRequest gaugeValuesRequest) {
+        return Collections.emptyMap();
+    }
+
+    @Override
+    public void createOrNoopGauge(Role role) {
+        // no-op
+    }
+
+    @Override
+    public Collection<Role> gauges() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public Role findGaugeRole(String name) {
+        return null;
+    }
+
+    @Override
+    public void gaugeStopped(final Role gauge) {
+        // no-op
+    }
 }

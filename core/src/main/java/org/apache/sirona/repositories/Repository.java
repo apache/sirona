@@ -43,7 +43,7 @@ public interface Repository {
 
     Map<Long, Double> getGaugeValues(long start, long end, Role role);
 
-    Collection<Gauge> gauges();
+    Collection<Role> gauges();
 
     Role findGaugeRole(String name);
 }

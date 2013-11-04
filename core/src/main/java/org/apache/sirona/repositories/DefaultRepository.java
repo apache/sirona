@@ -19,9 +19,9 @@ package org.apache.sirona.repositories;
 import org.apache.sirona.MonitoringException;
 import org.apache.sirona.Role;
 import org.apache.sirona.configuration.Configuration;
-import org.apache.sirona.counters.CollectorCounterStore;
+import org.apache.sirona.store.CollectorCounterStore;
 import org.apache.sirona.counters.Counter;
-import org.apache.sirona.gauges.CollectorGaugeDataStore;
+import org.apache.sirona.store.CollectorGaugeDataStore;
 import org.apache.sirona.gauges.DefaultGaugeManager;
 import org.apache.sirona.gauges.Gauge;
 import org.apache.sirona.stopwatches.CounterStopWatch;
@@ -32,7 +32,6 @@ import org.apache.sirona.store.GaugeDataStore;
 import org.apache.sirona.store.GaugeValuesRequest;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Map;
 
 public class DefaultRepository implements Repository {
@@ -106,13 +105,13 @@ public class DefaultRepository implements Repository {
     }
 
     @Override
-    public Collection<Gauge> gauges() {
-        return gaugeManager.gauges();
+    public Collection<Role> gauges() {
+        return gaugeDataStore.gauges();
     }
 
     @Override
     public Role findGaugeRole(final String name) {
-        return gaugeManager.findGaugeRole(name);
+        return gaugeDataStore.findGaugeRole(name);
     }
 
     @Override

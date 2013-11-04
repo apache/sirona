@@ -18,30 +18,17 @@ package org.apache.sirona.cube;
 
 import org.apache.sirona.Role;
 import org.apache.sirona.configuration.Configuration;
-import org.apache.sirona.store.GaugeDataStore;
-import org.apache.sirona.store.GaugeValuesRequest;
+import org.apache.sirona.gauges.RemoteGaugeDataStore;
 
-import java.util.Collections;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class CubeGaugeDataStore implements GaugeDataStore {
+public class CubeGaugeDataStore extends RemoteGaugeDataStore {
     private static final Logger LOGGER = Logger.getLogger(CubeGaugeDataStore.class.getName());
 
     private static final String GAUGE_TYPE = "gauge";
 
     private final Cube cube = Configuration.findOrCreateInstance(CubeBuilder.class).build();
-
-    @Override
-    public Map<Long, Double> getGaugeValues(GaugeValuesRequest gaugeValuesRequest) {
-        return Collections.emptyMap();
-    }
-
-    @Override
-    public void createOrNoopGauge(Role role) {
-        // no-op
-    }
 
     @Override
     public void addToGauge(final Role role, final long time, final double value) {

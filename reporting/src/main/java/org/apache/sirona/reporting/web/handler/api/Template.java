@@ -16,9 +16,6 @@
  */
 package org.apache.sirona.reporting.web.handler.api;
 
-import org.apache.sirona.reporting.web.template.MapBuilder;
-
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
