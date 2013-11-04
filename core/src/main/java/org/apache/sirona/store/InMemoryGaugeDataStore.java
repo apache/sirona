@@ -33,7 +33,7 @@ public class InMemoryGaugeDataStore implements GaugeDataStore {
     protected final Map<String, Role> roleMapping = new ConcurrentHashMap<String, Role>();
 
     @Override
-    public Map<Long, Double> getGaugeValues(GaugeValuesRequest gaugeValuesRequest) {
+    public Map<Long, Double> getGaugeValues(final GaugeValuesRequest gaugeValuesRequest) {
         final Map<Long, Double> map = gauges.get(gaugeValuesRequest.getRole());
         if (map == null) {
             return Collections.emptyMap();

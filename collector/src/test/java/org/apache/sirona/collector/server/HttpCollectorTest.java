@@ -18,12 +18,14 @@ package org.apache.sirona.collector.server;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.sirona.Role;
-import org.apache.sirona.store.CollectorCounterStore;
 import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.counters.Unit;
+import org.apache.sirona.reporting.web.template.MapBuilder;
 import org.apache.sirona.repositories.Repository;
-import org.apache.sirona.store.CounterDataStore;
+import org.apache.sirona.store.CollectorCounterStore;
+import org.apache.sirona.store.CollectorGaugeDataStore;
+import org.apache.sirona.store.GaugeValuesRequest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,10 +35,12 @@ import java.io.OutputStream;
 import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class HttpCollectorTest {
     private CollectorServer server;
@@ -56,7 +60,7 @@ public class HttpCollectorTest {
     }
 
     @Test
-    public void collect() throws Exception {
+    public void collectCounter() throws Exception {
         {
             final Event[] events1 = new Event[2];
             {
@@ -87,13 +91,70 @@ public class HttpCollectorTest {
             doPost(events2);
         }
 
-        final CollectorCounterStore store = CollectorCounterStore.class.cast(Configuration.getInstance(CounterDataStore.class));
+        final CollectorCounterStore store = Configuration.getInstance(CollectorCounterStore.class);
         final Counter counter1 = store.getOrCreateCounter(new Counter.Key(new Role("role1", Unit.UNARY), "counter1"));
         final Counter counter1Client1 = store.getOrCreateCounter(new Counter.Key(new Role("role1", Unit.UNARY), "counter1"), "client1");
         final Counter counter1Client2 = store.getOrCreateCounter(new Counter.Key(new Role("role1", Unit.UNARY), "counter1"), "client2");
         assertCounter(counter1, 200, 4, 612, 3.59, 12.24785, 150.01005, 718);
         assertCounter(counter1Client1, 10, 4, 12, 8, 2.64575, 7, 64);
         assertCounter(counter1Client2, 190, 46, 612, 64, 8.83176, 78, 654);
+    }
+
+    @Test
+    public void collectGauges() throws Exception {
+        final Date pushDate = new Date(); // we aggregated only if push was done on the exactly same date so ensuring it
+        {
+            final Event[] events1 = new Event[1];
+            {
+                events1[0] = new Event();
+                events1[0].setTime(pushDate);
+                events1[0].setType("gauge");
+                events1[0].setData(new MapBuilder<String, Object>()
+                    .set("role", "event-role")
+                    .set("unit", Unit.UNARY.getName())
+                    .set("value", 5)
+                    .set("marker", "node1")
+                    .build());
+            }
+            doPost(events1);
+        }
+
+        {
+            final Event[] events2 = new Event[2];
+            {
+                events2[0] = new Event();
+                events2[0].setTime(pushDate);
+                events2[0].setType("gauge");
+                events2[0].setData(new MapBuilder<String, Object>()
+                    .set("role", "event-role")
+                    .set("unit", Unit.UNARY.getName())
+                    .set("value", 15)
+                    .set("marker", "node2")
+                    .build());
+            }
+            {
+                events2[1] = new Event();
+                events2[1].setTime(pushDate);
+                events2[1].setType("gauge");
+                events2[1].setData(new MapBuilder<String, Object>()
+                    .set("role", "event2-role")
+                    .set("unit", Unit.UNARY.getName())
+                    .set("value", 25)
+                    .set("marker", "node2")
+                    .build());
+            }
+            doPost(events2);
+        }
+
+        final CollectorGaugeDataStore store = Configuration.getInstance(CollectorGaugeDataStore.class);
+        final GaugeValuesRequest gaugeValuesRequest = new GaugeValuesRequest(0, System.currentTimeMillis() + 1000, new Role("event-role", Unit.UNARY));
+        final Map<Long, Double> aggregated = store.getGaugeValues(gaugeValuesRequest);
+        final Map<Long, Double> node1 = store.getGaugeValues(gaugeValuesRequest, "node1");
+        final Map<Long, Double> node2 = store.getGaugeValues(gaugeValuesRequest, "node2");
+        assertEquals(1, aggregated.size());
+        assertTrue(aggregated.containsValue(20.));
+        assertTrue(node1.containsValue(5.));
+        assertTrue(node2.containsValue(15.));
     }
 
     private void doPost(final Event[] events) throws Exception {

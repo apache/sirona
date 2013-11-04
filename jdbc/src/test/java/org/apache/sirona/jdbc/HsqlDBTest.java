@@ -39,7 +39,6 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public class HsqlDBTest {
-
     @BeforeClass
     public static void init() {
         MonitoringDriver.load();

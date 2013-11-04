@@ -18,6 +18,7 @@ package org.apache.sirona.web.registration;
 
 import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.repositories.Repository;
+import org.apache.sirona.util.Environment;
 import org.apache.sirona.web.discovery.GaugeDiscoveryListener;
 import org.apache.sirona.web.lifecycle.SironaLifecycle;
 import org.apache.sirona.web.servlet.MonitoringFilter;
@@ -37,6 +38,10 @@ public class WebMonitoringInitializer implements ServletContainerInitializer {
 
     @Override
     public void onStartup(final Set<Class<?>> classes, final ServletContext ctx) throws ServletException {
+        if (Environment.isCollector()) {
+            return;
+        }
+
         final String activated = ctx.getInitParameter(ACTIVATED);
         if (FALSE.equalsIgnoreCase(Configuration.getProperty(ACTIVATED, activated))) {
             return;

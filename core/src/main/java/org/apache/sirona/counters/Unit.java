@@ -18,13 +18,8 @@
 package org.apache.sirona.counters;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * Units allow monitored data to have get typed. A primary unit is the
@@ -109,10 +104,6 @@ public class Unit implements Comparable<Unit>, Serializable {
 
     private Unit primary;
 
-    private List<Unit> derived;
-
-    public Set<Unit> primaryUnits = new CopyOnWriteArraySet<Unit>();
-
 
     public static Unit get(String name) {
         return UNITS.get(name);
@@ -127,9 +118,6 @@ public class Unit implements Comparable<Unit>, Serializable {
         this.name = name;
         this.primary = this;
         this.scale = 1;
-        this.derived = new ArrayList<Unit>();
-        this.derived.add(this);
-        primaryUnits.add(this);
         UNITS.put(name, this);
     }
 
@@ -144,24 +132,8 @@ public class Unit implements Comparable<Unit>, Serializable {
         this.name = name;
         this.primary = derived.isPrimary() ? derived : derived.getPrimary();
         this.scale = scale * derived.getScale();
-        primary.derived.add(this);
-        Collections.sort(primary.derived);
         UNITS.put(name, this);
     }
-
-    public Unit getDerived(String name) {
-        for (Unit unit : derived) {
-            if (unit.name.equals(name)) {
-                return unit;
-            }
-        }
-        return null;
-    }
-
-    public List<Unit> getDerived() {
-        return Collections.unmodifiableList(derived);
-    }
-
 
     public String getName() {
         return name;

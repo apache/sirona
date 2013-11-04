@@ -19,7 +19,6 @@ package org.apache.sirona.counters;
 
 import org.junit.Test;
 
-import static org.apache.sirona.counters.Unit.Time.HOUR;
 import static org.apache.sirona.counters.Unit.Time.MICROSECOND;
 import static org.apache.sirona.counters.Unit.Time.MILLISECOND;
 import static org.apache.sirona.counters.Unit.Time.NANOSECOND;
@@ -30,15 +29,6 @@ import static org.junit.Assert.assertEquals;
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public class UnitTest {
-    @Test
-    public void derived() {
-        assertEquals(NANOSECOND, HOUR.getPrimary());
-        assertEquals(NANOSECOND, NANOSECOND.getDerived("ns"));
-        assertEquals(MICROSECOND, NANOSECOND.getDerived("us"));
-        assertEquals(MILLISECOND, NANOSECOND.getDerived("ms"));
-        assertEquals(SECOND, NANOSECOND.getDerived("s"));
-    }
-
     @Test
     public void scales() {
         assertEquals(1L, NANOSECOND.getScale());

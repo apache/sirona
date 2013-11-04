@@ -20,6 +20,7 @@ import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.reporting.web.handler.internal.EndpointInfo;
 import org.apache.sirona.reporting.web.handler.internal.Invoker;
 import org.apache.sirona.spi.SPI;
+import org.apache.sirona.util.Environment;
 
 import java.util.Collection;
 import java.util.Map;
@@ -35,7 +36,12 @@ public final class PluginRepository {
     public static final String ACTIVATED_FLAG = ".activated";
 
     static {
+        final boolean acceptLocal = !Environment.isCollector();
         for (final Plugin plugin : SPI.INSTANCE.find(Plugin.class, Plugin.class.getClassLoader())) {
+            if (!acceptLocal && plugin.getClass().getAnnotation(Local.class) != null) {
+                continue;
+            }
+
             final String name = plugin.name();
             if (name == null) {
                 throw new IllegalArgumentException("plugin name can't be null");

@@ -84,7 +84,7 @@ public class RequestPerformanceTest {
         final TextPage page = newClient().getPage(base.toExternalForm() + "hit");
         assertEquals(HttpURLConnection.HTTP_OK, page.getWebResponse().getStatusCode());
         Thread.sleep(1000);
-        assertEquals(1, statusGaugeSum(role) - before);
+        assertEquals("" + Repository.INSTANCE.getGaugeValues(0, System.currentTimeMillis() + 1000, role), 1, statusGaugeSum(role) - before);
     }
 
     @Test

@@ -16,8 +16,10 @@
  */
 package org.apache.sirona.reporting.web.plugin.thread;
 
+import org.apache.sirona.reporting.web.plugin.Local;
 import org.apache.sirona.reporting.web.plugin.Plugin;
 
+@Local
 public class ThreadPlugin implements Plugin {
     @Override
     public String name() {
