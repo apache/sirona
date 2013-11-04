@@ -14,52 +14,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.store;
+package org.apache.sirona.spi;
 
-import org.apache.sirona.Role;
+import org.apache.sirona.status.Status;
+import org.apache.sirona.status.Validation;
+import org.apache.sirona.status.ValidationResult;
 
-/**
- * @author Olivier Lamy
- */
-public class GaugeValuesRequest {
+import java.util.Arrays;
 
-    private long start;
+public class SpiTestImpl extends DefaultSPI {
+    public static ValidationResult status = new ValidationResult("n", Status.OK, "m");
 
-    private long end;
-
-    private Role role;
-
-    public GaugeValuesRequest() {
-        // no op
-    }
-
-    public GaugeValuesRequest(long start, long end, Role role) {
-        this.start = start;
-        this.end = end;
-        this.role = role;
-    }
-
-    public long getStart() {
-        return start;
-    }
-
-    public void setStart(long start) {
-        this.start = start;
-    }
-
-    public long getEnd() {
-        return end;
-    }
-
-    public void setEnd(long end) {
-        this.end = end;
-    }
-
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
+    @Override
+    public <T> Iterable<T> find(final Class<T> api, final ClassLoader loader) {
+        if (Validation.class.equals(api)) {
+            return (Iterable<T>) Arrays.asList(new Validation() {
+                @Override
+                public ValidationResult validate() {
+                    return status;
+                }
+            });
+        }
+        return super.find(api, loader);
     }
 }

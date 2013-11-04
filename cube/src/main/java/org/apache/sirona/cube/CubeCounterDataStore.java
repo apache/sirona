@@ -18,7 +18,7 @@ package org.apache.sirona.cube;
 
 import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.counters.Counter;
-import org.apache.sirona.store.BatchCounterDataStore;
+import org.apache.sirona.store.counter.BatchCounterDataStore;
 
 import java.util.Collection;
 

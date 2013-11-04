@@ -17,7 +17,7 @@
 package org.apache.sirona.counters;
 
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
-import org.apache.sirona.store.CounterDataStore;
+import org.apache.sirona.store.counter.CounterDataStore;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;

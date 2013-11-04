@@ -14,13 +14,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.graphite;
+package org.apache.sirona.collector.server.store.status;
 
-import org.apache.sirona.store.DelegateDataStoreFactory;
-import org.apache.sirona.store.status.EmptyStatuses;
+import org.apache.sirona.status.NodeStatus;
+import org.apache.sirona.store.status.NodeStatusDataStore;
 
-public class GraphiteDataStoreFactory extends DelegateDataStoreFactory {
-    public GraphiteDataStoreFactory() {
-        super(new GraphiteCounterDataStore(), new GraphiteGaugeDataStore(), new EmptyStatuses());
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
+
+public class CollectorNodeStatusDataStore implements NodeStatusDataStore {
+    private final Map<String, NodeStatus> statuses = new ConcurrentHashMap<String, NodeStatus>();
+
+    @Override
+    public Map<String, NodeStatus> statuses() {
+        return new TreeMap<String, NodeStatus>(statuses);
+    }
+
+    public void store(final String node, final NodeStatus status) {
+        statuses.put(node, status);
     }
 }

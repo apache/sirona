@@ -14,12 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.store;
+package org.apache.sirona.status;
 
-import org.apache.sirona.Role;
-
-public interface GaugeDataStore extends CommonGaugeDataStore {
-    void createOrNoopGauge(Role role);
-
-    void addToGauge(Role role, long time, double value);
+public interface Validation {
+    ValidationResult validate();
 }

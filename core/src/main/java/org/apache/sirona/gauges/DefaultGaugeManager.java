@@ -20,7 +20,7 @@ import org.apache.sirona.Role;
 import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.gauges.jvm.CPUGauge;
 import org.apache.sirona.gauges.jvm.UsedMemoryGauge;
-import org.apache.sirona.store.GaugeDataStore;
+import org.apache.sirona.store.gauge.GaugeDataStore;
 
 import java.util.Map;
 import java.util.Timer;

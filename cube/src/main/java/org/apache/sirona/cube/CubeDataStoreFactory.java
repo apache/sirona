@@ -20,6 +20,6 @@ import org.apache.sirona.store.DelegateDataStoreFactory;
 
 public class CubeDataStoreFactory extends DelegateDataStoreFactory {
     public CubeDataStoreFactory() {
-        super(new CubeCounterDataStore(), new CubeGaugeDataStore());
+        super(new CubeCounterDataStore(), new CubeGaugeDataStore(), new CubeNodeStatusDataStore());
     }
 }

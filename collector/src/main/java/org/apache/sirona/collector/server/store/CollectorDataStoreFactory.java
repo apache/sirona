@@ -18,10 +18,11 @@ package org.apache.sirona.collector.server.store;
 
 import org.apache.sirona.collector.server.store.counter.InMemoryCollectorCounterStore;
 import org.apache.sirona.collector.server.store.gauge.DelegatedCollectorGaugeDataStore;
+import org.apache.sirona.collector.server.store.status.CollectorNodeStatusDataStore;
 import org.apache.sirona.store.DelegateDataStoreFactory;
 
 public class CollectorDataStoreFactory extends DelegateDataStoreFactory {
     public CollectorDataStoreFactory() {
-        super(new InMemoryCollectorCounterStore(), new DelegatedCollectorGaugeDataStore());
+        super(new InMemoryCollectorCounterStore(), new DelegatedCollectorGaugeDataStore(), new CollectorNodeStatusDataStore());
     }
 }

@@ -19,24 +19,27 @@ package org.apache.sirona.repositories;
 import org.apache.sirona.MonitoringException;
 import org.apache.sirona.Role;
 import org.apache.sirona.configuration.Configuration;
-import org.apache.sirona.store.CollectorCounterStore;
 import org.apache.sirona.counters.Counter;
-import org.apache.sirona.store.CollectorGaugeDataStore;
 import org.apache.sirona.gauges.DefaultGaugeManager;
 import org.apache.sirona.gauges.Gauge;
+import org.apache.sirona.status.NodeStatus;
 import org.apache.sirona.stopwatches.CounterStopWatch;
 import org.apache.sirona.stopwatches.StopWatch;
-import org.apache.sirona.store.CommonGaugeDataStore;
-import org.apache.sirona.store.CounterDataStore;
+import org.apache.sirona.store.counter.CollectorCounterStore;
+import org.apache.sirona.store.gauge.CollectorGaugeDataStore;
+import org.apache.sirona.store.gauge.CommonGaugeDataStore;
+import org.apache.sirona.store.counter.CounterDataStore;
 import org.apache.sirona.store.DataStoreFactory;
-import org.apache.sirona.store.GaugeDataStore;
-import org.apache.sirona.store.GaugeValuesRequest;
+import org.apache.sirona.store.gauge.GaugeDataStore;
+import org.apache.sirona.store.gauge.GaugeValuesRequest;
+import org.apache.sirona.store.status.NodeStatusDataStore;
 
 import java.util.Collection;
 import java.util.Map;
 
 public class DefaultRepository implements Repository {
     private final CounterDataStore counterDataStore;
+    private final NodeStatusDataStore nodeStatusDataStore;
     private final CommonGaugeDataStore gaugeDataStore;
     private final DefaultGaugeManager gaugeManager;
 
@@ -69,6 +72,13 @@ public class DefaultRepository implements Repository {
             }
         }
 
+        NodeStatusDataStore status = null;
+        try {
+            status = Configuration.findOrCreateInstance(NodeStatusDataStore.class);
+        } catch (final MonitoringException e) {
+            // no-op
+        }
+
         if (counter == null) {
             counter = Configuration.findOrCreateInstance(DataStoreFactory.class).getCounterDataStore();
             if (CollectorCounterStore.class.isInstance(counter)) {
@@ -87,8 +97,14 @@ public class DefaultRepository implements Repository {
             }
         }
 
+        if (status == null) {
+            status = Configuration.findOrCreateInstance(DataStoreFactory.class).getNodeStatusDataStore();
+            Configuration.setSingletonInstance(NodeStatusDataStore.class, status);
+        }
+
         this.counterDataStore = counter;
         this.gaugeDataStore = gauge;
+        this.nodeStatusDataStore = status;
 
         if (GaugeDataStore.class.isInstance(this.gaugeDataStore)) {
             this.gaugeManager = new DefaultGaugeManager(GaugeDataStore.class.cast(this.gaugeDataStore));
@@ -151,5 +167,10 @@ public class DefaultRepository implements Repository {
         if (gaugeManager != null) {
             gaugeManager.stopGauge(role);
         }
+    }
+
+    @Override
+    public Map<String, NodeStatus> statuses() {
+        return nodeStatusDataStore.statuses();
     }
 }

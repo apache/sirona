@@ -14,11 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.store;
+package org.apache.sirona.store.counter;
 
 import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.repositories.Repository;
+import org.apache.sirona.store.BatchFuture;
 import org.apache.sirona.util.DaemonThreadFactory;
 
 import java.util.Collection;

@@ -17,9 +17,8 @@
 package org.apache.sirona.util;
 
 import org.apache.sirona.configuration.Configuration;
-import org.apache.sirona.store.CollectorCounterStore;
+import org.apache.sirona.store.counter.CollectorCounterStore;
 import org.apache.sirona.repositories.Repository;
-import org.apache.sirona.store.CounterDataStore;
 
 public final class Environment {
     private Environment() {

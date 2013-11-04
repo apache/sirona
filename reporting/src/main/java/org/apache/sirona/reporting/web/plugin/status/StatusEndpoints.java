@@ -14,13 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.graphite;
+package org.apache.sirona.reporting.web.plugin.status;
 
-import org.apache.sirona.store.DelegateDataStoreFactory;
-import org.apache.sirona.store.status.EmptyStatuses;
+import org.apache.sirona.reporting.web.handler.api.Regex;
+import org.apache.sirona.reporting.web.handler.api.Template;
+import org.apache.sirona.repositories.Repository;
 
-public class GraphiteDataStoreFactory extends DelegateDataStoreFactory {
-    public GraphiteDataStoreFactory() {
-        super(new GraphiteCounterDataStore(), new GraphiteGaugeDataStore(), new EmptyStatuses());
+public class StatusEndpoints {
+    @Regex
+    public Template home() {
+        return new Template("status/home.vm").set("nodes", Repository.INSTANCE.statuses());
+    }
+
+    @Regex("/([^/]*)")
+    public Template detail(final String node) {
+        return new Template("status/detail.vm")
+            .set("node", Repository.INSTANCE.statuses().get(node))
+            .set("name", node);
     }
 }

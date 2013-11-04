@@ -14,10 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.store;
+package org.apache.sirona.store.counter;
 
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.counters.DefaultCounter;
+import org.apache.sirona.store.counter.CounterDataStore;
 
 import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;

@@ -14,13 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.graphite;
+package org.apache.sirona.store.counter;
 
-import org.apache.sirona.store.DelegateDataStoreFactory;
-import org.apache.sirona.store.status.EmptyStatuses;
+import org.apache.sirona.counters.Counter;
+import org.apache.sirona.math.M2AwareStatisticalSummary;
 
-public class GraphiteDataStoreFactory extends DelegateDataStoreFactory {
-    public GraphiteDataStoreFactory() {
-        super(new GraphiteCounterDataStore(), new GraphiteGaugeDataStore(), new EmptyStatuses());
-    }
+import java.util.Collection;
+
+public interface CollectorCounterStore extends CounterDataStore {
+    void update(Counter.Key key, String marker, M2AwareStatisticalSummary stats, int concurrency);
+    Collection<String> markers();
+    Collection<? extends Counter> getCounters(String marker);
+    Counter getOrCreateCounter(Counter.Key key, final String marker);
 }

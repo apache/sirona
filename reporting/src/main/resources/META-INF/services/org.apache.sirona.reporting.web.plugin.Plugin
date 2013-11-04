@@ -1,5 +1,6 @@
 org.apache.sirona.reporting.web.plugin.report.ReportPlugin
 org.apache.sirona.reporting.web.plugin.gauge.GaugePlugin
+org.apache.sirona.reporting.web.plugin.status.StatusPlugin
 org.apache.sirona.reporting.web.plugin.jmx.JMXPlugin
 org.apache.sirona.reporting.web.plugin.jvm.JVMPlugin
 org.apache.sirona.reporting.web.plugin.jta.JTAPlugin

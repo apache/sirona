@@ -29,7 +29,7 @@ public class GraphiteBuilder {
     private int port;
     private String charset;
 
-    public Graphite build() {
+    public synchronized Graphite build() {
         if (charset == null) {
             charset = "UTF-8";
         }

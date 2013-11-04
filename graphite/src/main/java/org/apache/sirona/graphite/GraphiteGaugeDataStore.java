@@ -18,8 +18,8 @@ package org.apache.sirona.graphite;
 
 import org.apache.sirona.Role;
 import org.apache.sirona.configuration.Configuration;
-import org.apache.sirona.store.AggregatedGaugeDataStore;
-import org.apache.sirona.store.Value;
+import org.apache.sirona.store.gauge.AggregatedGaugeDataStore;
+import org.apache.sirona.store.gauge.Value;
 
 import java.io.IOException;
 import java.util.Map;

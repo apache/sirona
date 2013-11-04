@@ -14,13 +14,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.graphite;
+package org.apache.sirona.status;
 
-import org.apache.sirona.store.DelegateDataStoreFactory;
-import org.apache.sirona.store.status.EmptyStatuses;
+public class NodeStatus {
+    private final ValidationResult[] results;
 
-public class GraphiteDataStoreFactory extends DelegateDataStoreFactory {
-    public GraphiteDataStoreFactory() {
-        super(new GraphiteCounterDataStore(), new GraphiteGaugeDataStore(), new EmptyStatuses());
+    public NodeStatus(final ValidationResult[] results) {
+        this.results = results;
+    }
+
+    public ValidationResult[] getResults() {
+        return results;
+    }
+
+    public Status getStatus() {
+        Status lowest = Status.OK;
+        for (final ValidationResult result : results) {
+            if (Status.KO.equals(result.getStatus())) {
+                return Status.KO;
+            } else if (Status.DEGRADED.equals(result.getStatus())) {
+                lowest = Status.DEGRADED;
+            }
+        }
+        return lowest;
     }
 }

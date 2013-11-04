@@ -14,19 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.store;
+package org.apache.sirona.store.counter;
 
-import org.apache.sirona.Role;
+import org.apache.sirona.counters.Counter;
 
 import java.util.Collection;
-import java.util.Map;
 
-public interface CommonGaugeDataStore {
-    Map<Long, Double> getGaugeValues(GaugeValuesRequest gaugeValuesRequest);
+public interface CounterDataStore {
+    Counter getOrCreateCounter(Counter.Key key);
 
-    Collection<Role> gauges();
+    void clearCounters();
 
-    Role findGaugeRole(String name);
+    Collection<Counter> getCounters();
 
-    void gaugeStopped(Role gauge);
+    void addToCounter(Counter defaultCounter, double delta);  // sensitive method which need to be thread safe
 }

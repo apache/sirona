@@ -20,13 +20,18 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.sirona.Role;
+import org.apache.sirona.collector.server.store.status.CollectorNodeStatusDataStore;
 import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.counters.Unit;
 import org.apache.sirona.math.M2AwareStatisticalSummary;
 import org.apache.sirona.repositories.Repository;
-import org.apache.sirona.store.CollectorCounterStore;
-import org.apache.sirona.store.CollectorGaugeDataStore;
+import org.apache.sirona.status.NodeStatus;
+import org.apache.sirona.status.Status;
+import org.apache.sirona.status.ValidationResult;
+import org.apache.sirona.store.counter.CollectorCounterStore;
+import org.apache.sirona.store.gauge.CollectorGaugeDataStore;
+import org.apache.sirona.store.status.NodeStatusDataStore;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -34,6 +39,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
@@ -46,11 +53,13 @@ public class Collector extends HttpServlet {
     private static final String OK = "{}";
     private static final String GAUGE = "gauge";
     private static final String COUNTER = "counter";
+    private static final String VALIDATION = "validation";
 
     private final Map<String, Role> roles = new ConcurrentHashMap<String, Role>();
 
     private CollectorCounterStore counterDataStore = null;
     private CollectorGaugeDataStore gaugeDataStore = null;
+    private CollectorNodeStatusDataStore statusDataStore;
     private ObjectMapper mapper;
 
     @Override
@@ -58,17 +67,29 @@ public class Collector extends HttpServlet {
         // force init to ensure we have stores
         Configuration.findOrCreateInstance(Repository.class);
 
-        final CollectorGaugeDataStore gds = Configuration.findOrCreateInstance(CollectorGaugeDataStore.class);
-        if (gds == null) {
-            throw new IllegalStateException("Collector only works with " + CollectorGaugeDataStore.class.getName());
+        {
+            final CollectorGaugeDataStore gds = Configuration.findOrCreateInstance(CollectorGaugeDataStore.class);
+            if (gds == null) {
+                throw new IllegalStateException("Collector only works with " + CollectorGaugeDataStore.class.getName());
+            }
+            this.gaugeDataStore = CollectorGaugeDataStore.class.cast(gds);
         }
-        this.gaugeDataStore = CollectorGaugeDataStore.class.cast(gds);
 
-        final CollectorCounterStore cds = Configuration.findOrCreateInstance(CollectorCounterStore.class);
-        if (cds == null) {
-            throw new IllegalStateException("Collector only works with " + CollectorCounterStore.class.getName());
+        {
+            final CollectorCounterStore cds = Configuration.findOrCreateInstance(CollectorCounterStore.class);
+            if (cds == null) {
+                throw new IllegalStateException("Collector only works with " + CollectorCounterStore.class.getName());
+            }
+            this.counterDataStore = CollectorCounterStore.class.cast(cds);
         }
-        this.counterDataStore = CollectorCounterStore.class.cast(cds);
+
+        {
+            final NodeStatusDataStore nds = Configuration.findOrCreateInstance(NodeStatusDataStore.class);
+            if (!CollectorNodeStatusDataStore.class.isInstance(nds)) {
+                throw new IllegalStateException("Collector only works with " + CollectorNodeStatusDataStore.class.getName());
+            }
+            this.statusDataStore = CollectorNodeStatusDataStore.class.cast(nds);
+        }
 
         this.mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).configure(JsonParser.Feature.ALLOW_NON_NUMERIC_NUMBERS, true);
     }
@@ -78,15 +99,28 @@ public class Collector extends HttpServlet {
         final Event[] events = mapper.readValue(req.getInputStream(), Event[].class);
         if (events != null && events.length > 0) {
             try {
-                for (final Event event : events) {
-                    final String type = event.getType();
+                if (VALIDATION.equals(events[0].getType())) {
+                    final Collection<ValidationResult> results = new ArrayList<ValidationResult>(events.length);
+                    for (final Event event : events) {
+                        final Map<String, Object> data = event.getData();
+                        results.add(new ValidationResult(
+                            (String) data.get("name"),
+                            Status.valueOf((String) data.get("status")),
+                            (String) data.get("message")));
+                    }
+                    final NodeStatus status = new NodeStatus(results.toArray(new ValidationResult[results.size()]));
+                    statusDataStore.store((String) events[0].getData().get("marker"), status);
+                } else {
+                    for (final Event event : events) {
+                        final String type = event.getType();
 
-                    if (COUNTER.equals(type)) {
-                        updateCounter(event);
-                    } else if (GAUGE.equals(type)) {
-                        updateGauge(event);
-                    } else {
-                        LOGGER.info("Unexpected type '" + type + "', skipping");
+                        if (COUNTER.equals(type)) {
+                            updateCounter(event);
+                        } else if (GAUGE.equals(type)) {
+                            updateGauge(event);
+                        } else {
+                            LOGGER.info("Unexpected type '" + type + "', skipping");
+                        }
                     }
                 }
             } catch (final Exception e) {

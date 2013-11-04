@@ -17,8 +17,8 @@
 package org.apache.sirona.gauges;
 
 import org.apache.sirona.Role;
-import org.apache.sirona.store.GaugeDataStore;
-import org.apache.sirona.store.GaugeValuesRequest;
+import org.apache.sirona.store.gauge.GaugeDataStore;
+import org.apache.sirona.store.gauge.GaugeValuesRequest;
 
 import java.util.Collection;
 import java.util.Collections;

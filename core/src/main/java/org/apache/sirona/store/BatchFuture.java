@@ -20,7 +20,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-class BatchFuture {
+public class BatchFuture {
     private final ScheduledExecutorService executor;
     private final ScheduledFuture<?> task;
 

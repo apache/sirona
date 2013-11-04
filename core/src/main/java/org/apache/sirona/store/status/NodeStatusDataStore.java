@@ -14,17 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.store;
+package org.apache.sirona.store.status;
 
-import org.apache.sirona.counters.Counter;
-import org.apache.sirona.math.M2AwareStatisticalSummary;
-import org.apache.sirona.store.CounterDataStore;
+import org.apache.sirona.status.NodeStatus;
 
-import java.util.Collection;
+import java.util.Map;
 
-public interface CollectorCounterStore extends CounterDataStore {
-    void update(Counter.Key key, String marker, M2AwareStatisticalSummary stats, int concurrency);
-    Collection<String> markers();
-    Collection<? extends Counter> getCounters(String marker);
-    Counter getOrCreateCounter(Counter.Key key, final String marker);
+public interface NodeStatusDataStore {
+    Map<String, NodeStatus> statuses();
 }

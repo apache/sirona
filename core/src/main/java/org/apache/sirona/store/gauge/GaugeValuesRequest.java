@@ -14,16 +14,52 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.store;
+package org.apache.sirona.store.gauge;
 
 import org.apache.sirona.Role;
 
-import java.util.Collection;
-import java.util.Map;
+/**
+ * @author Olivier Lamy
+ */
+public class GaugeValuesRequest {
 
-public interface CollectorGaugeDataStore extends CommonGaugeDataStore {
-    Map<Long, Double> getGaugeValues(GaugeValuesRequest gaugeValuesRequest, String marker);
-    void createOrNoopGauge(Role role, String marker);
-    void addToGauge(Role role, long time, double value, String marker);
-    Collection<String> markers();
+    private long start;
+
+    private long end;
+
+    private Role role;
+
+    public GaugeValuesRequest() {
+        // no op
+    }
+
+    public GaugeValuesRequest(long start, long end, Role role) {
+        this.start = start;
+        this.end = end;
+        this.role = role;
+    }
+
+    public long getStart() {
+        return start;
+    }
+
+    public void setStart(long start) {
+        this.start = start;
+    }
+
+    public long getEnd() {
+        return end;
+    }
+
+    public void setEnd(long end) {
+        this.end = end;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
 }

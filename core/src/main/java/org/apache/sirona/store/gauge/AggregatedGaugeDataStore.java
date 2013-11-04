@@ -14,12 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.store;
+package org.apache.sirona.store.gauge;
 
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import org.apache.sirona.Role;
 import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.gauges.RemoteGaugeDataStore;
+import org.apache.sirona.store.BatchFuture;
 import org.apache.sirona.util.DaemonThreadFactory;
 
 import java.util.Locale;

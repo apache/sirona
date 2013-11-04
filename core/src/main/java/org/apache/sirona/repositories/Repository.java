@@ -21,6 +21,7 @@ import org.apache.sirona.Role;
 import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.gauges.Gauge;
+import org.apache.sirona.status.NodeStatus;
 import org.apache.sirona.stopwatches.StopWatch;
 
 import java.util.Collection;
@@ -46,4 +47,6 @@ public interface Repository {
     Collection<Role> gauges();
 
     Role findGaugeRole(String name);
+
+    Map<String, NodeStatus> statuses();
 }

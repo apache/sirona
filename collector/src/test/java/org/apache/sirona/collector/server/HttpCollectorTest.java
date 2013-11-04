@@ -18,14 +18,18 @@ package org.apache.sirona.collector.server;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.sirona.Role;
+import org.apache.sirona.collector.server.store.status.CollectorNodeStatusDataStore;
 import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.counters.Unit;
 import org.apache.sirona.reporting.web.template.MapBuilder;
 import org.apache.sirona.repositories.Repository;
-import org.apache.sirona.store.CollectorCounterStore;
-import org.apache.sirona.store.CollectorGaugeDataStore;
-import org.apache.sirona.store.GaugeValuesRequest;
+import org.apache.sirona.status.NodeStatus;
+import org.apache.sirona.status.Status;
+import org.apache.sirona.store.counter.CollectorCounterStore;
+import org.apache.sirona.store.gauge.CollectorGaugeDataStore;
+import org.apache.sirona.store.gauge.GaugeValuesRequest;
+import org.apache.sirona.store.status.NodeStatusDataStore;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -155,6 +159,50 @@ public class HttpCollectorTest {
         assertTrue(aggregated.containsValue(20.));
         assertTrue(node1.containsValue(5.));
         assertTrue(node2.containsValue(15.));
+    }
+
+    @Test
+    public void collectStatus() throws Exception {
+        final Date pushDate = new Date(); // we aggregated only if push was done on the exactly same date so ensuring it
+        {
+            final Event[] events1 = new Event[1];
+            {
+                events1[0] = new Event();
+                events1[0].setTime(pushDate);
+                events1[0].setType("validation");
+                events1[0].setData(new MapBuilder<String, Object>()
+                    .set("message", "good")
+                    .set("status", Status.OK)
+                    .set("name", "validation1")
+                    .set("marker", "node1")
+                    .build());
+            }
+            doPost(events1);
+        }
+
+        {
+            final Event[] events2 = new Event[1];
+            {
+                events2[0] = new Event();
+                events2[0].setTime(pushDate);
+                events2[0].setType("validation");
+                events2[0].setData(new MapBuilder<String, Object>()
+                    .set("message", "bad")
+                    .set("status", Status.KO)
+                    .set("name", "validation3")
+                    .set("marker", "node2")
+                    .build());
+            }
+            doPost(events2);
+        }
+
+        final NodeStatusDataStore store = Configuration.getInstance(NodeStatusDataStore.class);
+        final Map<String,NodeStatus> statuses = store.statuses();
+        assertEquals(2, statuses.size());
+        assertEquals(Status.OK, statuses.get("node1").getStatus());
+        assertEquals(1, statuses.get("node1").getResults().length);
+        assertEquals(Status.KO, statuses.get("node2").getStatus());
+        assertEquals(1, statuses.get("node2").getResults().length);
     }
 
     private void doPost(final Event[] events) throws Exception {

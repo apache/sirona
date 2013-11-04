@@ -14,18 +14,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.store;
+package org.apache.sirona.reporting.web.plugin.status;
 
-import org.apache.sirona.counters.Counter;
+import org.apache.sirona.reporting.web.plugin.Plugin;
 
-import java.util.Collection;
+public class StatusPlugin implements Plugin {
+    @Override
+    public String name() {
+        return "Status";
+    }
 
-public interface CounterDataStore {
-    Counter getOrCreateCounter(Counter.Key key);
+    @Override
+    public Class<?> endpoints() {
+        return StatusEndpoints.class;
+    }
 
-    void clearCounters();
-
-    Collection<Counter> getCounters();
-
-    void addToCounter(Counter defaultCounter, double delta);  // sensitive method which need to be thread safe
+    @Override
+    public String mapping() {
+        return "/status";
+    }
 }

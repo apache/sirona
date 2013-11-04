@@ -17,7 +17,7 @@
 package org.apache.sirona.counters;
 
 import org.apache.sirona.Role;
-import org.apache.sirona.store.InMemoryCounterDataStore;
+import org.apache.sirona.store.counter.InMemoryCounterDataStore;
 import org.junit.Test;
 
 import java.util.concurrent.ExecutorService;

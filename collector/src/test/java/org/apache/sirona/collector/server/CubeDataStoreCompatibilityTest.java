@@ -23,7 +23,7 @@ import org.apache.sirona.counters.DefaultCounter;
 import org.apache.sirona.counters.Unit;
 import org.apache.sirona.cube.CubeCounterDataStore;
 import org.apache.sirona.repositories.Repository;
-import org.apache.sirona.store.CollectorCounterStore;
+import org.apache.sirona.store.counter.CollectorCounterStore;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

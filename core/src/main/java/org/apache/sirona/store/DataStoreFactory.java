@@ -16,8 +16,14 @@
  */
 package org.apache.sirona.store;
 
+import org.apache.sirona.store.counter.CounterDataStore;
+import org.apache.sirona.store.gauge.CommonGaugeDataStore;
+import org.apache.sirona.store.status.NodeStatusDataStore;
+
 public interface DataStoreFactory {
     CounterDataStore getCounterDataStore();
 
     CommonGaugeDataStore getGaugeDataStore();
+
+    NodeStatusDataStore getNodeStatusDataStore();
 }

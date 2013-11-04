@@ -30,7 +30,7 @@ public class CubeBuilder {
     private String collector;
     private String marker;
 
-    public Cube build() {
+    public synchronized Cube build() {
         if (marker == null) {
             try {
                 marker = InetAddress.getLocalHost().getHostName();
