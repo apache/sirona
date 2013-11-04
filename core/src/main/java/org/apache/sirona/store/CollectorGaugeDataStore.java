@@ -14,16 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.counters;
+package org.apache.sirona.store;
 
-import org.apache.sirona.math.M2AwareStatisticalSummary;
-import org.apache.sirona.store.CounterDataStore;
+import org.apache.sirona.Role;
+import org.apache.sirona.store.GaugeDataStore;
+import org.apache.sirona.store.GaugeValuesRequest;
 
 import java.util.Collection;
+import java.util.Map;
 
-public interface CollectorCounterStore extends CounterDataStore {
-    void update(Counter.Key key, String marker, M2AwareStatisticalSummary stats, int concurrency);
+public interface CollectorGaugeDataStore extends GaugeDataStore {
+    Map<Long, Double> getGaugeValues(GaugeValuesRequest gaugeValuesRequest, String marker);
+    void createOrNoopGauge(Role role, String marker);
+    void addToGauge(Role role, long time, double value, String marker);
     Collection<String> markers();
-    Collection<? extends Counter> getCounters(String marker);
-    Counter getOrCreateCounter(Counter.Key key, final String marker);
 }

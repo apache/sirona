@@ -14,16 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.gauges;
+package org.apache.sirona.store;
 
-/**
- * This api is the one to use to schedule gauges updates.
- * only relevant in JVM where measures are done (= not in collector).
- */
-public interface GaugeManager {
-    void stop();
+import org.apache.sirona.counters.Counter;
+import org.apache.sirona.math.M2AwareStatisticalSummary;
+import org.apache.sirona.store.CounterDataStore;
 
-    void addGauge(Gauge gauge);
+import java.util.Collection;
 
-    void stopGauge(Gauge role);
+public interface CollectorCounterStore extends CounterDataStore {
+    void update(Counter.Key key, String marker, M2AwareStatisticalSummary stats, int concurrency);
+    Collection<String> markers();
+    Collection<? extends Counter> getCounters(String marker);
+    Counter getOrCreateCounter(Counter.Key key, final String marker);
 }

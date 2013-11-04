@@ -16,7 +16,7 @@
  */
 package org.apache.sirona.collector.server.store.counter;
 
-import org.apache.sirona.counters.CollectorCounterStore;
+import org.apache.sirona.store.CollectorCounterStore;
 import org.apache.sirona.math.M2AwareStatisticalSummary;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.store.InMemoryCounterDataStore;

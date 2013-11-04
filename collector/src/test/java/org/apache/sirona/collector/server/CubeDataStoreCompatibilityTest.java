@@ -18,7 +18,7 @@ package org.apache.sirona.collector.server;
 
 import org.apache.sirona.Role;
 import org.apache.sirona.configuration.Configuration;
-import org.apache.sirona.counters.CollectorCounterStore;
+import org.apache.sirona.store.CollectorCounterStore;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.counters.DefaultCounter;
 import org.apache.sirona.counters.Unit;

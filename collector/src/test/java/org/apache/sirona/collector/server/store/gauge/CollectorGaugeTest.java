@@ -18,7 +18,7 @@ package org.apache.sirona.collector.server.store.gauge;
 
 import org.apache.sirona.Role;
 import org.apache.sirona.counters.Unit;
-import org.apache.sirona.gauges.CollectorGaugeDataStore;
+import org.apache.sirona.store.CollectorGaugeDataStore;
 import org.apache.sirona.repositories.Repository;
 import org.apache.sirona.store.GaugeValuesRequest;
 import org.junit.After;

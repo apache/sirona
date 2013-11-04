@@ -18,7 +18,9 @@ package org.apache.sirona.store;
 
 import org.apache.sirona.Role;
 import org.apache.sirona.configuration.Configuration;
+import org.apache.sirona.gauges.Gauge;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
@@ -28,6 +30,7 @@ import java.util.concurrent.ConcurrentSkipListMap;
 
 public class InMemoryGaugeDataStore implements GaugeDataStore {
     protected final ConcurrentMap<Role, Map<Long, Double>> gauges = new ConcurrentHashMap<Role, Map<Long, Double>>();
+    protected final Map<String, Role> roleMapping = new ConcurrentHashMap<String, Role>();
 
     @Override
     public Map<Long, Double> getGaugeValues(GaugeValuesRequest gaugeValuesRequest) {
@@ -51,11 +54,27 @@ public class InMemoryGaugeDataStore implements GaugeDataStore {
     @Override
     public void createOrNoopGauge(final Role role) {
         gauges.putIfAbsent(role, new FixedSizedMap());
+        roleMapping.put(role.getName(), role);
     }
 
     @Override
     public void addToGauge(final Role role, final long time, final double value) {
         gauges.get(role).put(time, value);
+    }
+
+    @Override
+    public Collection<Role> gauges() {
+        return gauges.keySet();
+    }
+
+    @Override
+    public Role findGaugeRole(final String name) {
+        return roleMapping.get(name);
+    }
+
+    @Override
+    public void gaugeStopped(final Role gauge) {
+        roleMapping.remove(gauge.getName());
     }
 
     // no perf issues here normally since add is called not that often

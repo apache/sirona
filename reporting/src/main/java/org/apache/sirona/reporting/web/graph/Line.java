@@ -18,7 +18,7 @@ package org.apache.sirona.reporting.web.graph;
 
 import org.apache.sirona.Role;
 import org.apache.sirona.configuration.Configuration;
-import org.apache.sirona.gauges.CollectorGaugeDataStore;
+import org.apache.sirona.store.CollectorGaugeDataStore;
 import org.apache.sirona.reporting.web.plugin.json.Jsons;
 import org.apache.sirona.repositories.Repository;
 import org.apache.sirona.store.GaugeValuesRequest;
