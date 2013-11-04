@@ -20,6 +20,8 @@ import org.apache.sirona.Role;
 import org.apache.sirona.repositories.Repository;
 import org.apache.sirona.spi.SPI;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 
 public interface Gauge {
@@ -32,9 +34,12 @@ public interface Gauge {
     public static class LoaderHelper {
         private LinkedList<Gauge> gauges = new LinkedList<Gauge>();
 
-        public LoaderHelper(final boolean excludeParent, final String... includedPrefixes) {
+        public LoaderHelper(final boolean excludeParent, final Collection<? extends Gauge> manualGauges, final String... includedPrefixes) {
             final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
+            for (final Gauge g : manualGauges) {
+                addGauge(g);
+            }
             for (final Gauge g : SPI.INSTANCE.find(Gauge.class, classLoader)) {
                 addGaugeIfNecessary(classLoader, g, excludeParent, includedPrefixes);
             }
@@ -43,6 +48,10 @@ public interface Gauge {
                     addGaugeIfNecessary(classLoader, g, excludeParent, includedPrefixes);
                 }
             }
+        }
+
+        public LoaderHelper(final boolean excludeParent, final String... includedPrefixes) {
+            this(excludeParent, Collections.<Gauge>emptyList(), includedPrefixes);
         }
 
         private void addGaugeIfNecessary(final ClassLoader classLoader, final Gauge g, final boolean excludeParent, final String... prefixes) {
@@ -60,9 +69,13 @@ public interface Gauge {
                         return;
                     }
                 }
-                Repository.INSTANCE.addGauge(g);
-                gauges.add(g);
+                addGauge(g);
             }
+        }
+
+        private void addGauge(Gauge g) {
+            Repository.INSTANCE.addGauge(g);
+            gauges.add(g);
         }
 
         public void destroy() {

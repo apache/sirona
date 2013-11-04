@@ -42,13 +42,15 @@ public class WebMonitoringInitializer implements ServletContainerInitializer {
             return;
         }
 
+        final String monStatus = Boolean.toString(!FALSE.equalsIgnoreCase(ctx.getInitParameter(MonitoringFilter.MONITOR_STATUS)));
+        ctx.setAttribute(MonitoringFilter.MONITOR_STATUS, monStatus);
+
         ctx.addListener(MonitoringSessionListener.class);
         ctx.addListener(GaugeDiscoveryListener.class);
         if (ctx.getClassLoader().equals(Repository.class.getClassLoader())) {
             ctx.addListener(SironaLifecycle.class);
         }
 
-        final String monStatus = Boolean.toString(!FALSE.equalsIgnoreCase(ctx.getInitParameter(MonitoringFilter.MONITOR_STATUS)));
         String ignoredUrls = ctx.getInitParameter(MonitoringFilter.IGNORED_URLS);
         String monitoredUrls = ctx.getInitParameter(Configuration.CONFIG_PROPERTY_PREFIX + "web.monitored-urls");
         if (!"false".equalsIgnoreCase(monitoredUrls)) {
