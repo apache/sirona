@@ -80,7 +80,7 @@ public interface Gauge {
 
         public void destroy() {
             for (final Gauge gauge : gauges) {
-                Repository.INSTANCE.stopGauge(gauge.role());
+                Repository.INSTANCE.stopGauge(gauge);
             }
             gauges.clear();
         }

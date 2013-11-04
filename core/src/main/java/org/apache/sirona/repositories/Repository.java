@@ -23,12 +23,15 @@ import org.apache.sirona.counters.Counter;
 import org.apache.sirona.gauges.Gauge;
 import org.apache.sirona.stopwatches.StopWatch;
 
+import java.util.Collection;
 import java.util.Map;
 
-public interface Repository extends Iterable<Counter> {
+public interface Repository {
     Repository INSTANCE = Configuration.findOrCreateInstance(Repository.class);
 
     Counter getCounter(Counter.Key key);
+
+    Collection<Counter> counters();
 
     void clear();
 
@@ -36,7 +39,11 @@ public interface Repository extends Iterable<Counter> {
 
     void addGauge(final Gauge gauge);
 
-    void stopGauge(Role role);
+    void stopGauge(Gauge role);
 
     Map<Long, Double> getGaugeValues(long start, long end, Role role);
+
+    Collection<Gauge> gauges();
+
+    Role findGaugeRole(String name);
 }

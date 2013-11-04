@@ -27,9 +27,6 @@
 <script type="text/javascript" src="$mapping/resources/js/jquery.flot.time.min.js"></script>
 <script type="text/javascript">
     $(function() {
-        $('#sessions-datetimepicker-start').datetimepicker();
-        $('#sessions-datetimepicker-end').datetimepicker();
-
         var options = {
             canvas: true,
             series: { lines: { show: true }, points: { show: true } },

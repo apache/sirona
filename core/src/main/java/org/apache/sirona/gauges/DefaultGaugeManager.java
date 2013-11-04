@@ -22,13 +22,16 @@ import org.apache.sirona.gauges.jvm.CPUGauge;
 import org.apache.sirona.gauges.jvm.UsedMemoryGauge;
 import org.apache.sirona.store.GaugeDataStore;
 
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class DefaultGaugeManager implements GaugeManager {
-    private final Map<Role, Timer> timers = new ConcurrentHashMap<Role, Timer>();
+    private final Map<Gauge, Timer> timers = new ConcurrentHashMap<Gauge, Timer>();
+    private final Map<String, Role> roleMapping = new ConcurrentHashMap<String, Role>();
     private final GaugeDataStore store;
 
     public DefaultGaugeManager(final GaugeDataStore dataStore) {
@@ -48,16 +51,23 @@ public final class DefaultGaugeManager implements GaugeManager {
     }
 
     @Override
-    public void stopGauge(final Role role) {
-        final Timer timer = timers.remove(role);
+    public void stopGauge(final Gauge gauge) {
+        final Timer timer = timers.remove(gauge);
+        roleMapping.remove(gauge.role().getName());
         if (timer != null) {
             timer.cancel();
         }
     }
 
     @Override
+    public Role findGaugeRole(final String name) {
+        return roleMapping.get(name);
+    }
+
+    @Override
     public void addGauge(final Gauge gauge) {
         final Role role = gauge.role();
+        roleMapping.put(role.getName(), role);
 
         this.store.createOrNoopGauge(role);
 
@@ -65,11 +75,16 @@ public final class DefaultGaugeManager implements GaugeManager {
         Thread.currentThread().setContextClassLoader(gauge.getClass().getClassLoader());
         try {
             final Timer timer = new Timer("gauge-" + role.getName() + "-timer", true); // this starts a thread so ensure the loader is the right one
-            timers.put(role, timer);
+            timers.put(gauge, timer);
             timer.scheduleAtFixedRate(new GaugeTask(store, gauge), 0, gauge.period());
         } finally {
             Thread.currentThread().setContextClassLoader(old);
         }
+    }
+
+    @Override
+    public Collection<Gauge> gauges() {
+        return timers.keySet();
     }
 
     private static class GaugeTask extends TimerTask {

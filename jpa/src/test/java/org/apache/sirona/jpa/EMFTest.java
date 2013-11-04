@@ -30,6 +30,7 @@ import javax.persistence.spi.PersistenceUnitInfo;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.Collection;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -70,7 +71,7 @@ public class EMFTest {
     }
 
     private static void assertCreateCalled() {
-        final List<Counter> counters = IteratorUtils.toList(Repository.INSTANCE.iterator());
+        final Collection<Counter> counters = Repository.INSTANCE.counters();
         assertEquals(1, counters.size());
 
         final Counter counter = counters.iterator().next();

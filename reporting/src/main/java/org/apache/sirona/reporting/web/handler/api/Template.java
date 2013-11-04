@@ -16,19 +16,22 @@
  */
 package org.apache.sirona.reporting.web.handler.api;
 
+import org.apache.sirona.reporting.web.template.MapBuilder;
+
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 public class Template {
     private final String template;
-    private final Map<String, ?> userParams;
+    private final Map<String, Object> userParams;
     private final boolean html;
 
     public Template(final String template) {
-        this(template, Collections.<String, Object>emptyMap());
+        this(template, new HashMap<String, Object>());
     }
 
-    public Template(final String template, final Map<String, ?> userParams) {
+    public Template(final String template, final Map<String, Object> userParams) {
         this(template, userParams, true);
     }
 
@@ -37,7 +40,7 @@ public class Template {
      * @param userParams variables used by the template
      * @param isHtml should the template be rendered with the site them or not (= is it a page fragment).
      */
-    public Template(final String template, final Map<String, ?> userParams, final boolean isHtml) {
+    public Template(final String template, final Map<String, Object> userParams, final boolean isHtml) {
         this.template = template;
         this.userParams = userParams;
         this.html = isHtml;
@@ -53,5 +56,10 @@ public class Template {
 
     public boolean isHtml() {
         return html;
+    }
+
+    public Template set(final String attribute, final Object value) {
+        userParams.put(attribute, value);
+        return this;
     }
 }

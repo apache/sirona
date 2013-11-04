@@ -102,7 +102,7 @@ public abstract class MapFormat {
 
     protected static Map<String, Collection<String>> snapshotByPath(final Unit timeUnit, final String format) {
         final Map<String, Collection<String>> data = new TreeMap<String, Collection<String>>();
-        for (final Counter counter : Repository.INSTANCE) {
+        for (final Counter counter : Repository.INSTANCE.counters()) {
             final Counter.Key key = counter.getKey();
             data.put(generateCounterKeyString(key), generateLine(counter, timeUnit, format));
         }
@@ -120,7 +120,7 @@ public abstract class MapFormat {
 
     protected static Collection<Collection<String>> snapshot(final Unit timeUnit, final String format) {
         final Collection<Collection<String>> data = new ArrayList<Collection<String>>();
-        for (final Counter counter : Repository.INSTANCE) {
+        for (final Counter counter : Repository.INSTANCE.counters()) {
             data.add(generateLine(counter, timeUnit, format));
         }
         return data;

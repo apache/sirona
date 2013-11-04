@@ -14,20 +14,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.gauges;
+package org.apache.sirona.reporting.web.plugin.gauge;
 
-import org.apache.sirona.Role;
+import org.apache.sirona.reporting.web.plugin.Plugin;
 
-import java.util.Collection;
+public class GaugePlugin implements Plugin {
+    @Override
+    public String name() {
+        return "Gauges";
+    }
 
-public interface GaugeManager {
-    void stop();
+    @Override
+    public Class<?> endpoints() {
+        return GaugeEndpoints.class;
+    }
 
-    void addGauge(Gauge gauge);
-
-    void stopGauge(Gauge role);
-
-    Collection<Gauge> gauges();
-
-    Role findGaugeRole(String name);
+    @Override
+    public String mapping() {
+        return "/gauges";
+    }
 }

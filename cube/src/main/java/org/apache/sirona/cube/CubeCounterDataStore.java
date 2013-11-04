@@ -18,8 +18,9 @@ package org.apache.sirona.cube;
 
 import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.counters.Counter;
-import org.apache.sirona.repositories.Repository;
 import org.apache.sirona.store.BatchCounterDataStore;
+
+import java.util.Collection;
 
 public class CubeCounterDataStore extends BatchCounterDataStore {
     private static final String COUNTER_TYPE = "counter";
@@ -39,10 +40,10 @@ public class CubeCounterDataStore extends BatchCounterDataStore {
     private final Cube cube = Configuration.findOrCreateInstance(CubeBuilder.class).build();
 
     @Override
-    protected synchronized void pushCountersByBatch(final Repository instance) {
+    protected synchronized void pushCountersByBatch(final Collection<Counter> instances) {
         final long ts = System.currentTimeMillis();
         final StringBuilder events = cube.newEventStream();
-        for (final Counter counter : instance) {
+        for (final Counter counter : instances) {
             cube.buildEvent(events, COUNTER_TYPE, ts, new MapBuilder()
                     .add(NAME, counter.getKey().getName())
                     .add(ROLE, counter.getKey().getRole().getName())

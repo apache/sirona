@@ -17,6 +17,10 @@
 (function (Sirona, $, undefined) {
     var dayDuration = 24 * 3600 * 1000;
 
+    Sirona.escapeId = function (id) { // we use base64 etc so we need escaping
+        return id.replace( /(%|:|\.|\[|\])/g, "\\$1" );
+    };
+
     Sirona.extractTimeFromPicker = function (picker) {
         return picker.data('datetimepicker').getLocalDate().getTime();
     };
@@ -27,7 +31,7 @@
             type: "GET",
             dataType: "json",
             success: function (data) {
-                $.plot("#" + graph + "-graph", data, options);
+                $.plot("#" + Sirona.escapeId(graph + "-graph"), data, options);
             },
             //complete: complete, // TODO: find a better way to refresh the plot
             timeout: timeout
@@ -35,19 +39,24 @@
     };
 
     Sirona.initGraph = function(mapping, plugin, graph, options) {
+        var startDateTimePicker = $('#' + Sirona.escapeId(graph + '-datetimepicker-start'));
+        var endDateTimePicker = $('#' + Sirona.escapeId(graph + '-datetimepicker-end'));
+        startDateTimePicker.datetimepicker();
+        endDateTimePicker.datetimepicker();
+
         var yesterday = new Date();
         yesterday.setTime(yesterday.getTime() - dayDuration);
 
         var tomorrow = new Date();
         tomorrow.setTime(tomorrow.getTime() + dayDuration);
 
-        $('#' + graph + '-datetimepicker-start').data('datetimepicker').setLocalDate(yesterday);
-        $('#' + graph + '-datetimepicker-end').data('datetimepicker').setLocalDate(tomorrow);
+        startDateTimePicker.data('datetimepicker').setLocalDate(yesterday);
+        endDateTimePicker.data('datetimepicker').setLocalDate(tomorrow);
 
         (function doUpdateGraph() {
             Sirona.updateGraph(mapping, plugin, graph,
-                Sirona.extractTimeFromPicker($('#' + graph + '-datetimepicker-start')),
-                Sirona.extractTimeFromPicker($('#' + graph + '-datetimepicker-end')),
+                Sirona.extractTimeFromPicker(startDateTimePicker),
+                Sirona.extractTimeFromPicker(endDateTimePicker),
                 options, doUpdateGraph, 4000); // refresh interval = 4s
         })();
     };

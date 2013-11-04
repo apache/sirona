@@ -31,6 +31,7 @@ import org.apache.sirona.store.DataStoreFactory;
 import org.apache.sirona.store.GaugeDataStore;
 import org.apache.sirona.store.GaugeValuesRequest;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -85,6 +86,11 @@ public class DefaultRepository implements Repository {
     }
 
     @Override
+    public Collection<Counter> counters() {
+        return counterDataStore.getCounters();
+    }
+
+    @Override
     public void clear() {
         counterDataStore.clearCounters();
     }
@@ -95,13 +101,18 @@ public class DefaultRepository implements Repository {
     }
 
     @Override
-    public Iterator<Counter> iterator() {
-        return counterDataStore.getCounters().iterator();
+    public Map<Long, Double> getGaugeValues(final long start, final long end, final Role role) {
+        return gaugeDataStore.getGaugeValues(new GaugeValuesRequest(start, end, role));
     }
 
     @Override
-    public Map<Long, Double> getGaugeValues(final long start, final long end, final Role role) {
-        return gaugeDataStore.getGaugeValues(new GaugeValuesRequest(start, end, role));
+    public Collection<Gauge> gauges() {
+        return gaugeManager.gauges();
+    }
+
+    @Override
+    public Role findGaugeRole(final String name) {
+        return gaugeManager.findGaugeRole(name);
     }
 
     @Override
@@ -110,7 +121,7 @@ public class DefaultRepository implements Repository {
     }
 
     @Override
-    public void stopGauge(final Role role) {
+    public void stopGauge(final Gauge role) {
         gaugeManager.stopGauge(role);
     }
 }

@@ -53,9 +53,15 @@ public class GaugeDiscoveryListener implements ServletContextListener {
         final ConcurrentMap<Integer, StatusGauge> gauges = new ConcurrentHashMap<Integer, StatusGauge>(35);
         if ("true".equalsIgnoreCase((String) sce.getServletContext().getAttribute(MonitoringFilter.MONITOR_STATUS))) {
             final String monitoredStatuses = sce.getServletContext().getInitParameter(Configuration.CONFIG_PROPERTY_PREFIX + "web.monitored-statuses");
+
+            String contextPath = sce.getServletContext().getContextPath();
+            if (contextPath == null || contextPath.isEmpty()) {
+                contextPath = "/";
+            }
+
             if (monitoredStatuses == null) {
                 for (final int status : DEFAULT_STATUSES) {
-                    gauges.put(status, statusGauge(sce.getServletContext().getContextPath(), gauges, status));
+                    gauges.put(status, statusGauge(contextPath, gauges, status));
                 }
                 /* we could use it but it defines 25 statuses, surely too much
                 for (final Field f : HttpURLConnection.class.getDeclaredFields()) {
@@ -74,7 +80,7 @@ public class GaugeDiscoveryListener implements ServletContextListener {
             } else {
                 for (final String status : monitoredStatuses.split(",")) {
                     final int statusInt = Integer.parseInt(status.trim());
-                    gauges.put(statusInt, statusGauge(sce.getServletContext().getContextPath(), gauges, statusInt));
+                    gauges.put(statusInt, statusGauge(contextPath, gauges, statusInt));
                 }
             }
             sce.getServletContext().setAttribute(STATUS_GAUGES_ATTRIBUTE, gauges);

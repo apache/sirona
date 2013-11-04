@@ -110,9 +110,9 @@ public class QueryTest {
     }
 
     private static void assertCounter(final String method) {
-        assertTrue(Repository.INSTANCE.iterator().hasNext());
+        assertTrue(Repository.INSTANCE.counters().iterator().hasNext());
 
-        final Counter counter = Repository.INSTANCE.iterator().next();
+        final Counter counter = Repository.INSTANCE.counters().iterator().next();
         assertEquals(1, counter.getHits());
         assertThat(counter.getKey().getName(), containsString(method));
     }

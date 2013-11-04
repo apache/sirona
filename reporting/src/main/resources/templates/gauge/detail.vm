@@ -14,19 +14,9 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 *#
-#macro ( graph $name )
-<div class="col-lg-4">
-    #graphBlock($name, $name)
-</div>
-#end
-
-#set ( $parts = ["Commits", "Rollbacks", "Actives"])
-
 <div class="container-fluid">
     <div class="row-fluid">
-        #foreach ($item in $parts )
-            #graph($item)
-        #end
+        #graphBlock("$gauge", "$gauge64")
     </div>
 </div>
 
@@ -35,17 +25,12 @@
 <script type="text/javascript" src="$mapping/resources/js/jquery.flot.time.min.js"></script>
 <script type="text/javascript">
     $(function() {
-        var options = {
+        Sirona.initGraph("$mapping", 'gauges', "$gauge64", {
             canvas: true,
             series: { lines: { show: true }, points: { show: true } },
             grid: { hoverable: true, clickable: true },
             xaxes: [ { mode: "time", timezone: "browser" } ],
             yaxes: [ { min: 0 } ]
-        };
-
-        // update diagram when clicking on update buttons
-        #foreach ($item in $parts )
-            Sirona.initGraph("$mapping", "jta", "$item", options);
-        #end
+        });
     });
 </script>

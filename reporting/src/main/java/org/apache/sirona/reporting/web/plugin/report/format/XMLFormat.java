@@ -30,7 +30,7 @@ public class XMLFormat implements Format {
         return new Template("/templates/report/report-xml.vm",
             new MapBuilder<String, Object>()
                 .set("MetricData", MetricData.class)
-                .set("counters", Repository.INSTANCE.iterator())
+                .set("counters", Repository.INSTANCE.counters())
                 .build(), false);
     }
 
