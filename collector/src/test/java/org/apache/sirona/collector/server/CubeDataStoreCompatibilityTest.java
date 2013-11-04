@@ -18,13 +18,12 @@ package org.apache.sirona.collector.server;
 
 import org.apache.sirona.Role;
 import org.apache.sirona.configuration.Configuration;
-import org.apache.sirona.store.CollectorCounterStore;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.counters.DefaultCounter;
 import org.apache.sirona.counters.Unit;
 import org.apache.sirona.cube.CubeCounterDataStore;
 import org.apache.sirona.repositories.Repository;
-import org.apache.sirona.store.CounterDataStore;
+import org.apache.sirona.store.CollectorCounterStore;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -52,7 +51,7 @@ public class CubeDataStoreCompatibilityTest {
     public void cubeMe() {
         new SeeMyProtectedStuffStore().doPush();
 
-        final CollectorCounterStore store = CollectorCounterStore.class.cast(Configuration.getInstance(CounterDataStore.class));
+        final CollectorCounterStore store = Configuration.getInstance(CollectorCounterStore.class);
         final Counter counter1 = store.getOrCreateCounter(new Counter.Key(new Role("cube", Unit.UNARY), "client"));
         final Counter counter1Client1 = store.getOrCreateCounter(new Counter.Key(new Role("cube", Unit.UNARY), "client"), "local");
 

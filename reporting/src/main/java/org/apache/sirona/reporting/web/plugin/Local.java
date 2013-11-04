@@ -14,25 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.store;
+package org.apache.sirona.reporting.web.plugin;
 
-public class DelegateDataStoreFactory implements DataStoreFactory {
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-    private final CounterDataStore counterDataStore;
-    private final CommonGaugeDataStore gaugeDataStore;
-
-    public DelegateDataStoreFactory(CounterDataStore counterDataStore, CommonGaugeDataStore gaugeDataStore) {
-        this.counterDataStore = counterDataStore;
-        this.gaugeDataStore = gaugeDataStore;
-    }
-
-    @Override
-    public CounterDataStore getCounterDataStore() {
-        return counterDataStore;
-    }
-
-    @Override
-    public CommonGaugeDataStore getGaugeDataStore() {
-        return gaugeDataStore;
-    }
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface Local {
 }

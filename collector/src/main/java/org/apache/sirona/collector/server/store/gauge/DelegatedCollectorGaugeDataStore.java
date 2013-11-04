@@ -96,7 +96,7 @@ public class DelegatedCollectorGaugeDataStore implements CollectorGaugeDataStore
         return dataStores.keySet();
     }
 
-    @Override
+    @Override // TODO: see if using a period to aggregate data wouldn't make more sense
     public Map<Long, Double> getGaugeValues(final GaugeValuesRequest gaugeValuesRequest) {
         final Map<Long, Double> values = new TreeMap<Long, Double>();
         for (final Map.Entry<String, GaugeDataStore> marker : dataStores.entrySet()) {
@@ -141,15 +141,5 @@ public class DelegatedCollectorGaugeDataStore implements CollectorGaugeDataStore
         for (final GaugeDataStore store : dataStores.values()) {
             store.gaugeStopped(gauge);
         }
-    }
-
-    @Override
-    public void createOrNoopGauge(final Role role) {
-        throw new UnsupportedOperationException("Need a marker");
-    }
-
-    @Override
-    public void addToGauge(final Role role, final long time, final double value) {
-        throw new UnsupportedOperationException("Need a marker");
     }
 }

@@ -26,6 +26,7 @@ import org.apache.sirona.gauges.DefaultGaugeManager;
 import org.apache.sirona.gauges.Gauge;
 import org.apache.sirona.stopwatches.CounterStopWatch;
 import org.apache.sirona.stopwatches.StopWatch;
+import org.apache.sirona.store.CommonGaugeDataStore;
 import org.apache.sirona.store.CounterDataStore;
 import org.apache.sirona.store.DataStoreFactory;
 import org.apache.sirona.store.GaugeDataStore;
@@ -36,7 +37,7 @@ import java.util.Map;
 
 public class DefaultRepository implements Repository {
     private final CounterDataStore counterDataStore;
-    private final GaugeDataStore gaugeDataStore;
+    private final CommonGaugeDataStore gaugeDataStore;
     private final DefaultGaugeManager gaugeManager;
 
     public DefaultRepository() {
@@ -46,37 +47,61 @@ public class DefaultRepository implements Repository {
         } catch (final MonitoringException e) {
             // no-op
         }
+        if (counter == null) {
+            try {
+                counter = Configuration.findOrCreateInstance(CollectorCounterStore.class);
+            } catch (final MonitoringException e) {
+                // no-op
+            }
+        }
 
-        GaugeDataStore gauge = null;
+        CommonGaugeDataStore gauge = null;
         try {
             gauge = Configuration.findOrCreateInstance(GaugeDataStore.class);
         } catch (final MonitoringException e) {
             // no-op
         }
+        if (gauge == null) {
+            try {
+                gauge = Configuration.findOrCreateInstance(CollectorGaugeDataStore.class);
+            } catch (final MonitoringException e) {
+                // no-op
+            }
+        }
 
         if (counter == null) {
             counter = Configuration.findOrCreateInstance(DataStoreFactory.class).getCounterDataStore();
-            Configuration.setSingletonInstance(CounterDataStore.class, counter);
             if (CollectorCounterStore.class.isInstance(counter)) {
                 Configuration.setSingletonInstance(CollectorCounterStore.class, counter);
+            } else {
+                Configuration.setSingletonInstance(CounterDataStore.class, counter);
             }
         }
 
         if (gauge == null) {
             gauge = Configuration.findOrCreateInstance(DataStoreFactory.class).getGaugeDataStore();
-            Configuration.setSingletonInstance(GaugeDataStore.class, gauge);
             if (CollectorGaugeDataStore.class.isInstance(gauge)) {
                 Configuration.setSingletonInstance(CollectorGaugeDataStore.class, gauge);
+            } else {
+                Configuration.setSingletonInstance(GaugeDataStore.class, gauge);
             }
         }
+
         this.counterDataStore = counter;
         this.gaugeDataStore = gauge;
-        this.gaugeManager = new DefaultGaugeManager(this.gaugeDataStore);
+
+        if (GaugeDataStore.class.isInstance(this.gaugeDataStore)) {
+            this.gaugeManager = new DefaultGaugeManager(GaugeDataStore.class.cast(this.gaugeDataStore));
+        } else {
+            this.gaugeManager = null;
+        }
     }
 
     @Configuration.Destroying
     public void stopGaugeTimers() {
-        gaugeManager.stop();
+        if (gaugeManager != null) {
+            gaugeManager.stop();
+        }
     }
 
     @Override
@@ -116,11 +141,15 @@ public class DefaultRepository implements Repository {
 
     @Override
     public void addGauge(final Gauge gauge) {
-        gaugeManager.addGauge(gauge);
+        if (gaugeManager != null) {
+            gaugeManager.addGauge(gauge);
+        }
     }
 
     @Override
     public void stopGauge(final Gauge role) {
-        gaugeManager.stopGauge(role);
+        if (gaugeManager != null) {
+            gaugeManager.stopGauge(role);
+        }
     }
 }

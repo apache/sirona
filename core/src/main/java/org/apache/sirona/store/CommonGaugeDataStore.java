@@ -16,23 +16,17 @@
  */
 package org.apache.sirona.store;
 
-public class DelegateDataStoreFactory implements DataStoreFactory {
+import org.apache.sirona.Role;
 
-    private final CounterDataStore counterDataStore;
-    private final CommonGaugeDataStore gaugeDataStore;
+import java.util.Collection;
+import java.util.Map;
 
-    public DelegateDataStoreFactory(CounterDataStore counterDataStore, CommonGaugeDataStore gaugeDataStore) {
-        this.counterDataStore = counterDataStore;
-        this.gaugeDataStore = gaugeDataStore;
-    }
+public interface CommonGaugeDataStore {
+    Map<Long, Double> getGaugeValues(GaugeValuesRequest gaugeValuesRequest);
 
-    @Override
-    public CounterDataStore getCounterDataStore() {
-        return counterDataStore;
-    }
+    Collection<Role> gauges();
 
-    @Override
-    public CommonGaugeDataStore getGaugeDataStore() {
-        return gaugeDataStore;
-    }
+    Role findGaugeRole(String name);
+
+    void gaugeStopped(Role gauge);
 }

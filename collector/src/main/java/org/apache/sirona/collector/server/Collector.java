@@ -21,14 +21,12 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.sirona.Role;
 import org.apache.sirona.configuration.Configuration;
-import org.apache.sirona.store.CollectorCounterStore;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.counters.Unit;
-import org.apache.sirona.store.CollectorGaugeDataStore;
 import org.apache.sirona.math.M2AwareStatisticalSummary;
 import org.apache.sirona.repositories.Repository;
-import org.apache.sirona.store.CounterDataStore;
-import org.apache.sirona.store.GaugeDataStore;
+import org.apache.sirona.store.CollectorCounterStore;
+import org.apache.sirona.store.CollectorGaugeDataStore;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -60,14 +58,14 @@ public class Collector extends HttpServlet {
         // force init to ensure we have stores
         Configuration.findOrCreateInstance(Repository.class);
 
-        final GaugeDataStore gds = Configuration.findOrCreateInstance(GaugeDataStore.class);
-        if (!CollectorGaugeDataStore.class.isInstance(gds)) {
+        final CollectorGaugeDataStore gds = Configuration.findOrCreateInstance(CollectorGaugeDataStore.class);
+        if (gds == null) {
             throw new IllegalStateException("Collector only works with " + CollectorGaugeDataStore.class.getName());
         }
         this.gaugeDataStore = CollectorGaugeDataStore.class.cast(gds);
 
-        final CounterDataStore cds = Configuration.findOrCreateInstance(CounterDataStore.class);
-        if (!CollectorCounterStore.class.isInstance(cds)) {
+        final CollectorCounterStore cds = Configuration.findOrCreateInstance(CollectorCounterStore.class);
+        if (cds == null) {
             throw new IllegalStateException("Collector only works with " + CollectorCounterStore.class.getName());
         }
         this.counterDataStore = CollectorCounterStore.class.cast(cds);

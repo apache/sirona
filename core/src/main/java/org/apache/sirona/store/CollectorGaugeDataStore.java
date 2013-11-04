@@ -17,13 +17,11 @@
 package org.apache.sirona.store;
 
 import org.apache.sirona.Role;
-import org.apache.sirona.store.GaugeDataStore;
-import org.apache.sirona.store.GaugeValuesRequest;
 
 import java.util.Collection;
 import java.util.Map;
 
-public interface CollectorGaugeDataStore extends GaugeDataStore {
+public interface CollectorGaugeDataStore extends CommonGaugeDataStore {
     Map<Long, Double> getGaugeValues(GaugeValuesRequest gaugeValuesRequest, String marker);
     void createOrNoopGauge(Role role, String marker);
     void addToGauge(Role role, long time, double value, String marker);

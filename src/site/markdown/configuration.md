@@ -75,3 +75,5 @@ or to call manually `Configuration.shutdown()` method.
 #### CDI
 
 * org.apache.sirona.cdi.enabled: a boolean to activate/deactivate CDI interceptors config
+* org.apache.sirona.cdi.performance: list of intercepted beans for performances (prefix:org.superbiz, regex:.*Service...)
+* org.apache.sirona.cdi.jta: list of intercepted beans for JTA

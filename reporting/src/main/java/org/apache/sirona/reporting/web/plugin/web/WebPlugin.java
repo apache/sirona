@@ -16,8 +16,10 @@
  */
 package org.apache.sirona.reporting.web.plugin.web;
 
+import org.apache.sirona.reporting.web.plugin.Local;
 import org.apache.sirona.reporting.web.plugin.Plugin;
 
+@Local
 public class WebPlugin implements Plugin {
     @Override
     public String name() {

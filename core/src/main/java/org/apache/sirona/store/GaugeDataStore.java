@@ -18,19 +18,8 @@ package org.apache.sirona.store;
 
 import org.apache.sirona.Role;
 
-import java.util.Collection;
-import java.util.Map;
-
-public interface GaugeDataStore {
-    Map<Long, Double> getGaugeValues(GaugeValuesRequest gaugeValuesRequest);
-
+public interface GaugeDataStore extends CommonGaugeDataStore {
     void createOrNoopGauge(Role role);
 
     void addToGauge(Role role, long time, double value);
-
-    Collection<Role> gauges();
-
-    Role findGaugeRole(String name);
-
-    void gaugeStopped(Role gauge);
 }

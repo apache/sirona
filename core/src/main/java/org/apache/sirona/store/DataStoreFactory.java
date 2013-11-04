@@ -17,9 +17,7 @@
 package org.apache.sirona.store;
 
 public interface DataStoreFactory {
-
     CounterDataStore getCounterDataStore();
 
-    GaugeDataStore getGaugeDataStore();
-
+    CommonGaugeDataStore getGaugeDataStore();
 }
