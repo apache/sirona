@@ -27,7 +27,7 @@ public final class Environment {
     }
 
     public static boolean isCollector() {
-        Configuration.findOrCreateInstance(Repository.class); // ensure we have stores which init next class by default
-        return CollectorCounterStore.class.isInstance(Configuration.findOrCreateInstance(CounterDataStore.class));
+        Configuration.findOrCreateInstance(Repository.class); // ensure we have a repo which init store classes by default
+        return Configuration.getInstance(CollectorCounterStore.class) != null;
     }
 }
