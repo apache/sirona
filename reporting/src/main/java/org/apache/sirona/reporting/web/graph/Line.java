@@ -64,8 +64,6 @@ public class Line {
             return "[" + Line.toJson(label, Line.DEFAULT_COLOR, Repository.INSTANCE.getGaugeValues(start, end, role)) + "]";
         }
 
-        Configuration.findOrCreateInstance(Repository.class); // ensure CollectorGaugeDataStore exists
-
         final CollectorGaugeDataStore gaugeStore = Configuration.findOrCreateInstance(CollectorGaugeDataStore.class);
         final Iterator<String> markers = gaugeStore.markers().iterator();
         final StringBuilder builder = new StringBuilder("[");
