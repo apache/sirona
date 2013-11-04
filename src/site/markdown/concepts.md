@@ -51,9 +51,7 @@ the average, min, max, sum of logs, ....
         double getStandardDeviation();
         double getVariance();
         double getMean();
-        double getGeometricMean();
-        double getSumOfLogs();
-        double getSumOfSquares();
+        double getSecondMoment();
     }
 
 # Gauge
@@ -66,22 +64,6 @@ A gauge is a way to get a measure. It is intended to get a history of a metric.
         long period();
     }
 
-# DataStore
-
-Counters and Gauges are saved and queried (in memory by default) through a DataStore. it allows you to plug
-behind it any kind of persistence you would like.
-
-    public interface DataStore {
-        Counter getOrCreateCounter(Counter.Key key);
-        void clearCounters();
-        Collection<Counter> getCounters();
-        void addToCounter(Counter defaultCounter, double delta);  // sensitive method which need to be thread safe
-
-        Map<Long,Double> getGaugeValues(long start, long end, Role role);
-        void createOrNoopGauge(Role role);
-        void addToGauge(Gauge gauge, long time, double value);
-    }
-
 # StopWatch
 
 A StopWatch is just a handler for a measure with a counter.
@@ -91,3 +73,33 @@ A StopWatch is just a handler for a measure with a counter.
 
         StopWatch stop();
     }
+
+# Node status
+
+Node statuses can be reported using `org.apache.sirona.status.Validation`. `Validation` and `ValidationFactory`
+(just a list of validation) can be registered using `SPI` mecanism (`META-INF/services/org.apache.sirona.status.Validation`
+and `META-INF/services/org.apache.sirona.status.ValidationFactory` by default).
+
+`Validation` API is the following one:
+
+```java
+public interface Validation {
+    ValidationResult validate();
+}
+```
+
+A `ValidationResult` is just a message, a validation name and a status. It is aggregated by node to compute
+the node status keeping the lowest of all statuses of validation results.
+
+# DataStore
+
+Counters, Gauges and status are saved and queried (in memory by default) through a DataStore. it allows you to plug
+behind it any kind of persistence you would like. There are generally two kind of stores: local or remote.
+
+Here are the entry points if you want more details:
+
+* `org.apache.sirona.store.counter.CounterDataStore`
+* `org.apache.sirona.store.gauge.GaugeDataStore`
+* `org.apache.sirona.store.status.NodeStatusDataStore`
+* `org.apache.sirona.store.counter.CollectorCounterStore`
+* `org.apache.sirona.store.gauge.CollectorGaugeDataStore`

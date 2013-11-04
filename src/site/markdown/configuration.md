@@ -47,10 +47,11 @@ or to call manually `Configuration.shutdown()` method.
 * org.apache.sirona.gauge.max-size: int, 100 by default. Number of gauge measures to keep in memory when not persistent.
 * org.apache.sirona.gauge.memory.period: int, 4000 (ms) by default. Period for memory gauge.
 * org.apache.sirona.gauge.cpu.period: int, 4000 (ms) by default. Period for CPU gauge.
-* org.apache.sirona.store.DataStore: qualified class name, default `org.apache.sirona.store.DefaultDataStore`. DataStore to use.
+* org.apache.sirona.store.DataStoreFactory: qualified class name, default `org.apache.sirona.store.DefaultDataStoreFactory`. DataStoreFactory to use.
 * org.apache.sirona.repositories.Repository: qualified class name, default `org.apache.sirona.repositories.DefaultRepository`. Repository to use.
 * org.apache.sirona.core.gauge.activated: a boolean to deactivate cpu/memory gauges
 * org.apache.sirona.\<name>.period: the period to use to flush counters for a batch data store (like graphite one)
+* org.apache.sirona.periodic.status.period: the period to use for status reporting. Note: when using another reporter (cube typically) you'll need to replace `periodic` by the specific name of the reporter (`cube`). Note too that `period` is optional to allow to share the same period between all stores.
 
 #### Reporting
 
