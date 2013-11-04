@@ -16,21 +16,24 @@
  */
 package org.apache.sirona.reporting.web.plugin.status;
 
-import org.apache.sirona.reporting.web.handler.api.Regex;
-import org.apache.sirona.reporting.web.handler.api.Template;
-import org.apache.sirona.repositories.Repository;
+import org.apache.sirona.status.Status;
 
-public class StatusEndpoints {
-    @Regex
-    public Template home() {
-        return new Template("status/home.vm").set("helper", StatusHelper.class).set("nodes", Repository.INSTANCE.statuses());
+import java.util.HashMap;
+import java.util.Map;
+
+public final class StatusHelper {
+    private static final Map<Status, String> mapping = new HashMap<Status, String>();
+    static {
+        mapping.put(Status.OK, "success");
+        mapping.put(Status.DEGRADED, "warning");
+        mapping.put(Status.KO, "danger");
     }
 
-    @Regex("/([^/]*)")
-    public Template detail(final String node) {
-        return new Template("status/detail.vm")
-            .set("helper", StatusHelper.class)
-            .set("node", Repository.INSTANCE.statuses().get(node))
-            .set("name", node);
+    private StatusHelper() {
+        // no-op
+    }
+
+    public static String map(final Status status) {
+        return mapping.get(status);
     }
 }

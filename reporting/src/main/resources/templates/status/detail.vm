@@ -17,25 +17,23 @@
 <h1>Node $name</h1>
 
 <div>
-    Global status: $node.status
-    <ul>
-        <table class="table table-bordered table-striped table-hover">
-            <thead>
-            <tr>
-                <th>Name</th>
-                <th>Description</th>
-                <th>Status</th>
+    <div class="alert alert-$helper.map($node.status)">Global status: $node.status</div>
+    <table class="table table-bordered table-striped">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Status</th>
+        </tr>
+        </thead>
+        <tbody>
+            #foreach ($result in $node.results)
+            <tr class="$helper.map($result.status)">
+                <td>$result.name</td>
+                <td>$result.message</td>
+                <td>$result.status</td>
             </tr>
-            </thead>
-            <tbody>
-                #foreach ($result in $node.results)
-                <tr>
-                    <td>$result.name</td>
-                    <td>$result.message</td>
-                    <td>$result.status.name()</td>
-                </tr>
-                #end
-            </tbody>
-        </table>
-    </ul>
+            #end
+        </tbody>
+    </table>
 </div>
