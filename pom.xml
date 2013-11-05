@@ -57,18 +57,8 @@
 
   <modules>
     <module>core</module>
-    <module>aop</module>
-    <module>jdbc</module>
-    <module>jpa</module>
-    <module>aspectj</module>
-    <module>cdi</module>
-    <module>spring</module>
-    <module>jta</module>
-    <module>web</module>
-    <module>reporting</module>
-    <module>graphite</module>
-    <module>cube</module>
-    <module>collector</module>
+    <module>agent</module>
+    <module>server</module>
   </modules>
 
   <developers>

@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <artifactId>sirona-server</artifactId>
+    <groupId>org.apache.sirona</groupId>
+    <version>0.1-incubating-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>sirona-reporting</artifactId>
+  <name>Apache Sirona Incubator :: Server :: Reporting</name>
+  <packaging>war</packaging>
+
+  <properties>
+    <tomcatRunPort>8080</tomcatRunPort>
+    <tomcatRunPath>/monitoring</tomcatRunPath>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-servlet_3.0_spec</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.sirona</groupId>
+      <artifactId>sirona-core</artifactId>
+      <scope>provided</scope> <!-- using to put it in the container to get JDBC monitoring and deploy the webapp -->
+    </dependency>
+    <dependency>
+      <groupId>org.apache.sirona</groupId>
+      <artifactId>sirona-web</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.1</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+      <version>1.8</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.velocity</groupId>
+      <artifactId>velocity</artifactId>
+      <version>1.7</version>
+    </dependency>
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.shrinkwrap.descriptors</groupId>
+      <artifactId>shrinkwrap-descriptors-impl-javaee</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.shrinkwrap.resolver</groupId>
+      <artifactId>shrinkwrap-resolver-impl-maven</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.arquillian.junit</groupId>
+      <artifactId>arquillian-junit-container</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.arquillian.protocol</groupId>
+      <artifactId>arquillian-protocol-servlet</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.arquillian.container</groupId>
+      <artifactId>arquillian-tomcat-embedded-7</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.tomcat.embed</groupId>
+      <artifactId>tomcat-embed-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.tomcat.embed</groupId>
+      <artifactId>tomcat-embed-jasper</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.tomcat.embed</groupId>
+      <artifactId>tomcat-embed-logging-juli</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jdt.core.compiler</groupId>
+      <artifactId>ecj</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>net.sourceforge.htmlunit</groupId>
+      <artifactId>htmlunit</artifactId>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.tomcat.maven</groupId>
+        <artifactId>tomcat7-maven-plugin</artifactId>
+        <version>2.1</version>
+        <configuration>
+          <port>${tomcatRunPort}</port>
+          <path>${tomcatRunPath}</path>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.sirona</groupId>
+            <artifactId>sirona-core</artifactId>
+            <version>${project.version}</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+    </plugins>
+  </build>
+</project>
