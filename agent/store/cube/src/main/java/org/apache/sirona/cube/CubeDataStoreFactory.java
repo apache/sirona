@@ -16,10 +16,14 @@
  */
 package org.apache.sirona.cube;
 
+import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.store.DelegateDataStoreFactory;
 
 public class CubeDataStoreFactory extends DelegateDataStoreFactory {
     public CubeDataStoreFactory() {
-        super(new CubeCounterDataStore(), new CubeGaugeDataStore(), new CubeNodeStatusDataStore());
+        super(
+            Configuration.processInstance(new CubeCounterDataStore()),
+            new CubeGaugeDataStore(),
+            Configuration.processInstance(new CubeNodeStatusDataStore()));
     }
 }
