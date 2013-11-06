@@ -133,7 +133,7 @@ public class DefaultRepository implements Repository {
     }
 
     @Configuration.Destroying
-    public void stopGaugeTimers() {
+    public void stopGaugeManager() {
         if (gaugeManager != null) {
             gaugeManager.stop();
         }
