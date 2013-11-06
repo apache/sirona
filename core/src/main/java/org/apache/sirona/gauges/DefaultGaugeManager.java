@@ -26,18 +26,13 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public final class DefaultGaugeManager implements GaugeManager {
-    private final Map<Gauge, Timer> timers = new ConcurrentHashMap<Gauge, Timer>();
-    private final GaugeDataStore store;
+    private static final Logger LOGGER = Logger.getLogger(DefaultGaugeManager.class.getName());
 
-    public DefaultGaugeManager(final GaugeDataStore dataStore) {
-        store = dataStore;
-        if (Configuration.is(Configuration.CONFIG_PROPERTY_PREFIX + "core.gauge.activated", true)) {
-            addGauge(new CPUGauge());
-            addGauge(new UsedMemoryGauge());
-        }
-    }
+    private final Map<Gauge, Timer> timers = new ConcurrentHashMap<Gauge, Timer>();
 
     @Override
     public void stop() {
@@ -53,20 +48,18 @@ public final class DefaultGaugeManager implements GaugeManager {
         if (timer != null) {
             timer.cancel();
         }
-        store.gaugeStopped(gauge.role());
     }
 
     @Override
     public void addGauge(final Gauge gauge) {
         final Role role = gauge.role();
-        this.store.createOrNoopGauge(role);
 
         final ClassLoader old = Thread.currentThread().getContextClassLoader();
         Thread.currentThread().setContextClassLoader(gauge.getClass().getClassLoader());
         try {
             final Timer timer = new Timer("gauge-" + role.getName() + "-timer", true); // this starts a thread so ensure the loader is the right one
             timers.put(gauge, timer);
-            timer.scheduleAtFixedRate(new GaugeTask(store, gauge), 0, gauge.period());
+            timer.scheduleAtFixedRate(new GaugeTask(gauge), 0, gauge.period());
         } finally {
             Thread.currentThread().setContextClassLoader(old);
         }
@@ -76,18 +69,22 @@ public final class DefaultGaugeManager implements GaugeManager {
         private final Gauge gauge;
         private final GaugeDataStore store;
 
-        public GaugeTask(final GaugeDataStore store, final Gauge gauge) {
-            this.store = store;
+        public GaugeTask(final Gauge gauge) {
+            this.store = Configuration.getInstance(GaugeDataStore.class);
             this.gauge = gauge;
         }
 
         @Override
         public void run() {
-            final long time = System.currentTimeMillis();
-            final double value = gauge.value();
+            try {
+                final long time = System.currentTimeMillis();
+                final double value = gauge.value();
 
-            // role could be dynamic...even if not advised
-            store.addToGauge(gauge.role(), time, value);
+                // role could be dynamic...even if not advised
+                store.addToGauge(gauge.role(), time, value);
+            } catch (final Exception e) {
+                LOGGER.log(Level.WARNING, e.getMessage(), e);
+            }
         }
     }
 }

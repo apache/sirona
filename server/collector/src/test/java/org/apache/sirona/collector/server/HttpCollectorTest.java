@@ -28,6 +28,7 @@ import org.apache.sirona.status.Status;
 import org.apache.sirona.store.counter.CollectorCounterStore;
 import org.apache.sirona.store.gauge.CollectorGaugeDataStore;
 import org.apache.sirona.store.gauge.GaugeValuesRequest;
+import org.apache.sirona.store.status.CollectorNodeStatusDataStore;
 import org.apache.sirona.store.status.NodeStatusDataStore;
 import org.junit.After;
 import org.junit.Before;
@@ -195,7 +196,7 @@ public class HttpCollectorTest {
             doPost(events2);
         }
 
-        final NodeStatusDataStore store = Configuration.getInstance(NodeStatusDataStore.class);
+        final NodeStatusDataStore store = Configuration.getInstance(CollectorNodeStatusDataStore.class);
         final Map<String,NodeStatus> statuses = store.statuses();
         assertEquals(2, statuses.size());
         assertEquals(Status.OK, statuses.get("node1").getStatus());

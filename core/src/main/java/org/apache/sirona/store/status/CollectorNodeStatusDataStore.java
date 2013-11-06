@@ -14,24 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.collector.server.store.status;
+package org.apache.sirona.store.status;
 
 import org.apache.sirona.status.NodeStatus;
-import org.apache.sirona.store.status.NodeStatusDataStore;
 
 import java.util.Map;
-import java.util.TreeMap;
-import java.util.concurrent.ConcurrentHashMap;
 
-public class CollectorNodeStatusDataStore implements NodeStatusDataStore {
-    private final Map<String, NodeStatus> statuses = new ConcurrentHashMap<String, NodeStatus>();
-
-    @Override
-    public Map<String, NodeStatus> statuses() {
-        return new TreeMap<String, NodeStatus>(statuses);
-    }
-
-    public void store(final String node, final NodeStatus status) {
-        statuses.put(node, status);
-    }
+public interface CollectorNodeStatusDataStore extends NodeStatusDataStore {
+    void store(String node, NodeStatus status);
 }

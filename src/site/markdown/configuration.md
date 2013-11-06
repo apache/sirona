@@ -52,6 +52,7 @@ or to call manually `Configuration.shutdown()` method.
 * org.apache.sirona.core.gauge.activated: a boolean to deactivate cpu/memory gauges
 * org.apache.sirona.\<name>.period: the period to use to flush counters for a batch data store (like graphite one)
 * org.apache.sirona.periodic.status.period: the period to use for status reporting. Note: when using another reporter (cube typically) you'll need to replace `periodic` by the specific name of the reporter (`cube`). Note too that `period` is optional to allow to share the same period between all stores.
+* org.apache.sirona.gauges.GaugeManager: the gauge manager to use, by default for agents it uses timers to store/push metrics but you can set `org.apache.sirona.gauges.NoopGaugeManager` to prevent it.
 
 #### Reporting
 

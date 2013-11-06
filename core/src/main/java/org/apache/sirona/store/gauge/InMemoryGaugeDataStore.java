@@ -84,10 +84,6 @@ public class InMemoryGaugeDataStore implements GaugeDataStore {
             // no-op
         }
 
-        protected FixedSizedMap(final Map<Long, Double> value) {
-            super(value);
-        }
-
         @Override
         public Double put(final Long key, final Double value) {
             if (size() >= MAX_SIZE) {

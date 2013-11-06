@@ -20,7 +20,6 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.sirona.Role;
-import org.apache.sirona.collector.server.store.status.CollectorNodeStatusDataStore;
 import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.counters.Unit;
@@ -31,6 +30,7 @@ import org.apache.sirona.status.Status;
 import org.apache.sirona.status.ValidationResult;
 import org.apache.sirona.store.counter.CollectorCounterStore;
 import org.apache.sirona.store.gauge.CollectorGaugeDataStore;
+import org.apache.sirona.store.status.CollectorNodeStatusDataStore;
 import org.apache.sirona.store.status.NodeStatusDataStore;
 
 import javax.servlet.ServletException;
@@ -84,7 +84,7 @@ public class Collector extends HttpServlet {
         }
 
         {
-            final NodeStatusDataStore nds = Configuration.findOrCreateInstance(NodeStatusDataStore.class);
+            final NodeStatusDataStore nds = Configuration.findOrCreateInstance(CollectorNodeStatusDataStore.class);
             if (!CollectorNodeStatusDataStore.class.isInstance(nds)) {
                 throw new IllegalStateException("Collector only works with " + CollectorNodeStatusDataStore.class.getName());
             }
