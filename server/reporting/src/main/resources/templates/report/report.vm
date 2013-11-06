@@ -41,7 +41,7 @@
     </li>
 </ul>
 
-<table id="report-table" class="table table-bordered table-hover table-striped tablesorter">
+<table id="report-table">
     <thead>
     <tr>
         #foreach( $header in $headers )
@@ -70,10 +70,29 @@
 <script type="text/javascript" src="$mapping/resources/js/jquery.tablesorter.widgets.js"></script>
 <script type="text/javascript">
     $(function () {
+        $.extend($.tablesorter.themes.bootstrap, {
+            table      : 'table table-bordered table-hover table-striped tablesorter',
+            header     : 'bootstrap-header',
+            footerRow  : '',
+            footerCells: '',
+            icons      : '',
+            sortNone   : 'bootstrap-icon-unsorted',
+            sortAsc    : 'icon-chevron-up glyphicon glyphicon-chevron-up',
+            sortDesc   : 'icon-chevron-down glyphicon glyphicon-chevron-down',
+            active     : '',
+            hover      : '',
+            filterRow  : '',
+            even       : '',
+            odd        : ''
+        });
+
         $("table#report-table").tablesorter({
             theme : 'bootstrap',
             headerTemplate: '{content} {icon}',
-            widgets    : [ 'uitheme', 'filter' ]
+            widgets    : [ 'uitheme', 'filter', 'zebra' ],
+            widgetOptions: {
+                zebra : ["even", "odd"]
+            }
         });
 
         // input search box shouldn't force the width of columns

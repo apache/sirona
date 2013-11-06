@@ -52,6 +52,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class MonitoringController implements Filter {
+    public static final String CONTENT_TYPE = "Content-Type";
     private final Map<String, byte[]> cachedResources = new ConcurrentHashMap<String, byte[]>();
     private final Map<Pattern, Invoker> invokers = new HashMap<Pattern, Invoker>();
     private String mapping = null;
@@ -140,20 +141,32 @@ public class MonitoringController implements Filter {
         }
 
         // handle Content-Type, we could use a map but this is more efficient ATM and can still be overriden
-        boolean image = false;
+        boolean skipFiltering = false;
         if (requestURI.endsWith(".css")) {
-            httpResponse.setHeader("Content-Type", "text/css");
+            httpResponse.setHeader(CONTENT_TYPE, "text/css");
         } else if (requestURI.endsWith(".js")) {
-            httpResponse.setHeader("Content-Type", "application/javascript");
+            httpResponse.setHeader(CONTENT_TYPE, "application/javascript");
         } else if (requestURI.endsWith(".png")) {
-            httpResponse.setHeader("Content-Type", "image/png");
-            image = true;
+            httpResponse.setHeader(CONTENT_TYPE, "image/png");
+            skipFiltering = true;
         } else if (requestURI.endsWith(".gif")) {
-            httpResponse.setHeader("Content-Type", "image/gif");
-            image = true;
+            httpResponse.setHeader(CONTENT_TYPE, "image/gif");
+            skipFiltering = true;
         } else if (requestURI.endsWith(".jpg")) {
-            httpResponse.setHeader("Content-Type", "image/jpeg");
-            image = true;
+            httpResponse.setHeader(CONTENT_TYPE, "image/jpeg");
+            skipFiltering = true;
+        } else if (requestURI.endsWith(".svg")) {
+            httpResponse.setHeader(CONTENT_TYPE, "image/svg+xml");
+            skipFiltering = true;
+        } else if (requestURI.endsWith(".eot")) {
+            httpResponse.setHeader(CONTENT_TYPE, "application/vnd.ms-fontobject");
+            skipFiltering = true;
+        } else if (requestURI.endsWith(".woff")) {
+            httpResponse.setHeader(CONTENT_TYPE, "application/x-woff");
+            skipFiltering = true;
+        } else if (requestURI.endsWith(".ttf") || requestURI.endsWith(".itf")) {
+            httpResponse.setHeader(CONTENT_TYPE, "application/octet-stream");
+            skipFiltering = true;
         }
 
         // resource, they are in the classloader and not in the webapp to ease the embedded case
@@ -161,7 +174,7 @@ public class MonitoringController implements Filter {
             byte[] bytes = cachedResources.get(pathWithoutParams);
             if (bytes == null) {
                 final InputStream is;
-                if (!image && invoker != defaultInvoker) { // resource is filtered so filtering it before caching it
+                if (!skipFiltering && invoker != defaultInvoker) { // resource is filtered so filtering it before caching it
                     final StringWriter writer = new StringWriter();
                     final PrintWriter printWriter = new PrintWriter(writer);
                     invoker.invoke(httpRequest, HttpServletResponse.class.cast(Proxy.newProxyInstance(classloader, new Class<?>[]{HttpServletResponse.class}, new InvocationHandler() {

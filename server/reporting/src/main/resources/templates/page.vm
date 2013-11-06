@@ -26,7 +26,6 @@
 
     <link href="$mapping/resources/css/bootstrap.css" rel="stylesheet">
     <link href="$mapping/resources/css/sb-admin.css" rel="stylesheet">
-    <link href="$mapping/resources/font-awesome/css/font-awesome.min.css" rel="stylesheet" >
     <link href="$mapping/resources/css/tablesorter.bootstrap.css" rel="stylesheet" >
     <link href="$mapping/resources/css/sirona.css" rel="stylesheet" >
 

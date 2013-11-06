@@ -30,8 +30,9 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class FilteringEndpoints {
-    private static final String BOOTSTRAP_CSS = "/resources/css/bootstrap.min.css";
+    private static final String BOOTSTRAP_CSS = "/resources/css/bootstrap.css";
     private static final String MONITORING_CSS = "/resources/css/sirona.css";
+    private static final String RESOURCES = "/resources/.*";
 
     private ResourceLoader rl;
 
@@ -53,8 +54,8 @@ public class FilteringEndpoints {
         helper.renderPlain(BOOTSTRAP_CSS);
     }
 
-    @Regex("/resources/.*")
-    public void filterOtherResources(final HttpServletRequest req, final HttpServletResponse resp) {
+    @Regex(RESOURCES)
+    public void filterOtherResources(final HttpServletRequest req) {
         final String requestURI = req.getRequestURI();
 
         final InputStream is;
