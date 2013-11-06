@@ -21,28 +21,17 @@ import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.counters.Unit;
 import org.apache.sirona.gauges.Gauge;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class SessionGauge implements Gauge {
-    private static final WeakHashMap<Role, SessionGauge> GAUGES = new WeakHashMap<Role, SessionGauge>();
-
-    public static Map<Role, SessionGauge> gauges() {
-        return new HashMap<Role, SessionGauge>(GAUGES);
-    }
+    public static final String SESSIONS_PREFIX = "sessions-";
 
     private final Role role;
     private final AtomicLong counter;
 
     public SessionGauge(final String ctx, final AtomicLong counter) {
-        this.role = new Role("sessions-" + ctx, Unit.UNARY);
+        this.role = new Role(SESSIONS_PREFIX + ctx, Unit.UNARY);
         this.counter = counter;
-
-        synchronized (GAUGES) {
-            GAUGES.put(role, this);
-        }
     }
 
     @Override
