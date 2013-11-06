@@ -27,7 +27,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>sirona-graphite</artifactId>
-  <name>Apache Sirona Incubator:: Agent :: Store :: Graphite</name>
+  <name>Apache Sirona Incubator :: Agent :: Store :: Graphite</name>
 
   <dependencies>
     <dependency>

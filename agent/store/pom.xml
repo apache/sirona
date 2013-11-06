@@ -27,7 +27,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>sirona-store</artifactId>
-  <name>Apache Sirona Incubator:: Agent :: Store</name>
+  <name>Apache Sirona Incubator :: Agent :: Store</name>
   <packaging>pom</packaging>
 
   <modules>
