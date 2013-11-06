@@ -52,7 +52,8 @@
     <maven.compiler.target>1.6</maven.compiler.target>
 
     <tomcat.version>7.0.47</tomcat.version>
-    <arquillian.version>1.0.3.Final</arquillian.version>
+    <arquillian.version>1.0.3.Final</arquillian.version> <!-- for tomcat adapter -->
+    <openejb.version>4.5.2</openejb.version>
   </properties>
 
   <modules>

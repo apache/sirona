@@ -133,8 +133,19 @@ public final class Configuration {
         } catch (final Throwable throwable) { // NoClassDefFoundError or Exception
             loadedClass = clazz;
         }
+        return clazz.cast(internalProcessInstance(loadedClass.newInstance()));
+    }
 
-        final Object instance = loadedClass.newInstance();
+    public static <T> T processInstance(final T instance) {
+        try {
+            return internalProcessInstance(instance);
+        } catch (final Exception e) {
+            throw new MonitoringException(e);
+        }
+    }
+
+    private static <T> T internalProcessInstance(final T instance) throws IllegalAccessException, InvocationTargetException {
+        final Class<?> loadedClass = instance.getClass();
         for (final Method m : loadedClass.getMethods()) {
             if (m.getAnnotation(Created.class) != null) {
                 m.invoke(instance);
@@ -179,7 +190,7 @@ public final class Configuration {
             }
         }
 
-        return clazz.cast(instance);
+        return instance;
     }
 
     public static void setSingletonInstance(final Class<?> clazz, final Object instance) {

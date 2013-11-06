@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,13 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.store.status;
+package org.apache.sirona.tomee.agent;
 
-import org.apache.sirona.status.NodeStatus;
-
-import java.util.Map;
-
-public interface NodeStatusDataStore {
-    Map<String, NodeStatus> statuses();
-    void reset();
+public interface Reflection {
+    final Object[] NO_PARAM = new Object[0];
+    final Class<?>[] NO_PARAM_TYPES = new Class<?>[0];
 }

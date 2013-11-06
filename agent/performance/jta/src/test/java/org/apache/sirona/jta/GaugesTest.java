@@ -41,13 +41,13 @@ public class GaugesTest {
 
     @BeforeClass
     public static void init() {
-        Repository.INSTANCE.clear();
+        Repository.INSTANCE.clearCounters();
         gaugeLoader = new Gauge.LoaderHelper(false);
     }
 
     @AfterClass
     public static void reset() {
-        Repository.INSTANCE.clear();
+        Repository.INSTANCE.clearCounters();
         gaugeLoader.destroy();
     }
 

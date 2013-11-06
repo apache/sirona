@@ -32,7 +32,7 @@ import static org.junit.Assert.assertTrue;
 public class AggregatorTest {
     @Before @After
     public void clear() {
-        Repository.INSTANCE.clear();
+        Repository.INSTANCE.clearCounters();
     }
 
     @Test

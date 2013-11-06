@@ -90,7 +90,7 @@ public class ReportEndpoints {
 
     @Regex("/clear")
     public void clear(final HttpServletRequest request, final HttpServletResponse response) {
-        Repository.INSTANCE.clear();
+        Repository.INSTANCE.clearCounters();
         try {
             response.sendRedirect(request.getRequestURI().substring(0, request.getRequestURI().length() - "/clear".length()));
         } catch (final IOException e) {

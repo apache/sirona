@@ -34,7 +34,9 @@ public interface Repository {
 
     Collection<Counter> counters();
 
-    void clear();
+    void clearCounters();
+
+    void reset();
 
     StopWatch start(Counter counter);
 

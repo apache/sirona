@@ -43,14 +43,14 @@ public class ReportTest extends SironaReportingTestBase {
 
     @Before
     public void init() {
-        Repository.INSTANCE.clear();
+        Repository.INSTANCE.clearCounters();
         key = new Counter.Key(new Role("role", Unit.UNARY), "counter");
         Repository.INSTANCE.getCounter(key).add(55);
     }
 
     @After
     public void reset() {
-        Repository.INSTANCE.clear();
+        Repository.INSTANCE.clearCounters();
     }
 
     @BeforeClass

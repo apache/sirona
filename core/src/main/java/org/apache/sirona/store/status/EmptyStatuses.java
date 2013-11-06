@@ -29,4 +29,9 @@ public class EmptyStatuses implements NodeStatusDataStore {
     public Map<String, NodeStatus> statuses() {
         return statuses;
     }
+
+    @Override
+    public void reset() {
+        // no-op
+    }
 }

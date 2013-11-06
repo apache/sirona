@@ -24,9 +24,17 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 public class NodeStatusReporter {
-    private final Validation[] validations;
+    public synchronized NodeStatus computeStatus() {
+        final Validation[] validations = reload();
 
-    public NodeStatusReporter() {
+        final Collection<ValidationResult> results = new ArrayList<ValidationResult>(validations.length);
+        for (final Validation v : validations) {
+            results.add(v.validate());
+        }
+        return new NodeStatus(results.toArray(new ValidationResult[results.size()]));
+    }
+
+    public synchronized Validation[] reload() {
         final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
         final Collection<Validation> val = new LinkedList<Validation>();
@@ -37,18 +45,6 @@ public class NodeStatusReporter {
             val.addAll(Arrays.asList(f.validations()));
         }
 
-        validations = val.toArray(new Validation[val.size()]);
-    }
-
-    public NodeStatus computeStatus() {
-        final Collection<ValidationResult> results = new ArrayList<ValidationResult>(validations.length);
-        for (final Validation v : validations) {
-            results.add(v.validate());
-        }
-        return new NodeStatus(results.toArray(new ValidationResult[results.size()]));
-    }
-
-    public boolean hasValidations() {
-        return validations.length > 0;
+        return val.toArray(new Validation[val.size()]);
     }
 }

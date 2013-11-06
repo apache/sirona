@@ -64,7 +64,7 @@ public class RequestPerformanceTest {
 
     @Before
     public void resetCounters() {
-        Repository.INSTANCE.clear();
+        Repository.INSTANCE.clearCounters();
     }
 
     @Test

@@ -36,29 +36,39 @@ import java.util.logging.Logger;
 public class PeriodicNodeStatusDataStore implements NodeStatusDataStore {
     private static final Logger LOGGER = Logger.getLogger(PeriodicNodeStatusDataStore.class.getName());
 
-    private final BatchFuture scheduledTask;
+    private final AtomicReference<BatchFuture> scheduledTask = new AtomicReference<BatchFuture>();
     private final AtomicReference<NodeStatus> status = new AtomicReference<NodeStatus>();
     private final HashMap<String, NodeStatus> statusAsMap = new HashMap<String, NodeStatus>();
+    private final NodeStatusReporter nodeStatusReporter;
 
     public PeriodicNodeStatusDataStore() {
-        final NodeStatusReporter nodeStatusReporter = new NodeStatusReporter();
-        if (nodeStatusReporter.hasValidations()) {
-            final String name = getClass().getSimpleName().toLowerCase(Locale.ENGLISH).replace("nodestatusdatastore", "");
-            final long period = getPeriod(name);
-
-            final ScheduledExecutorService ses = Executors.newSingleThreadScheduledExecutor(new DaemonThreadFactory(name + "-status-schedule-"));
-            final ScheduledFuture<?> future = ses.scheduleAtFixedRate(new ReportStatusTask(nodeStatusReporter), period, period, TimeUnit.MILLISECONDS);
-            scheduledTask = new BatchFuture(ses, future);
-        } else {
-            scheduledTask = null;
-        }
+        nodeStatusReporter = new NodeStatusReporter();
+        reload();
     }
 
     @Configuration.Destroying
     public void shutdown() {
-        if (scheduledTask != null) {
-            scheduledTask.done();
+        final BatchFuture task = scheduledTask.get();
+        if (task != null) {
+            task.done();
+            scheduledTask.set(null);
         }
+        status.set(null);
+    }
+
+    @Override
+    public synchronized void reset() {
+        shutdown();
+        reload();
+    }
+
+    private void reload() {
+        final String name = getClass().getSimpleName().toLowerCase(Locale.ENGLISH).replace("nodestatusdatastore", "");
+        final long period = getPeriod(name);
+
+        final ScheduledExecutorService ses = Executors.newSingleThreadScheduledExecutor(new DaemonThreadFactory(name + "-status-schedule-"));
+        final ScheduledFuture<?> future = ses.scheduleAtFixedRate(new ReportStatusTask(nodeStatusReporter), period, period, TimeUnit.MILLISECONDS);
+        scheduledTask.set(new BatchFuture(ses, future));
     }
 
     protected int getPeriod(final String name) {

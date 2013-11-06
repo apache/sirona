@@ -16,12 +16,14 @@
  */
 package org.apache.sirona.store;
 
+import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.store.counter.InMemoryCounterDataStore;
 import org.apache.sirona.store.gauge.InMemoryGaugeDataStore;
 import org.apache.sirona.store.status.PeriodicNodeStatusDataStore;
 
 public class DefaultDataStoreFactory extends DelegateDataStoreFactory {
     public DefaultDataStoreFactory() {
-        super(new InMemoryCounterDataStore(), new InMemoryGaugeDataStore(), new PeriodicNodeStatusDataStore());
+        super(new InMemoryCounterDataStore(), new InMemoryGaugeDataStore(),
+            Configuration.processInstance(new PeriodicNodeStatusDataStore())); // this one has hooks
     }
 }

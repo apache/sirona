@@ -37,7 +37,7 @@ import static org.junit.Assert.assertEquals;
 public class FormatsTest {
     @BeforeClass
     public static void setup() {
-        Repository.INSTANCE.clear();
+        Repository.INSTANCE.clearCounters();
         Templates.init("", "");
 
         final Counter counter = Repository.INSTANCE.getCounter(new Counter.Key(Role.FAILURES, "RendererTest"));
@@ -47,7 +47,7 @@ public class FormatsTest {
 
     @AfterClass
     public static void clear() {
-        Repository.INSTANCE.clear();
+        Repository.INSTANCE.clearCounters();
     }
 
     @Test

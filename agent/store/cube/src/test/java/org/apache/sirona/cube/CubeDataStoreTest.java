@@ -42,14 +42,14 @@ public class CubeDataStoreTest {
     @Before
     public void startCube() throws IOException {
         server = new CubeServer("localhost", 1234).start();
-        Repository.INSTANCE.clear();
+        Repository.INSTANCE.clearCounters();
         gauges = new Gauge.LoaderHelper(false);
     }
 
     @After
     public void stopCube() {
         gauges.destroy();
-        Repository.INSTANCE.clear();
+        Repository.INSTANCE.clearCounters();
         server.stop();
     }
 

@@ -32,7 +32,7 @@ public abstract class GraphiteTestBase {
 
     @Before
     public void startGraphite() throws IOException {
-        Repository.INSTANCE.clear();
+        Repository.INSTANCE.clearCounters();
         server = new GraphiteMockServer(1234).start();
         gauges = new Gauge.LoaderHelper(false);
     }
@@ -42,7 +42,7 @@ public abstract class GraphiteTestBase {
         Configuration.shutdown();
         gauges.destroy();
         server.stop();
-        Repository.INSTANCE.clear();
+        Repository.INSTANCE.clearCounters();
     }
 
     protected Collection<String> messages() {

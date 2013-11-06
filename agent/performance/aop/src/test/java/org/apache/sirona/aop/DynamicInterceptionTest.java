@@ -38,7 +38,7 @@ public class DynamicInterceptionTest {
     @After
     public void reset() {
         repository = Repository.INSTANCE;
-        repository.clear();
+        repository.clearCounters();
     }
 
     @Test

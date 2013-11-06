@@ -79,3 +79,8 @@ or to call manually `Configuration.shutdown()` method.
 * org.apache.sirona.cdi.enabled: a boolean to activate/deactivate CDI interceptors config
 * org.apache.sirona.cdi.performance: list of intercepted beans for performances (prefix:org.superbiz, regex:.*Service...)
 * org.apache.sirona.cdi.jta: list of intercepted beans for JTA
+
+# TomEE
+
+* org.apache.sirona.tomee.gauges.activated: a boolean to deactivate tomee guages (stateless pool stat)
+* org.apache.sirona.tomee.validations.activated: a boolean to deactivate tomee validations (datasource validation by validation query)

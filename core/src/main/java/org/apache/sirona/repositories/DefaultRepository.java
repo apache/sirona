@@ -150,8 +150,15 @@ public class DefaultRepository implements Repository {
     }
 
     @Override
-    public void clear() {
+    public void clearCounters() {
         counterDataStore.clearCounters();
+    }
+
+    @Override
+    public void reset() {
+        clearCounters();
+        gaugeManager.stop();
+        nodeStatusDataStore.reset();
     }
 
     @Override

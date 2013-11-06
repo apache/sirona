@@ -37,7 +37,7 @@ public class EMFTest {
     @Before
     @After
     public void reset() {
-        Repository.INSTANCE.clear();
+        Repository.INSTANCE.clearCounters();
     }
 
     @Test

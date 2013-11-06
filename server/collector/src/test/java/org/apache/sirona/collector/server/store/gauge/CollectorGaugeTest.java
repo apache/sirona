@@ -34,7 +34,7 @@ public class CollectorGaugeTest {
     @Before
     @After
     public void clear() {
-        Repository.INSTANCE.clear();
+        Repository.INSTANCE.clearCounters();
     }
 
     @Test

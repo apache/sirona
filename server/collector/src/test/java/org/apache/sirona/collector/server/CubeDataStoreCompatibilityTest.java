@@ -38,13 +38,13 @@ public class CubeDataStoreCompatibilityTest {
     @Before
     public void start() {
         server = new CollectorServer("localhost", 1234).start();
-        Repository.INSTANCE.clear();
+        Repository.INSTANCE.clearCounters();
     }
 
     @After
     public void shutdown() {
         server.stop();
-        Repository.INSTANCE.clear();
+        Repository.INSTANCE.clearCounters();
     }
 
     @Test

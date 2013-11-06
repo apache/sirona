@@ -33,6 +33,11 @@ public class InMemoryCollectorNodeStatusDataStore implements CollectorNodeStatus
     }
 
     @Override
+    public void reset() {
+        statuses.clear();
+    }
+
+    @Override
     public void store(final String node, final NodeStatus status) {
         statuses.put(node, status);
     }
