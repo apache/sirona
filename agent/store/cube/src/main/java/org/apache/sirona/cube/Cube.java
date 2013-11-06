@@ -16,6 +16,11 @@
  */
 package org.apache.sirona.cube;
 
+import org.apache.sirona.Role;
+import org.apache.sirona.counters.Counter;
+import org.apache.sirona.status.NodeStatus;
+import org.apache.sirona.status.ValidationResult;
+
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSocketFactory;
 import java.io.OutputStream;
@@ -25,6 +30,7 @@ import java.net.Proxy;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
@@ -36,6 +42,22 @@ import java.util.logging.Logger;
 
 public class Cube {
     private static final Logger LOGGER = Logger.getLogger(Cube.class.getName());
+
+    private static final String COUNTER_TYPE = "counter";
+    private static final String GAUGE_TYPE = "gauge";
+    private static final String VALIDATION_TYPE = "validation";
+
+    private static final String NAME = "name";
+    private static final String ROLE = "role";
+    private static final String UNIT = "unit";
+    private static final String CONCURRENCY = "concurrency";
+    private static final String MEAN = "mean";
+    private static final String VARIANCE = "variance";
+    private static final String HITS = "hits";
+    private static final String MAX = "max";
+    private static final String MIN = "min";
+    private static final String SUM = "sum";
+    private static final String M_2 = "m2";
 
     private static final String JSON_BASE = "{" +
         "\"type\": \"%s\"," +
@@ -178,4 +200,46 @@ public class Cube {
         return simpleDateFormat;
     }
 
+    public StringBuilder counterSnapshot(final Collection<Counter> instances) {
+        final long ts = System.currentTimeMillis();
+        final StringBuilder events = newEventStream();
+        for (final Counter counter : instances) {
+            buildEvent(events, COUNTER_TYPE, ts, new MapBuilder()
+                .add(NAME, counter.getKey().getName())
+                .add(ROLE, counter.getKey().getRole().getName())
+                .add(UNIT, counter.getKey().getRole().getUnit().getName())
+                // minimum metrics to be able to aggregate counters later
+                .add(CONCURRENCY, counter.currentConcurrency().intValue())
+                .add(MEAN, counter.getMean())
+                .add(VARIANCE, counter.getVariance())
+                .add(HITS, counter.getHits())
+                .add(MAX, counter.getMax())
+                .add(MIN, counter.getMin())
+                .add(SUM, counter.getSum())
+                .add(M_2, counter.getSecondMoment())
+                .map());
+        }
+        return events;
+    }
+
+    public StringBuilder gaugeSnapshot(final long time, final Role role, final double value) {
+        return buildEvent(new StringBuilder(), GAUGE_TYPE, time,
+            new MapBuilder()
+                .add("value", value)
+                .add("role", role.getName())
+                .add("unit", role.getUnit().getName())
+                .map());
+    }
+
+    public StringBuilder statusSnapshot(final long ts, final NodeStatus nodeStatus) {
+        final StringBuilder events = newEventStream();
+        for (final ValidationResult result : nodeStatus.getResults()) {
+            buildEvent(events, VALIDATION_TYPE, ts, new MapBuilder()
+                .add("message", result.getMessage())
+                .add("status", result.getStatus().name())
+                .add("name", result.getName())
+                .map());
+        }
+        return events;
+    }
 }

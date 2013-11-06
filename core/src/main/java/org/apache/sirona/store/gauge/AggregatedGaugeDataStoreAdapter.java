@@ -19,7 +19,7 @@ package org.apache.sirona.store.gauge;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import org.apache.sirona.Role;
 import org.apache.sirona.configuration.Configuration;
-import org.apache.sirona.gauges.RemoteGaugeDataStore;
+import org.apache.sirona.gauges.GaugeDataStoreAdapter;
 import org.apache.sirona.store.BatchFuture;
 import org.apache.sirona.util.DaemonThreadFactory;
 
@@ -34,14 +34,14 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public abstract class AggregatedGaugeDataStore extends RemoteGaugeDataStore {
-    private static final Logger LOGGER = Logger.getLogger(AggregatedGaugeDataStore.class.getName());
+public abstract class AggregatedGaugeDataStoreAdapter extends GaugeDataStoreAdapter {
+    private static final Logger LOGGER = Logger.getLogger(AggregatedGaugeDataStoreAdapter.class.getName());
 
     private final ConcurrentMap<Role, SummaryStatistics> gauges = new ConcurrentHashMap<Role, SummaryStatistics>();
 
     protected final BatchFuture scheduledTask;
 
-    public AggregatedGaugeDataStore() {
+    public AggregatedGaugeDataStoreAdapter() {
         final String name = getClass().getSimpleName().toLowerCase(Locale.ENGLISH).replace("gaugedatastore", "");
         final long period = getPeriod(name);
 

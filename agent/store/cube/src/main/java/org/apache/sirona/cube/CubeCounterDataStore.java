@@ -23,42 +23,10 @@ import org.apache.sirona.store.counter.BatchCounterDataStore;
 import java.util.Collection;
 
 public class CubeCounterDataStore extends BatchCounterDataStore {
-    private static final String COUNTER_TYPE = "counter";
-
-    private static final String NAME = "name";
-    private static final String ROLE = "role";
-    private static final String UNIT = "unit";
-    private static final String CONCURRENCY = "concurrency";
-    private static final String MEAN = "mean";
-    private static final String VARIANCE = "variance";
-    private static final String HITS = "hits";
-    private static final String MAX = "max";
-    private static final String MIN = "min";
-    private static final String SUM = "sum";
-    private static final String M_2 = "m2";
-
     private final Cube cube = Configuration.findOrCreateInstance(CubeBuilder.class).build();
 
     @Override
     protected synchronized void pushCountersByBatch(final Collection<Counter> instances) {
-        final long ts = System.currentTimeMillis();
-        final StringBuilder events = cube.newEventStream();
-        for (final Counter counter : instances) {
-            cube.buildEvent(events, COUNTER_TYPE, ts, new MapBuilder()
-                    .add(NAME, counter.getKey().getName())
-                    .add(ROLE, counter.getKey().getRole().getName())
-                    .add(UNIT, counter.getKey().getRole().getUnit().getName())
-                    // minimum metrics to be able to aggregate counters later
-                    .add(CONCURRENCY, counter.currentConcurrency().intValue())
-                    .add(MEAN, counter.getMean())
-                    .add(VARIANCE, counter.getVariance())
-                    .add(HITS, counter.getHits())
-                    .add(MAX, counter.getMax())
-                    .add(MIN, counter.getMin())
-                    .add(SUM, counter.getSum())
-                    .add(M_2, counter.getSecondMoment())
-                    .map());
-        }
-        cube.post(events);
+        cube.post(cube.counterSnapshot(instances));
     }
 }

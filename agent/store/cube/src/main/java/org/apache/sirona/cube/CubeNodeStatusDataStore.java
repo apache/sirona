@@ -18,25 +18,13 @@ package org.apache.sirona.cube;
 
 import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.status.NodeStatus;
-import org.apache.sirona.status.ValidationResult;
 import org.apache.sirona.store.status.PeriodicNodeStatusDataStore;
 
 public class CubeNodeStatusDataStore extends PeriodicNodeStatusDataStore {
-    private static final String VALIDATION_TYPE = "validation";
-
     private final Cube cube = Configuration.findOrCreateInstance(CubeBuilder.class).build();
 
     @Override
     protected void reportStatus(final NodeStatus nodeStatus) {
-        final long ts = System.currentTimeMillis();
-        final StringBuilder events = cube.newEventStream();
-        for (final ValidationResult result : nodeStatus.getResults()) {
-            cube.buildEvent(events, VALIDATION_TYPE, ts, new MapBuilder()
-                .add("message", result.getMessage())
-                .add("status", result.getStatus().name())
-                .add("name", result.getName())
-                .map());
-        }
-        cube.post(events);
+        cube.post(cube.statusSnapshot(System.currentTimeMillis(), nodeStatus));
     }
 }

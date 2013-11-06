@@ -73,7 +73,7 @@ public interface Gauge {
             }
         }
 
-        private void addGauge(Gauge g) {
+        private void addGauge(final Gauge g) {
             Repository.INSTANCE.addGauge(g);
             gauges.add(g);
         }

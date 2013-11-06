@@ -18,7 +18,7 @@ package org.apache.sirona.graphite;
 
 import org.apache.sirona.Role;
 import org.apache.sirona.configuration.Configuration;
-import org.apache.sirona.store.gauge.AggregatedGaugeDataStore;
+import org.apache.sirona.store.gauge.AggregatedGaugeDataStoreAdapter;
 import org.apache.sirona.store.gauge.Value;
 
 import java.io.IOException;
@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class GraphiteGaugeDataStore extends AggregatedGaugeDataStore {
+public class GraphiteGaugeDataStore extends AggregatedGaugeDataStoreAdapter {
     private static final Logger LOGGER = Logger.getLogger(GraphiteGaugeDataStore.class.getName());
 
     private static final String GAUGE_PREFIX = "gauge-";

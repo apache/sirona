@@ -14,17 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.graphite;
+package org.apache.sirona.agent.webapp.pull.store;
 
-import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.store.DelegateDataStoreFactory;
+import org.apache.sirona.store.counter.InMemoryCounterDataStore;
+import org.apache.sirona.store.gauge.InMemoryGaugeDataStore;
 import org.apache.sirona.store.status.EmptyStatuses;
 
-public class GraphiteDataStoreFactory extends DelegateDataStoreFactory {
-    public GraphiteDataStoreFactory() {
-        super(
-            Configuration.processInstance(new GraphiteCounterDataStore()),
-            Configuration.processInstance(new GraphiteGaugeDataStore()),
-            new EmptyStatuses());
+public class PullDataStoreFactory extends DelegateDataStoreFactory {
+    public PullDataStoreFactory() {
+        super(new InMemoryCounterDataStore(), new InMemoryGaugeDataStore(), new EmptyStatuses());
     }
 }

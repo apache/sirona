@@ -84,3 +84,7 @@ or to call manually `Configuration.shutdown()` method.
 
 * org.apache.sirona.tomee.gauges.activated: a boolean to deactivate tomee guages (stateless pool stat)
 * org.apache.sirona.tomee.validations.activated: a boolean to deactivate tomee validations (datasource validation by validation query)
+
+# Pull
+
+* org.apache.sirona.agent.pull.mapping: the servlet mapping, default to `/sirona/pull`

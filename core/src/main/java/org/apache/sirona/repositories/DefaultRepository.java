@@ -42,26 +42,74 @@ import java.util.Collection;
 import java.util.Map;
 
 public class DefaultRepository implements Repository {
-    private final CounterDataStore counterDataStore;
-    private final NodeStatusDataStore nodeStatusDataStore;
-    private final CommonGaugeDataStore gaugeDataStore;
-    private final GaugeManager gaugeManager;
+    protected final CounterDataStore counterDataStore;
+    protected final NodeStatusDataStore nodeStatusDataStore;
+    protected final CommonGaugeDataStore gaugeDataStore;
+    protected final GaugeManager gaugeManager;
 
     public DefaultRepository() {
-        CounterDataStore counter = null;
+        this(findCounterDataStore(), findGaugeDataStore(), findStatusDataStore());
+    }
+
+    protected DefaultRepository(final CounterDataStore counter, final CommonGaugeDataStore gauge, final NodeStatusDataStore status) {
+        this.counterDataStore = counter;
+        this.gaugeDataStore = gauge;
+        this.nodeStatusDataStore = status;
+
+        if (CollectorCounterStore.class.isInstance(counter)) {
+            Configuration.setSingletonInstance(CollectorCounterStore.class, counter);
+        } else {
+            Configuration.setSingletonInstance(CounterDataStore.class, counter);
+        }
+        if (CollectorGaugeDataStore.class.isInstance(gauge)) {
+            Configuration.setSingletonInstance(CollectorGaugeDataStore.class, gauge);
+        } else {
+            Configuration.setSingletonInstance(GaugeDataStore.class, gauge);
+        }
+        if (CollectorNodeStatusDataStore.class.isInstance(status)) {
+            Configuration.setSingletonInstance(CollectorNodeStatusDataStore.class, status);
+        } else {
+            Configuration.setSingletonInstance(NodeStatusDataStore.class, status);
+        }
+
+        this.gaugeManager = findGaugeManager();
+
+        if (Configuration.is(Configuration.CONFIG_PROPERTY_PREFIX + "core.gauge.activated", true)) {
+            addGauge(new CPUGauge());
+            addGauge(new UsedMemoryGauge());
+        }
+    }
+
+    protected GaugeManager findGaugeManager() {
+        final GaugeManager manager;
+        if (GaugeDataStore.class.isInstance(gaugeDataStore)) {
+            GaugeManager mgr;
+            try {
+                mgr = Configuration.findOrCreateInstance(GaugeManager.class);
+            } catch (final MonitoringException e) {
+                mgr = new DefaultGaugeManager();
+            }
+            manager = mgr;
+        } else {
+            manager = null;
+        }
+        return manager;
+    }
+
+    private static NodeStatusDataStore findStatusDataStore() {
+        NodeStatusDataStore status = null;
         try {
-            counter = Configuration.findOrCreateInstance(CounterDataStore.class);
+            status = Configuration.findOrCreateInstance(NodeStatusDataStore.class);
         } catch (final MonitoringException e) {
             // no-op
         }
-        if (counter == null) {
-            try {
-                counter = Configuration.findOrCreateInstance(CollectorCounterStore.class);
-            } catch (final MonitoringException e) {
-                // no-op
-            }
+        if (status == null) {
+            status = Configuration.findOrCreateInstance(DataStoreFactory.class).getNodeStatusDataStore();
         }
+        return status;
+    }
 
+    private static CommonGaugeDataStore findGaugeDataStore() {
         CommonGaugeDataStore gauge = null;
         try {
             gauge = Configuration.findOrCreateInstance(GaugeDataStore.class);
@@ -75,61 +123,30 @@ public class DefaultRepository implements Repository {
                 // no-op
             }
         }
+        if (gauge == null) {
+            gauge = Configuration.findOrCreateInstance(DataStoreFactory.class).getGaugeDataStore();
+        }
+        return gauge;
+    }
 
-        NodeStatusDataStore status = null;
+    private static CounterDataStore findCounterDataStore() {
+        CounterDataStore counter = null;
         try {
-            status = Configuration.findOrCreateInstance(NodeStatusDataStore.class);
+            counter = Configuration.findOrCreateInstance(CounterDataStore.class);
         } catch (final MonitoringException e) {
             // no-op
         }
-
+        if (counter == null) {
+            try {
+                counter = Configuration.findOrCreateInstance(CollectorCounterStore.class);
+            } catch (final MonitoringException e) {
+                // no-op
+            }
+        }
         if (counter == null) {
             counter = Configuration.findOrCreateInstance(DataStoreFactory.class).getCounterDataStore();
-            if (CollectorCounterStore.class.isInstance(counter)) {
-                Configuration.setSingletonInstance(CollectorCounterStore.class, counter);
-            } else {
-                Configuration.setSingletonInstance(CounterDataStore.class, counter);
-            }
         }
-
-        if (gauge == null) {
-            gauge = Configuration.findOrCreateInstance(DataStoreFactory.class).getGaugeDataStore();
-            if (CollectorGaugeDataStore.class.isInstance(gauge)) {
-                Configuration.setSingletonInstance(CollectorGaugeDataStore.class, gauge);
-            } else {
-                Configuration.setSingletonInstance(GaugeDataStore.class, gauge);
-            }
-        }
-
-        if (status == null) {
-            status = Configuration.findOrCreateInstance(DataStoreFactory.class).getNodeStatusDataStore();
-            if (CollectorNodeStatusDataStore.class.isInstance(status)) {
-                Configuration.setSingletonInstance(CollectorNodeStatusDataStore.class, status);
-            } else {
-                Configuration.setSingletonInstance(NodeStatusDataStore.class, status);
-            }
-        }
-
-        this.counterDataStore = counter;
-        this.gaugeDataStore = gauge;
-        this.nodeStatusDataStore = status;
-
-        if (GaugeDataStore.class.isInstance(this.gaugeDataStore)) {
-            GaugeManager mgr;
-            try {
-                mgr = Configuration.findOrCreateInstance(GaugeManager.class);
-            } catch (final MonitoringException e) {
-                mgr = new DefaultGaugeManager();
-            }
-            this.gaugeManager = mgr;
-        } else {
-            this.gaugeManager = null;
-        }
-
-        if (Configuration.is(Configuration.CONFIG_PROPERTY_PREFIX + "core.gauge.activated", true)) {
-            addGauge(new CPUGauge());
-            addGauge(new UsedMemoryGauge());
-        }
+        return counter;
     }
 
     @Configuration.Destroying

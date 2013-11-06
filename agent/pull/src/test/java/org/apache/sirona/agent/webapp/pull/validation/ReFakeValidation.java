@@ -14,17 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.graphite;
+package org.apache.sirona.agent.webapp.pull.validation;
 
-import org.apache.sirona.configuration.Configuration;
-import org.apache.sirona.store.DelegateDataStoreFactory;
-import org.apache.sirona.store.status.EmptyStatuses;
+import org.apache.sirona.status.Status;
+import org.apache.sirona.status.Validation;
+import org.apache.sirona.status.ValidationResult;
 
-public class GraphiteDataStoreFactory extends DelegateDataStoreFactory {
-    public GraphiteDataStoreFactory() {
-        super(
-            Configuration.processInstance(new GraphiteCounterDataStore()),
-            Configuration.processInstance(new GraphiteGaugeDataStore()),
-            new EmptyStatuses());
+public class ReFakeValidation implements Validation {
+    @Override
+    public ValidationResult validate() {
+        return new ValidationResult("refake", Status.OK, "descr");
     }
 }

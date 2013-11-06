@@ -14,39 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.gauges;
+package org.apache.sirona.agent.webapp.pull.validation;
 
-import org.apache.sirona.Role;
-import org.apache.sirona.store.gauge.GaugeDataStore;
-import org.apache.sirona.store.gauge.GaugeValuesRequest;
+import org.apache.sirona.status.Status;
+import org.apache.sirona.status.Validation;
+import org.apache.sirona.status.ValidationResult;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
-
-public abstract class RemoteGaugeDataStore implements GaugeDataStore {
+public class FakeValidation implements Validation {
     @Override
-    public Map<Long, Double> getGaugeValues(GaugeValuesRequest gaugeValuesRequest) {
-        return Collections.emptyMap();
-    }
-
-    @Override
-    public void createOrNoopGauge(Role role) {
-        // no-op
-    }
-
-    @Override
-    public Collection<Role> gauges() {
-        return Collections.emptyList();
-    }
-
-    @Override
-    public Role findGaugeRole(String name) {
-        return null;
-    }
-
-    @Override
-    public void gaugeStopped(final Role gauge) {
-        // no-op
+    public ValidationResult validate() {
+        return new ValidationResult("fake", Status.OK, "descr");
     }
 }

@@ -25,5 +25,5 @@ public interface GaugeManager {
 
     void addGauge(Gauge gauge);
 
-    void stopGauge(Gauge role);
+    void stopGauge(Gauge gauge);
 }

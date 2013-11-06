@@ -292,6 +292,11 @@
       </dependency>
       <dependency>
         <groupId>org.apache.sirona</groupId>
+        <artifactId>sirona-cube</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.sirona</groupId>
         <artifactId>sirona-aop</artifactId>
         <version>${project.version}</version>
       </dependency>

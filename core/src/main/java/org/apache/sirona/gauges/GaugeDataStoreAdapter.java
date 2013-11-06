@@ -14,26 +14,44 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.cube;
+package org.apache.sirona.gauges;
 
 import org.apache.sirona.Role;
-import org.apache.sirona.configuration.Configuration;
-import org.apache.sirona.gauges.GaugeDataStoreAdapter;
+import org.apache.sirona.store.gauge.GaugeDataStore;
+import org.apache.sirona.store.gauge.GaugeValuesRequest;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
 
-public class CubeGaugeDataStore extends GaugeDataStoreAdapter {
-    private static final Logger LOGGER = Logger.getLogger(CubeGaugeDataStore.class.getName());
+public class GaugeDataStoreAdapter implements GaugeDataStore {
+    @Override
+    public Map<Long, Double> getGaugeValues(final GaugeValuesRequest gaugeValuesRequest) {
+        return Collections.emptyMap();
+    }
 
-    private final Cube cube = Configuration.findOrCreateInstance(CubeBuilder.class).build();
+    @Override
+    public void createOrNoopGauge(final Role role) {
+        // no-op
+    }
 
     @Override
     public void addToGauge(final Role role, final long time, final double value) {
-        try {
-            cube.post(cube.gaugeSnapshot(time, role, value));
-        } catch (final Exception e) {
-            LOGGER.log(Level.SEVERE, e.getMessage(), e);
-        }
+        // no-op
+    }
+
+    @Override
+    public Collection<Role> gauges() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public Role findGaugeRole(final String name) {
+        return null;
+    }
+
+    @Override
+    public void gaugeStopped(final Role gauge) {
+        // no-op
     }
 }

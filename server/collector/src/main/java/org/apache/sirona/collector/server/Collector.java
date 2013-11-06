@@ -41,6 +41,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
@@ -99,9 +100,23 @@ public class Collector extends HttpServlet {
         final Event[] events = mapper.readValue(req.getInputStream(), Event[].class);
         if (events != null && events.length > 0) {
             try {
-                if (VALIDATION.equals(events[0].getType())) {
-                    final Collection<ValidationResult> results = new ArrayList<ValidationResult>(events.length);
-                    for (final Event event : events) {
+                final Collection<Event> validations = new LinkedList<Event>();
+                for (final Event event : events) {
+                    final String type = event.getType();
+                    if (VALIDATION.equals(type)) {
+                        validations.add(event);
+                    } else if (COUNTER.equals(type)) {
+                        updateCounter(event);
+                    } else if (GAUGE.equals(type)) {
+                        updateGauge(event);
+                    } else {
+                        LOGGER.info("Unexpected type '" + type + "', skipping");
+                    }
+                }
+
+                if (validations.size() > 0) {
+                    final Collection<ValidationResult> results = new ArrayList<ValidationResult>(validations.size());
+                    for (final Event event : validations) {
                         final Map<String, Object> data = event.getData();
                         results.add(new ValidationResult(
                             (String) data.get("name"),
@@ -110,18 +125,6 @@ public class Collector extends HttpServlet {
                     }
                     final NodeStatus status = new NodeStatus(results.toArray(new ValidationResult[results.size()]));
                     statusDataStore.store((String) events[0].getData().get("marker"), status);
-                } else {
-                    for (final Event event : events) {
-                        final String type = event.getType();
-
-                        if (COUNTER.equals(type)) {
-                            updateCounter(event);
-                        } else if (GAUGE.equals(type)) {
-                            updateGauge(event);
-                        } else {
-                            LOGGER.info("Unexpected type '" + type + "', skipping");
-                        }
-                    }
                 }
             } catch (final Exception e) {
                 resp.setStatus(HttpURLConnection.HTTP_BAD_REQUEST);

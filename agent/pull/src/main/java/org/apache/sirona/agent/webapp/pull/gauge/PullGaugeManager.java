@@ -14,17 +14,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.graphite;
+package org.apache.sirona.agent.webapp.pull.gauge;
 
-import org.apache.sirona.configuration.Configuration;
-import org.apache.sirona.store.DelegateDataStoreFactory;
-import org.apache.sirona.store.status.EmptyStatuses;
+import org.apache.sirona.gauges.Gauge;
+import org.apache.sirona.gauges.GaugeManager;
 
-public class GraphiteDataStoreFactory extends DelegateDataStoreFactory {
-    public GraphiteDataStoreFactory() {
-        super(
-            Configuration.processInstance(new GraphiteCounterDataStore()),
-            Configuration.processInstance(new GraphiteGaugeDataStore()),
-            new EmptyStatuses());
+import java.util.Collection;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+public class PullGaugeManager implements GaugeManager {
+    private final Collection<Gauge> gauges = new CopyOnWriteArrayList<Gauge>();
+
+    @Override
+    public void stop() {
+        gauges.clear();
+    }
+
+    @Override
+    public void addGauge(final Gauge gauge) {
+        gauges.add(gauge);
+    }
+
+    @Override
+    public void stopGauge(final Gauge gauge) {
+        gauges.remove(gauge);
+    }
+
+    public Collection<Gauge> getGauges() {
+        return gauges;
     }
 }
