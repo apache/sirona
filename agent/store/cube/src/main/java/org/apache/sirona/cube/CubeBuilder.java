@@ -16,10 +16,20 @@
  */
 package org.apache.sirona.cube;
 
+import org.apache.sirona.MonitoringException;
 import org.apache.sirona.configuration.Configuration;
 
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import javax.xml.bind.DatatypeConverter;
+import java.io.FileInputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.security.KeyStore;
 
 @Configuration.AutoSet
 public class CubeBuilder {
@@ -29,6 +39,18 @@ public class CubeBuilder {
     private int proxyPort;
     private String collector;
     private String marker;
+    private SSLSocketFactory socketFactory;
+
+    // ssl config
+    private String sslTrustStore;
+    private String sslTrustStoreType;
+    private String sslTrustStorePassword;
+    private String sslTrustStoreProvider;
+    private String sslKeyStore;
+    private String sslKeyStoreType;
+    private String sslKeyStorePassword;
+    private String sslKeyStoreProvider;
+    private String basicHeader; // user:pwd
 
     public synchronized Cube build() {
         if (marker == null) {
@@ -37,6 +59,24 @@ public class CubeBuilder {
             } catch (final UnknownHostException e) {
                 marker = DEFAULT_MARKER;
             }
+        }
+
+        if (sslKeyStore != null || sslTrustStore != null) {
+            final KeyManager[] keyManagers = createKeyManager();
+            final TrustManager[] trustManagers = createTrustManager();
+            try {
+                final SSLContext sslContext = SSLContext.getInstance("SSL");
+                sslContext.init(keyManagers, trustManagers, new java.security.SecureRandom());
+                socketFactory = sslContext.getSocketFactory();
+            } catch (final Exception e) {
+                throw new MonitoringException(e);
+            }
+        } else {
+            socketFactory = null;
+        }
+
+        if (basicHeader != null) { // compute it
+            basicHeader = "Basic " + DatatypeConverter.printBase64Binary(basicHeader.getBytes());
         }
 
         return new Cube(this);
@@ -56,6 +96,68 @@ public class CubeBuilder {
 
     public String getMarker() {
         return marker;
+    }
+
+    public SSLSocketFactory getSocketFactory() {
+        return socketFactory;
+    }
+
+    public String getBasicHeader() {
+        return basicHeader;
+    }
+
+    private TrustManager[] createTrustManager() {
+        if (sslTrustStore == null) {
+            return null;
+        }
+
+        try {
+            KeyStore ks = KeyStore.getInstance(null == sslTrustStoreType ? KeyStore.getDefaultType() : sslTrustStoreType);
+            char[] pwd;
+            if (sslTrustStorePassword != null) {
+                pwd = sslTrustStorePassword.toCharArray();
+            } else {
+                pwd = "changeit".toCharArray();
+            }
+            FileInputStream fis = new FileInputStream(sslTrustStore);
+            try {
+                ks.load(fis, pwd);
+            } finally {
+                fis.close();
+            }
+            TrustManagerFactory tmf = TrustManagerFactory.getInstance(null == sslTrustStoreProvider ? TrustManagerFactory.getDefaultAlgorithm() : sslTrustStoreProvider);
+            tmf.init(ks);
+            return tmf.getTrustManagers();
+        } catch (final Exception e) {
+            throw new MonitoringException(e);
+        }
+    }
+
+    private KeyManager[] createKeyManager() {
+        if (sslKeyStore == null) {
+            return null;
+        }
+
+        try {
+            KeyStore ks = KeyStore.getInstance(null == sslKeyStoreType ? KeyStore.getDefaultType() : sslKeyStoreType);
+            char[] pwd;
+            if (sslKeyStorePassword != null) {
+                pwd = sslKeyStorePassword.toCharArray();
+            } else {
+                pwd = "changeit".toCharArray();
+            }
+            FileInputStream fis = new FileInputStream(sslKeyStore);
+            try {
+                ks.load(fis, pwd);
+            } finally {
+                fis.close();
+            }
+            KeyManagerFactory kmf = KeyManagerFactory.getInstance(null == sslKeyStoreProvider ? KeyManagerFactory.getDefaultAlgorithm() : sslKeyStoreProvider);
+            kmf.init(ks, pwd);
+            return kmf.getKeyManagers();
+        } catch (final Exception e) {
+            throw new MonitoringException(e);
+        }
     }
 
     @Override

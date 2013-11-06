@@ -16,6 +16,8 @@
  */
 package org.apache.sirona.cube;
 
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLSocketFactory;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
@@ -84,6 +86,17 @@ public class Cube {
             final URL url = new URL(config.getCollector());
 
             final HttpURLConnection connection = HttpURLConnection.class.cast(url.openConnection(proxy));
+
+            final SSLSocketFactory socketFactory = config.getSocketFactory();
+            if (socketFactory != null && "https".equals(url.getProtocol())) {
+                HttpsURLConnection.class.cast(connection).setSSLSocketFactory(socketFactory);
+            }
+
+            final String auth = config.getBasicHeader();
+            if (auth != null) {
+                connection.setRequestProperty("Authorization", auth);
+            }
+
             connection.setRequestMethod(POST);
             connection.setRequestProperty(CONTENT_TYPE, APPLICATION_JSON);
             connection.setRequestProperty(CONTENT_LENGTH, Long.toString(payload.length()));
