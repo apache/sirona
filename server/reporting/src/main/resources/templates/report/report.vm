@@ -43,25 +43,25 @@
 
 <table id="report-table" class="table table-bordered table-hover table-striped tablesorter">
     <thead>
-        <tr>
-            #foreach( $header in $headers )
-                <th>$header <i class="icon-sort"></i></th>
-            #end
-        </tr>
+    <tr>
+        #foreach( $header in $headers )
+            <th>$header</th>
+        #end
+    </tr>
     </thead>
     <tbody>
         #foreach( $line in $data.entrySet() )
-            <tr>
-                #foreach( $item in $line.getValue() )
-                    <td>
-                        #if ($foreach.isFirst())
-                            <a href="$mapping/report/counter/$line.getKey()">$item</a>
-                        #else
-                            $item
-                        #end
-                    </td>
-                #end
-            </tr>
+        <tr>
+            #foreach( $item in $line.getValue() )
+                <td>
+                    #if ($foreach.isFirst())
+                        <a href="$mapping/report/counter/$line.getKey()">$item</a>
+                    #else
+                        $item
+                    #end
+                </td>
+            #end
+        </tr>
         #end
     </tbody>
 </table>
@@ -69,29 +69,11 @@
 <script type="text/javascript" src="$mapping/resources/js/jquery.tablesorter.js"></script>
 <script type="text/javascript" src="$mapping/resources/js/jquery.tablesorter.widgets.js"></script>
 <script type="text/javascript">
-    $(function() {
+    $(function () {
         $("table#report-table").tablesorter({
-            widthFixed : false,
-            widgets: [ "filter" ],
-            widgetOptions : {
-                filter_childRows : false,
-                filter_columnFilters : true,
-                filter_cssFilter : 'tablesorter-filter',
-                filter_filteredRow   : 'filtered',
-                filter_formatter : null,
-                filter_functions : null,
-                filter_hideFilters : false,
-                filter_ignoreCase : true,
-                filter_liveSearch : true,
-                filter_reset : 'button.reset',
-                filter_searchDelay : 300,
-                filter_serversideFiltering: false,
-                filter_startsWith : false,
-                filter_useParsedData : false,
-                cssAsc: 'headerSortUp',
-                cssDesc: 'headerSortDown',
-                sortList: [[4, 1]] // sort by mean in descending order
-            }
+            theme : 'bootstrap',
+            headerTemplate: '{content} {icon}',
+            widgets    : [ 'uitheme', 'filter' ]
         });
 
         // input search box shouldn't force the width of columns

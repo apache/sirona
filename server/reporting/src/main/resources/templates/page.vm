@@ -26,8 +26,9 @@
 
     <link href="$mapping/resources/css/bootstrap.css" rel="stylesheet">
     <link href="$mapping/resources/css/sb-admin.css" rel="stylesheet">
-    <link rel="stylesheet" href="$mapping/resources/font-awesome/css/font-awesome.min.css">
-    <link rel="stylesheet" href="$mapping/resources/css/sirona.css">
+    <link href="$mapping/resources/font-awesome/css/font-awesome.min.css" rel="stylesheet" >
+    <link href="$mapping/resources/css/tablesorter.bootstrap.css" rel="stylesheet" >
+    <link href="$mapping/resources/css/sirona.css" rel="stylesheet" >
 
     #* js shared accross pages so we need to put it in <head /> if content pages uses it in $()) *#
     <script src="$mapping/resources/js/jquery.min.js"></script>

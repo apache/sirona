@@ -140,16 +140,20 @@ public class MonitoringController implements Filter {
         }
 
         // handle Content-Type, we could use a map but this is more efficient ATM and can still be overriden
+        boolean image = false;
         if (requestURI.endsWith(".css")) {
             httpResponse.setHeader("Content-Type", "text/css");
         } else if (requestURI.endsWith(".js")) {
             httpResponse.setHeader("Content-Type", "application/javascript");
         } else if (requestURI.endsWith(".png")) {
             httpResponse.setHeader("Content-Type", "image/png");
+            image = true;
         } else if (requestURI.endsWith(".gif")) {
             httpResponse.setHeader("Content-Type", "image/gif");
+            image = true;
         } else if (requestURI.endsWith(".jpg")) {
             httpResponse.setHeader("Content-Type", "image/jpeg");
+            image = true;
         }
 
         // resource, they are in the classloader and not in the webapp to ease the embedded case
@@ -157,7 +161,7 @@ public class MonitoringController implements Filter {
             byte[] bytes = cachedResources.get(pathWithoutParams);
             if (bytes == null) {
                 final InputStream is;
-                if (invoker != defaultInvoker) { // resource is filtered so filtering it before caching it
+                if (!image && invoker != defaultInvoker) { // resource is filtered so filtering it before caching it
                     final StringWriter writer = new StringWriter();
                     final PrintWriter printWriter = new PrintWriter(writer);
                     invoker.invoke(httpRequest, HttpServletResponse.class.cast(Proxy.newProxyInstance(classloader, new Class<?>[]{HttpServletResponse.class}, new InvocationHandler() {
