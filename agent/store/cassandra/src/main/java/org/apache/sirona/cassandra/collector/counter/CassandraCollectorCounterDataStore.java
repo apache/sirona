@@ -40,7 +40,7 @@ public class CassandraCollectorCounterDataStore extends InMemoryCollectorCounter
 
     @Override
     public Collection<String> markers() {
-        throw new UnsupportedOperationException();
+        return dao.markers();
     }
 
     @Override

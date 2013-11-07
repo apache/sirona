@@ -26,6 +26,7 @@ public class CassandraBuilder {
     private String counterColumnFamily = "counters";
     private String gaugeColumnFamily = "gauges";
     private String statusColumnFamily = "statuses";
+    private String markersColumnFamily = "markers";
     private int replicationFactor = 1;
 
     public String getHosts() {
@@ -54,5 +55,9 @@ public class CassandraBuilder {
 
     public int getReplicationFactor() {
         return replicationFactor;
+    }
+
+    public String getMarkersColumnFamily() {
+        return markersColumnFamily;
     }
 }

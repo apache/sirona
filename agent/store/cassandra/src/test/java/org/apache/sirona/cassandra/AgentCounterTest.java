@@ -29,9 +29,13 @@ import org.apache.sirona.counters.Unit;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.Collection;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(CassandraRunner.class)
 public class AgentCounterTest {
@@ -63,5 +67,19 @@ public class AgentCounterTest {
         final LeafCollectorCounter counter = new CassandraCollectorCounterDataStore().getOrCreateCounter(key, marker);
         assertEquals("K100Drap#1", counter.getKey().getName());
         assertEquals("K100Drap", counter.getKey().getRole().getName());
+    }
+
+    @Test
+    public void markers() {
+        final Counter.Key key = new Counter.Key(new Role("K100Drap", Unit.UNARY), "K100Drap#1");
+        final String marker = "node1";
+
+        assertNull(new CounterDao().findByKey(key, marker));
+        new CassandraCollectorCounterDataStore().getOrCreateCounter(key, marker);
+        assertNotNull(new CounterDao().findByKey(key, marker));
+
+        final Collection<String> markers = new CassandraCollectorCounterDataStore().markers();
+        assertEquals(1, markers.size());
+        assertTrue(markers.contains("node1"));
     }
 }

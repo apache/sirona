@@ -25,8 +25,11 @@ import me.prettyprint.hector.api.Keyspace;
 import me.prettyprint.hector.api.Serializer;
 import me.prettyprint.hector.api.beans.ColumnSlice;
 import me.prettyprint.hector.api.beans.HColumn;
+import me.prettyprint.hector.api.beans.OrderedRows;
+import me.prettyprint.hector.api.beans.Row;
 import me.prettyprint.hector.api.factory.HFactory;
 import me.prettyprint.hector.api.query.QueryResult;
+import me.prettyprint.hector.api.query.RangeSlicesQuery;
 import me.prettyprint.hector.api.query.SliceQuery;
 import org.apache.sirona.cassandra.DynamicDelegatedSerializer;
 import org.apache.sirona.cassandra.collector.CassandraSirona;
@@ -34,17 +37,22 @@ import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.math.M2AwareStatisticalSummary;
 
+import java.util.Collection;
+import java.util.HashSet;
+
 public class CounterDao {
     private static final String[] FIND_COLUMNS = new String[] { "maxConcurrency", "variance", "n", "max", "min", "sum", "m2", "mean" };
 
     private final Keyspace keyspace;
     private final String family;
+    private final String markerFamily;
     private final CassandraSirona cassandra;
 
     public CounterDao() {
         this.cassandra = Configuration.findOrCreateInstance(CassandraSirona.class);
         this.keyspace = cassandra.getKeyspace();
         this.family = cassandra.getCounterColumnFamily();
+        this.markerFamily = cassandra.getMarkersColumFamily();
     }
 
     public CassandraLeafCounter findByKey(final Counter.Key ckey, final String marker) {
@@ -81,6 +89,7 @@ public class CounterDao {
         final Counter.Key key = counter.getKey();
         final String id = id(key, marker);
 
+        // counter itself
         HFactory.createMutator(keyspace, StringSerializer.get())
             .addInsertion(id, family, column("role", key.getRole().getName()))
             .addInsertion(id, family, column("key", key.getName()))
@@ -95,7 +104,32 @@ public class CounterDao {
             .addInsertion(id, family, column("marker", marker))
             .execute();
 
+        // marker
+        HFactory.createMutator(keyspace, StringSerializer.get())
+            .addInsertion(marker, markerFamily, column("name", marker))
+            .execute();
+
         return counter;
+    }
+
+    public Collection<String> markers() {
+        final OrderedRows<String, String, String> result = HFactory.createRangeSlicesQuery(keyspace,
+                StringSerializer.get(), StringSerializer.get(), StringSerializer.get())
+            .setColumnFamily(markerFamily)
+            .setRange(null, null, false, Integer.MAX_VALUE)
+            .setReturnKeysOnly()
+            .execute()
+            .get();
+
+        final Collection<String> set = new HashSet<String>();
+
+        if (result != null) {
+            for (final Row<String, String, String> item : result) {
+                set.add(item.getKey());
+            }
+        }
+
+        return set;
     }
 
     private String id(final Counter.Key key, final String marker) {

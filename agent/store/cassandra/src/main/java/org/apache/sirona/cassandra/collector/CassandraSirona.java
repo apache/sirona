@@ -51,13 +51,14 @@ public class CassandraSirona {
         final ColumnFamilyDefinition counters = HFactory.createColumnFamilyDefinition(keyspaceName, builder.getCounterColumnFamily(), ComparatorType.UTF8TYPE);
         final ColumnFamilyDefinition gauges = HFactory.createColumnFamilyDefinition(keyspaceName, builder.getGaugeColumnFamily(), ComparatorType.UTF8TYPE);
         final ColumnFamilyDefinition statuses = HFactory.createColumnFamilyDefinition(keyspaceName, builder.getStatusColumnFamily(), ComparatorType.UTF8TYPE);
+        final ColumnFamilyDefinition markers = HFactory.createColumnFamilyDefinition(keyspaceName, builder.getMarkersColumnFamily(), ComparatorType.UTF8TYPE);
 
         { // ensure keyspace exists, here if the keyspace doesn't exist we suppose nothing exist
             if (cluster.describeKeyspace(keyspaceName) == null) {
                 LOGGER.info("Creating Cassandra '" + keyspaceName + "' keyspace.");
                 cluster.addKeyspace(
                     HFactory.createKeyspaceDefinition(keyspaceName, ThriftKsDef.DEF_STRATEGY_CLASS, builder.getReplicationFactor(),
-                        asList(counters, gauges, statuses)));
+                        asList(counters, gauges, statuses, markers)));
             }
         }
     }
@@ -82,6 +83,10 @@ public class CassandraSirona {
 
     public String getCounterColumnFamily() {
         return builder.getCounterColumnFamily();
+    }
+
+    public String getMarkersColumFamily() {
+        return builder.getMarkersColumnFamily();
     }
 
     public Keyspace getKeyspace() {
