@@ -88,3 +88,10 @@ or to call manually `Configuration.shutdown()` method.
 # Pull
 
 * org.apache.sirona.agent.pull.mapping: the servlet mapping, default to `/sirona/pull`
+
+# Collector
+
+* `org.apache.sirona.collector.collection.period`: the timer period (in ms) when used in pull mode
+* `org.apache.sirona.collector.collection.agent-urls`: comma separated value of agent urls when auto registering is not used by agents
+* `org.apache.sirona.collector.server.api.SecurityProvider`: the basic information provider requests on agents
+* `org.apache.sirona.collector.server.api.SSLSocketFactoryProvider`: the ssl socket factory provider when contacting agents over ssl
