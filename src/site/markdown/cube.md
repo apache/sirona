@@ -31,9 +31,9 @@ org.apache.sirona.cube.CubeBuilder.collector = http://localhost:1234/collector/1
 
 For instance your `commons-monitoring.properties` can look like:
 
-```
+<pre class="prettyprint linenums"><![CDATA[
 org.apache.sirona.cube.CubeBuilder.collector = http://localhost:1234/collector/1.0/event/put
-```
+]]></pre>
 
 ## DataStore
 
@@ -41,9 +41,9 @@ To push metrics (Gauges + Counters) to Cube you can use the dedicated `DataStore
 
 Simply add to `commons-monitoring.properties` the line:
 
-```
+<pre class="prettyprint linenums"><![CDATA[
 org.apache.sirona.store.DataStore = org.apache.sirona.cube.CubeDataStore
-```
+]]></pre>
 
 ### Counters
 

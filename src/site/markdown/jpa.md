@@ -29,7 +29,7 @@ If you have in your environment a single "real" JPA provider it should be found 
 case of if you want to force the implementation set the property `org.apache.sirona.jpa.provider`
 to the real implementation you want. For instance:
 
-```xml
+<pre class="prettyprint linenums"><![CDATA[
 <?xml version="1.0" encoding="UTF-8"?>
 <persistence version="2.0"
              xmlns="http://java.sun.com/xml/ns/persistence"
@@ -45,6 +45,6 @@ to the real implementation you want. For instance:
     </properties>
   </persistence-unit>
 </persistence>
-```
+]]></pre>
 
 Note: it works for JTA transaction-type units too.

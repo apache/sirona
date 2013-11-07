@@ -28,14 +28,16 @@ Add commons-monitoring-web to your webapp.
 
 Simply add the filter `org.apache.sirona.web.servlet.MonitoringFilter`:
 
-    <filter>
-        <filter-name>monitoring-request</filter-name>
-        <filter-class>org.apache.sirona.web.servlet.MonitoringFilter</filter-class>
-    </filter>
-    <filter-mapping>
-        <filter-name>monitoring-request</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
+<pre class="prettyprint linenums"><![CDATA[
+<filter>
+    <filter-name>monitoring-request</filter-name>
+    <filter-class>org.apache.sirona.web.servlet.MonitoringFilter</filter-class>
+</filter>
+<filter-mapping>
+    <filter-name>monitoring-request</filter-name>
+    <url-pattern>/*</url-pattern>
+</filter-mapping>
+]]></pre>
 
 Note: in a servlet 3 container you can simply configure `org.apache.sirona.web.monitored-urls` to the
 servlet pattern you want to match. If you want to register the `MonitoringFilter` yourself just set the
@@ -45,9 +47,11 @@ init parameter `org.apache.sirona.web.activated` to false.
 
 Simply add the listener `org.apache.sirona.web.servlet.MonitoringFilter`:
 
-    <listener>
-      <listener-class>org.apache.sirona.web.session.MonitoringSessionListener</listener-class>
-    </listener>
+<pre class="prettyprint linenums"><![CDATA[
+<listener>
+  <listener-class>org.apache.sirona.web.session.MonitoringSessionListener</listener-class>
+</listener>
+]]></pre>
 
 Note: in a servlet 3 container and if `org.apache.sirona.web.activated` is not set to false it is added by default.
 

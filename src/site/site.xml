@@ -15,15 +15,15 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<project name="Apache Common Monitoring"
+<project name="Apache Sirona"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xmlns="http://maven.apache.org/DECORATION/1.0.1"
          xsi:schemaLocation="http://maven.apache.org/DECORATION/1.0.1
                              http://maven.apache.org/xsd/decoration-1.0.1.xsd">
   <bannerLeft>
-    <name>Apache Commons</name>
+    <name>Apache Sirona</name>
     <src>/images/commons-logo.png</src>
-    <alt>Apache Commons logo</alt>
+    <alt>Apache Sirona logo</alt>
     <href>/index.html</href>
   </bannerLeft>
 
@@ -31,7 +31,6 @@
     <fluidoSkin>
       <topBarEnabled>true</topBarEnabled>
       <topBarIcon />
-      <sideBarEnabled>false</sideBarEnabled>
       <sourceLineNumbersEnabled>true</sourceLineNumbersEnabled>
     </fluidoSkin>
   </custom>

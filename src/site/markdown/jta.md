@@ -25,14 +25,16 @@ This module aims to monitor commits/rollbacks and active transaction number.
 `sirona-jta` should be added to your webapp. You need to register the jta gauges. To do it the easiest is
 to add `commons-monitoring-web` to your webapp and register the listener `org.apache.sirona.web.discovery.GaugeDiscoveryListener`:
 
-    <web-app xmlns="http://java.sun.com/xml/ns/javaee"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
-             version="2.5">
-      <listener>
-        <listener-class>org.apache.sirona.web.discovery.GaugeDiscoveryListener</listener-class>
-      </listener>
-    </web-app>
+<pre class="prettyprint linenums"><![CDATA[
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+         version="2.5">
+  <listener>
+    <listener-class>org.apache.sirona.web.discovery.GaugeDiscoveryListener</listener-class>
+  </listener>
+</web-app>
+]]></pre>
 
 Note: you can register it manually using `org.apache.sirona.gauges.Gauge$LoaderHelper` or `org.apache.sirona.repositories.Repository#addGauge`.
 Note 2: in a servlet 3 container it is done automatically if `org.apache.sirona.web.activated` is true (by default)
@@ -48,6 +50,6 @@ and listing predicates as values (see CDI for details). This feature needs cdi m
 
 For instance:
 
-```
+<pre class="prettyprint linenums"><![CDATA[
 org.apache.sirona.cdi.jta = prefix:org.superbiz.MyService,regex:.*Bean
-```
+]]></pre>

@@ -34,12 +34,14 @@ What is GaugeFactory designed for? Imagine a custom gauge is parameterized. You'
 several times with different parameters. If you use Gauge SPI you'll need to do N implementations (which makes the parameters useless).
 With GaugeFactory you just need to return the built instances:
 
-    public class MyGaugeFactory implements GaugeFactory {
-        @Override
-        public Gauge[] gauges() {
-            return new Gauge[] { new MyGauge(1); new MyGauge(2); };
-        }
+<pre class="prettyprint linenums"><![CDATA[
+public class MyGaugeFactory implements GaugeFactory {
+    @Override
+    public Gauge[] gauges() {
+        return new Gauge[] { new MyGauge(1); new MyGauge(2); };
     }
+}
+]]></pre>
 
 ## Extend the reporting GUI
 
@@ -48,11 +50,13 @@ relies on java ServiceLoader (SPI) mecanism.
 
 Here is the Plugin interface:
 
-    public interface Plugin {
-        String name();
-        Class<?> endpoints();
-        String mapping();
-    }
+<pre class="prettyprint linenums"><![CDATA[
+public interface Plugin {
+    String name();
+    Class<?> endpoints();
+    String mapping();
+}
+]]></pre>
 
 
 A plugin has basically a name (what will identify it in the webapp and in the GUI - it will be the name of the plugin tab),
@@ -64,37 +68,40 @@ To make it more concrete we'll use a sample (the standard Hello World).
 
 So first we define our HelloPlugin:
 
-    public class HelloPlugin implements Plugin {
-        public String name() {
-            return "Hello";
-        }
-
-        public Class<?> endpoints() {
-            return HelloEndpoints.class;
-        }
-
-        public String mapping() {
-            return "/hello";
-        }
+<pre class="prettyprint linenums"><![CDATA[
+public class HelloPlugin implements Plugin {
+    public String name() {
+        return "Hello";
     }
+
+    public Class<?> endpoints() {
+        return HelloEndpoints.class;
+    }
+
+    public String mapping() {
+        return "/hello";
+    }
+}
+]]></pre>
 
 ### Define the endpoints
 
 The `HelloEndpoints` class defines all the urls accessible for the hello plugin. It uses the `org.apache.sirona.reporting.web.handler.api.Regex`
 annotation:
 
-
-    public class HelloEndpoints {
-        @Regex // will match "/hello"
-        public Template home() {
-            return new Template("hello/home.vm", new MapBuilder<String, Object>().set("name", "world).build());
-        }
-
-        @Regex("/world/([0-9]*)/([0-9]*)") // will match "/hello/world/1/2"
-        public String jsonWorld(final long start, final long end) {
-            return "{ \"name\": \world\", \"start\":\"" + long1 + "\",\"end\":\"" + long2 + "\"}";
-        }
+<pre class="prettyprint linenums"><![CDATA[
+public class HelloEndpoints {
+    @Regex // will match "/hello"
+    public Template home() {
+        return new Template("hello/home.vm", new MapBuilder<String, Object>().set("name", "world).build());
     }
+
+    @Regex("/world/([0-9]*)/([0-9]*)") // will match "/hello/world/1/2"
+    public String jsonWorld(final long start, final long end) {
+        return "{ \"name\": \world\", \"start\":\"" + long1 + "\",\"end\":\"" + long2 + "\"}";
+    }
+}
+]]></pre>
 
 The first home method uses a template. The GUI relies on velocity and html templates needs to be in the classloader in templates directory.
 
@@ -103,10 +110,12 @@ So basically the home method will search for templates/hello/home.vm velocity te
 
 Here is a sample:
 
-    <h1>Hello</h1>
-    <div>
-        Welcome to $name
-    </div>
+<pre class="prettyprint linenums"><![CDATA[
+<h1>Hello</h1>
+<div>
+    Welcome to $name
+</div>
+]]></pre>
 
 If you need resources put them in the classloader too in "resources" folder.
 
@@ -114,10 +123,12 @@ Note: if you want to do links in the template you can use $mapping variable as b
 
 If you want to filter some resources you can add a custom endpoint:
 
-    @Regex("/resources/myresource.css")
-    public void filterCss(final TemplateHelper helper) {
-        helper.renderPlain("/resources/myresource.css");
-    }
+<pre class="prettyprint linenums"><![CDATA[
+@Regex("/resources/myresource.css")
+public void filterCss(final TemplateHelper helper) {
+    helper.renderPlain("/resources/myresource.css");
+}
+]]></pre>
 
 #### `@Regex`
 

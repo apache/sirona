@@ -33,30 +33,32 @@ Note 2: if you use commons-monitoring-jdbc put it in the container too.
 Just adding commons-monitoring-reporting jar (classifier `classes` if you use maven) in your application
 you can embed it. You'll need to update your web.xml to declare the monitoring filter:
 
-    <web-app xmlns="http://java.sun.com/xml/ns/javaee"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
-             version="2.5">
+<pre class="prettyprint linenums"><![CDATA[
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+         version="2.5">
 
-      <listener>
-        <listener-class>org.apache.sirona.reporting.web.listener.MonitoringListener</listener-class>
-      </listener>
+  <listener>
+    <listener-class>org.apache.sirona.reporting.web.listener.MonitoringListener</listener-class>
+  </listener>
 
-      <filter>
-        <filter-name>Monitoring</filter-name>
-        <filter-class>org.apache.sirona.reporting.web.MonitoringController</filter-class>
-        <init-param> <!-- should match your filter mapping base -->
-          <param-name>monitoring-mapping</param-name>
-          <param-value>/monitoring/</param-value>
-        </init-param>
-      </filter>
+  <filter>
+    <filter-name>Monitoring</filter-name>
+    <filter-class>org.apache.sirona.reporting.web.MonitoringController</filter-class>
+    <init-param> <!-- should match your filter mapping base -->
+      <param-name>monitoring-mapping</param-name>
+      <param-value>/monitoring/</param-value>
+    </init-param>
+  </filter>
 
-      <filter-mapping>
-        <filter-name>Monitoring</filter-name>
-        <url-pattern>/monitoring/*</url-pattern>
-      </filter-mapping>
+  <filter-mapping>
+    <filter-name>Monitoring</filter-name>
+    <url-pattern>/monitoring/*</url-pattern>
+  </filter-mapping>
 
-    </web-app>
+</web-app>
+]]></pre>
 
 Note: in a servlet 3.0 container you can just configure it through init parameters:
 

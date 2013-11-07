@@ -36,9 +36,9 @@ Just use the collector `DataStoreFactory`: `org.apache.sirona.collector.server.s
 
 For instance your `commons-monitoring.properties` can look like:
 
-```
+<pre class="prettyprint linenums"><![CDATA[
 org.apache.sirona.store.DataStore = org.apache.sirona.collector.server.store.CollectorDataStoreFactory
-```
+]]></pre>
 
 The `GaugeDataStore` can be configured through `org.apache.sirona.collector.gauge.store-class` property.
 By default it uses the in memory implementation but you can set your own one if you want.
@@ -59,12 +59,42 @@ The input is an array of event. Events are either gauges or counters.
 
 Here is an array with a single gauge:
 
-```json
-[{"type": "gauge","time": "-","data": {"unit":"u","marker":"client1","value":0.0,"role":"mock"}}]
-```
+<pre class="prettyprint linenums"><![CDATA[
+[
+    {
+        "type": "gauge",
+        "time": "-",
+        "data": {
+            "unit": "u",
+            "marker": "client1",
+            "value": 0.0,
+            "role": "mock"
+        }
+    }
+]
+]]></pre>
 
 And here is an array with a single counter:
 
-```json
-[{"type": "counter","time": "2013-10-21T12:50:40Z","data": {"min":1.4,"unit":"ns","hits":4,"max":2.9,"marker":"client1","name":"test","concurrency":0,"m2":1.4099999999999997,"sum":8.2,"mean":2.05,"role":"performances","variance":0.4699999999999999}}]
-```
+<pre class="prettyprint linenums"><![CDATA[
+[
+    {
+        "type": "counter",
+        "time": "2013-10-21T12:50:40Z",
+        "data": {
+            "min": 1.4,
+            "unit": "ns",
+            "hits": 4,
+            "max": 2.9,
+            "marker": "client1",
+            "name": "test",
+            "concurrency": 0,
+            "m2": 1.4099999999999997,
+            "sum": 8.2,
+            "mean": 2.05,
+            "role": "performances",
+            "variance": 0.4699999999999999
+        }
+    }
+]
+]]></pre>

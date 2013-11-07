@@ -27,9 +27,9 @@ to use javassist you set it to `org.apache.commons.proxy.factory.javassist.Javas
 
 Then the API is quite simple:
 
-```java
+<pre class="prettyprint linenums"><![CDATA[
 final MyClient client = MonitoringProxyFactory.monitor(MyClient.class, getMyClientInstance());
-```
+]]></pre>
 
 # CDI
 
@@ -37,14 +37,15 @@ You just need to decorate your CDI bean/method with the interceptor binding `org
 
 For instance:
 
-
-    @Monitored
-    @ApplicationScoped
-    public class MyMonitoredBean {
-        public void myMethod() {
-            // ...
-        }
+<pre class="prettyprint linenums"><![CDATA[
+@Monitored
+@ApplicationScoped
+public class MyMonitoredBean {
+    public void myMethod() {
+        // ...
     }
+}
+]]></pre>
 
 Note: in some (old) CDI implementation you'll need to activate the monitoring interceptor: `org.apache.sirona.cdi.SironaInterceptor`.
 
@@ -53,22 +54,24 @@ value is a list of predicate (`regex:<regex>`, `prefix:<prefix>`, `suffix:<suffi
 
 For instance:
 
-```
+<pre class="prettyprint linenums"><![CDATA[
 org.apache.sirona.cdi.performance = prefix:org.superbiz.MyService,regex:.*Bean
-```
+]]></pre>
 
 # Spring
 
 Using `org.apache.sirona.spring.BeanNameMonitoringAutoProxyCreator` you can automatically
 add monitoring to selected beans.
 
-    <bean class="org.apache.sirona.spring.BeanNameMonitoringAutoProxyCreator">
-      <property name="beanNames">
-        <list>
-          <value>*Service</value>
-        </list>
-      </property>
-    </bean>
+<pre class="prettyprint linenums"><![CDATA[
+<bean class="org.apache.sirona.spring.BeanNameMonitoringAutoProxyCreator">
+  <property name="beanNames">
+    <list>
+      <value>*Service</value>
+    </list>
+  </property>
+</bean>
+]]></pre>
 
 An alternative is to use `org.apache.sirona.spring.PointcutMonitoringAutoProxyCreator` which uses
 a `org.springframework.aop.Pointcut` to select beans to monitor.
@@ -78,18 +81,20 @@ a `org.springframework.aop.Pointcut` to select beans to monitor.
 To use AspectJ weaver (it works with build time enhancement too but it is often less relevant) just configure a custom
 concrete aspect defining the pointcut to monitor:
 
-    <aspectj>
-      <aspects>
-        <concrete-aspect name="org.apache.commons.aspectj.MyMonitoringAspectJ"
-                         extends="org.apache.sirona.aspectj.SironaAspect">
-          <pointcut name="pointcut" expression="execution(* org.apache.sirona.aspectj.AspectJMonitoringTest$MonitorMe.*(..))"/>
-        </concrete-aspect>
-      </aspects>
+<pre class="prettyprint linenums"><![CDATA[
+<aspectj>
+  <aspects>
+    <concrete-aspect name="org.apache.commons.aspectj.MyMonitoringAspectJ"
+                     extends="org.apache.sirona.aspectj.SironaAspect">
+      <pointcut name="pointcut" expression="execution(* org.apache.sirona.aspectj.AspectJMonitoringTest$MonitorMe.*(..))"/>
+    </concrete-aspect>
+  </aspects>
 
-      <weaver>
-        <include within="org.apache.sirona.aspectj.AspectJMonitoringTest$MonitorMe"/>
-      </weaver>
-    </aspectj>
+  <weaver>
+    <include within="org.apache.sirona.aspectj.AspectJMonitoringTest$MonitorMe"/>
+  </weaver>
+</aspectj>
+]]></pre>
 
 See [AspectJ documentation](http://eclipse.org/aspectj/doc/next/progguide/language-joinPoints.html) for more information.
 
@@ -107,23 +112,23 @@ Here a sample of the behavior associated with these properties. Let say you conf
  `threshold` to 100 milliseconds. If `xxx ms` represent an invocation of xxx milliseconds and `*` represent a call
  which was measured, here is an invocation sequence:
 
- ```
- 500 ms*
- 5 ms*
- 500 ms
- 500 ms
- 500 ms
- 500 ms
- 500 ms
- 20 ms*
- 200 ms
- 200 ms
- 200 ms
- 200 ms
- 200 ms
- 500 ms*
- 500 ms*
- ```
+<pre class="prettyprint linenums"><![CDATA[
+500 ms*
+5 ms*
+500 ms
+500 ms
+500 ms
+500 ms
+500 ms
+20 ms*
+200 ms
+200 ms
+200 ms
+200 ms
+200 ms
+500 ms*
+500 ms*
+]]></pre>
 
 Note: the idea is to reduce the overhead of the interception. This is pretty efficient in general but particularly with AspectJ.
 Note 2: if your invocations are pretty unstable this is not really usable since since you'll not get a good threshold value.

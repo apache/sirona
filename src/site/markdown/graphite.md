@@ -28,19 +28,20 @@ Graphite module allows to push counters and gauges to a graphite instance.
 
 For instance your `commons-monitoring.properties` can look like:
 
-```
+<pre class="prettyprint linenums"><![CDATA[
 org.apache.sirona.graphite.GraphiteBuilder.address = localhost
 org.apache.sirona.graphite.GraphiteBuilder.port = 1234
-```
+]]></pre>
+
 ## DataStore
 
 To push metrics (Gauges + Counters) to Graphite you can use the dedicated `DataStore`: `org.apache.sirona.graphite.GraphiteDataStore`.
 
 Simply add to `commons-monitoring.properties` the line:
 
-```
+<pre class="prettyprint linenums"><![CDATA[
 org.apache.sirona.store.DataStore = org.apache.sirona.graphite.GraphiteDataStore
-```
+]]></pre>
 
 ### Counters
 

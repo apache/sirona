@@ -20,59 +20,66 @@ under the License.
 
 The repository is a singleton for the JVM. It is the entry point to get access to counters and gauges.
 
-    public interface Repository extends Iterable<Counter> {
-        Counter getCounter(Counter.Key key);
-        void clear();
-        StopWatch start(Counter counter);
+<pre class="prettyprint linenums"><![CDATA[
+public interface Repository extends Iterable<Counter> {
+    Counter getCounter(Counter.Key key);
+    void clear();
+    StopWatch start(Counter counter);
 
-        Map<Long, Double> getGaugeValues(long start, long end, Role role);
-        void stopGauge(Role role);
-    }
+    Map<Long, Double> getGaugeValues(long start, long end, Role role);
+    void stopGauge(Role role);
+}
+]]></pre>
 
 # Counter
 
 A counter is a statistic and concurrency holder. It aggregates the information provided computing
 the average, min, max, sum of logs, ....
 
+<pre class="prettyprint linenums"><![CDATA[
+public interface Counter {
+    Key getKey();
+    void reset();
 
-    public interface Counter {
-        Key getKey();
-        void reset();
+    void add(double delta);
 
-        void add(double delta);
+    AtomicInteger currentConcurrency();
+    int getMaxConcurrency();
 
-        AtomicInteger currentConcurrency();
-        int getMaxConcurrency();
-
-        double getMax();
-        double getMin();
-        long getHits();
-        double getSum();
-        double getStandardDeviation();
-        double getVariance();
-        double getMean();
-        double getSecondMoment();
-    }
+    double getMax();
+    double getMin();
+    long getHits();
+    double getSum();
+    double getStandardDeviation();
+    double getVariance();
+    double getMean();
+    double getSecondMoment();
+}
+]]></pre>
 
 # Gauge
 
 A gauge is a way to get a measure. It is intended to get a history of a metric.
 
-    public interface Gauge {
-        Role role();
-        double value();
-        long period();
-    }
+<pre class="prettyprint linenums"><![CDATA[
+public interface Gauge {
+    Role role();
+    double value();
+    long period();
+}
+]]></pre>
 
 # StopWatch
 
 A StopWatch is just a handler for a measure with a counter.
 
-    public interface StopWatch {
-        long getElapsedTime();
+<pre class="prettyprint linenums"><![CDATA[
+public interface StopWatch {
+    long getElapsedTime();
 
-        StopWatch stop();
-    }
+    StopWatch stop();
+}
+]]></pre>
 
 # Node status
 
@@ -82,11 +89,11 @@ and `META-INF/services/org.apache.sirona.status.ValidationFactory` by default).
 
 `Validation` API is the following one:
 
-```java
+<pre class="prettyprint linenums"><![CDATA[
 public interface Validation {
     ValidationResult validate();
 }
-```
+]]></pre>
 
 A `ValidationResult` is just a message, a validation name and a status. It is aggregated by node to compute
 the node status keeping the lowest of all statuses of validation results.
