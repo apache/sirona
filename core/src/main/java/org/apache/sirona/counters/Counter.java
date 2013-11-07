@@ -18,6 +18,7 @@ package org.apache.sirona.counters;
 
 import org.apache.sirona.Role;
 
+import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -59,7 +60,7 @@ public interface Counter {
 
     double getSecondMoment(); // here for aggregation etc but not (yet?) a human metric so not in MetricData
 
-    public static class Key {
+    public static class Key implements Serializable {
         private final String name;
         private final Role role;
 

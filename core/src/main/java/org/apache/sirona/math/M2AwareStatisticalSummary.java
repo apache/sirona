@@ -16,9 +16,10 @@
  */
 package org.apache.sirona.math;
 
+import java.io.Serializable;
 import java.util.Map;
 
-public class M2AwareStatisticalSummary {
+public class M2AwareStatisticalSummary implements Serializable {
     private final double mean;
     private final double variance;
     private final long n;
@@ -91,9 +92,5 @@ public class M2AwareStatisticalSummary {
 
     public double getSum() {
         return sum;
-    }
-
-    public double getM2() {
-        return m2;
     }
 }

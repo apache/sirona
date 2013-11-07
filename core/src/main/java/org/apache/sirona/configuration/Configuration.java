@@ -244,6 +244,9 @@ public final class Configuration {
         if (String.class.equals(type)) {
             return value;
         }
+        if (String[].class.equals(type)) {
+            return value.split(",");
+        }
         if (int.class.equals(type)) {
             return Integer.parseInt(value);
         }

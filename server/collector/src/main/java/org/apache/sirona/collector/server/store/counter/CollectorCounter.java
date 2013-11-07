@@ -20,12 +20,13 @@ import org.apache.sirona.math.M2AwareStatisticalSummary;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.counters.Unit;
 
+import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public abstract class CollectorCounter implements Counter {
+public abstract class CollectorCounter implements Counter, Serializable {
     protected final Key key;
     protected final ReadWriteLock lock = new ReentrantReadWriteLock();
     protected volatile int maxConcurrency = 0;

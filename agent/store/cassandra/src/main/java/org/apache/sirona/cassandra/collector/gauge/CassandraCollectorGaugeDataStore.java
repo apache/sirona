@@ -1,0 +1,66 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.apache.sirona.cassandra.collector.gauge;
+
+import org.apache.sirona.Role;
+import org.apache.sirona.store.gauge.CollectorGaugeDataStore;
+import org.apache.sirona.store.gauge.GaugeValuesRequest;
+
+import java.util.Collection;
+import java.util.Map;
+
+public class CassandraCollectorGaugeDataStore implements CollectorGaugeDataStore {
+    @Override
+    public Map<Long, Double> getGaugeValues(final GaugeValuesRequest gaugeValuesRequest) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Collection<Role> gauges() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Role findGaugeRole(final String name) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void gaugeStopped(final Role gauge) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Map<Long, Double> getGaugeValues(final GaugeValuesRequest gaugeValuesRequest, final String marker) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void createOrNoopGauge(final Role role, final String marker) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void addToGauge(final Role role, final long time, final double value, final String marker) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Collection<String> markers() {
+        throw new UnsupportedOperationException();
+    }
+}
