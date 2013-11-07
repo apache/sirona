@@ -37,6 +37,9 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.stream.ChunkedWriteHandler;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -50,6 +53,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.ServerSocket;
 import java.nio.charset.Charset;
+import java.util.Enumeration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -147,7 +151,31 @@ public class CollectorServer {
 
         private RequestHandler() {
             collector = new Collector();
-            collector.init();
+            try { // no need to call destroy since we don't start the timer
+                collector.init(new ServletConfig() {
+                    @Override
+                    public String getServletName() {
+                        return null;
+                    }
+
+                    @Override
+                    public ServletContext getServletContext() {
+                        return null;
+                    }
+
+                    @Override
+                    public String getInitParameter(String name) {
+                        return null;
+                    }
+
+                    @Override
+                    public Enumeration<String> getInitParameterNames() {
+                        return null;
+                    }
+                });
+            } catch (final ServletException e) {
+                // no-op
+            }
         }
 
         @Override

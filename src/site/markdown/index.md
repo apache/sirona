@@ -16,7 +16,7 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 -->
-## Commons Monitoring
+## Apache Sirona
 
 Commons-monitoring aims to provide a simple but extensible monitoring solution for Java applications.
 
@@ -25,6 +25,8 @@ How to start?
 [See Concepts](./concepts.html)
 
 [See Basis](./basis.html)
+
+[See Deployments](./deployments.html)
 
 [See Configuration](./configuration.html)
 

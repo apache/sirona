@@ -19,8 +19,10 @@
 package org.apache.sirona.agent.webapp.pull.servlet;
 
 import org.apache.sirona.agent.webapp.pull.repository.PullRepository;
+import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.repositories.Repository;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -33,8 +35,14 @@ public class PullServlet extends HttpServlet {
     private PullRepository repository;
 
     @Override
-    public void init() throws ServletException {
+    public void init(final ServletConfig config) throws ServletException {
+        super.init(config);
         repository = PullRepository.class.cast(Repository.INSTANCE);
+
+        final String registration = config.getInitParameter(Configuration.CONFIG_PROPERTY_PREFIX + "pull.url");
+        if (registration != null) { // needs to have configured org.apache.sirona.cube.CubeBuilder in sirona.properties
+            repository.register(registration);
+        } // else collector should be aware or it with another way -> config in the collector
     }
 
     @Override

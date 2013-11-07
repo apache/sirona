@@ -67,8 +67,8 @@ public class Cube {
 
     private static final String POST = "POST";
     private static final String CONTENT_TYPE = "Content-Type";
-    private static final String CONTENT_LENGTH = "Content-Length";
     private static final String APPLICATION_JSON = "application/json";
+    private static final String CONTENT_LENGTH = "Content-Length";
 
     private static final String JS_ISO_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
     private static final String UTC = "UTC";
@@ -97,9 +97,16 @@ public class Cube {
         return new StringBuilder();
     }
 
+    public String globalPayload(final StringBuilder payload) {
+        if (payload.length() > 0) {
+            return finalPayload(payload.substring(0, payload.length() - 1));
+        }
+        return finalPayload(payload.toString());
+    }
+
     public void post(final StringBuilder payload) {
         if (payload.length() > 0) {
-            doPost(finalPayload(payload.substring(0, payload.length() - 1)));
+            doPost(globalPayload(payload));
         }
     }
 

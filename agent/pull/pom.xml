@@ -55,5 +55,9 @@
       <classifier>jdk15</classifier>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-codec-http</artifactId>
+    </dependency>
   </dependencies>
 </project>

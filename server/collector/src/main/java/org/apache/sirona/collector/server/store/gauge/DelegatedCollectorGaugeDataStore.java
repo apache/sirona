@@ -142,4 +142,8 @@ public class DelegatedCollectorGaugeDataStore implements CollectorGaugeDataStore
             store.gaugeStopped(gauge);
         }
     }
+
+    public void reset() {
+        dataStores.clear();
+    }
 }

@@ -174,7 +174,9 @@ public class DefaultRepository implements Repository {
     @Override
     public void reset() {
         clearCounters();
-        gaugeManager.stop();
+        if (gaugeManager != null) {
+            gaugeManager.stop();
+        }
         nodeStatusDataStore.reset();
     }
 

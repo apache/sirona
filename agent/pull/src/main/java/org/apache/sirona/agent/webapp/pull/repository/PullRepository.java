@@ -20,6 +20,7 @@ import org.apache.sirona.agent.webapp.pull.gauge.PullGaugeManager;
 import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.cube.Cube;
 import org.apache.sirona.cube.CubeBuilder;
+import org.apache.sirona.cube.MapBuilder;
 import org.apache.sirona.gauges.Gauge;
 import org.apache.sirona.gauges.GaugeDataStoreAdapter;
 import org.apache.sirona.gauges.GaugeManager;
@@ -34,8 +35,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 public class PullRepository extends DefaultRepository {
-    private static final char START_ARRAY = '[';
-    private static final char END_ARRAY = ']';
+    private static final String REGISTRATION_TYPE = "registration";
 
     private final Cube cube;
 
@@ -75,9 +75,14 @@ public class PullRepository extends DefaultRepository {
 
         // remove last ','
         if (answer.length() == 0) {
-            return Character.toString(START_ARRAY) + END_ARRAY;
+            return null;
         }
-        answer.setLength(answer.length() - 1);
-        return START_ARRAY + answer.toString() + END_ARRAY;
+        return cube.globalPayload(answer);
+    }
+
+    public void register(final String registrationUrl) {
+        if (registrationUrl != null) {
+            cube.post(cube.buildEvent(cube.newEventStream(), REGISTRATION_TYPE, 0, new MapBuilder().add("url", registrationUrl).map()));
+        }
     }
 }
