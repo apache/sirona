@@ -180,7 +180,7 @@ public abstract class AbstractPerformanceInterceptor<T> implements Serializable 
     protected static class SerializableMethod implements Serializable {
         protected final String clazz;
         protected final String method;
-        protected Method realMethod;
+        protected transient Method realMethod;
         protected final int hashCode;
 
         public SerializableMethod(final String clazz, final String method, final Method reflectMethod) {
