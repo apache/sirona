@@ -60,7 +60,7 @@ public class CassandraRunner extends BlockJUnit4ClassRunner {
         }
 
         @Override
-        public void evaluate() throws Throwable {
+        public void evaluate() throws Throwable { // one clean instance by test to avoid side effects
             EmbeddedCassandraServerHelper.startEmbeddedCassandra();
             EmbeddedCassandraServerHelper.cleanEmbeddedCassandra();
             try {

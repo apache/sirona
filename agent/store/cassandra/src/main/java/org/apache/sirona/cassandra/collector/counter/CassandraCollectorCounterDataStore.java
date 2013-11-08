@@ -19,7 +19,6 @@ package org.apache.sirona.cassandra.collector.counter;
 import me.prettyprint.cassandra.serializers.DoubleSerializer;
 import me.prettyprint.cassandra.serializers.IntegerSerializer;
 import me.prettyprint.cassandra.serializers.LongSerializer;
-import me.prettyprint.cassandra.serializers.SerializerTypeInferer;
 import me.prettyprint.cassandra.serializers.StringSerializer;
 import me.prettyprint.cassandra.service.KeyIterator;
 import me.prettyprint.hector.api.Keyspace;
@@ -46,20 +45,23 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 
+import static org.apache.sirona.cassandra.collector.CassandraSirona.column;
+import static org.apache.sirona.cassandra.collector.CassandraSirona.emptyColumn;
+import static org.apache.sirona.cassandra.collector.CassandraSirona.keys;
+
 public class CassandraCollectorCounterDataStore extends InMemoryCollectorCounterStore {
     private static final String[] FIND_BY_KEYS_COLUMNS = new String[] { "maxConcurrency", "variance", "n", "max", "min", "sum", "m2", "mean" };
-    private static final String EMPTY_VALUE = "";
 
     private final Keyspace keyspace;
     private final String family;
-    private final String markerCounterFamily;
+    private final String markerFamily;
     private final CassandraSirona cassandra;
 
     public CassandraCollectorCounterDataStore() {
         this.cassandra = Configuration.findOrCreateInstance(CassandraSirona.class);
         this.keyspace = cassandra.getKeyspace();
         this.family = cassandra.getCounterColumnFamily();
-        this.markerCounterFamily = cassandra.getMarkerCountersColumFamily();
+        this.markerFamily = cassandra.getMarkerCountersColumFamily();
     }
 
     @Override
@@ -77,7 +79,7 @@ public class CassandraCollectorCounterDataStore extends InMemoryCollectorCounter
             StringSerializer.get(), StringSerializer.get(), StringSerializer.get());
 
         final QueryResult<ColumnSlice<String, String>> result = q.setKey(marker)
-            .setColumnFamily(markerCounterFamily)
+            .setColumnFamily(markerFamily)
             .setRange(null, null, false, Integer.MAX_VALUE)
             .execute();
 
@@ -113,11 +115,7 @@ public class CassandraCollectorCounterDataStore extends InMemoryCollectorCounter
 
     @Override
     public Collection<String> markers() {
-        final Collection<String> set = new HashSet<String>();
-        for (final String item : new KeyIterator.Builder<String>(cassandra.getKeyspace(), cassandra.getMarkerCountersColumFamily(), StringSerializer.get()).build()) {
-            set.add(item);
-        }
-        return set;
+        return keys(keyspace, markerFamily);
     }
 
     @Override // TODO: see if we shouldn't store it or if aggregation can be done on java side
@@ -218,7 +216,7 @@ public class CassandraCollectorCounterDataStore extends InMemoryCollectorCounter
 
         // marker-counter
         HFactory.createMutator(keyspace, StringSerializer.get())
-            .addInsertion(marker, markerCounterFamily, column(id, EMPTY_VALUE))
+            .addInsertion(marker, markerFamily, emptyColumn(id))
             .execute();
 
         return counter;
@@ -234,9 +232,5 @@ public class CassandraCollectorCounterDataStore extends InMemoryCollectorCounter
             return 0;
         }
         return col.getValue();
-    }
-
-    protected static <B> HColumn<String, B> column(final String name, final B value) {
-        return HFactory.createColumn(name, value, StringSerializer.get(), (Serializer<B>) SerializerTypeInferer.getSerializer(value));
     }
 }

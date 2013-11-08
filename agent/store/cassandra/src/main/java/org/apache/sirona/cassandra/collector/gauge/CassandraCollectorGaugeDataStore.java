@@ -16,51 +16,133 @@
  */
 package org.apache.sirona.cassandra.collector.gauge;
 
+import me.prettyprint.cassandra.serializers.DoubleSerializer;
+import me.prettyprint.cassandra.serializers.LongSerializer;
+import me.prettyprint.cassandra.serializers.StringSerializer;
+import me.prettyprint.hector.api.Keyspace;
+import me.prettyprint.hector.api.beans.ColumnSlice;
+import me.prettyprint.hector.api.beans.HColumn;
+import me.prettyprint.hector.api.factory.HFactory;
+import me.prettyprint.hector.api.query.QueryResult;
 import org.apache.sirona.Role;
+import org.apache.sirona.cassandra.collector.CassandraSirona;
+import org.apache.sirona.configuration.Configuration;
+import org.apache.sirona.counters.Unit;
 import org.apache.sirona.store.gauge.CollectorGaugeDataStore;
 import org.apache.sirona.store.gauge.GaugeValuesRequest;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.TreeMap;
+
+import static org.apache.sirona.cassandra.collector.CassandraSirona.column;
+import static org.apache.sirona.cassandra.collector.CassandraSirona.emptyColumn;
+import static org.apache.sirona.cassandra.collector.CassandraSirona.keys;
 
 public class CassandraCollectorGaugeDataStore implements CollectorGaugeDataStore {
-    @Override
-    public Map<Long, Double> getGaugeValues(final GaugeValuesRequest gaugeValuesRequest) {
-        throw new UnsupportedOperationException();
+    private final CassandraSirona cassandra;
+    private final Keyspace keyspace;
+    private final String valueFamily;
+    private final String markerFamily;
+
+    public CassandraCollectorGaugeDataStore() {
+        this.cassandra = Configuration.findOrCreateInstance(CassandraSirona.class);
+        this.keyspace = cassandra.getKeyspace();
+        this.valueFamily = cassandra.getGaugeValuesColumnFamily();
+        this.markerFamily = cassandra.getMarkerGaugesColumFamily();
     }
 
-    @Override
-    public Collection<Role> gauges() {
-        throw new UnsupportedOperationException();
+    private String id(final Role role, final String marker) { // order is really important here, see keyToRole()
+        return cassandra.generateKey(role.getName(), role.getUnit().getName(), marker);
     }
 
-    @Override
-    public Role findGaugeRole(final String name) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void gaugeStopped(final Role gauge) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Map<Long, Double> getGaugeValues(final GaugeValuesRequest gaugeValuesRequest, final String marker) {
-        throw new UnsupportedOperationException();
+    private Role keyToRole(final String key) {
+        final String[] segments = key.split(cassandra.keySeparator());
+        return new Role(segments[0], Unit.get(segments[1]));  // no need of segments[2] (= marker)
     }
 
     @Override
     public void createOrNoopGauge(final Role role, final String marker) {
-        throw new UnsupportedOperationException();
+        final String id = id(role, marker);
+
+        HFactory.createMutator(keyspace, StringSerializer.get())
+            .addInsertion(marker, markerFamily, emptyColumn(id))
+            .execute();
     }
 
     @Override
     public void addToGauge(final Role role, final long time, final double value, final String marker) {
-        throw new UnsupportedOperationException();
+        createOrNoopGauge(role, marker);
+
+        HFactory.createMutator(keyspace, StringSerializer.get())
+            .addInsertion(id(role, marker), valueFamily, column(time, value))
+            .execute();
     }
 
     @Override
     public Collection<String> markers() {
-        throw new UnsupportedOperationException();
+        return keys(keyspace, markerFamily);
+    }
+
+    @Override
+    public Map<Long, Double> getGaugeValues(final GaugeValuesRequest gaugeValuesRequest, final String marker) {
+        final QueryResult<ColumnSlice<Long, Double>> qResult = HFactory.createSliceQuery(keyspace, StringSerializer.get(), LongSerializer.get(), DoubleSerializer.get())
+            .setKey(id(gaugeValuesRequest.getRole(), marker))
+            .setColumnFamily(valueFamily)
+            .setRange(gaugeValuesRequest.getStart(), gaugeValuesRequest.getEnd(), false, Integer.MAX_VALUE)
+            .execute();
+
+        final Map<Long, Double> result = new TreeMap<Long, Double>();
+        for (final HColumn<Long, Double> slide : qResult.get().getColumns()) {
+            result.put(slide.getName(), slide.getValue());
+        }
+
+        return result;
+    }
+
+    @Override
+    public Map<Long, Double> getGaugeValues(final GaugeValuesRequest gaugeValuesRequest) {
+        final Map<Long, Double> result = new TreeMap<Long, Double>();
+
+        for (final String marker : markers()) {
+            for (final Map.Entry<Long, Double> values : getGaugeValues(gaugeValuesRequest, marker).entrySet()) {
+                final Long key = values.getKey();
+
+                Double d = result.get(key);
+                if (d == null) {
+                    d = 0.;
+                }
+
+                result.put(key, d + values.getValue());
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public Collection<Role> gauges() {
+        final Collection<Role> roles = new HashSet<Role>();
+        for (final String key : keys(keyspace, valueFamily)) {
+            roles.add(keyToRole(key));
+        }
+        return roles;
+    }
+
+    @Override
+    public Role findGaugeRole(final String name) {
+        for (final String key : keys(keyspace, valueFamily)) {
+            final String[] segments = key.split(cassandra.keySeparator());
+            if (segments[0].equals(name)) {
+                return keyToRole(key);
+            }
+        }
+        throw new IllegalArgumentException("role '" + name + "' not found");
+    }
+
+    @Override
+    public void gaugeStopped(final Role gauge) {
+        // no-op
     }
 }
