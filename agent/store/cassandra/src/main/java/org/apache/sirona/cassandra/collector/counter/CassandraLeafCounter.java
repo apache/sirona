@@ -20,16 +20,27 @@ import org.apache.sirona.collector.server.store.counter.LeafCollectorCounter;
 import org.apache.sirona.math.M2AwareStatisticalSummary;
 
 public class CassandraLeafCounter extends LeafCollectorCounter {
-    public CassandraLeafCounter(final Key key) {
+    private final CassandraCollectorCounterDataStore store;
+    private final String marker;
+
+    public CassandraLeafCounter(final Key key, final CassandraCollectorCounterDataStore store, final String marker) {
         super(key);
+        this.store = store;
+        this.marker = marker;
     }
 
-    public void sync(final M2AwareStatisticalSummary newStats, final int newConcurrency) {
+    public CassandraLeafCounter sync(final M2AwareStatisticalSummary newStats, final int newConcurrency) {
         super.update(newStats, newConcurrency);
+        return this;
     }
 
     @Override
     public void update(final M2AwareStatisticalSummary newStats, final int newConcurrency) {
-        throw new UnsupportedOperationException();
+        super.update(newStats, newConcurrency);
+        store.save(this, marker);
+    }
+
+    public M2AwareStatisticalSummary getStatistics() {
+        return statistics;
     }
 }

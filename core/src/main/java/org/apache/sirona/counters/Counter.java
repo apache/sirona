@@ -63,6 +63,7 @@ public interface Counter {
     public static class Key implements Serializable {
         private final String name;
         private final Role role;
+        private int hash = Integer.MIN_VALUE;
 
         public Key(final Role role, final String name) {
             this.role = role;
@@ -86,9 +87,11 @@ public interface Counter {
 
         @Override
         public int hashCode() {
-            int result = name.hashCode();
-            result = 31 * result + role.hashCode();
-            return result;
+            if (hash == Integer.MIN_VALUE) {
+                hash = name.hashCode();
+                hash = 31 * hash + role.hashCode();
+            }
+            return hash;
         }
 
         public String getName() {

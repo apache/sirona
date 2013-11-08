@@ -33,6 +33,12 @@ public class AggregatedCollectorCounter extends CollectorCounter implements Aggr
         super(key);
     }
 
+    public AggregatedCollectorCounter(final Key key, final Map<String, LeafCollectorCounter> counters) {
+        super(key);
+        aggregation.putAll(counters);
+        update();
+    }
+
     public void update() {
         final Lock workLock = lock.writeLock();
         workLock.lock();

@@ -41,7 +41,7 @@ public class InMemoryCollectorCounterStore extends InMemoryCounterDataStore impl
     }
 
     @Override
-    public Collection<? extends Counter> getCounters(final String marker) {
+    public Collection<? extends LeafCollectorCounter> getCounters(final String marker) {
         return countersByMarker.get(marker).values();
     }
 
