@@ -95,3 +95,15 @@ or to call manually `Configuration.shutdown()` method.
 * `org.apache.sirona.collector.collection.agent-urls`: comma separated value of agent urls when auto registering is not used by agents
 * `org.apache.sirona.collector.server.api.SecurityProvider`: the basic information provider requests on agents
 * `org.apache.sirona.collector.server.api.SSLSocketFactoryProvider`: the ssl socket factory provider when contacting agents over ssl
+
+# cassandra
+
+* `org.apache.sirona.cassandra.CassandraBuilder.hosts`: comma separated list of hosts (IP:port)
+* `org.apache.sirona.cassandra.CassandraBuilder.cluster`: sirona cluster name
+* `org.apache.sirona.cassandra.CassandraBuilder.keyspace`: sirona keyspace name
+* `org.apache.sirona.cassandra.CassandraBuilder.counterColumnFamily`: sirona counter column family name
+* `org.apache.sirona.cassandra.CassandraBuilder.gaugeValuesColumnFamily`: sirona gauge column family name to store data
+* `org.apache.sirona.cassandra.CassandraBuilder.statusColumnFamily`: sirona statuses column family name
+* `org.apache.sirona.cassandra.CassandraBuilder.markerCountersColumFamily`: sirona counter by marker (= instance) column family name
+* `org.apache.sirona.cassandra.CassandraBuilder.markerGaugesColumFamily`: sirona gauge by marker (= instance) column family name
+* `org.apache.sirona.cassandra.CassandraBuilder.replicationFactor`: replication factory for cassandra client instance

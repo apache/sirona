@@ -24,8 +24,7 @@ public class CassandraBuilder {
     private String cluster = "sirona-cluster";
     private String keyspace = "sirona";
     private String counterColumnFamily = "counters";
-    private String gaugeMetricsColumnFamily = "gauges_values";
-    private String gaugeRolesColumnFamily = "gauges_roles";
+    private String gaugeValuesColumnFamily = "gauges_values";
     private String statusColumnFamily = "statuses";
     private String markerCountersColumFamily = "markers_counters";
     private String markerGaugesColumFamily = "markers_gauges";
@@ -48,7 +47,7 @@ public class CassandraBuilder {
     }
 
     public String getGaugeValuesColumnFamily() {
-        return gaugeMetricsColumnFamily;
+        return gaugeValuesColumnFamily;
     }
 
     public String getStatusColumnFamily() {

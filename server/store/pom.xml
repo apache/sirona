@@ -15,34 +15,21 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
   <parent>
-    <artifactId>sirona-agent-store</artifactId>
+    <artifactId>sirona-server</artifactId>
     <groupId>org.apache.sirona</groupId>
     <version>0.1-incubating-SNAPSHOT</version>
   </parent>
 
-  <modelVersion>4.0.0</modelVersion>
+  <artifactId>sirona-collector-store</artifactId>
+  <name>Apache Sirona Incubator :: Server :: Store</name>
+  <packaging>pom</packaging>
 
-  <artifactId>sirona-cube</artifactId>
-  <name>Apache Sirona Incubator :: Agent :: Store :: Cube</name>
-  <description>A DataStore for https://github.com/square/cube</description>
-
-  <dependencies>
-    <dependency>
-      <groupId>org.apache.sirona</groupId>
-      <artifactId>sirona-core</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.netty</groupId>
-      <artifactId>netty-codec-http</artifactId>
-    </dependency>
-  </dependencies>
+  <modules>
+    <module>cassandra</module>
+  </modules>
 </project>

@@ -20,7 +20,6 @@ import me.prettyprint.cassandra.serializers.DoubleSerializer;
 import me.prettyprint.cassandra.serializers.IntegerSerializer;
 import me.prettyprint.cassandra.serializers.LongSerializer;
 import me.prettyprint.cassandra.serializers.StringSerializer;
-import me.prettyprint.cassandra.service.KeyIterator;
 import me.prettyprint.hector.api.Keyspace;
 import me.prettyprint.hector.api.Serializer;
 import me.prettyprint.hector.api.beans.ColumnSlice;
@@ -41,7 +40,6 @@ import org.apache.sirona.math.M2AwareStatisticalSummary;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -186,14 +184,14 @@ public class CassandraCollectorCounterDataStore extends InMemoryCollectorCounter
                                          final String marker) {
         return new CassandraLeafCounter(ckey, this, marker)
             .sync(new M2AwareStatisticalSummary(
-                getOrZero(serializer, map.getColumnByName("mean"), DoubleSerializer.get()).doubleValue(),
-                getOrZero(serializer, map.getColumnByName("variance"), DoubleSerializer.get()).doubleValue(),
-                getOrZero(serializer, map.getColumnByName("n"), LongSerializer.get()).longValue(),
-                getOrZero(serializer, map.getColumnByName("max"), DoubleSerializer.get()).doubleValue(),
-                getOrZero(serializer, map.getColumnByName("min"), DoubleSerializer.get()).doubleValue(),
-                getOrZero(serializer, map.getColumnByName("sum"), DoubleSerializer.get()).doubleValue(),
-                getOrZero(serializer, map.getColumnByName("m2"), DoubleSerializer.get()).doubleValue()),
-                getOrZero(serializer, map.getColumnByName("maxConcurrency"), IntegerSerializer.get()).intValue());
+                getOrDefault(serializer, map.getColumnByName("mean"), DoubleSerializer.get()).doubleValue(),
+                getOrDefault(serializer, map.getColumnByName("variance"), DoubleSerializer.get()).doubleValue(),
+                getOrDefault(serializer, map.getColumnByName("n"), LongSerializer.get()).longValue(),
+                getOrDefault(serializer, map.getColumnByName("max"), DoubleSerializer.get()).doubleValue(),
+                getOrDefault(serializer, map.getColumnByName("min"), DoubleSerializer.get()).doubleValue(),
+                getOrDefault(serializer, map.getColumnByName("sum"), DoubleSerializer.get()).doubleValue(),
+                getOrDefault(serializer, map.getColumnByName("m2"), DoubleSerializer.get()).doubleValue()),
+                getOrDefault(serializer, map.getColumnByName("maxConcurrency"), IntegerSerializer.get()).intValue());
     }
 
     protected CassandraLeafCounter save(final CassandraLeafCounter counter, final String marker) {
@@ -226,9 +224,12 @@ public class CassandraCollectorCounterDataStore extends InMemoryCollectorCounter
         return cassandra.generateKey(key.getRole().getName(), key.getRole().getUnit().getName(), key.getName(), marker);
     }
 
-    protected static Number getOrZero(final DynamicDelegatedSerializer<Number> delegatedSerializer, final HColumn<String, Number> col, final Serializer<? extends Number> serializer) {
+    protected static Number getOrDefault(final DynamicDelegatedSerializer<Number> delegatedSerializer, final HColumn<String, Number> col, final Serializer<? extends Number> serializer) {
         delegatedSerializer.setDelegate(serializer);
         if (col == null || col.getValue() == null) {
+            if (DoubleSerializer.get() == serializer) {
+                return Double.NaN;
+            }
             return 0;
         }
         return col.getValue();

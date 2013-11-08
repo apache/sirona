@@ -37,7 +37,7 @@ Just use the collector `DataStoreFactory`: `org.apache.sirona.collector.server.s
 For instance your `commons-monitoring.properties` can look like:
 
 <pre class="prettyprint linenums"><![CDATA[
-org.apache.sirona.store.DataStore = org.apache.sirona.collector.server.store.CollectorDataStoreFactory
+org.apache.sirona.store.DataStoreFactory = org.apache.sirona.collector.server.store.CollectorDataStoreFactory
 ]]></pre>
 
 The `GaugeDataStore` can be configured through `org.apache.sirona.collector.gauge.store-class` property.

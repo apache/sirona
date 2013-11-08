@@ -41,7 +41,7 @@ public class AgentGaugeTest {
         final Collection<String> markers = new CassandraCollectorGaugeDataStore().markers();
         assertNotNull(markers);
         assertEquals(1, markers.size());
-        assertEquals("node1", markers.iterator().next());
+        assertEquals(MARKER, markers.iterator().next());
     }
 
     @Test

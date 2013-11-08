@@ -26,6 +26,7 @@ import me.prettyprint.hector.api.Keyspace;
 import me.prettyprint.hector.api.Serializer;
 import me.prettyprint.hector.api.beans.HColumn;
 import me.prettyprint.hector.api.ddl.ColumnFamilyDefinition;
+import me.prettyprint.hector.api.ddl.ColumnType;
 import me.prettyprint.hector.api.ddl.ComparatorType;
 import me.prettyprint.hector.api.factory.HFactory;
 import org.apache.sirona.cassandra.CassandraBuilder;
@@ -57,10 +58,12 @@ public class CassandraSirona {
         keyspace = HFactory.createKeyspace(keyspaceName, cluster);
 
         final ColumnFamilyDefinition counters = HFactory.createColumnFamilyDefinition(keyspaceName, builder.getCounterColumnFamily(), ComparatorType.UTF8TYPE);
+        final ColumnFamilyDefinition markersCounters = HFactory.createColumnFamilyDefinition(keyspaceName, builder.getMarkerCountersColumFamily(), ComparatorType.UTF8TYPE);
         final ColumnFamilyDefinition gauges = HFactory.createColumnFamilyDefinition(keyspaceName, builder.getGaugeValuesColumnFamily(), ComparatorType.UTF8TYPE);
         final ColumnFamilyDefinition markersGauges = HFactory.createColumnFamilyDefinition(keyspaceName, builder.getMarkerGaugesColumFamily(), ComparatorType.UTF8TYPE);
         final ColumnFamilyDefinition statuses = HFactory.createColumnFamilyDefinition(keyspaceName, builder.getStatusColumnFamily(), ComparatorType.UTF8TYPE);
-        final ColumnFamilyDefinition markersCounters = HFactory.createColumnFamilyDefinition(keyspaceName, builder.getMarkerCountersColumFamily(), ComparatorType.UTF8TYPE);
+        statuses.setColumnType(ColumnType.SUPER);
+        statuses.setSubComparatorType(ComparatorType.UTF8TYPE);
 
         { // ensure keyspace exists, here if the keyspace doesn't exist we suppose nothing exist
             if (cluster.describeKeyspace(keyspaceName) == null) {
@@ -114,6 +117,10 @@ public class CassandraSirona {
         return builder.getGaugeValuesColumnFamily();
     }
 
+    public String getStatusColumnFamily() {
+        return builder.getStatusColumnFamily();
+    }
+
     public String keySeparator() {
         return SEPARATOR;
     }
@@ -126,9 +133,9 @@ public class CassandraSirona {
         return HFactory.createColumn(name, value, (Serializer<A>) SerializerTypeInferer.getSerializer(name), (Serializer<B>) SerializerTypeInferer.getSerializer(value));
     }
 
-    public static Collection<String> keys(final Keyspace keyspace, final String markerFamily) {
+    public static Collection<String> keys(final Keyspace keyspace, final String family) {
         final Collection<String> set = new HashSet<String>();
-        for (final String item : new KeyIterator.Builder<String>(keyspace, markerFamily, StringSerializer.get()).build()) {
+        for (final String item : new KeyIterator.Builder<String>(keyspace, family, StringSerializer.get()).build()) {
             set.add(item);
         }
         return set;
