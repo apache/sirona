@@ -36,7 +36,7 @@ How to start?
 
 [See Plugins](./plugins.html)
 
-[See Jta](./jta.html)
+[See JTA](./jta.html)
 
 [See JPA](./jpa.html)
 
@@ -47,5 +47,7 @@ How to start?
 [See Cube](./cube.html)
 
 [See Collector](./collector.html)
+
+[See Cassandra](./cassandra.html)
 
 

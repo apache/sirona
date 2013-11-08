@@ -79,7 +79,7 @@ GaugeId is a string following this convention: `gaugeRoleName->gaugeRoleUnitName
 
 ```
 nodeId => gaugeId1, gaugeId2, gaugeId3....
-``
+```
 
 ## statuses
 

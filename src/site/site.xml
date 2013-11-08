@@ -54,6 +54,7 @@
       <item name="Graphite" href="/graphite.html"/>
       <item name="Cube" href="/cube.html"/>
       <item name="Collector" href="/collector.html"/>
+      <item name="Cassandra" href="/cassandra.html"/>
     </menu>
   </body>
 </project>
