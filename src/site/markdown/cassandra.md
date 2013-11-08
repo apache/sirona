@@ -49,3 +49,40 @@ org.apache.sirona.cassandra.CassandraBuilder.markerCountersColumFamily = markers
 org.apache.sirona.cassandra.CassandraBuilder.markerGaugesColumFamily = markers_gauges
 org.apache.sirona.cassandra.CassandraBuilder.replicationFactor = 1
 ]]></pre>
+
+# Model
+
+## counters
+
+```
+counterId => role, key, maxConcurrency, variance, n, max, min, sum, m2, mean
+```
+
+CounterId is a string following this convention: `counterRoleName->counterRoleUnit->counterName->marker`.
+
+## markers_counters
+
+```
+nodeId => counterId1, counterId2, counterId3....
+```
+
+## gauges
+
+
+```
+gaugeId => time1=valueAtTime1, time2=valueAtTime2, ...
+```
+
+GaugeId is a string following this convention: `gaugeRoleName->gaugeRoleUnitName->marker`
+
+## markers_gauges
+
+```
+nodeId => gaugeId1, gaugeId2, gaugeId3....
+``
+
+## statuses
+
+```
+nodeId => (validationName1 => (validationDescription1, validationStatus1)), (validationName2 => (validationDescription2, validationStatus2)), ...
+```
