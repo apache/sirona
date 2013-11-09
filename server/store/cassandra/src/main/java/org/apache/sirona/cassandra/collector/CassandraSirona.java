@@ -19,17 +19,19 @@ package org.apache.sirona.cassandra.collector;
 import me.prettyprint.cassandra.serializers.SerializerTypeInferer;
 import me.prettyprint.cassandra.serializers.StringSerializer;
 import me.prettyprint.cassandra.service.CassandraHostConfigurator;
-import me.prettyprint.cassandra.service.KeyIterator;
 import me.prettyprint.cassandra.service.ThriftKsDef;
 import me.prettyprint.hector.api.Cluster;
 import me.prettyprint.hector.api.Keyspace;
 import me.prettyprint.hector.api.Serializer;
 import me.prettyprint.hector.api.beans.HColumn;
+import me.prettyprint.hector.api.beans.OrderedRows;
+import me.prettyprint.hector.api.beans.Row;
 import me.prettyprint.hector.api.ddl.ColumnFamilyDefinition;
 import me.prettyprint.hector.api.ddl.ColumnType;
 import me.prettyprint.hector.api.ddl.ComparatorType;
 import me.prettyprint.hector.api.factory.HFactory;
 import org.apache.sirona.cassandra.CassandraBuilder;
+import org.apache.sirona.cassandra.DynamicDelegatedSerializer;
 import org.apache.sirona.configuration.Configuration;
 
 import java.util.Collection;
@@ -57,20 +59,17 @@ public class CassandraSirona {
 
         keyspace = HFactory.createKeyspace(keyspaceName, cluster);
 
-        final ColumnFamilyDefinition counters = HFactory.createColumnFamilyDefinition(keyspaceName, builder.getCounterColumnFamily(), ComparatorType.UTF8TYPE);
-        final ColumnFamilyDefinition markersCounters = HFactory.createColumnFamilyDefinition(keyspaceName, builder.getMarkerCountersColumFamily(), ComparatorType.UTF8TYPE);
         final ColumnFamilyDefinition gauges = HFactory.createColumnFamilyDefinition(keyspaceName, builder.getGaugeValuesColumnFamily(), ComparatorType.UTF8TYPE);
         final ColumnFamilyDefinition markersGauges = HFactory.createColumnFamilyDefinition(keyspaceName, builder.getMarkerGaugesColumFamily(), ComparatorType.UTF8TYPE);
-        final ColumnFamilyDefinition statuses = HFactory.createColumnFamilyDefinition(keyspaceName, builder.getStatusColumnFamily(), ComparatorType.UTF8TYPE);
-        statuses.setColumnType(ColumnType.SUPER);
-        statuses.setSubComparatorType(ComparatorType.UTF8TYPE);
+        final ColumnFamilyDefinition counters = createSuperColumn(keyspaceName, builder.getCounterColumnFamily());
+        final ColumnFamilyDefinition statuses = createSuperColumn(keyspaceName, builder.getStatusColumnFamily());
 
         { // ensure keyspace exists, here if the keyspace doesn't exist we suppose nothing exist
             if (cluster.describeKeyspace(keyspaceName) == null) {
                 LOGGER.info("Creating Sirona Cassandra '" + keyspaceName + "' keyspace.");
                 cluster.addKeyspace(
                     HFactory.createKeyspaceDefinition(keyspaceName, ThriftKsDef.DEF_STRATEGY_CLASS, builder.getReplicationFactor(),
-                        asList(counters, markersCounters, gauges, markersGauges, statuses)));
+                        asList(counters, gauges, markersGauges, statuses)));
             }
         }
     }
@@ -101,14 +100,6 @@ public class CassandraSirona {
         return keyspace;
     }
 
-    public String getMarkerCountersColumFamily() {
-        return builder.getMarkerCountersColumFamily();
-    }
-
-    public String getMarkerGaugesColumFamily() {
-        return builder.getMarkerGaugesColumFamily();
-    }
-
     public String getCounterColumnFamily() {
         return builder.getCounterColumnFamily();
     }
@@ -119,6 +110,10 @@ public class CassandraSirona {
 
     public String getStatusColumnFamily() {
         return builder.getStatusColumnFamily();
+    }
+
+    public String getMarkerGaugesColumFamily() {
+        return builder.getMarkerGaugesColumFamily();
     }
 
     public String keySeparator() {
@@ -134,10 +129,25 @@ public class CassandraSirona {
     }
 
     public static Collection<String> keys(final Keyspace keyspace, final String family) {
+        final OrderedRows<String, String, Object> result = HFactory.createRangeSlicesQuery(keyspace, StringSerializer.get(), StringSerializer.get(), new DynamicDelegatedSerializer<Object>())
+            .setColumnFamily(family)
+            .setReturnKeysOnly()
+            .execute()
+            .get();
+
         final Collection<String> set = new HashSet<String>();
-        for (final String item : new KeyIterator.Builder<String>(keyspace, family, StringSerializer.get()).build()) {
-            set.add(item);
+        if (result != null) {
+            for (final Row<String, String, ?> row :result) {
+                set.add(row.getKey());
+            }
         }
         return set;
+    }
+
+    private static ColumnFamilyDefinition createSuperColumn(final String keyspaceName, final String name) {
+        final ColumnFamilyDefinition statuses = HFactory.createColumnFamilyDefinition(keyspaceName, name, ComparatorType.UTF8TYPE);
+        statuses.setColumnType(ColumnType.SUPER);
+        statuses.setSubComparatorType(ComparatorType.UTF8TYPE);
+        return statuses;
     }
 }

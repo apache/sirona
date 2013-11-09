@@ -22,11 +22,12 @@ import me.prettyprint.cassandra.serializers.LongSerializer;
 import me.prettyprint.cassandra.serializers.StringSerializer;
 import me.prettyprint.hector.api.Keyspace;
 import me.prettyprint.hector.api.Serializer;
-import me.prettyprint.hector.api.beans.ColumnSlice;
 import me.prettyprint.hector.api.beans.HColumn;
+import me.prettyprint.hector.api.beans.HSuperColumn;
+import me.prettyprint.hector.api.beans.OrderedSuperRows;
+import me.prettyprint.hector.api.beans.SuperRow;
 import me.prettyprint.hector.api.factory.HFactory;
 import me.prettyprint.hector.api.query.QueryResult;
-import me.prettyprint.hector.api.query.SliceQuery;
 import org.apache.sirona.Role;
 import org.apache.sirona.cassandra.DynamicDelegatedSerializer;
 import org.apache.sirona.cassandra.collector.CassandraSirona;
@@ -38,28 +39,26 @@ import org.apache.sirona.counters.Counter;
 import org.apache.sirona.counters.Unit;
 import org.apache.sirona.math.M2AwareStatisticalSummary;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import static org.apache.sirona.cassandra.collector.CassandraSirona.column;
-import static org.apache.sirona.cassandra.collector.CassandraSirona.emptyColumn;
 import static org.apache.sirona.cassandra.collector.CassandraSirona.keys;
 
 public class CassandraCollectorCounterDataStore extends InMemoryCollectorCounterStore {
-    private static final String[] FIND_BY_KEYS_COLUMNS = new String[] { "maxConcurrency", "variance", "n", "max", "min", "sum", "m2", "mean" };
-
     private final Keyspace keyspace;
     private final String family;
-    private final String markerFamily;
     private final CassandraSirona cassandra;
 
     public CassandraCollectorCounterDataStore() {
         this.cassandra = Configuration.findOrCreateInstance(CassandraSirona.class);
         this.keyspace = cassandra.getKeyspace();
         this.family = cassandra.getCounterColumnFamily();
-        this.markerFamily = cassandra.getMarkerCountersColumFamily();
     }
 
     @Override
@@ -73,47 +72,32 @@ public class CassandraCollectorCounterDataStore extends InMemoryCollectorCounter
 
     @Override
     public Collection<? extends LeafCollectorCounter> getCounters(final String marker) {
-        final SliceQuery<String, String, String> q = HFactory.createSliceQuery(keyspace,
-            StringSerializer.get(), StringSerializer.get(), StringSerializer.get());
+        final DynamicDelegatedSerializer<Object> dynamicSerializer = new DynamicDelegatedSerializer<Object>();
+        final QueryResult<OrderedSuperRows<String, String, String, Object>> mainResult =
+            HFactory.createRangeSuperSlicesQuery(keyspace, StringSerializer.get(), StringSerializer.get(), StringSerializer.get(), dynamicSerializer)
+                .setColumnFamily(family)
+                .setRange(null, null, false, Integer.MAX_VALUE)
+                .setKeys(marker, marker)
+                .execute();
 
-        final QueryResult<ColumnSlice<String, String>> result = q.setKey(marker)
-            .setColumnFamily(markerFamily)
-            .setRange(null, null, false, Integer.MAX_VALUE)
-            .execute();
-
-        final ColumnSlice<String, String> map = result.get();
-        if (map.getColumns().isEmpty()) {
-            return null;
+        if (mainResult == null) {
+            return Collections.<LeafCollectorCounter>emptyList();
         }
 
         final Collection<CassandraLeafCounter> counters = new LinkedList<CassandraLeafCounter>();
-        for (final HColumn<String, String> c : map.getColumns()) {
-            final String key = c.getName();
-            final String[] segments = key.split(cassandra.keySeparator());
-            final Counter.Key ckey = new Counter.Key(new Role(segments[0], Unit.get(segments[1])), segments[2]);
-
-            final DynamicDelegatedSerializer<Number> dynamicSerializer = new DynamicDelegatedSerializer<Number>();
-            final SliceQuery<String, String, Number> slice = HFactory.createSliceQuery(keyspace,
-                StringSerializer.get(), StringSerializer.get(), dynamicSerializer);
-
-            final QueryResult<ColumnSlice<String, Number>> counterResult = slice.setKey(key)
-                .setColumnNames(FIND_BY_KEYS_COLUMNS)
-                .setColumnFamily(family)
-                .execute();
-
-            final ColumnSlice<String, Number> counterColumn = counterResult.get();
-            if (counterColumn.getColumns().isEmpty()) {
-                return null;
+        for (final SuperRow<String, String, String, Object> c : mainResult.get()) {
+            for (final HSuperColumn<String, String, Object> col : c.getSuperSlice().getSuperColumns()) {
+                final String[] segments = col.getName().split(cassandra.keySeparator());
+                final Counter.Key ckey = new Counter.Key(new Role(segments[0], Unit.get(segments[1])), segments[2]);
+                counters.add(counter(ckey, dynamicSerializer, col, marker));
             }
-
-            counters.add(counter(ckey, dynamicSerializer, counterColumn, marker));
         }
         return counters;
     }
 
     @Override
     public Collection<String> markers() {
-        return keys(keyspace, markerFamily);
+        return keys(keyspace, family);
     }
 
     @Override // TODO: see if we shouldn't store it or if aggregation can be done on java side
@@ -161,60 +145,58 @@ public class CassandraCollectorCounterDataStore extends InMemoryCollectorCounter
     protected CassandraLeafCounter findByKey(final Counter.Key ckey, final String marker) {
         final String key = id(ckey, marker);
 
-        final DynamicDelegatedSerializer<Number> serializer = new DynamicDelegatedSerializer<Number>();
-        final SliceQuery<String, String, Number> q = HFactory.createSliceQuery(keyspace,
-            StringSerializer.get(), StringSerializer.get(), serializer);
+        final DynamicDelegatedSerializer<Object> serializer = new DynamicDelegatedSerializer<Object>();
 
-        final QueryResult<ColumnSlice<String, Number>> result = q.setKey(key)
-            .setColumnNames(FIND_BY_KEYS_COLUMNS)
-            .setColumnFamily(family)
-            .execute();
+        final HSuperColumn<String, String, Object> result =
+            HFactory.createSuperColumnQuery(keyspace, StringSerializer.get(), StringSerializer.get(), StringSerializer.get(), serializer)
+                .setColumnFamily(family)
+                .setKey(marker)
+                .setSuperName(key)
+                .execute()
+                .get();
 
-        final ColumnSlice<String, Number> map = result.get();
-        if (map.getColumns().isEmpty()) {
+        if (result == null) {
             return null;
         }
 
-        return counter(ckey, serializer, map, marker);
+        return counter(ckey, serializer, result, marker);
     }
 
     protected CassandraLeafCounter counter(final Counter.Key ckey,
-                                         final DynamicDelegatedSerializer<Number> serializer,
-                                         final ColumnSlice<String, Number> map,
-                                         final String marker) {
+                                           final DynamicDelegatedSerializer<Object> serializer,
+                                           final HSuperColumn<String, String, Object> map,
+                                           final String marker) {
         return new CassandraLeafCounter(ckey, this, marker)
             .sync(new M2AwareStatisticalSummary(
-                getOrDefault(serializer, map.getColumnByName("mean"), DoubleSerializer.get()).doubleValue(),
-                getOrDefault(serializer, map.getColumnByName("variance"), DoubleSerializer.get()).doubleValue(),
-                getOrDefault(serializer, map.getColumnByName("n"), LongSerializer.get()).longValue(),
-                getOrDefault(serializer, map.getColumnByName("max"), DoubleSerializer.get()).doubleValue(),
-                getOrDefault(serializer, map.getColumnByName("min"), DoubleSerializer.get()).doubleValue(),
-                getOrDefault(serializer, map.getColumnByName("sum"), DoubleSerializer.get()).doubleValue(),
-                getOrDefault(serializer, map.getColumnByName("m2"), DoubleSerializer.get()).doubleValue()),
-                getOrDefault(serializer, map.getColumnByName("maxConcurrency"), IntegerSerializer.get()).intValue());
+                getOrDefault(serializer, map.getSubColumnByName("mean"), DoubleSerializer.get()).doubleValue(),
+                getOrDefault(serializer, map.getSubColumnByName("variance"), DoubleSerializer.get()).doubleValue(),
+                getOrDefault(serializer, map.getSubColumnByName("n"), LongSerializer.get()).longValue(),
+                getOrDefault(serializer, map.getSubColumnByName("max"), DoubleSerializer.get()).doubleValue(),
+                getOrDefault(serializer, map.getSubColumnByName("min"), DoubleSerializer.get()).doubleValue(),
+                getOrDefault(serializer, map.getSubColumnByName("sum"), DoubleSerializer.get()).doubleValue(),
+                getOrDefault(serializer, map.getSubColumnByName("m2"), DoubleSerializer.get()).doubleValue()),
+                getOrDefault(serializer, map.getSubColumnByName("maxConcurrency"), IntegerSerializer.get()).intValue());
     }
 
     protected CassandraLeafCounter save(final CassandraLeafCounter counter, final String marker) {
         final Counter.Key key = counter.getKey();
         final String id = id(key, marker);
 
-        // counter itself
-        HFactory.createMutator(keyspace, StringSerializer.get())
-            .addInsertion(id, family, column("role", key.getRole().getName()))
-            .addInsertion(id, family, column("key", key.getName()))
-            .addInsertion(id, family, column("maxConcurrency", counter.getMaxConcurrency()))
-            .addInsertion(id, family, column("variance", counter.getVariance()))
-            .addInsertion(id, family, column("n", counter.getHits()))
-            .addInsertion(id, family, column("max", counter.getMax()))
-            .addInsertion(id, family, column("min", counter.getMin()))
-            .addInsertion(id, family, column("sum", counter.getSum()))
-            .addInsertion(id, family, column("m2", counter.getSecondMoment()))
-            .addInsertion(id, family, column("mean", counter.getMean()))
-            .execute();
+        final List<HColumn<String, Object>> columns = new ArrayList<HColumn<String, Object>>();
+        columns.add(HColumn.class.cast(column("role", key.getRole().getName())));
+        columns.add(HColumn.class.cast(column("key", key.getName())));
+        columns.add(HColumn.class.cast(column("maxConcurrency", counter.getMaxConcurrency())));
+        columns.add(HColumn.class.cast(column("variance", counter.getVariance())));
+        columns.add(HColumn.class.cast(column("n", counter.getHits())));
+        columns.add(HColumn.class.cast(column("max", counter.getMax())));
+        columns.add(HColumn.class.cast(column("min", counter.getMin())));
+        columns.add(HColumn.class.cast(column("sum", counter.getSum())));
+        columns.add(HColumn.class.cast(column("m2", counter.getSecondMoment())));
+        columns.add(HColumn.class.cast(column("mean", counter.getMean())));
 
-        // marker-counter
         HFactory.createMutator(keyspace, StringSerializer.get())
-            .addInsertion(marker, markerFamily, emptyColumn(id))
+            .addInsertion(marker, family,
+                HFactory.createSuperColumn(id, columns, StringSerializer.get(), StringSerializer.get(), new DynamicDelegatedSerializer<Object>()))
             .execute();
 
         return counter;
@@ -224,7 +206,7 @@ public class CassandraCollectorCounterDataStore extends InMemoryCollectorCounter
         return cassandra.generateKey(key.getRole().getName(), key.getRole().getUnit().getName(), key.getName(), marker);
     }
 
-    protected static Number getOrDefault(final DynamicDelegatedSerializer<Number> delegatedSerializer, final HColumn<String, Number> col, final Serializer<? extends Number> serializer) {
+    protected static Number getOrDefault(final DynamicDelegatedSerializer delegatedSerializer, final HColumn<?, ?> col, final Serializer<?> serializer) {
         delegatedSerializer.setDelegate(serializer);
         if (col == null || col.getValue() == null) {
             if (DoubleSerializer.get() == serializer) {
@@ -232,6 +214,11 @@ public class CassandraCollectorCounterDataStore extends InMemoryCollectorCounter
             }
             return 0;
         }
-        return col.getValue();
+
+        final Object value = col.getValue();
+        if (Number.class.isInstance(value)) {
+            return Number.class.cast(value);
+        }
+        throw new IllegalArgumentException("not a number " + value);
     }
 }

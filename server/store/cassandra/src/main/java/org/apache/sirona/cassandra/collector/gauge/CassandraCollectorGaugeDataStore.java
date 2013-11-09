@@ -19,6 +19,7 @@ package org.apache.sirona.cassandra.collector.gauge;
 import me.prettyprint.cassandra.serializers.DoubleSerializer;
 import me.prettyprint.cassandra.serializers.LongSerializer;
 import me.prettyprint.cassandra.serializers.StringSerializer;
+import me.prettyprint.cassandra.service.StringKeyIterator;
 import me.prettyprint.hector.api.Keyspace;
 import me.prettyprint.hector.api.beans.ColumnSlice;
 import me.prettyprint.hector.api.beans.HColumn;
@@ -82,7 +83,11 @@ public class CassandraCollectorGaugeDataStore implements CollectorGaugeDataStore
 
     @Override
     public Collection<String> markers() {
-        return keys(keyspace, markerFamily);
+        final Collection<String> set = new HashSet<String>();
+        for (final String item : new StringKeyIterator.Builder(keyspace, markerFamily).build()) {
+            set.add(item);
+        }
+        return set;
     }
 
     @Override

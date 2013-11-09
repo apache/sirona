@@ -17,6 +17,8 @@
 package org.apache.sirona.cassandra;
 
 import me.prettyprint.cassandra.serializers.AbstractSerializer;
+import me.prettyprint.cassandra.serializers.SerializerTypeInferer;
+import me.prettyprint.cassandra.serializers.TypeInferringSerializer;
 import me.prettyprint.hector.api.Serializer;
 
 import java.nio.ByteBuffer;
@@ -26,7 +28,7 @@ public class DynamicDelegatedSerializer<T> extends AbstractSerializer<T> {
 
     @Override
     public ByteBuffer toByteBuffer(final T obj) {
-        throw new UnsupportedOperationException();
+        return SerializerTypeInferer.getSerializer(obj).toByteBuffer(obj);
     }
 
     @Override

@@ -45,7 +45,6 @@ org.apache.sirona.cassandra.CassandraBuilder.keyspace = sirona
 org.apache.sirona.cassandra.CassandraBuilder.counterColumnFamily = counters
 org.apache.sirona.cassandra.CassandraBuilder.gaugeValuesColumnFamily = gauges_values
 org.apache.sirona.cassandra.CassandraBuilder.statusColumnFamily = statuses
-org.apache.sirona.cassandra.CassandraBuilder.markerCountersColumFamily = markers_counters
 org.apache.sirona.cassandra.CassandraBuilder.markerGaugesColumFamily = markers_gauges
 org.apache.sirona.cassandra.CassandraBuilder.replicationFactor = 1
 ]]></pre>
@@ -55,19 +54,12 @@ org.apache.sirona.cassandra.CassandraBuilder.replicationFactor = 1
 ## counters
 
 ```
-counterId => role, key, maxConcurrency, variance, n, max, min, sum, m2, mean
+nodeId => (counterId1 => (role, key, maxConcurrency, variance, n, max, min, sum, m2, mean)), (counterId2 => (role, key, maxConcurrency, variance, n, max, min, sum, m2, mean))
 ```
 
 CounterId is a string following this convention: `counterRoleName->counterRoleUnit->counterName->marker`.
 
-## markers_counters
-
-```
-nodeId => counterId1, counterId2, counterId3....
-```
-
 ## gauges
-
 
 ```
 gaugeId => time1=valueAtTime1, time2=valueAtTime2, ...
