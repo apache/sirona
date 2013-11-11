@@ -52,7 +52,7 @@ public class HttpCollectorTest {
 
     @Before
     public void start() {
-        server = new CollectorServer("localhost", 1234).start();
+        server = new CollectorServer("localhost", Integer.getInteger("collector.server.port", 1234)).start();
         mapper = new ObjectMapper();
         Repository.INSTANCE.clearCounters();
     }

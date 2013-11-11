@@ -24,6 +24,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 // little mok to replace Graphite as a server
@@ -33,7 +34,7 @@ public class GraphiteMockServer {
     private ServerSocket server;
     private GraphiteThread thread;
 
-    private Collection<String> messages = new ArrayList<String>();
+    private Collection<String> messages = new CopyOnWriteArrayList<String>();
 
     public GraphiteMockServer(final int port) {
         this.port = port;

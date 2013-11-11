@@ -33,7 +33,7 @@ public abstract class GraphiteTestBase {
     @Before
     public void startGraphite() throws IOException {
         Repository.INSTANCE.clearCounters();
-        server = new GraphiteMockServer(1234).start();
+        server = new GraphiteMockServer(Integer.getInteger("collector.server.port", 1234)).start();
         gauges = new Gauge.LoaderHelper(false);
     }
 

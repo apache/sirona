@@ -41,7 +41,7 @@ public class CubeDataStoreTest {
 
     @Before
     public void startCube() throws IOException {
-        server = new CubeServer("localhost", 1234).start();
+        server = new CubeServer("localhost", Integer.getInteger("collector.server.port", 1234)).start();
         Repository.INSTANCE.clearCounters();
         gauges = new Gauge.LoaderHelper(false);
     }

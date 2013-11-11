@@ -62,7 +62,7 @@ public class RegistrationTest {
 
     @Before
     public void start() {
-        agent = new HttpServer("localhost", 1234).start();
+        agent = new HttpServer("localhost", Integer.getInteger("collector.server.port", 1234)).start();
         Repository.INSTANCE.reset();
         DelegatedCollectorGaugeDataStore.class.cast(Configuration.getInstance(CollectorGaugeDataStore.class)).reset();
     }
@@ -93,7 +93,7 @@ public class RegistrationTest {
                     if (name.endsWith("period")) {
                         return "100";
                     }
-                    return "http://localhost:1234"; // agent-urls
+                    return "http://localhost:"+Integer.getInteger("collector.server.port", 1234); // agent-urls
                 }
 
                 @Override
