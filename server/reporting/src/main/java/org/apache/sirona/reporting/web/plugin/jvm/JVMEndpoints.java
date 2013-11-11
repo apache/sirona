@@ -18,6 +18,7 @@ package org.apache.sirona.reporting.web.plugin.jvm;
 
 import org.apache.sirona.gauges.jvm.CPUGauge;
 import org.apache.sirona.gauges.jvm.UsedMemoryGauge;
+import org.apache.sirona.gauges.jvm.UsedNonHeapMemoryGauge;
 import org.apache.sirona.reporting.web.handler.api.Regex;
 import org.apache.sirona.reporting.web.handler.api.Template;
 import org.apache.sirona.util.Environment;
@@ -43,7 +44,9 @@ public class JVMEndpoints {
             params.put("version", os.getVersion());
             params.put("numberProcessor", os.getAvailableProcessors());
             params.put("maxMemory", memory.getHeapMemoryUsage().getMax());
-            params.put("initMemory", memory.getHeapMemoryUsage().getInit());
+            params.put( "initMemory", memory.getHeapMemoryUsage().getInit() );
+            params.put("maxNonHeapMemory", memory.getNonHeapMemoryUsage().getMax());
+            params.put("initNonHeapMemory", memory.getNonHeapMemoryUsage().getInit());
         }
         return new Template("jvm/jvm.vm", params);
     }
@@ -56,5 +59,10 @@ public class JVMEndpoints {
     @Regex("/memory/([0-9]*)/([0-9]*)")
     public String memory(final long start, final long end) {
         return generateReport("Used Memory", UsedMemoryGauge.USED_MEMORY, start, end);
+    }
+
+    @Regex("/nonheapmemory/([0-9]*)/([0-9]*)")
+    public String nonHeapmemory(final long start, final long end) {
+        return generateReport("Used Non Heap Memory", UsedNonHeapMemoryGauge.USED_NONHEAPMEMORY, start, end);
     }
 }

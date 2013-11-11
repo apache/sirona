@@ -60,6 +60,29 @@
             </div>
             #end
         </div>
+
+        <div class="col-lg-6">
+            #graphBlock("Used Non Heap Memory", "nonheapmemory")
+
+            #if ($initMemory)
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <i class="icon-table"></i>Memory Status
+                        </h3>
+                    </div>
+                    <div class="panel-body">
+                        <table id="memory-table" class="table table-bordered table-striped table-hover">
+                            <tbody>
+                            <tr><td>Init</td><td>$initNonHeapMemory</td></tr>
+                            <tr><td>Max</td><td>$maxNonHeapMemory</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            #end
+        </div>
+
     </div>
 </div>
 
@@ -113,5 +136,6 @@
         // update diagram when clicking on update buttons
         Sirona.initGraph("$mapping", 'jvm', 'cpu', cpuOptions);
         Sirona.initGraph("$mapping", 'jvm', 'memory', memoryOptions);
+        Sirona.initGraph("$mapping", 'jvm', 'nonheapmemory', memoryOptions);
     });
 </script>

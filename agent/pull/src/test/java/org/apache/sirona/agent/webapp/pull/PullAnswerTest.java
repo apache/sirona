@@ -37,12 +37,12 @@ public class PullAnswerTest {
     public void json() {
         final JSONArray snapshotJson = JSONArray.class.cast(
             JSONSerializer.toJSON(createRepo().snapshot().replaceAll("\"time\": \"[^\"]*\"", "\"time\": \"assert\"").replaceAll("\"marker\": \"[^\"]*\"", "\"marker\": \"ubuntu\"")));
-        assertEquals(8, snapshotJson.size());
+        assertEquals(9, snapshotJson.size());
 
         final Collection<Integer> counters = new LinkedList<Integer>();
         final Collection<String> gauges = new LinkedList<String>();
         final Collection<String> validations = new LinkedList<String>();
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < 9; i++) {
             final JSONObject object = JSONObject.class.cast(snapshotJson.get(i));
             final Object type = object.get("type");
             final JSONObject data = JSONObject.class.cast(object.get("data"));

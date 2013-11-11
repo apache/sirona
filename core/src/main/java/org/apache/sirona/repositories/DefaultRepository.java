@@ -24,6 +24,7 @@ import org.apache.sirona.gauges.DefaultGaugeManager;
 import org.apache.sirona.gauges.Gauge;
 import org.apache.sirona.gauges.GaugeManager;
 import org.apache.sirona.gauges.jvm.CPUGauge;
+import org.apache.sirona.gauges.jvm.UsedNonHeapMemoryGauge;
 import org.apache.sirona.gauges.jvm.UsedMemoryGauge;
 import org.apache.sirona.status.NodeStatus;
 import org.apache.sirona.stopwatches.CounterStopWatch;
@@ -77,6 +78,7 @@ public class DefaultRepository implements Repository {
         if (Configuration.is(Configuration.CONFIG_PROPERTY_PREFIX + "core.gauge.activated", true)) {
             addGauge(new CPUGauge());
             addGauge(new UsedMemoryGauge());
+            addGauge(new UsedNonHeapMemoryGauge());
         }
     }
 
