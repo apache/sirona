@@ -52,7 +52,7 @@ public final class Configuration {
 
     private static Thread shutdownHook = null;
 
-    private static final Properties PROPERTIES = new Properties(System.getProperties());
+    private static final Properties PROPERTIES = new Properties();
 
     static {
         try {
@@ -60,6 +60,7 @@ public final class Configuration {
             if (is != null) {
                 PROPERTIES.load(is);
             }
+            PROPERTIES.putAll( System.getProperties() );
         } catch (final Exception e) {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
         }
