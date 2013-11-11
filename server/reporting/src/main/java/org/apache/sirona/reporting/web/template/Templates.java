@@ -63,7 +63,10 @@ public final class Templates {
             context.put("templateId", template.replace(".vm", ""));
         }
 
-        final Template velocityTemplate = Velocity.getTemplate("/templates/page.vm", "UTF-8");
+        boolean onlyBodyRendering=variables.containsKey( "onlyBody" );
+
+        final Template velocityTemplate = onlyBodyRendering ?
+            Velocity.getTemplate("/templates/"+template, "UTF-8") : Velocity.getTemplate("/templates/page.vm", "UTF-8");
         velocityTemplate.merge(context, writer);
     }
 

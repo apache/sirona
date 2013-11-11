@@ -26,7 +26,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Matcher;
 
@@ -48,10 +51,12 @@ public class Invoker {
         for (int i = 0; i < params.length; i++) {
             params[i] = parameters.get(i).extract(request, response, matcher);
         }
+
         try {
             final Object result = method.invoke(instance, params);
             if (Template.class.isInstance(result)) {
                 final Template template = Template.class.cast(result);
+                populateRequestParameters( template, request );
                 final TemplateHelper helper = new TemplateHelperExtractor(name).extract(request, response, matcher);
                 if (template.isHtml()) {
                     response.setContentType(TEXT_HTML);
@@ -67,6 +72,24 @@ public class Invoker {
         } catch (final Exception e) {
             throw new MonitoringException(e);
         }
+    }
+
+    private void populateRequestParameters(Template template, HttpServletRequest request){
+        Map<String,String> requestParameters = extractRequestParameters( request );
+        for( Map.Entry<String,String> entry:requestParameters.entrySet()){
+             template.set( entry.getKey(), entry.getValue() );
+        }
+    }
+
+    private Map<String,String> extractRequestParameters(HttpServletRequest request){
+        Map<String,String> requestParameters = new HashMap<String, String>( request.getParameterMap().size() );
+        Enumeration<String> keys = request.getParameterNames();
+        while(keys.hasMoreElements()){
+            String key = keys.nextElement();
+            String value=request.getParameter( key );
+            requestParameters.put( key, value);
+        }
+        return requestParameters;
     }
 
     public void addRequestParameter() {
@@ -109,7 +132,8 @@ public class Invoker {
         @Override
         public TemplateHelper extract(final HttpServletRequest request, final HttpServletResponse response, final Matcher matcher) {
             try {
-                return new TemplateHelper(response.getWriter(), new MapBuilder<String, Object>().set("templateId", plugin).build());
+                return new TemplateHelper(response.getWriter(),
+                                          new MapBuilder<String, Object>().set( "templateId", plugin ).build());
             } catch (final IOException e) {
                 throw new MonitoringException(e);
             }

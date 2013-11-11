@@ -29,6 +29,7 @@ public class TemplateHelper {
     private final PrintWriter writer;
     private final Map<String, ?> params;
 
+
     public TemplateHelper(final PrintWriter writer, final Map<String, ?> params) {
         this.writer = writer;
         this.params = params;
