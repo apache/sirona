@@ -16,6 +16,7 @@
  */
 package org.apache.sirona.cassandra.collector;
 
+import me.prettyprint.cassandra.model.ConfigurableConsistencyLevel;
 import me.prettyprint.cassandra.serializers.SerializerTypeInferer;
 import me.prettyprint.cassandra.serializers.StringSerializer;
 import me.prettyprint.cassandra.service.CassandraHostConfigurator;
@@ -57,7 +58,10 @@ public class CassandraSirona {
 
         final String keyspaceName = builder.getKeyspace();
 
-        keyspace = HFactory.createKeyspace(keyspaceName, cluster);
+        final ConfigurableConsistencyLevel consistencyLevelPolicy = new ConfigurableConsistencyLevel();
+        consistencyLevelPolicy.setDefaultReadConsistencyLevel(builder.getReadConsistencyLevel());
+        consistencyLevelPolicy.setDefaultWriteConsistencyLevel(builder.getWriteConsistencyLevel());
+        keyspace = HFactory.createKeyspace(keyspaceName, cluster, consistencyLevelPolicy);
 
         final ColumnFamilyDefinition gauges = HFactory.createColumnFamilyDefinition(keyspaceName, builder.getGaugeValuesColumnFamily(), ComparatorType.LONGTYPE);
         final ColumnFamilyDefinition markersGauges = HFactory.createColumnFamilyDefinition(keyspaceName, builder.getMarkerGaugesColumFamily(), ComparatorType.UTF8TYPE);

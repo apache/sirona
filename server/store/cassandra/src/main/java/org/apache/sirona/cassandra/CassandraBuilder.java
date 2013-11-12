@@ -16,6 +16,7 @@
  */
 package org.apache.sirona.cassandra;
 
+import me.prettyprint.hector.api.HConsistencyLevel;
 import org.apache.sirona.configuration.Configuration;
 
 @Configuration.AutoSet
@@ -27,6 +28,8 @@ public class CassandraBuilder {
     private String gaugeValuesColumnFamily = "gauges_values";
     private String statusColumnFamily = "statuses";
     private String markerGaugesColumFamily = "markers_gauges";
+    private String writeConsistencyLevel = HConsistencyLevel.QUORUM.name();
+    private String readConsistencyLevel = HConsistencyLevel.QUORUM.name();
     private int replicationFactor = 1;
 
     public String getHosts() {
@@ -59,5 +62,13 @@ public class CassandraBuilder {
 
     public String getMarkerGaugesColumFamily() {
         return markerGaugesColumFamily;
+    }
+
+    public HConsistencyLevel getWriteConsistencyLevel() {
+        return HConsistencyLevel.valueOf(writeConsistencyLevel);
+    }
+
+    public HConsistencyLevel getReadConsistencyLevel() {
+        return HConsistencyLevel.valueOf(readConsistencyLevel);
     }
 }
