@@ -47,6 +47,8 @@ org.apache.sirona.cassandra.CassandraBuilder.gaugeValuesColumnFamily = gauges_va
 org.apache.sirona.cassandra.CassandraBuilder.statusColumnFamily = statuses
 org.apache.sirona.cassandra.CassandraBuilder.markerGaugesColumFamily = markers_gauges
 org.apache.sirona.cassandra.CassandraBuilder.replicationFactor = 1
+org.apache.sirona.cassandra.CassandraBuilder.writeConsistencyLevel = QUORUM
+org.apache.sirona.cassandra.CassandraBuilder.readConsistencyLevel = QUORUM
 ]]></pre>
 
 # Model
