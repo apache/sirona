@@ -34,12 +34,27 @@
       <groupId>org.apache.sirona</groupId>
       <artifactId>sirona-collector</artifactId>
       <classifier>classes</classifier>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>org.hectorclient</groupId>
       <artifactId>hector-core</artifactId>
       <version>1.1-4</version>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.servlet</groupId>
+          <artifactId>servlet-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.ecyrd.speed4j</groupId>
+          <artifactId>speed4j</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.yammer.metrics</groupId>
+          <artifactId>metrics-core</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>

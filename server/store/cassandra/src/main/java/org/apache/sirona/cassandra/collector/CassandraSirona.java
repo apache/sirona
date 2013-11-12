@@ -59,10 +59,10 @@ public class CassandraSirona {
 
         keyspace = HFactory.createKeyspace(keyspaceName, cluster);
 
-        final ColumnFamilyDefinition gauges = HFactory.createColumnFamilyDefinition(keyspaceName, builder.getGaugeValuesColumnFamily(), ComparatorType.UTF8TYPE);
+        final ColumnFamilyDefinition gauges = HFactory.createColumnFamilyDefinition(keyspaceName, builder.getGaugeValuesColumnFamily(), ComparatorType.LONGTYPE);
         final ColumnFamilyDefinition markersGauges = HFactory.createColumnFamilyDefinition(keyspaceName, builder.getMarkerGaugesColumFamily(), ComparatorType.UTF8TYPE);
-        final ColumnFamilyDefinition counters = createSuperColumn(keyspaceName, builder.getCounterColumnFamily());
-        final ColumnFamilyDefinition statuses = createSuperColumn(keyspaceName, builder.getStatusColumnFamily());
+        final ColumnFamilyDefinition counters = createSuperColumn(keyspaceName, builder.getCounterColumnFamily(), ComparatorType.UTF8TYPE);
+        final ColumnFamilyDefinition statuses = createSuperColumn(keyspaceName, builder.getStatusColumnFamily(), ComparatorType.UTF8TYPE);
 
         { // ensure keyspace exists, here if the keyspace doesn't exist we suppose nothing exist
             if (cluster.describeKeyspace(keyspaceName) == null) {
@@ -144,10 +144,10 @@ public class CassandraSirona {
         return set;
     }
 
-    private static ColumnFamilyDefinition createSuperColumn(final String keyspaceName, final String name) {
+    private static ColumnFamilyDefinition createSuperColumn(final String keyspaceName, final String name, final ComparatorType comparator) {
         final ColumnFamilyDefinition statuses = HFactory.createColumnFamilyDefinition(keyspaceName, name, ComparatorType.UTF8TYPE);
         statuses.setColumnType(ColumnType.SUPER);
-        statuses.setSubComparatorType(ComparatorType.UTF8TYPE);
+        statuses.setSubComparatorType(comparator);
         return statuses;
     }
 }

@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -33,6 +34,16 @@ import static org.junit.Assert.assertNotNull;
 public class AgentGaugeTest {
     private static final Role ROLE = new Role("_role_", Unit.DECA);
     private static final String MARKER = "node1";
+
+    @Test
+    public void checkLongHandling() {
+        new CassandraCollectorGaugeDataStore()
+            .addToGauge( // was throwing exception cause of a wrong comparator in DDL, that's why we don't have asserts then
+                new Role("/-HTTP-301", Unit.UNARY),
+                new Date().getTime(),
+                0., MARKER
+            );
+    }
 
     @Test
     public void createGaugeWithMarker() {

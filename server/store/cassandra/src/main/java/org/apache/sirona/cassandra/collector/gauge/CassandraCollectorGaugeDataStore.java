@@ -65,19 +65,23 @@ public class CassandraCollectorGaugeDataStore implements CollectorGaugeDataStore
 
     @Override
     public void createOrNoopGauge(final Role role, final String marker) {
+        internalCreateOrNoopGauge(role, marker);
+    }
+
+    private String internalCreateOrNoopGauge(final Role role, final String marker) {
         final String id = id(role, marker);
 
         HFactory.createMutator(keyspace, StringSerializer.get())
             .addInsertion(marker, markerFamily, emptyColumn(id))
             .execute();
+
+        return id;
     }
 
     @Override
     public void addToGauge(final Role role, final long time, final double value, final String marker) {
-        createOrNoopGauge(role, marker);
-
         HFactory.createMutator(keyspace, StringSerializer.get())
-            .addInsertion(id(role, marker), valueFamily, column(time, value))
+            .addInsertion(internalCreateOrNoopGauge(role, marker), valueFamily, column(time, value))
             .execute();
     }
 
