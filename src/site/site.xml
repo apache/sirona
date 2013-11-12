@@ -62,6 +62,8 @@
       <item name="Cassandra" href="/cassandra.html"/>
     </menu>
 
+    <menu ref="reports" inherit="bottom"/>
+
     <menu name="ASF">
       <item name="How Apache Works" href="http://www.apache.org/foundation/how-it-works.html"/>
       <item name="Foundation" href="http://www.apache.org/foundation/"/>
