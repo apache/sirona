@@ -16,7 +16,7 @@
 *#
 <div class="container-fluid">
     <div class="row-fluid">
-        <div class="col-lg-6">
+        <div class="col-lg-4">
             #graphBlock("CPU", "cpu")
 
             #if ($name)
@@ -39,7 +39,7 @@
             </div>
             #end
         </div>
-        <div class="col-lg-6">
+        <div class="col-lg-4">
             #graphBlock("Used Memory", "memory")
 
             #if ($initMemory)
@@ -61,7 +61,7 @@
             #end
         </div>
 
-        <div class="col-lg-6">
+        <div class="col-lg-4">
             #graphBlock("Used Non Heap Memory", "nonheapmemory")
 
             #if ($initMemory)
@@ -112,22 +112,21 @@
                 {
                     min: 0,
                     tickFormatter: function (bytes, axis) {
-                        var precision = 2;
                         var kb = 1024;
                         var mb = kb * kb;
                         var gb = mb * kb;
 
                         if (bytes >= 0 && bytes < kb) {
-                            return bytes + ' o';
+                            return bytes.toFixed(axis.tickDecimals) + ' o';
                         } else if (bytes >= kb && bytes < mb) {
-                            return (bytes / kb).toFixed(precision) + ' Ko';
+                            return (bytes / kb).toFixed(axis.tickDecimals) + ' Ko';
                         } else if (bytes >= mb && bytes < gb) {
-                            return (bytes / mb).toFixed(precision) + ' Mo';
+                            return (bytes / mb).toFixed(axis.tickDecimals) + ' Mo';
                         } else if (bytes >= gb) {
-                            return (bytes / gb).toFixed(precision) + ' Go';
+                            return (bytes / gb).toFixed(axis.tickDecimals) + ' Go';
                         }
 
-                        return bytes + ' B';
+                        return bytes.toFixed(axis.tickDecimals) + ' B';
                     }
                 }
             ]
