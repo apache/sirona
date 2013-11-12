@@ -20,12 +20,12 @@
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xsi:schemaLocation="http://jboss.org/schema/arquillian
                                 http://jboss.org/schema/arquillian/arquillian_1_0.xsd">
-  <container qualifier="tomcat7" default="true">
+  <container qualifier="tomcat7">
     <configuration>
       <property name="tomcatHome">target/tomcat7</property>
       <property name="workDir">target/arquillian-work</property>
       <property name="unpackArchive">true</property>
-      <property name="bindHttpPort">1234</property>
+      <property name="bindHttpPort">${tomcat.http}</property>
     </configuration>
   </container>
 </arquillian>
