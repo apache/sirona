@@ -26,10 +26,15 @@
     <alt>Apache Sirona logo</alt>
     <href>/index.html</href>
   </bannerLeft>
+  <bannerRight>
+    <src>http://incubator.apache.org/images/egg-logo.png</src>
+    <href>http://incubator.apache.org/</href>
+  </bannerRight>
 
   <custom>
     <fluidoSkin>
       <topBarEnabled>true</topBarEnabled>
+      <sideBarEnabled>false</sideBarEnabled>
       <topBarIcon />
       <sourceLineNumbersEnabled>true</sourceLineNumbersEnabled>
     </fluidoSkin>
