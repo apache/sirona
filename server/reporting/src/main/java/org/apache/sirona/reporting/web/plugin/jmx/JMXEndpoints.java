@@ -156,7 +156,7 @@ public class JMXEndpoints {
                 if (type.equals(Character.TYPE.getName())) {
                     return value.charAt(0);
                 } else {
-                    return tryStringConstructor(type, value);
+                    return tryStringConstructor(WRAPPERS.get(type).getName(), value);
                 }
             }
 
