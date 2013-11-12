@@ -28,6 +28,7 @@ import javax.ejb.LockType;
 import javax.ejb.Singleton;
 import javax.ejb.embeddable.EJBContainer;
 import java.util.Collection;
+import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -56,7 +57,10 @@ public class GaugesTest {
 
     @Test
     public void test() throws Exception {
-        final EJBContainer container = EJBContainer.createEJBContainer();
+        final EJBContainer container = EJBContainer.createEJBContainer(new Properties() {{
+            setProperty("openejb.jul.forceReload", Boolean.TRUE.toString());
+            setProperty("logging.level.OpenEJB", "OFF"); // logging will make the test failling just cause System.out takes time
+        }});
         container.getContext().bind("inject", this);
 
         final long start = System.currentTimeMillis();
@@ -68,7 +72,12 @@ public class GaugesTest {
                 es.submit(new Runnable() {
                     @Override
                     public void run() {
-                        jtaSupport.commit();
+                        try {
+                            jtaSupport.commit();
+                        } catch (final Exception e) {
+                            e.printStackTrace(System.out);
+                        }
+
                         try {
                             jtaSupport.rollback();
                         } finally {
@@ -94,7 +103,7 @@ public class GaugesTest {
         }
     }
 
-    private double sum(final Collection<Double> values) {
+    private static double sum(final Collection<Double> values) {
         double sum = 0;
         for (final Double d : values) {
             sum += d;
