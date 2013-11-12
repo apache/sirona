@@ -37,6 +37,10 @@
       <sideBarEnabled>false</sideBarEnabled>
       <topBarIcon />
       <sourceLineNumbersEnabled>true</sourceLineNumbersEnabled>
+      <ohloh>
+        <projectId>sirona</projectId>
+        <widget>stats</widget>
+      </ohloh>
     </fluidoSkin>
   </custom>
 
