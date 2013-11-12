@@ -77,6 +77,16 @@
       <organization>Apache</organization>
       <timezone>+2</timezone>
     </developer>
+    <developer>
+      <id>olamy</id>
+      <name>Olivier Lamy</name>
+      <email>olamy@apache.org</email>
+      <organization>Ecetera.com.au</organization>
+      <roles>
+        <role>PMC Member</role>
+      </roles>
+      <timezone>Australia/Melbourne</timezone>
+    </developer>
   </developers>
 
   <mailingLists>
