@@ -38,7 +38,7 @@ import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.stream.ChunkedWriteHandler;
 import org.apache.sirona.MonitoringException;
 import org.apache.sirona.Role;
-import org.apache.sirona.collector.server.store.gauge.DelegatedCollectorGaugeDataStore;
+import org.apache.sirona.store.gauge.DelegatedCollectorGaugeDataStore;
 import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.repositories.Repository;

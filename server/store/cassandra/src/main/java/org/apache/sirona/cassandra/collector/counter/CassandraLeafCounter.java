@@ -16,7 +16,7 @@
  */
 package org.apache.sirona.cassandra.collector.counter;
 
-import org.apache.sirona.collector.server.store.counter.LeafCollectorCounter;
+import org.apache.sirona.store.counter.LeafCollectorCounter;
 import org.apache.sirona.math.M2AwareStatisticalSummary;
 
 public class CassandraLeafCounter extends LeafCollectorCounter {

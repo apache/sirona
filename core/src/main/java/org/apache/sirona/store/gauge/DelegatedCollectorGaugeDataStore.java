@@ -14,15 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.collector.server.store.gauge;
+package org.apache.sirona.store.gauge;
 
 import org.apache.sirona.MonitoringException;
 import org.apache.sirona.Role;
 import org.apache.sirona.configuration.Configuration;
-import org.apache.sirona.store.gauge.CollectorGaugeDataStore;
-import org.apache.sirona.store.gauge.GaugeDataStore;
-import org.apache.sirona.store.gauge.GaugeValuesRequest;
-import org.apache.sirona.store.gauge.InMemoryGaugeDataStore;
 
 import java.lang.reflect.Constructor;
 import java.util.Collection;

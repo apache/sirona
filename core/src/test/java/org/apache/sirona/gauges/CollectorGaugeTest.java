@@ -14,12 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.collector.server.store.gauge;
+package org.apache.sirona.gauges;
 
 import org.apache.sirona.Role;
 import org.apache.sirona.counters.Unit;
 import org.apache.sirona.store.gauge.CollectorGaugeDataStore;
 import org.apache.sirona.repositories.Repository;
+import org.apache.sirona.store.gauge.DelegatedCollectorGaugeDataStore;
 import org.apache.sirona.store.gauge.GaugeValuesRequest;
 import org.junit.After;
 import org.junit.Before;

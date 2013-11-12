@@ -32,12 +32,12 @@ Take a servlet container and deploy `sirona-collector-[version].war`. You'll get
 
 ## Configuration
 
-Just use the collector `DataStoreFactory`: `org.apache.sirona.collector.server.store.CollectorDataStoreFactory`.
+Just use the collector `DataStoreFactory`: `org.apache.sirona.store.CollectorDataStoreFactory`.
 
 For instance your `commons-monitoring.properties` can look like:
 
 <pre class="prettyprint linenums"><![CDATA[
-org.apache.sirona.store.DataStoreFactory = org.apache.sirona.collector.server.store.CollectorDataStoreFactory
+org.apache.sirona.store.DataStoreFactory = org.apache.sirona.store.CollectorDataStoreFactory
 ]]></pre>
 
 The `GaugeDataStore` can be configured through `org.apache.sirona.collector.gauge.store-class` property.

@@ -14,15 +14,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.collector.server.store;
+package org.apache.sirona.store.counter;
 
-import org.apache.sirona.collector.server.store.counter.InMemoryCollectorCounterStore;
-import org.apache.sirona.collector.server.store.gauge.DelegatedCollectorGaugeDataStore;
-import org.apache.sirona.collector.server.store.status.InMemoryCollectorNodeStatusDataStore;
-import org.apache.sirona.store.DelegateDataStoreFactory;
+import org.apache.sirona.math.M2AwareStatisticalSummary;
+import org.apache.sirona.counters.Counter;
 
-public class CollectorDataStoreFactory extends DelegateDataStoreFactory {
-    public CollectorDataStoreFactory() {
-        super(new InMemoryCollectorCounterStore(), new DelegatedCollectorGaugeDataStore(), new InMemoryCollectorNodeStatusDataStore());
+import java.util.concurrent.locks.Lock;
+
+public class LeafCollectorCounter extends CollectorCounter {
+    public LeafCollectorCounter(final Counter.Key key) {
+        super(key);
+    }
+
+    public void update(final M2AwareStatisticalSummary newStats, final int newConcurrency) {
+        final Lock workLock = lock.writeLock();
+        workLock.lock();
+        try {
+            concurrency.set(newConcurrency);
+            updateConcurrency(newConcurrency);
+            statistics = newStats;
+        } finally {
+            workLock.unlock();
+        }
     }
 }

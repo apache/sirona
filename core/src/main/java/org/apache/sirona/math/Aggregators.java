@@ -14,9 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.collector.server.math;
+package org.apache.sirona.math;
 
-import org.apache.sirona.collector.server.store.counter.LeafCollectorCounter;
+import org.apache.sirona.store.counter.LeafCollectorCounter;
 import org.apache.sirona.math.M2AwareStatisticalSummary;
 
 import java.util.Collection;

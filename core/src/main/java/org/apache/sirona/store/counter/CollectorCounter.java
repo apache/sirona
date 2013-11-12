@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.collector.server.store.counter;
+package org.apache.sirona.store.counter;
 
 import org.apache.sirona.math.M2AwareStatisticalSummary;
 import org.apache.sirona.counters.Counter;

@@ -43,12 +43,11 @@ import java.util.Map;
 import static org.apache.sirona.cassandra.collector.CassandraSirona.column;
 
 public class CassandraCollectorNodeStatusDataStore implements CollectorNodeStatusDataStore {
-    private final CassandraSirona cassandra;
     private final Keyspace keyspace;
     private final String family;
 
     public CassandraCollectorNodeStatusDataStore() {
-        this.cassandra = Configuration.findOrCreateInstance(CassandraSirona.class);
+        final CassandraSirona cassandra = Configuration.findOrCreateInstance(CassandraSirona.class);
         this.keyspace = cassandra.getKeyspace();
         this.family = cassandra.getStatusColumnFamily();
     }

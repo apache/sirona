@@ -32,9 +32,7 @@
   <dependencies>
     <dependency>
       <groupId>org.apache.sirona</groupId>
-      <artifactId>sirona-collector</artifactId>
-      <classifier>classes</classifier>
-      <scope>provided</scope>
+      <artifactId>sirona-core</artifactId>
     </dependency>
 
     <dependency>

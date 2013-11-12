@@ -14,11 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.collector.server.store.counter;
+package org.apache.sirona.store.counter;
 
-import org.apache.sirona.collector.server.math.Aggregators;
 import org.apache.sirona.counters.AggregatedCounter;
 import org.apache.sirona.counters.Counter;
+import org.apache.sirona.math.Aggregators;
 
 import java.util.Collection;
 import java.util.Map;

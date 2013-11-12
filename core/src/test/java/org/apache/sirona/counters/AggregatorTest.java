@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.collector.server.store.counter;
+package org.apache.sirona.counters;
 
 import org.apache.sirona.Role;
 import org.apache.sirona.store.counter.CollectorCounterStore;
@@ -22,6 +22,7 @@ import org.apache.sirona.math.M2AwareStatisticalSummary;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.counters.Unit;
 import org.apache.sirona.repositories.Repository;
+import org.apache.sirona.store.counter.InMemoryCollectorCounterStore;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
