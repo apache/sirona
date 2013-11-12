@@ -25,7 +25,7 @@
       <property name="tomcatHome">target/tomcat7</property>
       <property name="workDir">target/arquillian-work</property>
       <property name="unpackArchive">true</property>
-      <property name="bindHttpPort">${tomcat.http}</property>
+      <property name="bindHttpPort">${tomcat.http:9090}</property>
     </configuration>
   </container>
 </arquillian>
