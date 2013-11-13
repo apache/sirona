@@ -19,7 +19,7 @@ package org.apache.sirona.collector.server;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.sirona.MonitoringException;
+import org.apache.sirona.SironaException;
 import org.apache.sirona.Role;
 import org.apache.sirona.collector.server.api.SSLSocketFactoryProvider;
 import org.apache.sirona.collector.server.api.SecurityProvider;
@@ -146,7 +146,7 @@ public class Collector extends HttpServlet {
                             try {
                                 registerNode(url.trim());
                             } catch (final MalformedURLException e) {
-                                throw new MonitoringException(e);
+                                throw new SironaException(e);
                             }
                         }
                     }
@@ -179,7 +179,7 @@ public class Collector extends HttpServlet {
         final ServletInputStream inputStream = req.getInputStream();
         try {
             slurpEvents(inputStream);
-        } catch (final MonitoringException me) {
+        } catch (final SironaException me) {
             resp.setStatus(HttpURLConnection.HTTP_BAD_REQUEST);
             resp.getWriter().write("{\"error\":\"" + me.getCause().getMessage().replace('\"', ' ') + "\"}");
             return;
@@ -222,7 +222,7 @@ public class Collector extends HttpServlet {
                     statusDataStore.store((String) events[0].getData().get("marker"), status);
                 }
             } catch (final Exception e) {
-                throw new MonitoringException(e);
+                throw new SironaException(e);
             }
         }
     }

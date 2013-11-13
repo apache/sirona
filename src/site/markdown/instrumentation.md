@@ -19,7 +19,7 @@ under the License.
 # Manually (clients)
 
 To handle manually the interception you need to import commons-monitoring-aop.
-Then you can rely on `org.apache.sirona.aop.MonitoringProxyFactory`.
+Then you can rely on `org.apache.sirona.aop.SironaProxyFactory`.
 
 `org.apache.commons.proxy.ProxyFactory` key defines the proxy factory to use to create proxies For instance
 to use javassist you set it to `org.apache.commons.proxy.factory.javassist.JavassistProxyFactory`
@@ -28,7 +28,7 @@ to use javassist you set it to `org.apache.commons.proxy.factory.javassist.Javas
 Then the API is quite simple:
 
 <pre class="prettyprint linenums"><![CDATA[
-final MyClient client = MonitoringProxyFactory.monitor(MyClient.class, getMyClientInstance());
+final MyClient client = SironaProxyFactory.monitor(MyClient.class, getMyClientInstance());
 ]]></pre>
 
 # CDI

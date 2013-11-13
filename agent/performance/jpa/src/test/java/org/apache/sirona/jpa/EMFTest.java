@@ -51,7 +51,7 @@ public class EMFTest {
 
     @Test
     public void newEmfJavaEE() {
-        final EntityManagerFactory emf = new MonitoringPersistence().createContainerEntityManagerFactory(
+        final EntityManagerFactory emf = new SironaPersistence().createContainerEntityManagerFactory(
             PersistenceUnitInfo.class.cast(Proxy.newProxyInstance(getClass().getClassLoader(), new Class<?>[]{PersistenceUnitInfo.class}, new InvocationHandler() {
                 @Override
                 public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {

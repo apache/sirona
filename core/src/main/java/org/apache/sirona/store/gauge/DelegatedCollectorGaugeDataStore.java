@@ -16,7 +16,7 @@
  */
 package org.apache.sirona.store.gauge;
 
-import org.apache.sirona.MonitoringException;
+import org.apache.sirona.SironaException;
 import org.apache.sirona.Role;
 import org.apache.sirona.configuration.Configuration;
 
@@ -41,7 +41,7 @@ public class DelegatedCollectorGaugeDataStore implements CollectorGaugeDataStore
                 DelegatedCollectorGaugeDataStore.class.getClassLoader().loadClass( // use this classloader and not TCCL to avoid issues
                     Configuration.getProperty(Configuration.CONFIG_PROPERTY_PREFIX + "collector.gauge.store-class", InMemoryGaugeDataStore.class.getName())));
         } catch (final ClassNotFoundException e) {
-            throw new MonitoringException(e);
+            throw new SironaException(e);
         }
     }
 
@@ -55,7 +55,7 @@ public class DelegatedCollectorGaugeDataStore implements CollectorGaugeDataStore
             }
             return delegateClass.newInstance();
         } catch (final Exception e) {
-            throw new MonitoringException(e);
+            throw new SironaException(e);
         }
     }
 

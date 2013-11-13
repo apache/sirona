@@ -16,7 +16,7 @@
  */
 package org.apache.sirona.reporting.web.handler.internal;
 
-import org.apache.sirona.MonitoringException;
+import org.apache.sirona.SironaException;
 import org.apache.sirona.reporting.web.handler.api.Template;
 import org.apache.sirona.reporting.web.handler.api.TemplateHelper;
 import org.apache.sirona.reporting.web.template.MapBuilder;
@@ -68,9 +68,9 @@ public class Invoker {
                 response.getWriter().write(result.toString());
             }
         } catch (final InvocationTargetException e) {
-            throw new MonitoringException(e.getCause());
+            throw new SironaException(e.getCause());
         } catch (final Exception e) {
-            throw new MonitoringException(e);
+            throw new SironaException(e);
         }
     }
 
@@ -135,7 +135,7 @@ public class Invoker {
                 return new TemplateHelper(response.getWriter(),
                                           new MapBuilder<String, Object>().set( "templateId", plugin ).build());
             } catch (final IOException e) {
-                throw new MonitoringException(e);
+                throw new SironaException(e);
             }
         }
     }

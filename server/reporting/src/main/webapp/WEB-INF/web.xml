@@ -31,7 +31,7 @@
 
   <filter>
     <filter-name>Monitoring</filter-name>
-    <filter-class>org.apache.sirona.reporting.web.MonitoringController</filter-class>
+    <filter-class>org.apache.sirona.reporting.web.SironaController</filter-class>
   </filter>
 
   <filter-mapping>

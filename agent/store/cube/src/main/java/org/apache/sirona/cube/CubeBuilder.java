@@ -16,7 +16,7 @@
  */
 package org.apache.sirona.cube;
 
-import org.apache.sirona.MonitoringException;
+import org.apache.sirona.SironaException;
 import org.apache.sirona.configuration.Configuration;
 
 import javax.net.ssl.KeyManager;
@@ -69,7 +69,7 @@ public class CubeBuilder {
                 sslContext.init(keyManagers, trustManagers, new java.security.SecureRandom());
                 socketFactory = sslContext.getSocketFactory();
             } catch (final Exception e) {
-                throw new MonitoringException(e);
+                throw new SironaException(e);
             }
         } else {
             socketFactory = null;
@@ -129,7 +129,7 @@ public class CubeBuilder {
             tmf.init(ks);
             return tmf.getTrustManagers();
         } catch (final Exception e) {
-            throw new MonitoringException(e);
+            throw new SironaException(e);
         }
     }
 
@@ -156,7 +156,7 @@ public class CubeBuilder {
             kmf.init(ks, pwd);
             return kmf.getKeyManagers();
         } catch (final Exception e) {
-            throw new MonitoringException(e);
+            throw new SironaException(e);
         }
     }
 

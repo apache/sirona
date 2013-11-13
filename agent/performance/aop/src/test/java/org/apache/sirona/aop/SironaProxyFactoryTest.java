@@ -29,7 +29,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
-public class MonitoringProxyFactoryTest {
+public class SironaProxyFactoryTest {
     @Before
     @After
     public void reset() {
@@ -38,7 +38,7 @@ public class MonitoringProxyFactoryTest {
 
     @Test
     public void test() {
-        final Foo foo = MonitoringProxyFactory.monitor(Foo.class, new FooImpl());
+        final Foo foo = SironaProxyFactory.monitor(Foo.class, new FooImpl());
         foo.haveARest(2000);
 
         final Counter perf = Repository.INSTANCE.getCounter(new Counter.Key(Role.PERFORMANCES, FooImpl.class.getName() + ".haveARest"));

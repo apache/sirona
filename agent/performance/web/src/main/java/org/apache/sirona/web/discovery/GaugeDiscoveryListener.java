@@ -20,7 +20,7 @@ import org.apache.sirona.Role;
 import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.counters.Unit;
 import org.apache.sirona.gauges.Gauge;
-import org.apache.sirona.web.servlet.MonitoringFilter;
+import org.apache.sirona.web.servlet.SironaFilter;
 import org.apache.sirona.web.servlet.StatusGauge;
 
 import javax.servlet.ServletContextEvent;
@@ -49,7 +49,7 @@ public class GaugeDiscoveryListener implements ServletContextListener {
     public void contextInitialized(final ServletContextEvent sce) {
         // init status gauges
         final ConcurrentMap<Integer, StatusGauge> gauges = new ConcurrentHashMap<Integer, StatusGauge>(35);
-        if ("true".equalsIgnoreCase((String) sce.getServletContext().getAttribute(MonitoringFilter.MONITOR_STATUS))) {
+        if ("true".equalsIgnoreCase((String) sce.getServletContext().getAttribute(SironaFilter.MONITOR_STATUS))) {
             final String monitoredStatuses = sce.getServletContext().getInitParameter(Configuration.CONFIG_PROPERTY_PREFIX + "web.monitored-statuses");
 
             String contextPath = sce.getServletContext().getContextPath();

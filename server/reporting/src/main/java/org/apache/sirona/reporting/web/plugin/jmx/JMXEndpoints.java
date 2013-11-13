@@ -17,7 +17,7 @@
 package org.apache.sirona.reporting.web.plugin.jmx;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.sirona.MonitoringException;
+import org.apache.sirona.SironaException;
 import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.reporting.web.handler.api.Regex;
 import org.apache.sirona.reporting.web.handler.api.Template;
@@ -78,7 +78,7 @@ public class JMXEndpoints {
     @Regex("/operation/([^/]*)/([^/]*)/(.*)")
     public String invokeOperation(final String objectNameBase64, final String method, final String[] parameters) {
         if (!METHOD_INVOCATION_ALLOWED) {
-            throw new MonitoringException("Method invocation not allowed");
+            throw new SironaException("Method invocation not allowed");
         }
 
         try {
@@ -119,7 +119,7 @@ public class JMXEndpoints {
                     .set("operations", operations(info))
                     .build(), false);
         } catch (final Exception e) {
-            throw new MonitoringException(e);
+            throw new SironaException(e);
         }
     }
 
@@ -173,7 +173,7 @@ public class JMXEndpoints {
 
             return tryStringConstructor(type, value);
         } catch (final Exception e) {
-            throw new MonitoringException(e);
+            throw new SironaException(e);
         }
     }
 
@@ -199,7 +199,7 @@ public class JMXEndpoints {
             }
         }
 
-        throw new MonitoringException(value + " is not a number");
+        throw new SironaException(value + " is not a number");
     }
 
     private static Object tryStringConstructor(String type, final String value) throws Exception {
@@ -308,7 +308,7 @@ public class JMXEndpoints {
 
             return value.toString();
         } catch (final Exception e) {
-            throw new MonitoringException(e);
+            throw new SironaException(e);
         }
     }
 

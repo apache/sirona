@@ -16,7 +16,7 @@
  */
 package org.apache.sirona.reporting.web.plugin.report;
 
-import org.apache.sirona.MonitoringException;
+import org.apache.sirona.SironaException;
 import org.apache.sirona.Role;
 import org.apache.sirona.counters.AggregatedCounter;
 import org.apache.sirona.counters.Counter;
@@ -94,7 +94,7 @@ public class ReportEndpoints {
         try {
             response.sendRedirect(request.getRequestURI().substring(0, request.getRequestURI().length() - "/clear".length()));
         } catch (final IOException e) {
-            throw new MonitoringException(e);
+            throw new SironaException(e);
         }
     }
 

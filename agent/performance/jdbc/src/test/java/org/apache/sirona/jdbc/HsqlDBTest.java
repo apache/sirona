@@ -39,12 +39,12 @@ import static org.junit.Assert.assertTrue;
 public class HsqlDBTest {
     @BeforeClass
     public static void init() {
-        MonitoringDriver.load();
+        SironaDriver.load();
     }
 
     @Test
     public void driverMonitoring() throws Exception {
-        final Connection connection = DriverManager.getConnection("jdbc:monitoring:hsqldb:mem:monitoring?delegateDriver=" + jdbcDriver.class.getName(), "SA", "");
+        final Connection connection = DriverManager.getConnection("jdbc:sirona:hsqldb:mem:monitoring?delegateDriver=" + jdbcDriver.class.getName(), "SA", "");
         assertNotNull(connection);
         assertTrue(Proxy.isProxyClass(connection.getClass()));
         final InvocationHandler handler = Proxy.getInvocationHandler(connection);

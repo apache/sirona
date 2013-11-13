@@ -23,7 +23,7 @@ This module aims to monitor JPA invocations.
 ## Installation
 
 To use this module and get execution time of queries creation (`createNamedQuery`, ...) set
-as JPA provider `org.apache.sirona.jpa.MonitoringPersistence`.
+as JPA provider `org.apache.sirona.jpa.SironaPersistence`.
 
 If you have in your environment a single "real" JPA provider it should be found automatically but if that's not the
 case of if you want to force the implementation set the property `org.apache.sirona.jpa.provider`

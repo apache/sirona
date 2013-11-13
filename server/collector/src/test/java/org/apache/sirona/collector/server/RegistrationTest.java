@@ -36,7 +36,7 @@ import io.netty.handler.codec.http.HttpResponseEncoder;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.stream.ChunkedWriteHandler;
-import org.apache.sirona.MonitoringException;
+import org.apache.sirona.SironaException;
 import org.apache.sirona.Role;
 import org.apache.sirona.store.gauge.DelegatedCollectorGaugeDataStore;
 import org.apache.sirona.configuration.Configuration;
@@ -143,12 +143,12 @@ public class RegistrationTest {
                         @Override
                         public void operationComplete(final ChannelFuture future) throws Exception {
                             if (!future.isSuccess()) {
-                                throw new MonitoringException("bind failed");
+                                throw new SironaException("bind failed");
                             }
                         }
                     }).sync();
             } catch (final InterruptedException e) {
-                throw new MonitoringException(e);
+                throw new SironaException(e);
             }
 
             return this;

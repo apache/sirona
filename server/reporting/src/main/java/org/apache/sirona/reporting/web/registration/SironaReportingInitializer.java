@@ -17,7 +17,7 @@
 package org.apache.sirona.reporting.web.registration;
 
 import org.apache.sirona.configuration.Configuration;
-import org.apache.sirona.reporting.web.MonitoringController;
+import org.apache.sirona.reporting.web.SironaController;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.ServletContainerInitializer;
@@ -26,7 +26,7 @@ import javax.servlet.ServletException;
 import java.util.EnumSet;
 import java.util.Set;
 
-public class MonitoringReportingInitializer implements ServletContainerInitializer {
+public class SironaReportingInitializer implements ServletContainerInitializer {
     @Override
     public void onStartup(final Set<Class<?>> classes, final ServletContext ctx) throws ServletException {
         final String activated = ctx.getInitParameter(Configuration.CONFIG_PROPERTY_PREFIX + "reporting.activated");
@@ -45,7 +45,7 @@ public class MonitoringReportingInitializer implements ServletContainerInitializ
             mapping = mapping.substring(0, mapping.length() - 1);
         }
 
-        final MonitoringController controller = new MonitoringController();
+        final SironaController controller = new SironaController();
         controller.setMapping(mapping);
         ctx.addFilter("commons-monitoring-reporting", controller).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, mapping + "/*");
     }

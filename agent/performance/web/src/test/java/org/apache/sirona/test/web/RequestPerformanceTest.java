@@ -23,7 +23,7 @@ import org.apache.sirona.Role;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.counters.Unit;
 import org.apache.sirona.repositories.Repository;
-import org.apache.sirona.web.registration.WebMonitoringInitializer;
+import org.apache.sirona.web.registration.WebSironaInitializer;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
@@ -56,7 +56,7 @@ public class RequestPerformanceTest {
             .addClasses(HittableServlet.class)
             .addAsLibraries(
                 ShrinkWrap.create(JavaArchive.class, "sci.jar")
-                    .addAsServiceProvider(ServletContainerInitializer.class, WebMonitoringInitializer.class));
+                    .addAsServiceProvider(ServletContainerInitializer.class, WebSironaInitializer.class));
     }
 
     @ArquillianResource

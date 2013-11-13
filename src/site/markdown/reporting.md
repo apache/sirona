@@ -45,7 +45,7 @@ you can embed it. You'll need to update your web.xml to declare the monitoring f
 
   <filter>
     <filter-name>Monitoring</filter-name>
-    <filter-class>org.apache.sirona.reporting.web.MonitoringController</filter-class>
+    <filter-class>org.apache.sirona.reporting.web.SironaController</filter-class>
     <init-param> <!-- should match your filter mapping base -->
       <param-name>monitoring-mapping</param-name>
       <param-value>/monitoring/</param-value>

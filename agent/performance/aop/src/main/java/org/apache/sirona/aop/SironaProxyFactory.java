@@ -24,21 +24,21 @@ import org.apache.commons.proxy.ProxyFactory;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-public final class MonitoringProxyFactory {
+public final class SironaProxyFactory {
     public static <T> T monitor(final Class<T> clazz, final Object instance) {
         return clazz.cast(
             Configuration.findOrCreateInstance(ProxyFactory.class)
-                .createInvokerProxy(ClassLoaders.current(), new MonitoringHandler(instance), new Class<?>[]{clazz}));
+                .createInvokerProxy(ClassLoaders.current(), new SironaPerformanceHandler(instance), new Class<?>[]{clazz}));
     }
 
-    private MonitoringProxyFactory() {
+    private SironaProxyFactory() {
         // no-op
     }
 
-    private static class MonitoringHandler extends AbstractPerformanceInterceptor<Invocation> implements Invoker {
+    private static class SironaPerformanceHandler extends AbstractPerformanceInterceptor<Invocation> implements Invoker {
         private final Object instance;
 
-        public MonitoringHandler(final Object instance) {
+        public SironaPerformanceHandler(final Object instance) {
             this.instance = instance;
         }
 

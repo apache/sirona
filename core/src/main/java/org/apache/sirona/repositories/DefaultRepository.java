@@ -16,7 +16,7 @@
  */
 package org.apache.sirona.repositories;
 
-import org.apache.sirona.MonitoringException;
+import org.apache.sirona.SironaException;
 import org.apache.sirona.Role;
 import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.counters.Counter;
@@ -88,7 +88,7 @@ public class DefaultRepository implements Repository {
             GaugeManager mgr;
             try {
                 mgr = Configuration.findOrCreateInstance(GaugeManager.class);
-            } catch (final MonitoringException e) {
+            } catch (final SironaException e) {
                 mgr = new DefaultGaugeManager();
             }
             manager = mgr;
@@ -102,7 +102,7 @@ public class DefaultRepository implements Repository {
         NodeStatusDataStore status = null;
         try {
             status = Configuration.findOrCreateInstance(NodeStatusDataStore.class);
-        } catch (final MonitoringException e) {
+        } catch (final SironaException e) {
             // no-op
         }
         if (status == null) {
@@ -115,13 +115,13 @@ public class DefaultRepository implements Repository {
         CommonGaugeDataStore gauge = null;
         try {
             gauge = Configuration.findOrCreateInstance(GaugeDataStore.class);
-        } catch (final MonitoringException e) {
+        } catch (final SironaException e) {
             // no-op
         }
         if (gauge == null) {
             try {
                 gauge = Configuration.findOrCreateInstance(CollectorGaugeDataStore.class);
-            } catch (final MonitoringException e) {
+            } catch (final SironaException e) {
                 // no-op
             }
         }
@@ -135,13 +135,13 @@ public class DefaultRepository implements Repository {
         CounterDataStore counter = null;
         try {
             counter = Configuration.findOrCreateInstance(CounterDataStore.class);
-        } catch (final MonitoringException e) {
+        } catch (final SironaException e) {
             // no-op
         }
         if (counter == null) {
             try {
                 counter = Configuration.findOrCreateInstance(CollectorCounterStore.class);
-            } catch (final MonitoringException e) {
+            } catch (final SironaException e) {
                 // no-op
             }
         }

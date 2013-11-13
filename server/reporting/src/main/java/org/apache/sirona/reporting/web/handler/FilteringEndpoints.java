@@ -24,14 +24,13 @@ import org.apache.velocity.runtime.RuntimeSingleton;
 import org.apache.velocity.runtime.resource.loader.ResourceLoader;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
 public class FilteringEndpoints {
     private static final String BOOTSTRAP_CSS = "/resources/css/bootstrap.css";
-    private static final String MONITORING_CSS = "/resources/css/sirona.css";
+    private static final String SIRONA_CSS = "/resources/css/sirona.css";
     private static final String RESOURCES = "/resources/.*";
 
     private ResourceLoader rl;
@@ -44,9 +43,9 @@ public class FilteringEndpoints {
         }
     }
 
-    @Regex(MONITORING_CSS)
+    @Regex(SIRONA_CSS)
     public void filterCss(final TemplateHelper helper) {
-        helper.renderPlain(MONITORING_CSS);
+        helper.renderPlain(SIRONA_CSS);
     }
 
     @Regex(BOOTSTRAP_CSS)

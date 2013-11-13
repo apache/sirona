@@ -16,7 +16,7 @@
  */
 package org.apache.sirona.jpa;
 
-import org.apache.sirona.MonitoringException;
+import org.apache.sirona.SironaException;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -33,7 +33,7 @@ import java.util.LinkedList;
 
 public class OverridePersistenceXmlClassLoader extends ClassLoader {
     private static final String PERSISTENCE_XML = "META-INF/persistence.xml";
-    private static final String PERSISTENCE_PROVIDER = MonitoringPersistence.class.getName();
+    private static final String PERSISTENCE_PROVIDER = SironaPersistence.class.getName();
     public static final String NO_PROVIDER = "<provider></provider>";
 
     private final String replacement;
@@ -95,7 +95,7 @@ public class OverridePersistenceXmlClassLoader extends ClassLoader {
             }
             return new String(out.toByteArray());
         } catch (final IOException e) {
-            throw new MonitoringException(e);
+            throw new SironaException(e);
         } finally {
             // no need to close out
             try {

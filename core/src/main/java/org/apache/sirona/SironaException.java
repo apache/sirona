@@ -16,12 +16,12 @@
  */
 package org.apache.sirona;
 
-public class MonitoringException extends RuntimeException {
-    public MonitoringException(final Throwable e) {
+public class SironaException extends RuntimeException {
+    public SironaException(final Throwable e) {
         super(e);
     }
 
-    public MonitoringException(final String s) {
+    public SironaException(final String s) {
         super(s);
     }
 }

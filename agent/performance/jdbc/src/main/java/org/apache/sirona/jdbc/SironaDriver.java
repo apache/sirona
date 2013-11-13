@@ -29,25 +29,25 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-public class MonitoringDriver implements Driver {
+public class SironaDriver implements Driver {
     static {
         try {
-            DriverManager.registerDriver(new MonitoringDriver());
+            DriverManager.registerDriver(new SironaDriver());
         } catch (final SQLException e) {
             // no-op
         }
     }
 
-    private static final String PREFIX = "jdbc:monitoring:";
+    private static final String PREFIX = "jdbc:sirona:";
     private static final String DRIVER_SUFFIX = "delegateDriver=";
 
     public static void load() {
-    } // sexier than Class.forName("org.apache.sirona.jdbc.MonitoringDriver"); in full java
+    } // sexier than Class.forName("org.apache.sirona.jdbc.SironaDriver"); in full java
 
     @Override
     public Connection connect(final String url, final Properties info) throws SQLException {
         if (!acceptsURL(url)) {
-            throw new SQLException("Driver " + MonitoringDriver.class.getName() + " doesn't accept " + url + ". Pattern is jdbc:monitoring:<xxx>:<yyy>?delegateDriver=<zzz>");
+            throw new SQLException("Driver " + SironaDriver.class.getName() + " doesn't accept " + url + ". Pattern is jdbc:sirona:<xxx>:<yyy>?delegateDriver=<zzz>");
         }
 
         final int driverIndex = url.indexOf(DRIVER_SUFFIX);

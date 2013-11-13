@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class MonitoringSessionListener implements HttpSessionListener, ServletContextListener {
+public class SironaSessionListener implements HttpSessionListener, ServletContextListener {
     private final Map<String, StopWatch> watches = new ConcurrentHashMap<String, StopWatch>();
 
     private final AtomicLong sessionNumber = new AtomicLong(0);

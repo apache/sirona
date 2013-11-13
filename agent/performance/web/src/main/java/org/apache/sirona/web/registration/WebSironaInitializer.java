@@ -21,8 +21,8 @@ import org.apache.sirona.repositories.Repository;
 import org.apache.sirona.util.Environment;
 import org.apache.sirona.web.discovery.GaugeDiscoveryListener;
 import org.apache.sirona.web.lifecycle.SironaLifecycle;
-import org.apache.sirona.web.servlet.MonitoringFilter;
-import org.apache.sirona.web.session.MonitoringSessionListener;
+import org.apache.sirona.web.servlet.SironaFilter;
+import org.apache.sirona.web.session.SironaSessionListener;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.FilterRegistration;
@@ -32,7 +32,7 @@ import javax.servlet.ServletException;
 import java.util.EnumSet;
 import java.util.Set;
 
-public class WebMonitoringInitializer implements ServletContainerInitializer {
+public class WebSironaInitializer implements ServletContainerInitializer {
     private static final String ACTIVATED = Configuration.CONFIG_PROPERTY_PREFIX + "web.activated";
     private static final String FALSE = Boolean.FALSE.toString();
 
@@ -47,16 +47,16 @@ public class WebMonitoringInitializer implements ServletContainerInitializer {
             return;
         }
 
-        final String monStatus = Boolean.toString(!FALSE.equalsIgnoreCase(ctx.getInitParameter(MonitoringFilter.MONITOR_STATUS)));
-        ctx.setAttribute(MonitoringFilter.MONITOR_STATUS, monStatus);
+        final String monStatus = Boolean.toString(!FALSE.equalsIgnoreCase(ctx.getInitParameter(SironaFilter.MONITOR_STATUS)));
+        ctx.setAttribute(SironaFilter.MONITOR_STATUS, monStatus);
 
-        ctx.addListener(MonitoringSessionListener.class);
+        ctx.addListener(SironaSessionListener.class);
         ctx.addListener(GaugeDiscoveryListener.class);
         if (ctx.getClassLoader().equals(Repository.class.getClassLoader())) {
             ctx.addListener(SironaLifecycle.class);
         }
 
-        String ignoredUrls = ctx.getInitParameter(MonitoringFilter.IGNORED_URLS);
+        String ignoredUrls = ctx.getInitParameter(SironaFilter.IGNORED_URLS);
         String monitoredUrls = ctx.getInitParameter(Configuration.CONFIG_PROPERTY_PREFIX + "web.monitored-urls");
         if (!"false".equalsIgnoreCase(monitoredUrls)) {
             if (monitoredUrls == null) {
@@ -64,22 +64,22 @@ public class WebMonitoringInitializer implements ServletContainerInitializer {
             }
 
             if (ignoredUrls == null) {
-                ignoredUrls = Configuration.getProperty(MonitoringFilter.IGNORED_URLS, "/monitoring");
+                ignoredUrls = Configuration.getProperty(SironaFilter.IGNORED_URLS, "/monitoring");
             }
 
             if (monitoredUrls.contains(",")) {
                 final String[] split = monitoredUrls.split(",");
                 for (int i = 0; i < split.length; i++) {
-                    final FilterRegistration.Dynamic filter = ctx.addFilter("monitoring-filter-" + i, MonitoringFilter.class);
+                    final FilterRegistration.Dynamic filter = ctx.addFilter("monitoring-filter-" + i, SironaFilter.class);
                     filter.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), false, split[i]);
-                    filter.setInitParameter(MonitoringFilter.MONITOR_STATUS, monStatus);
-                    filter.setInitParameter(MonitoringFilter.IGNORED_URLS, ignoredUrls);
+                    filter.setInitParameter(SironaFilter.MONITOR_STATUS, monStatus);
+                    filter.setInitParameter(SironaFilter.IGNORED_URLS, ignoredUrls);
                 }
             } else {
-                final FilterRegistration.Dynamic filter = ctx.addFilter("monitoring-filter", MonitoringFilter.class);
+                final FilterRegistration.Dynamic filter = ctx.addFilter("monitoring-filter", SironaFilter.class);
                 filter.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), false, monitoredUrls);
-                filter.setInitParameter(MonitoringFilter.MONITOR_STATUS, monStatus);
-                filter.setInitParameter(MonitoringFilter.IGNORED_URLS, ignoredUrls);
+                filter.setInitParameter(SironaFilter.MONITOR_STATUS, monStatus);
+                filter.setInitParameter(SironaFilter.IGNORED_URLS, ignoredUrls);
             }
         }
     }

@@ -32,7 +32,7 @@ import java.util.Map;
 
 import static org.apache.sirona.jpa.JPAProxyFactory.monitor;
 
-public class MonitoringPersistence implements PersistenceProvider {
+public class SironaPersistence implements PersistenceProvider {
     public static final Role ROLE = new Role("jpa", Unit.Time.NANOSECOND);
 
     private static final String DELEGATE_PROVIDER_KEY = Configuration.CONFIG_PROPERTY_PREFIX + "jpa.provider";

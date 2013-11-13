@@ -51,7 +51,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class MonitoringController implements Filter {
+public class SironaController implements Filter {
     public static final String CONTENT_TYPE = "Content-Type";
     private final Map<String, byte[]> cachedResources = new ConcurrentHashMap<String, byte[]>();
     private final Map<Pattern, Invoker> invokers = new HashMap<Pattern, Invoker>();

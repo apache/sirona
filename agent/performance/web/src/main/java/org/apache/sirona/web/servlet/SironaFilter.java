@@ -16,7 +16,7 @@
  */
 package org.apache.sirona.web.servlet;
 
-import org.apache.sirona.MonitoringException;
+import org.apache.sirona.SironaException;
 import org.apache.sirona.Role;
 import org.apache.sirona.aop.AbstractPerformanceInterceptor;
 import org.apache.sirona.configuration.Configuration;
@@ -33,7 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
 
-public class MonitoringFilter extends AbstractPerformanceInterceptor<MonitoringFilter.Invocation> implements Filter {
+public class SironaFilter extends AbstractPerformanceInterceptor<SironaFilter.Invocation> implements Filter {
     public static final String MONITOR_STATUS = Configuration.CONFIG_PROPERTY_PREFIX + "web.monitored-status";
     public static final String IGNORED_URLS = Configuration.CONFIG_PROPERTY_PREFIX + "web.ignored-urls";
 
@@ -50,7 +50,7 @@ public class MonitoringFilter extends AbstractPerformanceInterceptor<MonitoringF
         final String monStatus = filterConfig.getInitParameter(MONITOR_STATUS);
         if ((monStatus == null || "true".equalsIgnoreCase(monStatus))
                 && filterConfig.getServletContext().getAttribute(GaugeDiscoveryListener.STATUS_GAUGES_ATTRIBUTE) == null) {
-            throw new MonitoringException("To monitor status activate " + GaugeDiscoveryListener.class.getName());
+            throw new SironaException("To monitor status activate " + GaugeDiscoveryListener.class.getName());
         }
 
         statusGauges = (Map<Integer, StatusGauge>) filterConfig.getServletContext().getAttribute(GaugeDiscoveryListener.STATUS_GAUGES_ATTRIBUTE);

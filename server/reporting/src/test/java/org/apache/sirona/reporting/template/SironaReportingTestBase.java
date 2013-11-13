@@ -20,7 +20,7 @@ import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
 import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebClient;
 import org.apache.catalina.startup.Constants;
-import org.apache.sirona.reporting.web.registration.MonitoringReportingInitializer;
+import org.apache.sirona.reporting.web.registration.SironaReportingInitializer;
 import org.apache.sirona.web.lifecycle.SironaLifecycle;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -53,7 +53,7 @@ public abstract class SironaReportingTestBase {
         return ShrinkWrap.create(WebArchive.class, "sirona-test.war")
             .addAsLibraries(
                 ShrinkWrap.create(JavaArchive.class, "sci.jar") // bug in tomcat?
-                    .addAsServiceProvider(ServletContainerInitializer.class, MonitoringReportingInitializer.class)
+                    .addAsServiceProvider(ServletContainerInitializer.class, SironaReportingInitializer.class)
                     .addClass(SironaLifecycle.class));
     }
 

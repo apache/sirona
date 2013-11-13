@@ -26,12 +26,12 @@ Add commons-monitoring-web to your webapp.
 
 ## Monitor requests
 
-Simply add the filter `org.apache.sirona.web.servlet.MonitoringFilter`:
+Simply add the filter `org.apache.sirona.web.servlet.SironaFilter`:
 
 <pre class="prettyprint linenums"><![CDATA[
 <filter>
     <filter-name>monitoring-request</filter-name>
-    <filter-class>org.apache.sirona.web.servlet.MonitoringFilter</filter-class>
+    <filter-class>org.apache.sirona.web.servlet.SironaFilter</filter-class>
 </filter>
 <filter-mapping>
     <filter-name>monitoring-request</filter-name>
@@ -45,11 +45,11 @@ init parameter `org.apache.sirona.web.activated` to false.
 
 ## Monitor sessions
 
-Simply add the listener `org.apache.sirona.web.servlet.MonitoringFilter`:
+Simply add the listener `org.apache.sirona.web.servlet.SironaFilter`:
 
 <pre class="prettyprint linenums"><![CDATA[
 <listener>
-  <listener-class>org.apache.sirona.web.session.MonitoringSessionListener</listener-class>
+  <listener-class>org.apache.sirona.web.session.SironaSessionListener</listener-class>
 </listener>
 ]]></pre>
 

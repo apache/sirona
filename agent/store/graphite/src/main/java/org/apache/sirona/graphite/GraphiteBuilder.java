@@ -16,7 +16,7 @@
  */
 package org.apache.sirona.graphite;
 
-import org.apache.sirona.MonitoringException;
+import org.apache.sirona.SironaException;
 import org.apache.sirona.configuration.Configuration;
 
 import javax.net.SocketFactory;
@@ -36,7 +36,7 @@ public class GraphiteBuilder {
         try {
             return new Graphite(SocketFactory.getDefault(), address, port, Charset.forName(charset));
         } catch (final IOException e) {
-            throw new MonitoringException(e);
+            throw new SironaException(e);
         }
     }
 }

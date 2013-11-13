@@ -16,7 +16,7 @@
  */
 package org.apache.sirona.configuration;
 
-import org.apache.sirona.MonitoringException;
+import org.apache.sirona.SironaException;
 import org.apache.sirona.util.ClassLoaders;
 
 import java.io.File;
@@ -94,7 +94,7 @@ public final class Configuration {
             try {
                 array[i] = newInstance(api, split[i]);
             } catch (final Exception e) {
-                throw new MonitoringException(e);
+                throw new SironaException(e);
             }
         }
         return array;
@@ -123,7 +123,7 @@ public final class Configuration {
             SINGLETONS.put(clazz, t);
             return t;
         } catch (final Exception e) {
-            throw new MonitoringException(e);
+            throw new SironaException(e);
         }
     }
 
@@ -141,7 +141,7 @@ public final class Configuration {
         try {
             return internalProcessInstance(instance);
         } catch (final Exception e) {
-            throw new MonitoringException(e);
+            throw new SironaException(e);
         }
     }
 

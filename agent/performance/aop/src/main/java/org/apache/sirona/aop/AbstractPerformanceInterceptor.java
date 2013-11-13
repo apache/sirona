@@ -17,7 +17,7 @@
 
 package org.apache.sirona.aop;
 
-import org.apache.sirona.MonitoringException;
+import org.apache.sirona.SironaException;
 import org.apache.sirona.Role;
 import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.counters.Counter;
@@ -208,7 +208,7 @@ public abstract class AbstractPerformanceInterceptor<T> implements Serializable 
                         declaring = declaring.getSuperclass();
                     }
                 } catch (final ClassNotFoundException e) {
-                    throw new MonitoringException(e);
+                    throw new SironaException(e);
                 }
             }
             return realMethod;
