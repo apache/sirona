@@ -162,7 +162,7 @@ public class SironaController implements Filter {
             httpResponse.setHeader(CONTENT_TYPE, "application/vnd.ms-fontobject");
             skipFiltering = true;
         } else if (requestURI.endsWith(".woff")) {
-            httpResponse.setHeader(CONTENT_TYPE, "application/x-woff");
+            httpResponse.setHeader(CONTENT_TYPE, "application/font-woff");
             skipFiltering = true;
         } else if (requestURI.endsWith(".ttf") || requestURI.endsWith(".itf")) {
             httpResponse.setHeader(CONTENT_TYPE, "application/octet-stream");

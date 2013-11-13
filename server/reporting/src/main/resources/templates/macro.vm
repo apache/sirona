@@ -18,7 +18,7 @@
 <span id="$id" class="col-lg-6">
     <label for="l$id">$label</label>
     <span class="add-on">
-      <i data-time-icon="icon-time" data-date-icon="icon-calendar" class="glyphicon glyphicon-calendar"></i>
+      <i data-time-icon="icon-time" data-date-icon="icon-calendar" class="glyphicon glyphicon-th"></i>
     </span>
     <input data-format="dd/MM/yyyy hh:mm:ss" type="text" class="form-control" id="l$id">
 </span>
