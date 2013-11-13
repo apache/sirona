@@ -18,7 +18,7 @@
     var dayDuration = 24 * 3600 * 1000;
 
     Sirona.escapeId = function (id) { // we use base64 etc so we need escaping
-        return id.replace( /(%|:|\.|\[|\])/g, "\\$1" );
+        return id.replace(/(%|:|\.|\[|\])/g, "\\$1");
     };
 
     Sirona.extractTimeFromPicker = function (picker) {
@@ -38,9 +38,10 @@
         });
     };
 
-    Sirona.initGraph = function(mapping, plugin, graph, options) {
-        var startDateTimePicker = $('#' + Sirona.escapeId(graph + '-datetimepicker-start'));
-        var endDateTimePicker = $('#' + Sirona.escapeId(graph + '-datetimepicker-end'));
+    Sirona.initGraph = function (mapping, plugin, graph, options) {
+        var escapedName = Sirona.escapeId(graph);
+        var startDateTimePicker = $('#' + escapedName + '-datetimepicker-start');
+        var endDateTimePicker = $('#' + escapedName + '-datetimepicker-end');
         startDateTimePicker.datetimepicker();
         endDateTimePicker.datetimepicker();
 
@@ -53,11 +54,17 @@
         startDateTimePicker.data('datetimepicker').setLocalDate(yesterday);
         endDateTimePicker.data('datetimepicker').setLocalDate(tomorrow);
 
-        (function doUpdateGraph() {
+        var doUpdateGraph = function () {
             Sirona.updateGraph(mapping, plugin, graph,
                 Sirona.extractTimeFromPicker(startDateTimePicker),
                 Sirona.extractTimeFromPicker(endDateTimePicker),
-                options, doUpdateGraph, 4000); // refresh interval = 4s
-        })();
+                options);
+        };
+
+        $('#update-' + escapedName).submit(function () {
+            doUpdateGraph();
+            return false;
+        });
+        doUpdateGraph();
     };
 }(window.Sirona = window.Sirona || {}, jQuery));

@@ -28,7 +28,7 @@
 <form class="form-inline" id="update-$id" role="form">
     #datePicker("From", "${id}-datetimepicker-start")
     #datePicker("To", "${id}-datetimepicker-end")
-    #*<button type="submit" class="btn btn-primary col-lg-12">Update</button>*#
+    <button id="${id}-submit" type="submit" class="btn btn-primary col-lg-12">Update</button>
 </form>
 #end
 
