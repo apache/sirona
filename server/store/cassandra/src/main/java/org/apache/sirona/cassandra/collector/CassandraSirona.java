@@ -20,17 +20,15 @@ import me.prettyprint.cassandra.model.ConfigurableConsistencyLevel;
 import me.prettyprint.cassandra.serializers.SerializerTypeInferer;
 import me.prettyprint.cassandra.serializers.StringSerializer;
 import me.prettyprint.cassandra.service.CassandraHostConfigurator;
+import me.prettyprint.cassandra.service.StringKeyIterator;
 import me.prettyprint.cassandra.service.ThriftKsDef;
 import me.prettyprint.hector.api.Cluster;
 import me.prettyprint.hector.api.Keyspace;
 import me.prettyprint.hector.api.Serializer;
 import me.prettyprint.hector.api.beans.HColumn;
 import me.prettyprint.hector.api.beans.OrderedRows;
-import me.prettyprint.hector.api.beans.OrderedSuperRows;
 import me.prettyprint.hector.api.beans.Row;
-import me.prettyprint.hector.api.beans.SuperRow;
 import me.prettyprint.hector.api.ddl.ColumnFamilyDefinition;
-import me.prettyprint.hector.api.ddl.ColumnType;
 import me.prettyprint.hector.api.ddl.ComparatorType;
 import me.prettyprint.hector.api.factory.HFactory;
 import org.apache.sirona.cassandra.CassandraBuilder;
@@ -39,7 +37,6 @@ import org.apache.sirona.configuration.ioc.Destroying;
 import org.apache.sirona.configuration.ioc.IoCs;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.logging.Logger;
 
@@ -57,7 +54,7 @@ public class CassandraSirona {
 
     public CassandraSirona() {
         final CassandraHostConfigurator configurator = new CassandraHostConfigurator(builder.getHosts());
-        configurator.setMaxActive(75);
+        configurator.setMaxActive(builder.getMaxActive());
         cluster = HFactory.getOrCreateCluster(builder.getCluster(), configurator);
 
         final String keyspaceName = builder.getKeyspace();
@@ -69,15 +66,17 @@ public class CassandraSirona {
 
         final ColumnFamilyDefinition gauges = HFactory.createColumnFamilyDefinition(keyspaceName, builder.getGaugeValuesColumnFamily(), ComparatorType.LONGTYPE);
         final ColumnFamilyDefinition markersGauges = HFactory.createColumnFamilyDefinition(keyspaceName, builder.getMarkerGaugesColumFamily(), ComparatorType.UTF8TYPE);
-        final ColumnFamilyDefinition counters = createSuperColumn(keyspaceName, builder.getCounterColumnFamily(), ComparatorType.UTF8TYPE);
-        final ColumnFamilyDefinition statuses = createSuperColumn(keyspaceName, builder.getStatusColumnFamily(), ComparatorType.UTF8TYPE);
+        final ColumnFamilyDefinition counters = HFactory.createColumnFamilyDefinition(keyspaceName, builder.getCounterColumnFamily(), ComparatorType.UTF8TYPE);
+        final ColumnFamilyDefinition markersCounters = HFactory.createColumnFamilyDefinition(keyspaceName, builder.getMarkerCountersColumnFamily(), ComparatorType.UTF8TYPE);
+        final ColumnFamilyDefinition statuses = HFactory.createColumnFamilyDefinition(keyspaceName, builder.getStatusColumnFamily(), ComparatorType.UTF8TYPE);
+        final ColumnFamilyDefinition markersStatuses = HFactory.createColumnFamilyDefinition(keyspaceName, builder.getMarkerStatusesColumnFamily(), ComparatorType.UTF8TYPE);
 
         { // ensure keyspace exists, here if the keyspace doesn't exist we suppose nothing exist
             if (cluster.describeKeyspace(keyspaceName) == null) {
                 LOGGER.info("Creating Sirona Cassandra '" + keyspaceName + "' keyspace.");
                 cluster.addKeyspace(
                     HFactory.createKeyspaceDefinition(keyspaceName, ThriftKsDef.DEF_STRATEGY_CLASS, builder.getReplicationFactor(),
-                        asList(counters, gauges, markersGauges, statuses)));
+                        asList(counters, markersCounters, gauges, markersGauges, statuses, markersStatuses)));
             }
         }
     }
@@ -124,6 +123,14 @@ public class CassandraSirona {
         return builder.getMarkerGaugesColumFamily();
     }
 
+    public String getMarkerCountersColumnFamily() {
+        return builder.getMarkerCountersColumnFamily();
+    }
+
+    public String getMarkerStatusesColumnFamily() {
+        return builder.getMarkerStatusesColumnFamily();
+    }
+
     public String keySeparator() {
         return SEPARATOR;
     }
@@ -137,43 +144,10 @@ public class CassandraSirona {
     }
 
     public static Collection<String> keys(final Keyspace keyspace, final String family) {
-        final OrderedRows<String, String, Object> result = HFactory.createRangeSlicesQuery(keyspace, StringSerializer.get(), StringSerializer.get(), new DynamicDelegatedSerializer<Object>())
-            .setColumnFamily(family)
-            .setReturnKeysOnly()
-            .execute()
-            .get();
-
         final Collection<String> set = new HashSet<String>();
-        if (result != null) {
-            for (final Row<String, String, ?> row :result) {
-                set.add(row.getKey());
-            }
+        for (final String item : new StringKeyIterator.Builder(keyspace, family).build()) {
+            set.add(item);
         }
         return set;
-    }
-
-    public static Collection<String> superKeys(final Keyspace keyspace, final String family) {
-        final OrderedSuperRows<String, String, String, ?> result = HFactory.createRangeSuperSlicesQuery(keyspace, StringSerializer.get(), StringSerializer.get(), StringSerializer.get(), new DynamicDelegatedSerializer<Object>())
-            .setColumnFamily(family)
-            .setRange(null, null, false, Integer.MAX_VALUE)
-            .setKeys("", "")
-            .execute()
-            .get();
-
-        final Collection<String> set = new HashSet<String>();
-        if (result != null) {
-            for (final SuperRow<String, String, String, ?> row : result) {
-                set.add(row.getKey());
-            }
-        }
-
-        return set;
-    }
-
-    private static ColumnFamilyDefinition createSuperColumn(final String keyspaceName, final String name, final ComparatorType comparator) {
-        final ColumnFamilyDefinition statuses = HFactory.createColumnFamilyDefinition(keyspaceName, name, ComparatorType.UTF8TYPE);
-        statuses.setColumnType(ColumnType.SUPER);
-        statuses.setSubComparatorType(comparator);
-        return statuses;
     }
 }

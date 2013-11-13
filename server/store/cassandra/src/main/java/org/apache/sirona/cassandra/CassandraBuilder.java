@@ -16,21 +16,25 @@
  */
 package org.apache.sirona.cassandra;
 
+import me.prettyprint.cassandra.service.CassandraHost;
 import me.prettyprint.hector.api.HConsistencyLevel;
 import org.apache.sirona.configuration.ioc.AutoSet;
 
 @AutoSet
 public class CassandraBuilder {
-    private String hosts = "localhost:9171";
+    private String hosts = "localhost:" + CassandraHost.DEFAULT_PORT;
     private String cluster = "sirona-cluster";
     private String keyspace = "sirona";
-    private String counterColumnFamily = "counters";
+    private String counterColumnFamily = "counters_values";
     private String gaugeValuesColumnFamily = "gauges_values";
-    private String statusColumnFamily = "statuses";
+    private String statusColumnFamily = "statuses_values";
+    private String markerCountersColumnFamily = "markers_counters";
+    private String markerStatusesColumnFamily = "markers_statuses";
     private String markerGaugesColumFamily = "markers_gauges";
     private String writeConsistencyLevel = HConsistencyLevel.QUORUM.name();
     private String readConsistencyLevel = HConsistencyLevel.QUORUM.name();
     private int replicationFactor = 1;
+    private int maxActive = CassandraHost.DEFAULT_MAX_ACTIVE;
 
     public String getHosts() {
         return hosts;
@@ -64,11 +68,27 @@ public class CassandraBuilder {
         return markerGaugesColumFamily;
     }
 
+    public String getMarkerCountersColumnFamily() {
+        return markerCountersColumnFamily;
+    }
+
+    public String getMarkerStatusesColumnFamily() {
+        return markerStatusesColumnFamily;
+    }
+
     public HConsistencyLevel getWriteConsistencyLevel() {
         return HConsistencyLevel.valueOf(writeConsistencyLevel);
     }
 
     public HConsistencyLevel getReadConsistencyLevel() {
         return HConsistencyLevel.valueOf(readConsistencyLevel);
+    }
+
+    public int getMaxActive() {
+        return maxActive;
+    }
+
+    public void setMaxActive(int maxActive) {
+        this.maxActive = maxActive;
     }
 }

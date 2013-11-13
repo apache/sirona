@@ -18,11 +18,10 @@ package org.apache.sirona.cassandra.collector.status;
 
 import me.prettyprint.cassandra.serializers.StringSerializer;
 import me.prettyprint.hector.api.Keyspace;
+import me.prettyprint.hector.api.beans.ColumnSlice;
 import me.prettyprint.hector.api.beans.HColumn;
-import me.prettyprint.hector.api.beans.HSuperColumn;
-import me.prettyprint.hector.api.beans.OrderedSuperRows;
-import me.prettyprint.hector.api.beans.SuperRow;
-import me.prettyprint.hector.api.beans.SuperSlice;
+import me.prettyprint.hector.api.beans.OrderedRows;
+import me.prettyprint.hector.api.beans.Row;
 import me.prettyprint.hector.api.factory.HFactory;
 import me.prettyprint.hector.api.mutation.Mutator;
 import me.prettyprint.hector.api.query.QueryResult;
@@ -33,45 +32,60 @@ import org.apache.sirona.status.Status;
 import org.apache.sirona.status.ValidationResult;
 import org.apache.sirona.store.status.CollectorNodeStatusDataStore;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
 import static org.apache.sirona.cassandra.collector.CassandraSirona.column;
+import static org.apache.sirona.cassandra.collector.CassandraSirona.emptyColumn;
 
 public class CassandraCollectorNodeStatusDataStore implements CollectorNodeStatusDataStore {
     private final Keyspace keyspace;
     private final String family;
+    private final String markerFamily;
+    private final CassandraSirona cassandra;
 
     public CassandraCollectorNodeStatusDataStore() {
-        final CassandraSirona cassandra = IoCs.findOrCreateInstance(CassandraSirona.class);
+        this.cassandra = IoCs.findOrCreateInstance(CassandraSirona.class);
         this.keyspace = cassandra.getKeyspace();
         this.family = cassandra.getStatusColumnFamily();
+        this.markerFamily = cassandra.getMarkerStatusesColumnFamily();
     }
 
     @Override
     public Map<String, NodeStatus> statuses() {
-        final QueryResult<OrderedSuperRows<String, String, String, String>> mainResult =
-            HFactory.createRangeSuperSlicesQuery(keyspace, StringSerializer.get(), StringSerializer.get(), StringSerializer.get(), StringSerializer.get())
-                .setColumnFamily(family)
+        final QueryResult<OrderedRows<String,String,String>> result =
+            HFactory.createRangeSlicesQuery(keyspace, StringSerializer.get(), StringSerializer.get(), StringSerializer.get())
+                .setColumnFamily(markerFamily)
                 .setRange(null, null, false, Integer.MAX_VALUE)
-                .setKeys("", "")
                 .execute();
 
-        if (mainResult == null) {
-            return Collections.emptyMap();
+        if (result == null || result.get() == null) {
+            return null;
         }
 
         final Map<String, NodeStatus> statuses = new HashMap<String, NodeStatus>();
-        for (final SuperRow<String, String, String, String> status : mainResult.get()) {
-            final SuperSlice<String,String,String> superSlice = status.getSuperSlice();
-
+        for (final Row<String, String, String> status : result.get()) {
             final Collection<ValidationResult> validations = new LinkedList<ValidationResult>();
-            for (final HSuperColumn<String, String, String> column : superSlice.getSuperColumns()) {
-                validations.add(new ValidationResult(column.getName(), Status.valueOf(column.getSubColumnByName("status").getValue()), column.getSubColumnByName("description").getValue()));
+
+            for (final HColumn<String, String> col : status.getColumnSlice().getColumns()) {
+                final QueryResult<ColumnSlice<String, String>> subResult =
+                    HFactory.createSliceQuery(keyspace, StringSerializer.get(), StringSerializer.get(), StringSerializer.get())
+                        .setColumnFamily(family)
+                        .setRange(null, null, false, Integer.MAX_VALUE)
+                        .setKey(col.getName())
+                        .execute();
+
+                if (subResult == null || subResult.get() == null) {
+                    continue;
+                }
+
+                final ColumnSlice<String, String> slice = subResult.get();
+                validations.add(new ValidationResult(
+                    slice.getColumnByName("name").getValue(),
+                    Status.valueOf(slice.getColumnByName("status").getValue()),
+                    slice.getColumnByName("description").getValue()));
             }
             statuses.put(status.getKey(), new NodeStatus(validations.toArray(new ValidationResult[validations.size()])));
         }
@@ -87,13 +101,11 @@ public class CassandraCollectorNodeStatusDataStore implements CollectorNodeStatu
     public void store(final String node, final NodeStatus status) {
         final Mutator<String> mutator = HFactory.createMutator(keyspace, StringSerializer.get());
         for (final ValidationResult validationResult : status.getResults()) {
-            mutator.addInsertion(node, family,
-                HFactory.createSuperColumn(validationResult.getName(),
-                    Arrays.<HColumn<String, String>>asList(
-                        column("description", validationResult.getMessage()),
-                        column("status", validationResult.getStatus().name())
-                    ),
-                    StringSerializer.get(), StringSerializer.get(), StringSerializer.get()));
+            final String id = cassandra.generateKey(node, validationResult.getName());
+            mutator.addInsertion(node, markerFamily, emptyColumn(id))
+                .addInsertion(id, family, column("name", validationResult.getName()))
+                .addInsertion(id, family, column("description", validationResult.getMessage()))
+                .addInsertion(id, family, column("status", validationResult.getStatus().name()));
         }
         mutator.execute();
     }
