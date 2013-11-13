@@ -16,40 +16,13 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 -->
-## Apache Sirona
+## JDBC module
 
-Commons-monitoring aims to provide a simple but extensible monitoring solution for Java applications.
+This module aims to monitor JDBC invocations.
 
-How to start?
+## Installation
 
-[See Concepts](./concepts.html)
+To monitor JDBC just configure your DataSource replacing its `java.sql.Driver` by `org.apache.sirona.jdbc.SironaDriver`
+and updating its jdbc url from `jdbc:foo:bar` to `jdbc:sirona:foo:bar?delegateDriver=xxxxx`.
 
-[See Basis](./basis.html)
-
-[See Deployments](./deployments.html)
-
-[See Configuration](./configuration.html)
-
-[See Instrumentation](./instrumentation.html)
-
-[See Reporting](./reporting.html)
-
-[See Plugins](./plugins.html)
-
-[See JDBC](./jdbc.html)
-
-[See JTA](./jta.html)
-
-[See JPA](./jpa.html)
-
-[See Web](./web.html)
-
-[See Graphite](./graphite.html)
-
-[See Cube](./cube.html)
-
-[See Collector](./collector.html)
-
-[See Cassandra](./cassandra.html)
-
-
+Note: delegateDriver needs to be the last parameter (if there are several).

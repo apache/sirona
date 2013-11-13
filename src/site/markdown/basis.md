@@ -61,10 +61,3 @@ Gauges values are retrieved by interval:
 <pre class="prettyprint linenums"><![CDATA[
 Map<Long, Double> sortedValueByIncreasingDate = Repository.INSTANCE.getGaugeValues(start, end, gaugeRole);
 ]]></pre>
-
-## Monitor JDBC
-
-To monitor JDBC just configure your DataSource replacing its `java.sql.Driver` by `org.apache.sirona.jdbc.SironaDriver`
-and updating its jdbc url from `jdbc:foo:bar` to `jdbc:sirona:foo:bar?delegateDriver=xxxxx`.
-
-Note: delegateDriver needs to be the last parameter (if there are several).

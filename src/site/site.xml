@@ -75,6 +75,8 @@
       <item name="Reporting" href="/reporting.html"/>
       <item name="Plugins" href="/plugins.html"/>
       <item name="JTA" href="/jta.html"/>
+      <item name="JPA" href="/jpa.html"/>
+      <item name="JDBC" href="/jdbc.html"/>
       <item name="Web" href="/web.html"/>
       <item name="Graphite" href="/graphite.html"/>
       <item name="Cube" href="/cube.html"/>
