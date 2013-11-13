@@ -31,7 +31,7 @@ import me.prettyprint.hector.api.query.QueryResult;
 import org.apache.sirona.Role;
 import org.apache.sirona.cassandra.DynamicDelegatedSerializer;
 import org.apache.sirona.cassandra.collector.CassandraSirona;
-import org.apache.sirona.configuration.Configuration;
+import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.counters.Unit;
 import org.apache.sirona.math.M2AwareStatisticalSummary;
@@ -56,7 +56,7 @@ public class CassandraCollectorCounterDataStore extends InMemoryCollectorCounter
     private final CassandraSirona cassandra;
 
     public CassandraCollectorCounterDataStore() {
-        this.cassandra = Configuration.findOrCreateInstance(CassandraSirona.class);
+        this.cassandra = IoCs.findOrCreateInstance(CassandraSirona.class);
         this.keyspace = cassandra.getKeyspace();
         this.family = cassandra.getCounterColumnFamily();
     }

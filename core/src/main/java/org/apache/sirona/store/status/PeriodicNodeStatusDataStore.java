@@ -17,6 +17,7 @@
 package org.apache.sirona.store.status;
 
 import org.apache.sirona.configuration.Configuration;
+import org.apache.sirona.configuration.ioc.Destroying;
 import org.apache.sirona.status.NodeStatus;
 import org.apache.sirona.status.NodeStatusReporter;
 import org.apache.sirona.store.BatchFuture;
@@ -46,7 +47,7 @@ public class PeriodicNodeStatusDataStore implements NodeStatusDataStore {
         reload();
     }
 
-    @Configuration.Destroying
+    @Destroying
     public void shutdown() {
         final BatchFuture task = scheduledTask.get();
         if (task != null) {

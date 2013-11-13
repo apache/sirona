@@ -16,12 +16,12 @@
  */
 package org.apache.sirona.web.lifecycle;
 
-import org.apache.sirona.configuration.Configuration;
+import org.apache.sirona.configuration.ioc.IoCs;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-// needs to be activate when commons-monitoring-core is in a webapp
+// needs to be activate when sirona-core is in a webapp
 public class SironaLifecycle implements ServletContextListener {
     @Override
     public void contextInitialized(final ServletContextEvent sce) {
@@ -30,6 +30,6 @@ public class SironaLifecycle implements ServletContextListener {
 
     @Override
     public void contextDestroyed(final ServletContextEvent sce) {
-        Configuration.shutdown();
+        IoCs.shutdown();
     }
 }

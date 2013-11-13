@@ -18,7 +18,7 @@ package org.apache.sirona.collector.server;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.sirona.Role;
-import org.apache.sirona.configuration.Configuration;
+import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.counters.Unit;
 import org.apache.sirona.reporting.web.template.MapBuilder;
@@ -95,7 +95,7 @@ public class HttpCollectorTest {
             doPost(events2);
         }
 
-        final CollectorCounterStore store = Configuration.getInstance(CollectorCounterStore.class);
+        final CollectorCounterStore store = IoCs.getInstance(CollectorCounterStore.class);
         final Counter counter1 = store.getOrCreateCounter(new Counter.Key(new Role("role1", Unit.UNARY), "counter1"));
         final Counter counter1Client1 = store.getOrCreateCounter(new Counter.Key(new Role("role1", Unit.UNARY), "counter1"), "client1");
         final Counter counter1Client2 = store.getOrCreateCounter(new Counter.Key(new Role("role1", Unit.UNARY), "counter1"), "client2");
@@ -150,7 +150,7 @@ public class HttpCollectorTest {
             doPost(events2);
         }
 
-        final CollectorGaugeDataStore store = Configuration.getInstance(CollectorGaugeDataStore.class);
+        final CollectorGaugeDataStore store = IoCs.getInstance(CollectorGaugeDataStore.class);
         final GaugeValuesRequest gaugeValuesRequest = new GaugeValuesRequest(0, System.currentTimeMillis() + 1000, new Role("event-role", Unit.UNARY));
         final Map<Long, Double> aggregated = store.getGaugeValues(gaugeValuesRequest);
         final Map<Long, Double> node1 = store.getGaugeValues(gaugeValuesRequest, "node1");
@@ -196,7 +196,7 @@ public class HttpCollectorTest {
             doPost(events2);
         }
 
-        final NodeStatusDataStore store = Configuration.getInstance(CollectorNodeStatusDataStore.class);
+        final NodeStatusDataStore store = IoCs.getInstance(CollectorNodeStatusDataStore.class);
         final Map<String,NodeStatus> statuses = store.statuses();
         assertEquals(2, statuses.size());
         assertEquals(Status.OK, statuses.get("node1").getStatus());

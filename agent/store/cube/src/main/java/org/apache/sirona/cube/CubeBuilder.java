@@ -17,7 +17,7 @@
 package org.apache.sirona.cube;
 
 import org.apache.sirona.SironaException;
-import org.apache.sirona.configuration.Configuration;
+import org.apache.sirona.configuration.ioc.AutoSet;
 
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
@@ -31,7 +31,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.security.KeyStore;
 
-@Configuration.AutoSet
+@AutoSet
 public class CubeBuilder {
     private static final String DEFAULT_MARKER = "sirona";
 

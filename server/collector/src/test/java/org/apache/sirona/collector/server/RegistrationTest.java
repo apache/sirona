@@ -36,13 +36,13 @@ import io.netty.handler.codec.http.HttpResponseEncoder;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.stream.ChunkedWriteHandler;
-import org.apache.sirona.SironaException;
 import org.apache.sirona.Role;
-import org.apache.sirona.store.gauge.DelegatedCollectorGaugeDataStore;
-import org.apache.sirona.configuration.Configuration;
+import org.apache.sirona.SironaException;
+import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.repositories.Repository;
 import org.apache.sirona.store.gauge.CollectorGaugeDataStore;
+import org.apache.sirona.store.gauge.DelegatedCollectorGaugeDataStore;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -64,7 +64,7 @@ public class RegistrationTest {
     public void start() {
         agent = new HttpServer("localhost", Integer.getInteger("collector.server.port", 1234)).start();
         Repository.INSTANCE.reset();
-        DelegatedCollectorGaugeDataStore.class.cast(Configuration.getInstance(CollectorGaugeDataStore.class)).reset();
+        DelegatedCollectorGaugeDataStore.class.cast(IoCs.getInstance(CollectorGaugeDataStore.class)).reset();
     }
 
     @After

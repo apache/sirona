@@ -20,7 +20,7 @@ import me.prettyprint.hector.api.Cluster;
 import me.prettyprint.hector.api.Keyspace;
 import me.prettyprint.hector.api.factory.HFactory;
 import org.apache.cassandra.config.DatabaseDescriptor;
-import org.apache.sirona.configuration.Configuration;
+import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.repositories.Repository;
 import org.cassandraunit.utils.EmbeddedCassandraServerHelper;
 import org.junit.rules.MethodRule;
@@ -82,7 +82,7 @@ public class CassandraRunner extends BlockJUnit4ClassRunner {
             } finally {
                 EmbeddedCassandraServerHelper.cleanEmbeddedCassandra();
                 Repository.INSTANCE.reset();
-                Configuration.shutdown();
+                IoCs.shutdown();
             }
         }
     }

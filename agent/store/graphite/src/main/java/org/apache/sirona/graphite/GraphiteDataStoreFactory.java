@@ -16,15 +16,15 @@
  */
 package org.apache.sirona.graphite;
 
-import org.apache.sirona.configuration.Configuration;
+import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.store.DelegateDataStoreFactory;
 import org.apache.sirona.store.status.EmptyStatuses;
 
 public class GraphiteDataStoreFactory extends DelegateDataStoreFactory {
     public GraphiteDataStoreFactory() {
         super(
-            Configuration.processInstance(new GraphiteCounterDataStore()),
-            Configuration.processInstance(new GraphiteGaugeDataStore()),
+            IoCs.processInstance(new GraphiteCounterDataStore()),
+            IoCs.processInstance(new GraphiteGaugeDataStore()),
             new EmptyStatuses());
     }
 }

@@ -27,7 +27,7 @@ import me.prettyprint.hector.api.factory.HFactory;
 import me.prettyprint.hector.api.mutation.Mutator;
 import me.prettyprint.hector.api.query.QueryResult;
 import org.apache.sirona.cassandra.collector.CassandraSirona;
-import org.apache.sirona.configuration.Configuration;
+import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.status.NodeStatus;
 import org.apache.sirona.status.Status;
 import org.apache.sirona.status.ValidationResult;
@@ -47,7 +47,7 @@ public class CassandraCollectorNodeStatusDataStore implements CollectorNodeStatu
     private final String family;
 
     public CassandraCollectorNodeStatusDataStore() {
-        final CassandraSirona cassandra = Configuration.findOrCreateInstance(CassandraSirona.class);
+        final CassandraSirona cassandra = IoCs.findOrCreateInstance(CassandraSirona.class);
         this.keyspace = cassandra.getKeyspace();
         this.family = cassandra.getStatusColumnFamily();
     }

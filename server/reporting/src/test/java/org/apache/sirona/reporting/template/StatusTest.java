@@ -17,7 +17,7 @@
 package org.apache.sirona.reporting.template;
 
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import org.apache.sirona.configuration.Configuration;
+import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.repositories.Repository;
 import org.apache.sirona.status.NodeStatus;
 import org.apache.sirona.status.Status;
@@ -34,8 +34,8 @@ import static org.junit.Assert.assertThat;
 public class StatusTest extends SironaReportingTestBase {
     @BeforeClass
     public static void addStatus() {
-        Configuration.findOrCreateInstance(Repository.class);
-        Configuration.getInstance(NodeStatusDataStore.class).statuses().put("node1", new NodeStatus(new ValidationResult[] { new ValidationResult("validation #1", Status.OK, "all is fine") }));
+        IoCs.findOrCreateInstance(Repository.class);
+        IoCs.getInstance(NodeStatusDataStore.class).statuses().put("node1", new NodeStatus(new ValidationResult[] { new ValidationResult("validation #1", Status.OK, "all is fine") }));
     }
 
     @Test

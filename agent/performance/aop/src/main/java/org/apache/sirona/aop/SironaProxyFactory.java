@@ -16,10 +16,10 @@
  */
 package org.apache.sirona.aop;
 
-import org.apache.sirona.configuration.Configuration;
-import org.apache.sirona.util.ClassLoaders;
 import org.apache.commons.proxy.Invoker;
 import org.apache.commons.proxy.ProxyFactory;
+import org.apache.sirona.configuration.ioc.IoCs;
+import org.apache.sirona.util.ClassLoaders;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -27,7 +27,7 @@ import java.lang.reflect.Method;
 public final class SironaProxyFactory {
     public static <T> T monitor(final Class<T> clazz, final Object instance) {
         return clazz.cast(
-            Configuration.findOrCreateInstance(ProxyFactory.class)
+            IoCs.findOrCreateInstance(ProxyFactory.class)
                 .createInvokerProxy(ClassLoaders.current(), new SironaPerformanceHandler(instance), new Class<?>[]{clazz}));
     }
 

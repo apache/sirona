@@ -16,14 +16,14 @@
  */
 package org.apache.sirona.cube;
 
-import org.apache.sirona.configuration.Configuration;
+import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.store.counter.BatchCounterDataStore;
 
 import java.util.Collection;
 
 public class CubeCounterDataStore extends BatchCounterDataStore {
-    private final Cube cube = Configuration.findOrCreateInstance(CubeBuilder.class).build();
+    private final Cube cube = IoCs.findOrCreateInstance(CubeBuilder.class).build();
 
     @Override
     protected synchronized void pushCountersByBatch(final Collection<Counter> instances) {

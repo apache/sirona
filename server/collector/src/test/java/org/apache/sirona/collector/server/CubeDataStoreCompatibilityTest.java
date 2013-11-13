@@ -17,7 +17,7 @@
 package org.apache.sirona.collector.server;
 
 import org.apache.sirona.Role;
-import org.apache.sirona.configuration.Configuration;
+import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.counters.DefaultCounter;
 import org.apache.sirona.counters.Unit;
@@ -51,7 +51,7 @@ public class CubeDataStoreCompatibilityTest {
     public void cubeMe() {
         new SeeMyProtectedStuffStore().doPush();
 
-        final CollectorCounterStore store = Configuration.getInstance(CollectorCounterStore.class);
+        final CollectorCounterStore store = IoCs.getInstance(CollectorCounterStore.class);
         final Counter counter1 = store.getOrCreateCounter(new Counter.Key(new Role("cube", Unit.UNARY), "client"));
         final Counter counter1Client1 = store.getOrCreateCounter(new Counter.Key(new Role("cube", Unit.UNARY), "client"), "local");
 

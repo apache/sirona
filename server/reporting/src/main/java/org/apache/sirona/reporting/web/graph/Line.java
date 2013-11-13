@@ -17,10 +17,10 @@
 package org.apache.sirona.reporting.web.graph;
 
 import org.apache.sirona.Role;
-import org.apache.sirona.configuration.Configuration;
-import org.apache.sirona.store.gauge.CollectorGaugeDataStore;
+import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.reporting.web.plugin.json.Jsons;
 import org.apache.sirona.repositories.Repository;
+import org.apache.sirona.store.gauge.CollectorGaugeDataStore;
 import org.apache.sirona.store.gauge.GaugeValuesRequest;
 import org.apache.sirona.util.Environment;
 
@@ -64,7 +64,7 @@ public class Line {
             return "[" + Line.toJson(label, Line.DEFAULT_COLOR, Repository.INSTANCE.getGaugeValues(start, end, role)) + "]";
         }
 
-        final CollectorGaugeDataStore gaugeStore = Configuration.findOrCreateInstance(CollectorGaugeDataStore.class);
+        final CollectorGaugeDataStore gaugeStore = IoCs.findOrCreateInstance(CollectorGaugeDataStore.class);
         final Iterator<String> markers = gaugeStore.markers().iterator();
         final StringBuilder builder = new StringBuilder("[");
         final Iterator<String> colors = COLORS.iterator();

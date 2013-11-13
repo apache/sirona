@@ -20,6 +20,7 @@ import org.apache.openejb.jee.EjbJar;
 import org.apache.openejb.junit.ApplicationComposer;
 import org.apache.openejb.testing.Configuration;
 import org.apache.openejb.testing.Module;
+import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.repositories.Repository;
 import org.apache.sirona.status.NodeStatus;
 import org.apache.sirona.status.Status;
@@ -68,14 +69,14 @@ public class ValidationsTest {
     @After
     public void shutdown() {
         Repository.INSTANCE.reset();
-        PeriodicNodeStatusDataStore.class.cast(org.apache.sirona.configuration.Configuration.getInstance(NodeStatusDataStore.class)).shutdown();
+        PeriodicNodeStatusDataStore.class.cast(IoCs.getInstance(NodeStatusDataStore.class)).shutdown();
     }
 
     @Test
     public void checkValidations() throws InterruptedException {
         Thread.sleep(150);
 
-        final NodeStatus result = org.apache.sirona.configuration.Configuration.getInstance(NodeStatusDataStore.class).statuses().values().iterator().next();
+        final NodeStatus result = IoCs.getInstance(NodeStatusDataStore.class).statuses().values().iterator().next();
         assertEquals(1, result.getResults().length);
 
         final ValidationResult validationResult = result.getResults()[0];

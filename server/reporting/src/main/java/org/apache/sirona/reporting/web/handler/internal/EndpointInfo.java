@@ -16,7 +16,7 @@
  */
 package org.apache.sirona.reporting.web.handler.internal;
 
-import org.apache.sirona.configuration.Configuration;
+import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.reporting.web.handler.api.Regex;
 import org.apache.sirona.reporting.web.handler.api.TemplateHelper;
 
@@ -36,7 +36,7 @@ public class EndpointInfo {
 
     public static EndpointInfo build(final Class<?> endpointClass, final String id, final String rootMapping) {
         final EndpointInfo info = new EndpointInfo();
-        final Object instance = Configuration.newInstance(endpointClass);
+        final Object instance = IoCs.newInstance(endpointClass);
         for (final Method method : endpointClass.getMethods()) {
             if (method.getDeclaringClass() == Object.class) {
                 continue;

@@ -17,13 +17,13 @@
 package org.apache.sirona.graphite;
 
 import org.apache.sirona.SironaException;
-import org.apache.sirona.configuration.Configuration;
+import org.apache.sirona.configuration.ioc.AutoSet;
 
 import javax.net.SocketFactory;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
-@Configuration.AutoSet
+@AutoSet
 public class GraphiteBuilder {
     private String address;
     private int port;

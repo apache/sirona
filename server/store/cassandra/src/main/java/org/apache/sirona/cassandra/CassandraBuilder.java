@@ -17,9 +17,9 @@
 package org.apache.sirona.cassandra;
 
 import me.prettyprint.hector.api.HConsistencyLevel;
-import org.apache.sirona.configuration.Configuration;
+import org.apache.sirona.configuration.ioc.AutoSet;
 
-@Configuration.AutoSet
+@AutoSet
 public class CassandraBuilder {
     private String hosts = "localhost:9171";
     private String cluster = "sirona-cluster";

@@ -16,12 +16,12 @@
  */
 package org.apache.sirona.cube;
 
-import org.apache.sirona.configuration.Configuration;
+import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.status.NodeStatus;
 import org.apache.sirona.store.status.PeriodicNodeStatusDataStore;
 
 public class CubeNodeStatusDataStore extends PeriodicNodeStatusDataStore {
-    private final Cube cube = Configuration.findOrCreateInstance(CubeBuilder.class).build();
+    private final Cube cube = IoCs.findOrCreateInstance(CubeBuilder.class).build();
 
     @Override
     protected void reportStatus(final NodeStatus nodeStatus) {

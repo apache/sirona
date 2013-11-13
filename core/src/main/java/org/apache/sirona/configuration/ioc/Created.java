@@ -14,16 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.store;
+package org.apache.sirona.configuration.ioc;
 
-import org.apache.sirona.configuration.ioc.IoCs;
-import org.apache.sirona.store.counter.InMemoryCounterDataStore;
-import org.apache.sirona.store.gauge.InMemoryGaugeDataStore;
-import org.apache.sirona.store.status.PeriodicNodeStatusDataStore;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public class DefaultDataStoreFactory extends DelegateDataStoreFactory {
-    public DefaultDataStoreFactory() {
-        super(new InMemoryCounterDataStore(), new InMemoryGaugeDataStore(),
-            IoCs.processInstance(new PeriodicNodeStatusDataStore())); // this one has hooks
-    }
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface Created {
 }

@@ -17,9 +17,7 @@
 package org.apache.sirona.gauges;
 
 import org.apache.sirona.Role;
-import org.apache.sirona.configuration.Configuration;
-import org.apache.sirona.gauges.jvm.CPUGauge;
-import org.apache.sirona.gauges.jvm.UsedMemoryGauge;
+import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.store.gauge.GaugeDataStore;
 
 import java.util.Map;
@@ -70,7 +68,7 @@ public final class DefaultGaugeManager implements GaugeManager {
         private final GaugeDataStore store;
 
         public GaugeTask(final Gauge gauge) {
-            this.store = Configuration.getInstance(GaugeDataStore.class);
+            this.store = IoCs.getInstance(GaugeDataStore.class);
             this.gauge = gauge;
         }
 

@@ -16,9 +16,9 @@
  */
 package org.apache.sirona.util;
 
-import org.apache.sirona.configuration.Configuration;
-import org.apache.sirona.store.counter.CollectorCounterStore;
+import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.repositories.Repository;
+import org.apache.sirona.store.counter.CollectorCounterStore;
 
 public final class Environment {
     private Environment() {
@@ -26,7 +26,7 @@ public final class Environment {
     }
 
     public static boolean isCollector() {
-        Configuration.findOrCreateInstance(Repository.class); // ensure we have a repo which init store classes by default
-        return Configuration.getInstance(CollectorCounterStore.class) != null;
+        IoCs.findOrCreateInstance(Repository.class); // ensure we have a repo which init store classes by default
+        return IoCs.getInstance(CollectorCounterStore.class) != null;
     }
 }

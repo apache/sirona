@@ -17,6 +17,7 @@
 package org.apache.sirona.store.counter;
 
 import org.apache.sirona.configuration.Configuration;
+import org.apache.sirona.configuration.ioc.Destroying;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.repositories.Repository;
 import org.apache.sirona.store.BatchFuture;
@@ -50,7 +51,7 @@ public abstract class BatchCounterDataStore extends InMemoryCounterDataStore {
             Configuration.getInteger(Configuration.CONFIG_PROPERTY_PREFIX + name + ".period", 60000));
     }
 
-    @Configuration.Destroying
+    @Destroying
     public void shutdown() {
         scheduledTask.done();
     }

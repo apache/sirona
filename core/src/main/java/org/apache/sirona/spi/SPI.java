@@ -16,11 +16,11 @@
  */
 package org.apache.sirona.spi;
 
-import org.apache.sirona.configuration.Configuration;
+import org.apache.sirona.configuration.ioc.IoCs;
 
 // ServiceLoader is sometimes just wrong
 public interface SPI {
-    SPI INSTANCE = Configuration.findOrCreateInstance(SPI.class);
+    SPI INSTANCE = IoCs.findOrCreateInstance(SPI.class);
 
     <T> Iterable<T> find(Class<T> api, ClassLoader loader);
 }

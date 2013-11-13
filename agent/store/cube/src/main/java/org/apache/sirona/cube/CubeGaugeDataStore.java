@@ -17,7 +17,7 @@
 package org.apache.sirona.cube;
 
 import org.apache.sirona.Role;
-import org.apache.sirona.configuration.Configuration;
+import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.gauges.GaugeDataStoreAdapter;
 
 import java.util.logging.Level;
@@ -26,7 +26,7 @@ import java.util.logging.Logger;
 public class CubeGaugeDataStore extends GaugeDataStoreAdapter {
     private static final Logger LOGGER = Logger.getLogger(CubeGaugeDataStore.class.getName());
 
-    private final Cube cube = Configuration.findOrCreateInstance(CubeBuilder.class).build();
+    private final Cube cube = IoCs.findOrCreateInstance(CubeBuilder.class).build();
 
     @Override
     public void addToGauge(final Role role, final long time, final double value) {

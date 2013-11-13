@@ -16,7 +16,7 @@
  */
 package org.apache.sirona.graphite;
 
-import org.apache.sirona.configuration.Configuration;
+import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.gauges.Gauge;
 import org.apache.sirona.graphite.server.GraphiteMockServer;
 import org.apache.sirona.repositories.Repository;
@@ -39,7 +39,7 @@ public abstract class GraphiteTestBase {
 
     @After
     public void shutdownGraphite() throws IOException {
-        Configuration.shutdown();
+        IoCs.shutdown();
         gauges.destroy();
         server.stop();
         Repository.INSTANCE.clearCounters();

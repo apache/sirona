@@ -33,7 +33,8 @@ import me.prettyprint.hector.api.ddl.ComparatorType;
 import me.prettyprint.hector.api.factory.HFactory;
 import org.apache.sirona.cassandra.CassandraBuilder;
 import org.apache.sirona.cassandra.DynamicDelegatedSerializer;
-import org.apache.sirona.configuration.Configuration;
+import org.apache.sirona.configuration.ioc.Destroying;
+import org.apache.sirona.configuration.ioc.IoCs;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -47,7 +48,7 @@ public class CassandraSirona {
     private static final String EMPTY_VALUE = "";
     private static final String SEPARATOR = "->";
 
-    private final CassandraBuilder builder = Configuration.findOrCreateInstance(CassandraBuilder.class);
+    private final CassandraBuilder builder = IoCs.findOrCreateInstance(CassandraBuilder.class);
     private final Cluster cluster;
     private final Keyspace keyspace;
 
@@ -95,7 +96,7 @@ public class CassandraSirona {
         return builder.toString();
     }
 
-    @Configuration.Destroying
+    @Destroying
     public void shutdown() {
         HFactory.shutdownCluster(cluster);
     }

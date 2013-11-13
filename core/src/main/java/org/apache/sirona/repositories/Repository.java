@@ -18,7 +18,7 @@
 package org.apache.sirona.repositories;
 
 import org.apache.sirona.Role;
-import org.apache.sirona.configuration.Configuration;
+import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.gauges.Gauge;
 import org.apache.sirona.status.NodeStatus;
@@ -28,7 +28,7 @@ import java.util.Collection;
 import java.util.Map;
 
 public interface Repository {
-    Repository INSTANCE = Configuration.findOrCreateInstance(Repository.class);
+    Repository INSTANCE = IoCs.findOrCreateInstance(Repository.class);
 
     Counter getCounter(Counter.Key key);
 

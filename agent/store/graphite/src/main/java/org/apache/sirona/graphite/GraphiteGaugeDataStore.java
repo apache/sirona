@@ -17,7 +17,7 @@
 package org.apache.sirona.graphite;
 
 import org.apache.sirona.Role;
-import org.apache.sirona.configuration.Configuration;
+import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.store.gauge.AggregatedGaugeDataStoreAdapter;
 import org.apache.sirona.store.gauge.Value;
 
@@ -31,7 +31,7 @@ public class GraphiteGaugeDataStore extends AggregatedGaugeDataStoreAdapter {
 
     private static final String GAUGE_PREFIX = "gauge-";
 
-    private final Graphite graphite = Configuration.findOrCreateInstance(GraphiteBuilder.class).build();
+    private final Graphite graphite = IoCs.findOrCreateInstance(GraphiteBuilder.class).build();
 
     @Override
     protected void pushGauges(final Map<Role, Value> gauges) {

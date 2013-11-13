@@ -25,18 +25,21 @@ Note: you can change the file name using `org.apache.sirona.configuration` syste
 ### Utilities
 
 `org.apache.sirona.configuration.Configuration` has several utility methods to get
-int, boolean... from the properties file. You can reuse it in your monitoring extensions if you want.
+int, boolean... from the properties file. You can reuse it in your sirona extensions if you want.
 
-Another interesting usage of Configuration class is to be a basic lifecycle handling of your objects.
-Using `org.apache.sirona.configuration.Configuration.newInstance` method you can
+It will be commonly used with `org.apache.sirona.configuration.ioc.IoCs` class.
+This last allows a basic lifecycle handling of your objects.
+Using `org.apache.sirona.configuration.ioc.IoCs.newInstance` method you can
 decorate your class methods with `org.apache.sirona.configuration.Configuration.Created`
-and `org.apache.sirona.configuration.Configuration.Destroying` to get lifecycle hooks.
+and `org.apache.sirona.configuration.ioc.Destroying` to get lifecycle hooks.
 
 `Destroying` is called when the monitoring is stopped. Generally since commons-monitoring-core is deployed in the
 container or JVM classloader it is with the JVM but sometimes you can deploy it in your application. In this case
 you'll need to either configure the `javax.servlet.ServletContextListener`
 `org.apache.sirona.web.lifecycle.SironaLifecycle` from reporting module
 or to call manually `Configuration.shutdown()` method.
+
+You can also use `org.apache.sirona.configuration.ioc.AutoSet` to init field of an instance using sirona configuration.
 
 ### Main configuration keys (by module)
 

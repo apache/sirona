@@ -21,7 +21,7 @@ import org.apache.openejb.jee.StatelessBean;
 import org.apache.openejb.junit.ApplicationComposer;
 import org.apache.openejb.testing.Module;
 import org.apache.sirona.Role;
-import org.apache.sirona.configuration.Configuration;
+import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.gauges.Gauge;
 import org.apache.sirona.repositories.Repository;
 import org.apache.sirona.store.status.NodeStatusDataStore;
@@ -61,7 +61,7 @@ public class GaugesTest {
             loader.destroy();
         }
         Repository.INSTANCE.reset();
-        PeriodicNodeStatusDataStore.class.cast(Configuration.getInstance(NodeStatusDataStore.class)).shutdown();
+        PeriodicNodeStatusDataStore.class.cast(IoCs.getInstance(NodeStatusDataStore.class)).shutdown();
     }
 
     @Test

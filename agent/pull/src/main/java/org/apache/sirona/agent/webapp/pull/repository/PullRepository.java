@@ -17,7 +17,7 @@
 package org.apache.sirona.agent.webapp.pull.repository;
 
 import org.apache.sirona.agent.webapp.pull.gauge.PullGaugeManager;
-import org.apache.sirona.configuration.Configuration;
+import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.cube.Cube;
 import org.apache.sirona.cube.CubeBuilder;
 import org.apache.sirona.cube.MapBuilder;
@@ -41,7 +41,7 @@ public class PullRepository extends DefaultRepository {
 
     public PullRepository() {
         super(new InMemoryCounterDataStore(), new GaugeDataStoreAdapter(), new EmptyStatuses());
-        cube = Configuration.findOrCreateInstance(CubeBuilder.class).build();
+        cube = IoCs.findOrCreateInstance(CubeBuilder.class).build();
     }
 
     @Override

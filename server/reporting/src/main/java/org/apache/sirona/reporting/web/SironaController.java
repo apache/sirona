@@ -16,7 +16,7 @@
  */
 package org.apache.sirona.reporting.web;
 
-import org.apache.sirona.configuration.Configuration;
+import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.reporting.web.handler.FilteringEndpoints;
 import org.apache.sirona.reporting.web.handler.HomeEndpoint;
 import org.apache.sirona.reporting.web.handler.internal.EndpointInfo;
@@ -61,7 +61,7 @@ public class SironaController implements Filter {
 
     @Override
     public void init(final FilterConfig config) throws ServletException {
-        Configuration.findOrCreateInstance(Repository.class); // ensure datastore are loaded
+        IoCs.findOrCreateInstance(Repository.class); // ensure datastore are loaded
 
         classloader = Thread.currentThread().getContextClassLoader();
         initMapping(config.getInitParameter("monitoring-mapping"));

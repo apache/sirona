@@ -27,7 +27,7 @@ import me.prettyprint.hector.api.factory.HFactory;
 import me.prettyprint.hector.api.query.QueryResult;
 import org.apache.sirona.Role;
 import org.apache.sirona.cassandra.collector.CassandraSirona;
-import org.apache.sirona.configuration.Configuration;
+import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.counters.Unit;
 import org.apache.sirona.store.gauge.CollectorGaugeDataStore;
 import org.apache.sirona.store.gauge.GaugeValuesRequest;
@@ -48,7 +48,7 @@ public class CassandraCollectorGaugeDataStore implements CollectorGaugeDataStore
     private final String markerFamily;
 
     public CassandraCollectorGaugeDataStore() {
-        this.cassandra = Configuration.findOrCreateInstance(CassandraSirona.class);
+        this.cassandra = IoCs.findOrCreateInstance(CassandraSirona.class);
         this.keyspace = cassandra.getKeyspace();
         this.valueFamily = cassandra.getGaugeValuesColumnFamily();
         this.markerFamily = cassandra.getMarkerGaugesColumFamily();

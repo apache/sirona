@@ -19,11 +19,12 @@ package org.apache.sirona.collector.server;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.sirona.SironaException;
 import org.apache.sirona.Role;
+import org.apache.sirona.SironaException;
 import org.apache.sirona.collector.server.api.SSLSocketFactoryProvider;
 import org.apache.sirona.collector.server.api.SecurityProvider;
 import org.apache.sirona.configuration.Configuration;
+import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.counters.Unit;
 import org.apache.sirona.math.M2AwareStatisticalSummary;
@@ -96,10 +97,10 @@ public class Collector extends HttpServlet {
         super.init(sc);
 
         // force init to ensure we have stores
-        Configuration.findOrCreateInstance(Repository.class);
+        IoCs.findOrCreateInstance(Repository.class);
 
         {
-            final CollectorGaugeDataStore gds = Configuration.findOrCreateInstance(CollectorGaugeDataStore.class);
+            final CollectorGaugeDataStore gds = IoCs.findOrCreateInstance(CollectorGaugeDataStore.class);
             if (gds == null) {
                 throw new IllegalStateException("Collector only works with " + CollectorGaugeDataStore.class.getName());
             }
@@ -107,7 +108,7 @@ public class Collector extends HttpServlet {
         }
 
         {
-            final CollectorCounterStore cds = Configuration.findOrCreateInstance(CollectorCounterStore.class);
+            final CollectorCounterStore cds = IoCs.findOrCreateInstance(CollectorCounterStore.class);
             if (cds == null) {
                 throw new IllegalStateException("Collector only works with " + CollectorCounterStore.class.getName());
             }
@@ -115,7 +116,7 @@ public class Collector extends HttpServlet {
         }
 
         {
-            final NodeStatusDataStore nds = Configuration.findOrCreateInstance(CollectorNodeStatusDataStore.class);
+            final NodeStatusDataStore nds = IoCs.findOrCreateInstance(CollectorNodeStatusDataStore.class);
             if (!CollectorNodeStatusDataStore.class.isInstance(nds)) {
                 throw new IllegalStateException("Collector only works with " + CollectorNodeStatusDataStore.class.getName());
             }
@@ -154,13 +155,13 @@ public class Collector extends HttpServlet {
             }
 
             try {
-                securityProvider = Configuration.findOrCreateInstance(SecurityProvider.class);
+                securityProvider = IoCs.findOrCreateInstance(SecurityProvider.class);
             } catch (final Exception e) {
                 securityProvider = null;
             }
 
             try {
-                sslSocketFactoryProvider = Configuration.findOrCreateInstance(SSLSocketFactoryProvider.class);
+                sslSocketFactoryProvider = IoCs.findOrCreateInstance(SSLSocketFactoryProvider.class);
             } catch (final Exception e) {
                 sslSocketFactoryProvider = null;
             }

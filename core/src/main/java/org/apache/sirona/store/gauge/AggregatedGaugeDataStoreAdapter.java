@@ -19,6 +19,7 @@ package org.apache.sirona.store.gauge;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import org.apache.sirona.Role;
 import org.apache.sirona.configuration.Configuration;
+import org.apache.sirona.configuration.ioc.Destroying;
 import org.apache.sirona.gauges.GaugeDataStoreAdapter;
 import org.apache.sirona.store.BatchFuture;
 import org.apache.sirona.util.DaemonThreadFactory;
@@ -55,7 +56,7 @@ public abstract class AggregatedGaugeDataStoreAdapter extends GaugeDataStoreAdap
             Configuration.getInteger(Configuration.CONFIG_PROPERTY_PREFIX + name + ".period", 60000));
     }
 
-    @Configuration.Destroying
+    @Destroying
     public void shutdown() {
         scheduledTask.done();
     }
