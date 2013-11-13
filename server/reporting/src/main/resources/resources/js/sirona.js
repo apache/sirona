@@ -48,11 +48,10 @@
         var yesterday = new Date();
         yesterday.setTime(yesterday.getTime() - dayDuration);
 
-        var tomorrow = new Date();
-        tomorrow.setTime(tomorrow.getTime() + dayDuration);
+        var now = new Date();
 
         startDateTimePicker.data('datetimepicker').setLocalDate(yesterday);
-        endDateTimePicker.data('datetimepicker').setLocalDate(tomorrow);
+        endDateTimePicker.data('datetimepicker').setLocalDate(now);
 
         var doUpdateGraph = function () {
             Sirona.updateGraph(mapping, plugin, graph,
