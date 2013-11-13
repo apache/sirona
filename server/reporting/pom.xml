@@ -31,7 +31,7 @@
 
   <properties>
     <tomcatRunPort>8080</tomcatRunPort>
-    <tomcatRunPath>/monitoring</tomcatRunPath>
+    <tomcatRunPath>/sirona</tomcatRunPath>
   </properties>
 
   <dependencies>

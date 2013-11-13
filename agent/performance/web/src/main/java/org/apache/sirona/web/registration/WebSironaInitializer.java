@@ -64,7 +64,7 @@ public class WebSironaInitializer implements ServletContainerInitializer {
             }
 
             if (ignoredUrls == null) {
-                ignoredUrls = Configuration.getProperty(SironaFilter.IGNORED_URLS, "/monitoring");
+                ignoredUrls = Configuration.getProperty(SironaFilter.IGNORED_URLS, "/sirona");
             }
 
             if (monitoredUrls.contains(",")) {

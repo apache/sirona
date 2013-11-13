@@ -67,7 +67,7 @@ public class ReportTest extends SironaReportingTestBase {
     @Test
     public void generalList() throws IOException {
         final WebClient client = newClient();
-        final HtmlPage page = client.getPage(base.toExternalForm() + "monitoring/report");
+        final HtmlPage page = client.getPage(base.toExternalForm() + "sirona/report");
         WebAssert.assertElementPresent(page, "report-table");
 
         final String text = page.getElementById("report-table").asText();
@@ -78,7 +78,7 @@ public class ReportTest extends SironaReportingTestBase {
     @Test
     public void detail() throws IOException {
         final WebClient client = newClient();
-        final HtmlPage page = client.getPage(base.toExternalForm() + "monitoring/report/counter/" + MapFormat.generateCounterKeyString(key));
+        final HtmlPage page = client.getPage(base.toExternalForm() + "sirona/report/counter/" + MapFormat.generateCounterKeyString(key));
         WebAssert.assertElementPresent(page, "counter");
 
         final String text = page.getElementById("counter").asText();

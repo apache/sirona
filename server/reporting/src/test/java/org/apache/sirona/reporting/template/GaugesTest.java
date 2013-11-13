@@ -32,7 +32,7 @@ public class GaugesTest extends SironaReportingTestBase {
     public void checkGaugesAreListed() throws IOException {
         final HtmlPage page = page("gauges");
         final String content = page.getWebResponse().getContentAsString();
-        assertThat(content, containsString("<a href=\"/sirona-test/monitoring/gauges/" + CPU_GAUGE_ENCODED + "\">"));
+        assertThat(content, containsString("<a href=\"/sirona-test/sirona/gauges/" + CPU_GAUGE_ENCODED + "\">"));
         assertThat(content, containsString("CPU"));
     }
 

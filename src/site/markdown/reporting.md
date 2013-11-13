@@ -44,17 +44,17 @@ you can embed it. You'll need to update your web.xml to declare the monitoring f
   </listener>
 
   <filter>
-    <filter-name>Monitoring</filter-name>
+    <filter-name>Sirona</filter-name>
     <filter-class>org.apache.sirona.reporting.web.SironaController</filter-class>
     <init-param> <!-- should match your filter mapping base -->
       <param-name>monitoring-mapping</param-name>
-      <param-value>/monitoring/</param-value>
+      <param-value>/sirona/</param-value>
     </init-param>
   </filter>
 
   <filter-mapping>
-    <filter-name>Monitoring</filter-name>
-    <url-pattern>/monitoring/*</url-pattern>
+    <filter-name>Sirona</filter-name>
+    <url-pattern>/sirona/*</url-pattern>
   </filter-mapping>
 
 </web-app>

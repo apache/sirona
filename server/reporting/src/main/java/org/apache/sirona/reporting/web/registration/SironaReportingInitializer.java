@@ -36,7 +36,7 @@ public class SironaReportingInitializer implements ServletContainerInitializer {
 
         String mapping = ctx.getInitParameter(Configuration.CONFIG_PROPERTY_PREFIX + "reporting.mapping");
         if (mapping == null) {
-            mapping = "/monitoring";
+            mapping = "/sirona";
         }
         if (mapping.endsWith("*")) {
             mapping = mapping.substring(0, mapping.length() - 1);
