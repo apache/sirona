@@ -33,6 +33,9 @@ public class DynamicDelegatedSerializer<T> extends AbstractSerializer<T> {
 
     @Override
     public T fromByteBuffer(final ByteBuffer byteBuffer) {
+        if (delegate == null) {
+            return null;
+        }
         return delegate.fromByteBuffer(byteBuffer);
     }
 

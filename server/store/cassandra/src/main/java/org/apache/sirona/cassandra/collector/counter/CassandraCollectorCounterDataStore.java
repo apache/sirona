@@ -48,7 +48,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.apache.sirona.cassandra.collector.CassandraSirona.column;
-import static org.apache.sirona.cassandra.collector.CassandraSirona.keys;
+import static org.apache.sirona.cassandra.collector.CassandraSirona.superKeys;
 
 public class CassandraCollectorCounterDataStore extends InMemoryCollectorCounterStore {
     private final Keyspace keyspace;
@@ -97,7 +97,7 @@ public class CassandraCollectorCounterDataStore extends InMemoryCollectorCounter
 
     @Override
     public Collection<String> markers() {
-        return keys(keyspace, family);
+        return superKeys(keyspace, family);
     }
 
     @Override // TODO: see if we shouldn't store it or if aggregation can be done on java side

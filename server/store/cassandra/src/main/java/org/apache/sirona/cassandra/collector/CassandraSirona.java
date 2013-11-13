@@ -26,7 +26,9 @@ import me.prettyprint.hector.api.Keyspace;
 import me.prettyprint.hector.api.Serializer;
 import me.prettyprint.hector.api.beans.HColumn;
 import me.prettyprint.hector.api.beans.OrderedRows;
+import me.prettyprint.hector.api.beans.OrderedSuperRows;
 import me.prettyprint.hector.api.beans.Row;
+import me.prettyprint.hector.api.beans.SuperRow;
 import me.prettyprint.hector.api.ddl.ColumnFamilyDefinition;
 import me.prettyprint.hector.api.ddl.ColumnType;
 import me.prettyprint.hector.api.ddl.ComparatorType;
@@ -37,6 +39,7 @@ import org.apache.sirona.configuration.ioc.Destroying;
 import org.apache.sirona.configuration.ioc.IoCs;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.logging.Logger;
 
@@ -146,6 +149,24 @@ public class CassandraSirona {
                 set.add(row.getKey());
             }
         }
+        return set;
+    }
+
+    public static Collection<String> superKeys(final Keyspace keyspace, final String family) {
+        final OrderedSuperRows<String, String, String, ?> result = HFactory.createRangeSuperSlicesQuery(keyspace, StringSerializer.get(), StringSerializer.get(), StringSerializer.get(), new DynamicDelegatedSerializer<Object>())
+            .setColumnFamily(family)
+            .setRange(null, null, false, Integer.MAX_VALUE)
+            .setKeys("", "")
+            .execute()
+            .get();
+
+        final Collection<String> set = new HashSet<String>();
+        if (result != null) {
+            for (final SuperRow<String, String, String, ?> row : result) {
+                set.add(row.getKey());
+            }
+        }
+
         return set;
     }
 
