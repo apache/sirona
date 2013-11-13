@@ -17,6 +17,7 @@
 package org.apache.sirona.reporting.web.graph;
 
 import org.apache.sirona.Role;
+import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.reporting.web.plugin.json.Jsons;
 import org.apache.sirona.repositories.Repository;
@@ -29,10 +30,13 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
+import java.util.TreeMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Line {
     public static final String DEFAULT_COLOR = "#317eac";
+
+    private static final int MAX_POINTS = Configuration.getInteger(Configuration.CONFIG_PROPERTY_PREFIX + "reporting.graph.max-points", 200) - 1;
 
     private static final Random RANDOM = new Random(System.currentTimeMillis());
     private static final int MAX_COLOR = 256;
@@ -61,7 +65,8 @@ public class Line {
 
     public static String generateReport(final String label, final Role role, final long start, final long end) {
         if (!Environment.isCollector()) {
-            return "[" + Line.toJson(label, Line.DEFAULT_COLOR, Repository.INSTANCE.getGaugeValues(start, end, role)) + "]";
+            final Map<Long, Double> gaugeValues = Repository.INSTANCE.getGaugeValues(start, end, role);
+            return "[" + Line.toJson(label, Line.DEFAULT_COLOR, aggregate(gaugeValues)) + "]";
         }
 
         final CollectorGaugeDataStore gaugeStore = IoCs.findOrCreateInstance(CollectorGaugeDataStore.class);
@@ -78,11 +83,12 @@ public class Line {
                 COLORS.add(color);
             }
 
+            final Map<Long, Double> gaugeValues = gaugeStore.getGaugeValues(new GaugeValuesRequest(start, end, role), marker);
             builder.append(
                 toJson(
                     label + " (" + marker + ")",
                     color,
-                    gaugeStore.getGaugeValues(new GaugeValuesRequest(start, end, role), marker)
+                    aggregate(gaugeValues)
                 )
             );
             if (markers.hasNext()) {
@@ -90,6 +96,37 @@ public class Line {
             }
         }
         return builder.append("]").toString();
+    }
+
+    private static Map<Long, Double> aggregate(final Map<Long, Double> gaugeValues) {
+        if (gaugeValues.size() < MAX_POINTS || !TreeMap.class.isInstance(gaugeValues)) {
+            return gaugeValues;
+        }
+
+        final long min = gaugeValues.keySet().iterator().next();
+        final long max = Number.class.cast(TreeMap.class.cast(gaugeValues).lastKey()).longValue();
+        final long step = (long) ((max - min) * 1. / MAX_POINTS);
+
+        final Map<Long, Double> aggregation = new TreeMap<Long, Double>();
+        double currentValue = 0;
+        long switchValue = min + step;
+        long number = 0;
+        for (final Map.Entry<Long, Double> entry : gaugeValues.entrySet()) {
+            final long key = entry.getKey();
+            final double value = entry.getValue();
+
+            if (key < switchValue) {
+                currentValue += value;
+                number++;
+            } else {
+                aggregation.put(switchValue, currentValue / Math.max(1, number));
+                switchValue += step;
+                number = 0;
+                currentValue = value;
+            }
+        }
+        aggregation.put(switchValue, currentValue / Math.max(1, number));
+        return aggregation;
     }
 
     private Line() {
