@@ -66,7 +66,11 @@ public class PullRepository extends DefaultRepository {
 
         // gauges
         for (final Gauge g : getGauges()) {
-            answer.append(cube.gaugeSnapshot(time, g.role(), g.value()));
+            try {
+                answer.append(cube.gaugeSnapshot(time, g.role(), g.value()));
+            } catch (final Exception e) {
+                // no-op: ignore
+            }
         }
 
         // status
