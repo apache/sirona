@@ -22,7 +22,7 @@
                              http://maven.apache.org/xsd/decoration-1.0.1.xsd">
   <bannerLeft>
     <name>Apache Sirona</name>
-    <src>/images/commons-logo.png</src>
+    <!--<src>/images/commons-logo.png</src>-->
     <alt>Apache Sirona logo</alt>
     <href>/index.html</href>
   </bannerLeft>
