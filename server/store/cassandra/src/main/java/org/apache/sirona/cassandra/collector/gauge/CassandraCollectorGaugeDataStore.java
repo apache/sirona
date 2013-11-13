@@ -87,11 +87,7 @@ public class CassandraCollectorGaugeDataStore implements CollectorGaugeDataStore
 
     @Override
     public Collection<String> markers() {
-        final Collection<String> set = new HashSet<String>();
-        for (final String item : new StringKeyIterator.Builder(keyspace, markerFamily).build()) {
-            set.add(item);
-        }
-        return set;
+        return keys(keyspace, markerFamily);
     }
 
     @Override
