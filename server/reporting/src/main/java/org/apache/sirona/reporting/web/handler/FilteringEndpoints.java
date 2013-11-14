@@ -20,7 +20,6 @@ import org.apache.sirona.reporting.web.handler.api.Regex;
 import org.apache.sirona.reporting.web.handler.api.TemplateHelper;
 import org.apache.sirona.reporting.web.template.Templates;
 import org.apache.velocity.exception.ResourceNotFoundException;
-import org.apache.velocity.runtime.RuntimeSingleton;
 import org.apache.velocity.runtime.resource.loader.ResourceLoader;
 
 import javax.servlet.http.HttpServletRequest;
@@ -37,7 +36,7 @@ public class FilteringEndpoints {
 
     public FilteringEndpoints() {
         try {
-            rl = ResourceLoader.class.cast(FilteringEndpoints.class.getClassLoader().loadClass((String) RuntimeSingleton.getProperty(Templates.RESOURCE_LOADER_KEY)).newInstance());
+            rl = ResourceLoader.class.cast(FilteringEndpoints.class.getClassLoader().loadClass((String) Templates.property(Templates.RESOURCE_LOADER_KEY)).newInstance());
         } catch (final Exception e) {
             throw new IllegalStateException(e);
         }

@@ -21,9 +21,11 @@ import org.apache.sirona.reporting.web.plugin.PluginRepository;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
+import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.log.JdkLogChute;
 import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
+import org.apache.velocity.runtime.resource.loader.ResourceLoader;
 
 import java.io.PrintWriter;
 import java.util.Map;
@@ -33,6 +35,7 @@ public final class Templates {
     public static final String RESOURCE_LOADER_KEY = "monitoring." + RuntimeConstants.RESOURCE_LOADER + ".class";
 
     private static String mapping;
+    private static VelocityEngine engine;
 
     public static void init(final String context, final String filterMapping) {
         final Properties velocityConfiguration = new Properties();
@@ -45,7 +48,7 @@ public final class Templates {
         velocityConfiguration.setProperty(RuntimeConstants.RESOURCE_LOADER, "monitoring");
         velocityConfiguration.setProperty(RuntimeConstants.VM_LIBRARY, "/templates/macro.vm");
         velocityConfiguration.setProperty(RESOURCE_LOADER_KEY, Configuration.getProperty(Configuration.CONFIG_PROPERTY_PREFIX + "reporting.resource-loader", ClasspathResourceLoader.class.getName()));
-        Velocity.init(velocityConfiguration);
+        engine = new VelocityEngine(velocityConfiguration);
 
         if (filterMapping.isEmpty()) {
             mapping = context;
@@ -66,14 +69,14 @@ public final class Templates {
         boolean onlyBodyRendering=variables.containsKey( "onlyBody" );
 
         final Template velocityTemplate = onlyBodyRendering ?
-            Velocity.getTemplate("/templates/"+template, "UTF-8") : Velocity.getTemplate("/templates/page.vm", "UTF-8");
+            engine.getTemplate("/templates/" + template, "UTF-8") : engine.getTemplate("/templates/page.vm", "UTF-8");
         velocityTemplate.merge(context, writer);
     }
 
     public static void render(final PrintWriter writer, final String template, final Map<String, ?> variables) {
         final VelocityContext context = newVelocityContext(variables);
         context.put("mapping", mapping);
-        final Template velocityTemplate = Velocity.getTemplate(template, "UTF-8");
+        final Template velocityTemplate = engine.getTemplate(template, "UTF-8");
         velocityTemplate.merge(context, writer);
     }
 
@@ -85,6 +88,10 @@ public final class Templates {
             context = new VelocityContext(variables);
         }
         return context;
+    }
+
+    public static Object property(final String key) {
+        return engine.getProperty(key);
     }
 
     private Templates() {
