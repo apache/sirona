@@ -27,6 +27,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.Date;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertThat;
@@ -35,7 +36,11 @@ public class StatusTest extends SironaReportingTestBase {
     @BeforeClass
     public static void addStatus() {
         IoCs.findOrCreateInstance(Repository.class);
-        IoCs.getInstance(NodeStatusDataStore.class).statuses().put("node1", new NodeStatus(new ValidationResult[] { new ValidationResult("validation #1", Status.OK, "all is fine") }));
+        IoCs.getInstance(NodeStatusDataStore.class).statuses()
+            .put("node1",
+                new NodeStatus(
+                    new ValidationResult[] { new ValidationResult("validation #1", Status.OK, "all is fine") },
+                    new Date()));
     }
 
     @Test
@@ -47,7 +52,8 @@ public class StatusTest extends SironaReportingTestBase {
     @Test
     public void checkDetail() throws IOException {
         final HtmlPage page = page("status/node1");
-        assertThat(page.getWebResponse().getContentAsString(), containsString("Global status: OK"));
+        assertThat(page.getWebResponse().getContentAsString(), containsString("Global status"));
+        assertThat(page.getWebResponse().getContentAsString(), containsString(": OK"));
         assertThat(page.getWebResponse().getContentAsString(), containsString("validation #1"));
         assertThat(page.getWebResponse().getContentAsString(), containsString("all is fine"));
     }

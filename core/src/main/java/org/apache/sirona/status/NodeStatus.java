@@ -16,11 +16,24 @@
  */
 package org.apache.sirona.status;
 
+import java.util.Date;
+
 public class NodeStatus {
     private final ValidationResult[] results;
+    private final Date date;
+    private final Status status;
 
-    public NodeStatus(final ValidationResult[] results) {
+    public NodeStatus(final ValidationResult[] results, final Date date) {
         this.results = results;
+        this.date = date;
+        this.status = computeStatus();
+    }
+
+    public Date getDate() {
+        if (date == null) {
+            return new Date(0);
+        }
+        return date;
     }
 
     public ValidationResult[] getResults() {
@@ -28,6 +41,10 @@ public class NodeStatus {
     }
 
     public Status getStatus() {
+        return status;
+    }
+
+    protected Status computeStatus() {
         Status lowest = Status.OK;
         for (final ValidationResult result : results) {
             if (Status.KO.equals(result.getStatus())) {

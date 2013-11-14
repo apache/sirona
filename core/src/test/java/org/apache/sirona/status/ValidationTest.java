@@ -20,16 +20,19 @@ import org.apache.sirona.spi.SpiTestImpl;
 import org.apache.sirona.store.status.PeriodicNodeStatusDataStore;
 import org.junit.Test;
 
+import java.util.Date;
+
 import static org.junit.Assert.assertEquals;
 
 public class ValidationTest {
     @Test
     public void globalStatus() {
-        assertEquals(Status.OK, new NodeStatus(new ValidationResult[]{new ValidationResult(null, Status.OK, null)}).getStatus());
-        assertEquals(Status.KO, new NodeStatus(new ValidationResult[]{new ValidationResult(null, Status.KO, null)}).getStatus());
-        assertEquals(Status.DEGRADED, new NodeStatus(new ValidationResult[]{new ValidationResult(null, Status.DEGRADED, null)}).getStatus());
-        assertEquals(Status.KO, new NodeStatus(new ValidationResult[]{new ValidationResult(null, Status.DEGRADED, null), new ValidationResult(null, Status.KO, null)}).getStatus());
-        assertEquals(Status.DEGRADED, new NodeStatus(new ValidationResult[]{new ValidationResult(null, Status.DEGRADED, null), new ValidationResult(null, Status.OK, null)}).getStatus());
+        final Date date = new Date();
+        assertEquals(Status.OK, new NodeStatus(new ValidationResult[]{new ValidationResult(null, Status.OK, null)}, date).getStatus());
+        assertEquals(Status.KO, new NodeStatus(new ValidationResult[]{new ValidationResult(null, Status.KO, null)}, date).getStatus());
+        assertEquals(Status.DEGRADED, new NodeStatus(new ValidationResult[]{new ValidationResult(null, Status.DEGRADED, null)}, date).getStatus());
+        assertEquals(Status.KO, new NodeStatus(new ValidationResult[]{new ValidationResult(null, Status.DEGRADED, null), new ValidationResult(null, Status.KO, null)}, date).getStatus());
+        assertEquals(Status.DEGRADED, new NodeStatus(new ValidationResult[]{new ValidationResult(null, Status.DEGRADED, null), new ValidationResult(null, Status.OK, null)}, date).getStatus());
     }
 
     @Test

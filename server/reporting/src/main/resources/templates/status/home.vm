@@ -24,7 +24,7 @@
             #set($statusClass = $helper.map($status))
             <li>
                 <div class="alert alert-$statusClass">
-                    <a class="alert-$statusClass" href="$mapping/status/$node.key">$node.key</a>: $status
+                    <a class="alert-$statusClass" href="$mapping/status/$node.key">$node.key ($!node.value.date)</a>: $status
                 </div>
             </li>
         #end

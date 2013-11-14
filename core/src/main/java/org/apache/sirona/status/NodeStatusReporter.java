@@ -21,6 +21,7 @@ import org.apache.sirona.spi.SPI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.LinkedList;
 
 public class NodeStatusReporter {
@@ -31,7 +32,7 @@ public class NodeStatusReporter {
         for (final Validation v : validations) {
             results.add(v.validate());
         }
-        return new NodeStatus(results.toArray(new ValidationResult[results.size()]));
+        return new NodeStatus(results.toArray(new ValidationResult[results.size()]), new Date());
     }
 
     public synchronized Validation[] reload() {

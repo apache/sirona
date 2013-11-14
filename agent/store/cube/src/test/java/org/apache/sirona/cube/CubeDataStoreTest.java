@@ -53,7 +53,6 @@ public class CubeDataStoreTest {
         server.stop();
     }
 
-
     @Test
     public void store() throws InterruptedException, UnknownHostException {
         { // force some counter data
@@ -73,7 +72,7 @@ public class CubeDataStoreTest {
         for (final String m : messages) {
             if (m.contains("\"type\": \"gauge\"")) {
                 gauges.add(m.replaceAll("\"time\": \"[^\"]*\"", "\"time\": \"-\"")); // remove date to be able to test it easily
-            } else {
+            } else if (m.contains("\"type\": \"counter\"")) {
                 counters++;
                 aCounterMessage = m;
             }

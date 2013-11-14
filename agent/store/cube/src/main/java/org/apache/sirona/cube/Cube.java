@@ -46,6 +46,7 @@ public class Cube {
     private static final String COUNTER_TYPE = "counter";
     private static final String GAUGE_TYPE = "gauge";
     private static final String VALIDATION_TYPE = "validation";
+    private static final String STATUS_TYPE = "status";
 
     private static final String NAME = "name";
     private static final String ROLE = "role";
@@ -245,6 +246,11 @@ public class Cube {
                 .add("message", result.getMessage())
                 .add("status", result.getStatus().name())
                 .add("name", result.getName())
+                .map());
+        }
+        if (nodeStatus.getDate() != null) {
+            buildEvent(events, STATUS_TYPE, ts, new MapBuilder()
+                .add("date", nodeStatus.getDate().getTime())
                 .map());
         }
         return events;

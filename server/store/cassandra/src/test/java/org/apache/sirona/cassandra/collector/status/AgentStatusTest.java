@@ -23,6 +23,7 @@ import org.apache.sirona.status.ValidationResult;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.Date;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -33,9 +34,9 @@ public class AgentStatusTest {
     @Test
     public void checkPersistence() {
         new CassandraCollectorNodeStatusDataStore().store("node1", new NodeStatus(new ValidationResult[] {
-            new ValidationResult("v1", Status.OK, "m1"), new ValidationResult("v2", Status.KO, "m2") }));
+            new ValidationResult("v1", Status.OK, "m1"), new ValidationResult("v2", Status.KO, "m2") }, new Date()));
         new CassandraCollectorNodeStatusDataStore().store("node2", new NodeStatus(new ValidationResult[] {
-            new ValidationResult("v3", Status.OK, "m3"), new ValidationResult("v4", Status.KO, "m4") }));
+            new ValidationResult("v3", Status.OK, "m3"), new ValidationResult("v4", Status.KO, "m4") }, new Date()));
 
         final Map<String, NodeStatus> statuses = new CassandraCollectorNodeStatusDataStore().statuses();
 

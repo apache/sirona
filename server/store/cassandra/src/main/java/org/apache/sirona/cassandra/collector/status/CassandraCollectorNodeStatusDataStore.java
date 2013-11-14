@@ -16,6 +16,7 @@
  */
 package org.apache.sirona.cassandra.collector.status;
 
+import me.prettyprint.cassandra.serializers.DateSerializer;
 import me.prettyprint.cassandra.serializers.StringSerializer;
 import me.prettyprint.hector.api.Keyspace;
 import me.prettyprint.hector.api.beans.ColumnSlice;
@@ -33,6 +34,7 @@ import org.apache.sirona.status.ValidationResult;
 import org.apache.sirona.store.status.CollectorNodeStatusDataStore;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -55,8 +57,8 @@ public class CassandraCollectorNodeStatusDataStore implements CollectorNodeStatu
 
     @Override
     public Map<String, NodeStatus> statuses() {
-        final QueryResult<OrderedRows<String,String,String>> result =
-            HFactory.createRangeSlicesQuery(keyspace, StringSerializer.get(), StringSerializer.get(), StringSerializer.get())
+        final QueryResult<OrderedRows<String, String,Date>> result =
+            HFactory.createRangeSlicesQuery(keyspace, StringSerializer.get(), StringSerializer.get(), DateSerializer.get())
                 .setColumnFamily(markerFamily)
                 .setRange(null, null, false, Integer.MAX_VALUE)
                 .execute();
@@ -66,10 +68,11 @@ public class CassandraCollectorNodeStatusDataStore implements CollectorNodeStatu
         }
 
         final Map<String, NodeStatus> statuses = new HashMap<String, NodeStatus>();
-        for (final Row<String, String, String> status : result.get()) {
+        for (final Row<String, String, Date> status : result.get()) {
             final Collection<ValidationResult> validations = new LinkedList<ValidationResult>();
 
-            for (final HColumn<String, String> col : status.getColumnSlice().getColumns()) {
+            Date maxDate = null;
+            for (final HColumn<String, Date> col : status.getColumnSlice().getColumns()) {
                 final QueryResult<ColumnSlice<String, String>> subResult =
                     HFactory.createSliceQuery(keyspace, StringSerializer.get(), StringSerializer.get(), StringSerializer.get())
                         .setColumnFamily(family)
@@ -81,13 +84,20 @@ public class CassandraCollectorNodeStatusDataStore implements CollectorNodeStatu
                     continue;
                 }
 
+                final Date value = col.getValue();
+                if (maxDate == null || value == null) {
+                    maxDate = value;
+                } else if (maxDate.compareTo(value) < 0) {
+                    maxDate = value;
+                }
+
                 final ColumnSlice<String, String> slice = subResult.get();
                 validations.add(new ValidationResult(
                     slice.getColumnByName("name").getValue(),
                     Status.valueOf(slice.getColumnByName("status").getValue()),
                     slice.getColumnByName("description").getValue()));
             }
-            statuses.put(status.getKey(), new NodeStatus(validations.toArray(new ValidationResult[validations.size()])));
+            statuses.put(status.getKey(), new NodeStatus(validations.toArray(new ValidationResult[validations.size()]), maxDate));
         }
         return statuses;
     }
@@ -102,7 +112,7 @@ public class CassandraCollectorNodeStatusDataStore implements CollectorNodeStatu
         final Mutator<String> mutator = HFactory.createMutator(keyspace, StringSerializer.get());
         for (final ValidationResult validationResult : status.getResults()) {
             final String id = cassandra.generateKey(node, validationResult.getName());
-            mutator.addInsertion(node, markerFamily, emptyColumn(id))
+            mutator.addInsertion(node, markerFamily, column(id, status.getDate()))
                 .addInsertion(id, family, column("name", validationResult.getName()))
                 .addInsertion(id, family, column("description", validationResult.getMessage()))
                 .addInsertion(id, family, column("status", validationResult.getStatus().name()));

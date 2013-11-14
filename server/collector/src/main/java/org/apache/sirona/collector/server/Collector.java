@@ -54,6 +54,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
@@ -75,6 +76,7 @@ public class Collector extends HttpServlet {
     private static final String GAUGE = "gauge";
     private static final String COUNTER = "counter";
     private static final String VALIDATION = "validation";
+    private static final String STATUS = "status";
     private static final String REGISTRATION = "registration";
 
     private static final String GET = "GET";
@@ -195,10 +197,13 @@ public class Collector extends HttpServlet {
         if (events != null && events.length > 0) {
             try {
                 final Collection<Event> validations = new LinkedList<Event>();
+                long date = -1;
                 for (final Event event : events) {
                     final String type = event.getType();
                     if (VALIDATION.equals(type)) {
                         validations.add(event);
+                    } else if (STATUS.equals(type)) {
+                        date = Number.class.cast(event.getData().get("date")).longValue();
                     } else if (COUNTER.equals(type)) {
                         updateCounter(event);
                     } else if (GAUGE.equals(type)) {
@@ -219,7 +224,14 @@ public class Collector extends HttpServlet {
                             Status.valueOf((String) data.get("status")),
                             (String) data.get("message")));
                     }
-                    final NodeStatus status = new NodeStatus(results.toArray(new ValidationResult[results.size()]));
+
+                    final Date statusDate;
+                    if (date == -1) {
+                        statusDate = new Date();
+                    } else {
+                        statusDate = new Date(date);
+                    }
+                    final NodeStatus status = new NodeStatus(results.toArray(new ValidationResult[results.size()]), statusDate);
                     statusDataStore.store((String) events[0].getData().get("marker"), status);
                 }
             } catch (final Exception e) {

@@ -17,7 +17,7 @@
 <h1>Node $name</h1>
 
 <div>
-    <div class="alert alert-$helper.map($node.status)">Global status: $node.status</div>
+    <div class="alert alert-$helper.map($node.status)">Global status ($!node.date): $node.status</div>
     <table class="table table-bordered table-striped">
         <thead>
         <tr>

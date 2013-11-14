@@ -37,12 +37,13 @@ public class PullAnswerTest {
     public void json() {
         final JSONArray snapshotJson = JSONArray.class.cast(
             JSONSerializer.toJSON(createRepo().snapshot().replaceAll("\"time\": \"[^\"]*\"", "\"time\": \"assert\"").replaceAll("\"marker\": \"[^\"]*\"", "\"marker\": \"ubuntu\"")));
-        assertEquals(9, snapshotJson.size());
+        assertEquals(10, snapshotJson.size());
 
         final Collection<Integer> counters = new LinkedList<Integer>();
         final Collection<String> gauges = new LinkedList<String>();
         final Collection<String> validations = new LinkedList<String>();
-        for (int i = 0; i < 9; i++) {
+        final Collection<Long> statuses = new LinkedList<Long>();
+        for (int i = 0; i < 10; i++) {
             final JSONObject object = JSONObject.class.cast(snapshotJson.get(i));
             final Object type = object.get("type");
             final JSONObject data = JSONObject.class.cast(object.get("data"));
@@ -52,8 +53,12 @@ public class PullAnswerTest {
                 gauges.add(String.class.cast(data.get("role")));
             } if ("validation".equals(type)) {
                 validations.add(String.class.cast(data.get("name")));
+            } if ("status".equals(type)) {
+                statuses.add(Number.class.cast(data.get("date")).longValue());
             }
         }
+
+        assertEquals(1, statuses.size());
 
         assertEquals(3, counters.size());
         assertTrue(counters.contains(0));
