@@ -16,16 +16,24 @@
  */
 package org.apache.sirona.store.counter;
 
+import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.counters.DefaultCounter;
+import org.apache.sirona.counters.MetricData;
+import org.apache.sirona.gauges.Gauge;
+import org.apache.sirona.gauges.counter.CounterGauge;
+import org.apache.sirona.repositories.Repository;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.locks.Lock;
 
 public class InMemoryCounterDataStore implements CounterDataStore {
+    protected final boolean gauged = Configuration.is(Configuration.CONFIG_PROPERTY_PREFIX + "counter.with-gauge", false);
     protected final ConcurrentMap<Counter.Key, Counter> counters = newCounterMap();
+    protected final Collection<Gauge> gauges = new LinkedList<Gauge>();
 
     protected ConcurrentMap<Counter.Key, Counter> newCounterMap() {
         return new ConcurrentHashMap<Counter.Key, Counter>(50);
@@ -43,14 +51,31 @@ public class InMemoryCounterDataStore implements CounterDataStore {
             final Counter previous = counters.putIfAbsent(key, counter);
             if (previous != null) {
                 counter = previous;
+            } else if (gauged) {
+                newGauge(new CounterGauge(counter, MetricData.Sum, true));
+                newGauge(new CounterGauge(counter, MetricData.Max, true));
+                newGauge(new CounterGauge(counter, MetricData.Hits, true));
             }
         }
         return counter;
     }
 
+    private void newGauge(final Gauge gauge) {
+        Repository.INSTANCE.addGauge(gauge);
+        synchronized (gauges) {
+            gauges.add(gauge);
+        }
+    }
+
     @Override
     public void clearCounters() {
         counters.clear();
+        synchronized (gauges) {
+            for (final Gauge g : gauges) {
+                Repository.INSTANCE.stopGauge(g);
+            }
+            gauges.clear();
+        }
     }
 
     @Override

@@ -20,26 +20,29 @@ import org.apache.sirona.Role;
 import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.counters.MetricData;
+import org.apache.sirona.counters.Unit;
 import org.apache.sirona.gauges.Gauge;
 
-public abstract class CounterGauge implements Gauge {
+public class CounterGauge implements Gauge {
     private final Counter counter;
     private final MetricData metric;
     private final boolean reset;
+    private final Role role;
 
     protected CounterGauge(final Counter counter) {
         this(counter, MetricData.Sum, true);
     }
 
-    protected CounterGauge(final Counter counter, final MetricData metric, final boolean reset) {
+    public CounterGauge(final Counter counter, final MetricData metric, final boolean reset) {
         this.counter = counter;
         this.metric = metric;
         this.reset = reset;
+        this.role = new Role(counter.getKey().getRole() + "-" + counter.getKey().getName() + "-" + metric.name(), Unit.UNARY);
     }
 
     @Override
     public Role role() {
-        return counter.getKey().getRole();
+        return role;
     }
 
     @Override
