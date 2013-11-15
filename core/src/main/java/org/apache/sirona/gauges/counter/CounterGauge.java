@@ -37,7 +37,7 @@ public class CounterGauge implements Gauge {
         this.counter = counter;
         this.metric = metric;
         this.reset = reset;
-        this.role = new Role(counter.getKey().getRole() + "-" + counter.getKey().getName() + "-" + metric.name(), Unit.UNARY);
+        this.role = new Role(counter.getKey().getRole().getName() + "-" + counter.getKey().getName() + "-" + metric.name(), Unit.UNARY);
     }
 
     @Override
