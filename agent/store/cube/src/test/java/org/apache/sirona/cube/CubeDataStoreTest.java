@@ -16,28 +16,32 @@
  */
 package org.apache.sirona.cube;
 
-import org.apache.sirona.Role;
-import org.apache.sirona.counters.Counter;
-import org.apache.sirona.gauges.Gauge;
-import org.apache.sirona.repositories.Repository;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Locale;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import org.apache.sirona.Role;
+import org.apache.sirona.counters.Counter;
+import org.apache.sirona.gauges.Gauge;
+import org.apache.sirona.repositories.Repository;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 public class CubeDataStoreTest {
     private CubeServer server;
     private Gauge.LoaderHelper gauges;
+    private static Locale oldLocale;
 
     @Before
     public void startCube() throws IOException {
@@ -51,6 +55,17 @@ public class CubeDataStoreTest {
         gauges.destroy();
         Repository.INSTANCE.clearCounters();
         server.stop();
+    }
+
+    @BeforeClass
+    public static void setDefaultLocale() {
+        oldLocale = Locale.getDefault();
+        Locale.setDefault(Locale.ENGLISH);
+    }
+
+    @AfterClass
+    public static void restoreLocale() {
+        Locale.setDefault(oldLocale);
     }
 
     @Test
@@ -79,7 +94,7 @@ public class CubeDataStoreTest {
 
                 final String valueStr = "value\":";
                 final int start = m.indexOf(valueStr) + valueStr.length();
-                gauges.add(Double.parseDouble(m.substring(start, Math.max(m.indexOf('"', start + 1), m.indexOf('}', start + 1)))));
+                gauges.add(Double.parseDouble(m.substring(start, Math.min(m.indexOf(',', start + 1), m.indexOf('}', start + 1)))));
             } else if (m.contains("\"type\": \"counter\"")) {
                 counters++;
                 aCounterMessage = m;
