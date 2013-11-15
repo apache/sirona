@@ -20,7 +20,7 @@ import org.apache.sirona.Role;
 import org.apache.sirona.counters.Unit;
 import org.apache.sirona.reporting.web.plugin.api.Regex;
 import org.apache.sirona.reporting.web.plugin.api.Template;
-import org.apache.sirona.reporting.web.plugin.json.Jsons;
+import org.apache.sirona.reporting.web.plugin.api.graph.Graphs;
 import org.apache.sirona.repositories.Repositories;
 import org.apache.sirona.repositories.Repository;
 import org.apache.sirona.web.session.SessionGauge;
@@ -36,7 +36,7 @@ public class WebEndpoints {
         final StringBuilder builder = new StringBuilder("[");
         for (final Role gauge : Repositories.findByPrefixAndUnit(SessionGauge.SESSIONS_PREFIX, Unit.UNARY)) {
             builder.append("{ \"data\": ")
-                .append(Jsons.toJson(Repository.INSTANCE.getGaugeValues(start, end, gauge)))
+                .append(Graphs.toJson(Repository.INSTANCE.getGaugeValues(start, end, gauge)))
                 .append(", \"label\": \"").append(gauge.getName()).append("\", \"color\": \"#317eac\" }")
                 .append(",");
         }

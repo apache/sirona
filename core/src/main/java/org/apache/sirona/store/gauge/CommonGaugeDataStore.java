@@ -19,10 +19,10 @@ package org.apache.sirona.store.gauge;
 import org.apache.sirona.Role;
 
 import java.util.Collection;
-import java.util.Map;
+import java.util.SortedMap;
 
 public interface CommonGaugeDataStore {
-    Map<Long, Double> getGaugeValues(GaugeValuesRequest gaugeValuesRequest);
+    SortedMap<Long, Double> getGaugeValues(GaugeValuesRequest gaugeValuesRequest);
 
     Collection<Role> gauges();
 

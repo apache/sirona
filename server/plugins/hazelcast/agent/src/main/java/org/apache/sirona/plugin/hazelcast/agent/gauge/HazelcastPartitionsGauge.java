@@ -14,26 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.reporting.web.plugin.json;
+package org.apache.sirona.plugin.hazelcast.agent.gauge;
 
-import java.util.Iterator;
-import java.util.Map;
+import com.hazelcast.core.HazelcastInstance;
 
-public final class Jsons {
-    public static String toJson(final Map<Long, Double> data) { // helper for gauges
-        final StringBuilder builder = new StringBuilder().append("[");
-        final Iterator<Map.Entry<Long,Double>> iterator = data.entrySet().iterator();
-        while (iterator.hasNext()) {
-            final Map.Entry<Long, Double> entry = iterator.next();
-            builder.append("[").append(entry.getKey()).append(", ").append(entry.getValue()).append("]");
-            if (iterator.hasNext()) {
-                builder.append(", ");
-            }
-        }
-        return builder.append("]").toString();
+public class HazelcastPartitionsGauge extends HazelcastGaugeBase {
+    public HazelcastPartitionsGauge(final String name, final HazelcastInstance instance) {
+        super("hazelcast-partitions-" + name, instance);
     }
 
-    private Jsons() {
-        // no-op
+    @Override
+    public double value() {
+        return instance.getPartitionService().getPartitions().size();
     }
 }

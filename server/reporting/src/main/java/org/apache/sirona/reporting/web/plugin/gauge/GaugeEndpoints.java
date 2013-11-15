@@ -29,7 +29,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.TreeMap;
 
-import static org.apache.sirona.reporting.web.graph.Line.generateReport;
+import static org.apache.sirona.reporting.web.plugin.api.graph.Graphs.generateReport;
 
 // gauge names can be not so URL friendly so using urlencode(base64), encoding is not in an utility class since it can change depending the data
 public class GaugeEndpoints {

@@ -43,6 +43,7 @@ import org.apache.sirona.store.status.NodeStatusDataStore;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.SortedMap;
 
 public class DefaultRepository implements Repository {
     protected final CounterDataStore counterDataStore;
@@ -190,7 +191,7 @@ public class DefaultRepository implements Repository {
     }
 
     @Override
-    public Map<Long, Double> getGaugeValues(final long start, final long end, final Role role) {
+    public SortedMap<Long, Double> getGaugeValues(final long start, final long end, final Role role) {
         return gaugeDataStore.getGaugeValues(new GaugeValuesRequest(start, end, role));
     }
 

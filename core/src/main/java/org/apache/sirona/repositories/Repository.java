@@ -26,6 +26,7 @@ import org.apache.sirona.stopwatches.StopWatch;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.SortedMap;
 
 public interface Repository {
     Repository INSTANCE = IoCs.findOrCreateInstance(Repository.class);
@@ -44,7 +45,7 @@ public interface Repository {
 
     void stopGauge(Gauge role);
 
-    Map<Long, Double> getGaugeValues(long start, long end, Role role);
+    SortedMap<Long, Double> getGaugeValues(long start, long end, Role role);
 
     Collection<Role> gauges();
 

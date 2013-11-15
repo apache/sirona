@@ -33,5 +33,6 @@
   <modules>
     <module>tomee</module>
     <module>api</module>
+    <module>hazelcast</module>
   </modules>
 </project>

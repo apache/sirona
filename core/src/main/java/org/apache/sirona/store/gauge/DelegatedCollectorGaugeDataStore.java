@@ -16,16 +16,16 @@
  */
 package org.apache.sirona.store.gauge;
 
-import org.apache.sirona.SironaException;
 import org.apache.sirona.Role;
+import org.apache.sirona.SironaException;
 import org.apache.sirona.configuration.Configuration;
 
 import java.lang.reflect.Constructor;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -60,10 +60,10 @@ public class DelegatedCollectorGaugeDataStore implements CollectorGaugeDataStore
     }
 
     @Override
-    public Map<Long, Double> getGaugeValues(final GaugeValuesRequest gaugeValuesRequest, final String marker) {
+    public SortedMap<Long, Double> getGaugeValues(final GaugeValuesRequest gaugeValuesRequest, final String marker) {
         final GaugeDataStore gaugeDataStore = dataStores.get(marker);
         if (gaugeDataStore == null) {
-            return Collections.emptyMap();
+            return new TreeMap<Long, Double>();
         }
         return gaugeDataStore.getGaugeValues(gaugeValuesRequest);
     }
@@ -93,8 +93,9 @@ public class DelegatedCollectorGaugeDataStore implements CollectorGaugeDataStore
     }
 
     @Override // TODO: see if using a period to aggregate data wouldn't make more sense
-    public Map<Long, Double> getGaugeValues(final GaugeValuesRequest gaugeValuesRequest) {
-        final Map<Long, Double> values = new TreeMap<Long, Double>();
+    public SortedMap<Long, Double> getGaugeValues(final GaugeValuesRequest gaugeValuesRequest) {
+        final SortedMap<Long, Double> values = new TreeMap<Long, Double>();
+
         for (final Map.Entry<String, GaugeDataStore> marker : dataStores.entrySet()) {
             final Map<Long, Double> gaugeValues = marker.getValue().getGaugeValues(gaugeValuesRequest);
             for (final Map.Entry<Long, Double> entry : gaugeValues.entrySet()) {

@@ -22,12 +22,13 @@ import org.apache.sirona.store.gauge.GaugeValuesRequest;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 public class GaugeDataStoreAdapter implements GaugeDataStore {
     @Override
-    public Map<Long, Double> getGaugeValues(final GaugeValuesRequest gaugeValuesRequest) {
-        return Collections.emptyMap();
+    public SortedMap<Long, Double> getGaugeValues(final GaugeValuesRequest gaugeValuesRequest) {
+        return new TreeMap<Long, Double>();
     }
 
     @Override

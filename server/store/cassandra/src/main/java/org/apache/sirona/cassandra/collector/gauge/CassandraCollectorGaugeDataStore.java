@@ -19,7 +19,6 @@ package org.apache.sirona.cassandra.collector.gauge;
 import me.prettyprint.cassandra.serializers.DoubleSerializer;
 import me.prettyprint.cassandra.serializers.LongSerializer;
 import me.prettyprint.cassandra.serializers.StringSerializer;
-import me.prettyprint.cassandra.service.StringKeyIterator;
 import me.prettyprint.hector.api.Keyspace;
 import me.prettyprint.hector.api.beans.ColumnSlice;
 import me.prettyprint.hector.api.beans.HColumn;
@@ -35,6 +34,7 @@ import org.apache.sirona.store.gauge.GaugeValuesRequest;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.SortedMap;
 import java.util.TreeMap;
 
 import static org.apache.sirona.cassandra.collector.CassandraSirona.column;
@@ -91,14 +91,14 @@ public class CassandraCollectorGaugeDataStore implements CollectorGaugeDataStore
     }
 
     @Override
-    public Map<Long, Double> getGaugeValues(final GaugeValuesRequest gaugeValuesRequest, final String marker) {
+    public SortedMap<Long, Double> getGaugeValues(final GaugeValuesRequest gaugeValuesRequest, final String marker) {
         final QueryResult<ColumnSlice<Long, Double>> qResult = HFactory.createSliceQuery(keyspace, StringSerializer.get(), LongSerializer.get(), DoubleSerializer.get())
             .setKey(id(gaugeValuesRequest.getRole(), marker))
             .setColumnFamily(valueFamily)
             .setRange(gaugeValuesRequest.getStart(), gaugeValuesRequest.getEnd(), false, Integer.MAX_VALUE)
             .execute();
 
-        final Map<Long, Double> result = new TreeMap<Long, Double>();
+        final SortedMap<Long, Double> result = new TreeMap<Long, Double>();
         for (final HColumn<Long, Double> slide : qResult.get().getColumns()) {
             result.put(slide.getName(), slide.getValue());
         }
@@ -107,8 +107,8 @@ public class CassandraCollectorGaugeDataStore implements CollectorGaugeDataStore
     }
 
     @Override
-    public Map<Long, Double> getGaugeValues(final GaugeValuesRequest gaugeValuesRequest) {
-        final Map<Long, Double> result = new TreeMap<Long, Double>();
+    public SortedMap<Long, Double> getGaugeValues(final GaugeValuesRequest gaugeValuesRequest) {
+        final SortedMap<Long, Double> result = new TreeMap<Long, Double>();
 
         for (final String marker : markers()) {
             for (final Map.Entry<Long, Double> values : getGaugeValues(gaugeValuesRequest, marker).entrySet()) {

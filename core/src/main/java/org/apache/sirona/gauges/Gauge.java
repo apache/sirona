@@ -44,8 +44,11 @@ public interface Gauge {
                 addGaugeIfNecessary(classLoader, g, excludeParent, includedPrefixes);
             }
             for (final GaugeFactory gf : SPI.INSTANCE.find(GaugeFactory.class, classLoader)) {
-                for (final Gauge g : gf.gauges()) {
-                    addGaugeIfNecessary(classLoader, g, excludeParent, includedPrefixes);
+                final Gauge[] list = gf.gauges();
+                if (list != null) {
+                    for (final Gauge g : list) {
+                        addGaugeIfNecessary(classLoader, g, excludeParent, includedPrefixes);
+                    }
                 }
             }
         }

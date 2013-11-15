@@ -28,4 +28,11 @@
 
   <artifactId>sirona-plugins-api</artifactId>
   <name>Apache Sirona Incubator :: Server :: Plugins :: API</name>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.sirona</groupId>
+      <artifactId>sirona-core</artifactId>
+    </dependency>
+  </dependencies>
 </project>

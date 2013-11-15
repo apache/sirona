@@ -21,7 +21,7 @@ import org.apache.sirona.counters.Unit;
 import org.apache.sirona.reporting.web.plugin.api.Regex;
 import org.apache.sirona.reporting.web.plugin.api.Template;
 
-import static org.apache.sirona.reporting.web.graph.Line.generateReport;
+import static org.apache.sirona.reporting.web.plugin.api.graph.Graphs.generateReport;
 
 public class JTAEndpoints {
     // copied to avoid classloading issue depending on the deployment, see org.apache.sirona.jta.JTAGauges

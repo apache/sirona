@@ -20,33 +20,35 @@ import org.apache.sirona.Role;
 import org.apache.sirona.configuration.Configuration;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 
 public class InMemoryGaugeDataStore implements GaugeDataStore {
-    protected final ConcurrentMap<Role, Map<Long, Double>> gauges = new ConcurrentHashMap<Role, Map<Long, Double>>();
+    protected final ConcurrentMap<Role, SortedMap<Long, Double>> gauges = new ConcurrentHashMap<Role, SortedMap<Long, Double>>();
     protected final Map<String, Role> roleMapping = new ConcurrentHashMap<String, Role>();
 
     @Override
-    public Map<Long, Double> getGaugeValues(final GaugeValuesRequest gaugeValuesRequest) {
+    public SortedMap<Long, Double> getGaugeValues(final GaugeValuesRequest gaugeValuesRequest) {
         final Map<Long, Double> map = gauges.get(gaugeValuesRequest.getRole());
         if (map == null) {
-            return Collections.emptyMap();
+            return new TreeMap<Long, Double>();
         }
 
-        final Map<Long, Double> copy = new TreeMap<Long, Double>(map);
+        final Map<Long, Double> copy = new HashMap<Long, Double>(map);
 
-        final Map<Long, Double> out = new TreeMap<Long, Double>();
+        final SortedMap<Long, Double> out = new TreeMap<Long, Double>();
         for (final Map.Entry<Long, Double> entry : copy.entrySet()) {
             final long time = entry.getKey();
             if (time >= gaugeValuesRequest.getStart() && time <= gaugeValuesRequest.getEnd()) {
                 out.put(time, entry.getValue());
             }
         }
+
         return out;
     }
 

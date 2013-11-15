@@ -14,12 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.reporting.web.graph;
+package org.apache.sirona.reporting.web.plugin.api.graph;
 
 import org.apache.sirona.Role;
 import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.configuration.ioc.IoCs;
-import org.apache.sirona.reporting.web.plugin.json.Jsons;
 import org.apache.sirona.repositories.Repository;
 import org.apache.sirona.store.gauge.CollectorGaugeDataStore;
 import org.apache.sirona.store.gauge.GaugeValuesRequest;
@@ -30,10 +29,12 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
+import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class Line {
+// a helper class to generate JSon (without dependencies) from gauges to plot graphes
+public class Graphs {
     public static final String DEFAULT_COLOR = "#317eac";
 
     private static final int MAX_POINTS = Configuration.getInteger(Configuration.CONFIG_PROPERTY_PREFIX + "reporting.graph.max-points", 200) - 1;
@@ -46,8 +47,21 @@ public class Line {
         generateColor(), generateColor(), generateColor(), generateColor(), generateColor()
     });
 
-    public static String toJson(final String label, final String color, final Map<Long, Double> data) {
-        return "{\"label\":\"" + label + "\",\"color\":\"" + color + "\",\"data\": " + Jsons.toJson(data) + "}";
+    public static String toJson(final String label, final String color, final SortedMap<Long, Double> data) {
+        return "{\"label\":\"" + label + "\",\"color\":\"" + color + "\",\"data\": " + toJson(data) + "}";
+    }
+
+    public static String toJson(final SortedMap<Long, Double> data) { // helper for gauges
+        final StringBuilder builder = new StringBuilder().append("[");
+        final Iterator<Map.Entry<Long,Double>> iterator = data.entrySet().iterator();
+        while (iterator.hasNext()) {
+            final Map.Entry<Long, Double> entry = iterator.next();
+            builder.append("[").append(entry.getKey()).append(", ").append(entry.getValue()).append("]");
+            if (iterator.hasNext()) {
+                builder.append(", ");
+            }
+        }
+        return builder.append("]").toString();
     }
 
     private static String generateColor() {
@@ -65,8 +79,8 @@ public class Line {
 
     public static String generateReport(final String label, final Role role, final long start, final long end) {
         if (!Environment.isCollector()) {
-            final Map<Long, Double> gaugeValues = Repository.INSTANCE.getGaugeValues(start, end, role);
-            return "[" + Line.toJson(label, Line.DEFAULT_COLOR, aggregate(gaugeValues)) + "]";
+            final SortedMap<Long, Double> gaugeValues = Repository.INSTANCE.getGaugeValues(start, end, role);
+            return "[" + Graphs.toJson(label, Graphs.DEFAULT_COLOR, aggregate(gaugeValues)) + "]";
         }
 
         final CollectorGaugeDataStore gaugeStore = IoCs.findOrCreateInstance(CollectorGaugeDataStore.class);
@@ -83,7 +97,7 @@ public class Line {
                 COLORS.add(color);
             }
 
-            final Map<Long, Double> gaugeValues = gaugeStore.getGaugeValues(new GaugeValuesRequest(start, end, role), marker);
+            final SortedMap<Long, Double> gaugeValues = gaugeStore.getGaugeValues(new GaugeValuesRequest(start, end, role), marker);
             builder.append(
                 toJson(
                     label + " (" + marker + ")",
@@ -98,7 +112,7 @@ public class Line {
         return builder.append("]").toString();
     }
 
-    private static Map<Long, Double> aggregate(final Map<Long, Double> gaugeValues) {
+    private static SortedMap<Long, Double> aggregate(final SortedMap<Long, Double> gaugeValues) {
         if (gaugeValues.size() < MAX_POINTS || !TreeMap.class.isInstance(gaugeValues)) {
             return gaugeValues;
         }
@@ -107,7 +121,7 @@ public class Line {
         final long max = Number.class.cast(TreeMap.class.cast(gaugeValues).lastKey()).longValue();
         final long step = (long) ((max - min) * 1. / MAX_POINTS);
 
-        final Map<Long, Double> aggregation = new TreeMap<Long, Double>();
+        final SortedMap<Long, Double> aggregation = new TreeMap<Long, Double>();
         double currentValue = 0;
         long switchValue = min + step;
         long number = 0;
@@ -129,7 +143,7 @@ public class Line {
         return aggregation;
     }
 
-    private Line() {
+    private Graphs() {
         // no-op
     }
 }

@@ -19,6 +19,7 @@ package org.apache.sirona.repositories;
 import org.apache.sirona.Role;
 import org.apache.sirona.counters.Unit;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -43,6 +44,14 @@ public class Repositories {
             }
         }
         return roles;
+    }
+
+    public static Collection<String> names(final Collection<Role> membersGauges) {
+        final Collection<String> names = new ArrayList<String>(membersGauges.size());
+        for (final Role role : membersGauges) {
+            names.add(role.getName());
+        }
+        return names;
     }
 
     private Repositories() {

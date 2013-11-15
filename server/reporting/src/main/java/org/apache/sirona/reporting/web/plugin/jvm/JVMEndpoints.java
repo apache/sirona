@@ -29,7 +29,7 @@ import java.lang.management.OperatingSystemMXBean;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.apache.sirona.reporting.web.graph.Line.generateReport;
+import static org.apache.sirona.reporting.web.plugin.api.graph.Graphs.generateReport;
 
 public class JVMEndpoints {
     @Regex
