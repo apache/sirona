@@ -127,7 +127,10 @@ public class Graphs {
         long number = 0;
         for (final Map.Entry<Long, Double> entry : gaugeValues.entrySet()) {
             final long key = entry.getKey();
-            final double value = entry.getValue();
+            double value = entry.getValue();
+            if (value == Double.NaN) {
+                value = 0;
+            }
 
             if (key < switchValue) {
                 currentValue += value;

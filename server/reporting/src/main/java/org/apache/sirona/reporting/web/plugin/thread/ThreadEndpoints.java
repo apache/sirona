@@ -78,7 +78,7 @@ public class ThreadEndpoints {
 
         for (int i = 0; i < count; i++) {
             final String name = threads[i].getName();
-            out.put(name, Base64.encodeBase64String(name.getBytes()));
+            out.put(name, Base64.encodeBase64URLSafeString(name.getBytes()));
         }
 
         return out;

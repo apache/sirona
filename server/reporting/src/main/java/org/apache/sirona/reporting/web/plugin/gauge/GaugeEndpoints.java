@@ -62,7 +62,7 @@ public class GaugeEndpoints {
     }
 
     private static String encode(final String role) {
-        final String base64 = new String(Base64.encodeBase64(role.getBytes()));
+        final String base64 = Base64.encodeBase64URLSafeString(role.getBytes());
         try {
             return URLEncoder.encode(base64, UTF8);
         } catch (final UnsupportedEncodingException e) {

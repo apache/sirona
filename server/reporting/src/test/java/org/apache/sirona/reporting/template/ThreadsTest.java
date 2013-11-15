@@ -28,7 +28,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public class ThreadsTest extends SironaReportingTestBase {
-    private static final String CONTAINER_BACKGROUND_THREAD = "Q29udGFpbmVyQmFja2dyb3VuZFByb2Nlc3NvcltTdGFuZGFyZEVuZ2luZVthcnF1aWxsaWFuLXRvbWNhdC1lbWJlZGRlZC03XV0="; // always exists
+    private static final String CONTAINER_BACKGROUND_THREAD = "Q29udGFpbmVyQmFja2dyb3VuZFByb2Nlc3NvcltTdGFuZGFyZEVuZ2luZVthcnF1aWxsaWFuLXRvbWNhdC1lbWJlZGRlZC03XV0"; // always exists
 
     @Test
     public void checkThreadsAreListed() throws IOException {

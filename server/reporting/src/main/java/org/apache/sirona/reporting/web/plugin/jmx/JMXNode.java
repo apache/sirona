@@ -65,7 +65,7 @@ public class JMXNode {
             node = child;
         }
 
-        node.base64 = Base64.encodeBase64String((domain + ":" + props).getBytes());
+        node.base64 = Base64.encodeBase64URLSafeString((domain + ":" + props).getBytes());
     }
 
     public String getName() {

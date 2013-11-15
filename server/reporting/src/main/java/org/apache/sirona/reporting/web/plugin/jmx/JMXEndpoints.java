@@ -112,7 +112,7 @@ public class JMXEndpoints {
             return new Template("templates/jmx/mbean.vm",
                 new MapBuilder<String, Object>()
                     .set("objectname", name.toString())
-                    .set("objectnameHash", Base64.encodeBase64String(name.toString().getBytes()))
+                    .set("objectnameHash", Base64.encodeBase64URLSafeString(name.toString().getBytes()))
                     .set("classname", info.getClassName())
                     .set("description", value(info.getDescription()))
                     .set("attributes", attributes(name, info))

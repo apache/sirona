@@ -24,19 +24,17 @@ import org.apache.sirona.counters.Unit;
 import org.apache.sirona.gauges.Gauge;
 
 public class CounterGauge implements Gauge {
-    private final Counter counter;
-    private final MetricData metric;
-    private final boolean reset;
-    private final Role role;
+    protected final Counter counter;
+    protected final MetricData metric;
+    protected final Role role;
 
     protected CounterGauge(final Counter counter) {
-        this(counter, MetricData.Sum, true);
+        this(counter, MetricData.Sum);
     }
 
-    public CounterGauge(final Counter counter, final MetricData metric, final boolean reset) {
+    public CounterGauge(final Counter counter, final MetricData metric) {
         this.counter = counter;
         this.metric = metric;
-        this.reset = reset;
         this.role = new Role("counter-" + counter.getKey().getRole().getName() + "-" + counter.getKey().getName() + "-" + metric.name(), Unit.UNARY);
     }
 
@@ -47,13 +45,7 @@ public class CounterGauge implements Gauge {
 
     @Override
     public double value() {
-        try {
-            return metric.value(counter);
-        } finally {
-            if (reset) {
-                counter.reset();
-            }
-        }
+        return metric.value(counter);
     }
 
     @Override

@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 
 public class InMemoryCounterDataStore implements CounterDataStore {
@@ -52,9 +53,10 @@ public class InMemoryCounterDataStore implements CounterDataStore {
             if (previous != null) {
                 counter = previous;
             } else if (gauged) {
-                newGauge(new CounterGauge(counter, MetricData.Sum, true));
-                newGauge(new CounterGauge(counter, MetricData.Max, true));
-                newGauge(new CounterGauge(counter, MetricData.Hits, true));
+                final Values values = new Values(counter);
+                newGauge(new SyncCounterGauge(counter, MetricData.Sum, values));
+                newGauge(new SyncCounterGauge(counter, MetricData.Max, values));
+                newGauge(new SyncCounterGauge(counter, MetricData.Hits, values));
             }
         }
         return counter;
@@ -96,6 +98,65 @@ public class InMemoryCounterDataStore implements CounterDataStore {
             defaultCounter.addInternal(delta);
         } finally {
             lock.unlock();
+        }
+    }
+
+    private static class SyncCounterGauge extends CounterGauge {
+        private final Values values;
+
+        private SyncCounterGauge(final Counter counter, final MetricData metric, final Values values) {
+            super(counter, metric);
+            this.values = values;
+        }
+
+        @Override
+        public double value() {
+            values.take();
+            if (MetricData.Hits == metric) {
+                return values.getHits();
+            } else if (MetricData.Sum == metric) {
+                return values.getSum();
+            } else if (MetricData.Max == metric) {
+                return values.getMax();
+            }
+            throw new IllegalArgumentException(metric.name());
+        }
+    }
+
+    private static class Values {
+        private double max;
+        private double sum;
+        private double hits;
+
+        private int called = -1;
+
+        private final Counter counter;
+
+        private Values(final Counter counter) {
+            this.counter = counter;
+        }
+
+        public synchronized void take() {
+            if (called == 3 || called == -1) {
+                max = counter.getMax();
+                sum = counter.getSum();
+                hits = counter.getHits();
+                counter.reset();
+                called = 0;
+            }
+            called++;
+        }
+
+        public double getMax() {
+            return max;
+        }
+
+        public double getSum() {
+            return sum;
+        }
+
+        public double getHits() {
+            return hits;
         }
     }
 }
