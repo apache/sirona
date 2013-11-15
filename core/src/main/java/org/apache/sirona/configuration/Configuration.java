@@ -50,17 +50,6 @@ public final class Configuration {
 
     private static InputStream findConfiguration() throws FileNotFoundException {
 
-        String sysPropsPath = System.getProperty( SYS_PROPS_FILE_PATH );
-
-        if (sysPropsPath != null){
-            File file = new File( sysPropsPath );
-            if (file.exists()){
-                return new FileInputStream( file );
-            } else {
-                LOGGER.log(Level.WARNING, "sirona configuration file with path " + sysPropsPath + " cannot be found so ignore it");
-            }
-        }
-
         for (final String cf : DEFAULT_CONFIGURATION_FILES) {
             final String filename = System.getProperty(CONFIG_PROPERTY_PREFIX + "configuration", cf);
             if (new File(filename).exists()) {
