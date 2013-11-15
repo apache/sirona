@@ -27,6 +27,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
+import javax.persistence.TypedQuery;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
@@ -98,8 +99,9 @@ public class QueryTest {
                 final EntityManager em = emf.createEntityManager();
                 try {
                     reset();
-                    em.createNamedQuery("Person.findByName", Person.class).setParameter("name", "sirona").getSingleResult();
+                    final TypedQuery<Person> namedQuery = em.createNamedQuery("Person.findByName", Person.class);
                     assertCounter("createNamedQuery");
+                    namedQuery.setParameter("name", "sirona").getSingleResult();
                 } finally {
                     em.close();
                 }

@@ -65,23 +65,30 @@ public class CubeDataStoreTest {
             Thread.sleep(1500);
         }
 
+        final String host = InetAddress.getLocalHost().getHostName();
+
         final Collection<String> messages = server.getMessages();
-        final Collection<String> gauges = new ArrayList<String>(4);
+        final Collection<Double> gauges = new ArrayList<Double>(4);
         int counters = 0;
         String aCounterMessage = null;
         for (final String m : messages) {
             if (m.contains("\"type\": \"gauge\"")) {
-                gauges.add(m.replaceAll("\"time\": \"[^\"]*\"", "\"time\": \"-\"")); // remove date to be able to test it easily
+                assertThat(m, containsString("\"role\":\"mock\""));
+                assertThat(m, containsString("\"unit\":\"u\""));
+                assertThat(m, containsString("\"marker\":\"" + host + "\""));
+
+                final String valueStr = "value\":";
+                final int start = m.indexOf(valueStr) + valueStr.length();
+                gauges.add(Double.parseDouble(m.substring(start, Math.max(m.indexOf('"', start + 1), m.indexOf('}', start + 1)))));
             } else if (m.contains("\"type\": \"counter\"")) {
                 counters++;
                 aCounterMessage = m;
             }
         }
 
-        final String host = InetAddress.getLocalHost().getHostName();
-        assertTrue(gauges.contains("[{\"type\": \"gauge\",\"time\": \"-\",\"data\": {\"unit\":\"u\",\"marker\":\"" + host + "\",\"value\":0.0,\"role\":\"mock\"}}]"));
-        assertTrue(gauges.contains("[{\"type\": \"gauge\",\"time\": \"-\",\"data\": {\"unit\":\"u\",\"marker\":\"" + host + "\",\"value\":1.0,\"role\":\"mock\"}}]"));
-        assertTrue(gauges.contains("[{\"type\": \"gauge\",\"time\": \"-\",\"data\": {\"unit\":\"u\",\"marker\":\"" + host + "\",\"value\":2.0,\"role\":\"mock\"}}]"));
+        assertTrue(gauges.contains(0.));
+        assertTrue(gauges.contains(1.));
+        assertTrue(gauges.contains(2.));
 
         assertTrue(counters >= 3);
         assertNotNull(aCounterMessage);
