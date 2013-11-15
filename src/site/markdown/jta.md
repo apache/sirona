@@ -23,7 +23,7 @@ This module aims to monitor commits/rollbacks and active transaction number.
 ## Installation
 
 `sirona-jta` should be added to your webapp. You need to register the jta gauges. To do it the easiest is
-to add `commons-monitoring-web` to your webapp and register the listener `org.apache.sirona.web.discovery.GaugeDiscoveryListener`:
+to add `sirona-web` to your webapp and register the listener `org.apache.sirona.web.discovery.GaugeDiscoveryListener`:
 
 <pre class="prettyprint linenums"><![CDATA[
 <web-app xmlns="http://java.sun.com/xml/ns/javaee"

@@ -16,8 +16,8 @@
  */
 package org.apache.sirona.reporting.web.plugin.status;
 
-import org.apache.sirona.reporting.web.handler.api.Regex;
-import org.apache.sirona.reporting.web.handler.api.Template;
+import org.apache.sirona.reporting.web.plugin.api.Regex;
+import org.apache.sirona.reporting.web.plugin.api.Template;
 import org.apache.sirona.repositories.Repository;
 
 public class StatusEndpoints {

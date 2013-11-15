@@ -21,7 +21,7 @@ under the License.
 There are several kind of plugins:
 
 * `org.apache.sirona.gauges.Gauge` and `org.apache.sirona.gauges.GaugeFactory`: you can add your own gauges
-* `org.apache.sirona.reporting.web.plugin.Plugin`: add feature to the web GUI
+* `org.apache.sirona.reporting.web.plugin.api.Plugin`: add feature to the web GUI
 
 ## Write your own gauge
 
@@ -45,7 +45,7 @@ public class MyGaugeFactory implements GaugeFactory {
 
 ## Extend the reporting GUI
 
-To extend the reporting GUI just write your own `org.apache.sirona.reporting.web.plugin.Plugin`. Here too it
+To extend the reporting GUI just write your own `org.apache.sirona.reporting.web.plugin.api.Plugin`. Here too it
 relies on java ServiceLoader (SPI) mecanism.
 
 Here is the Plugin interface:
@@ -86,7 +86,7 @@ public class HelloPlugin implements Plugin {
 
 ### Define the endpoints
 
-The `HelloEndpoints` class defines all the urls accessible for the hello plugin. It uses the `org.apache.sirona.reporting.web.handler.api.Regex`
+The `HelloEndpoints` class defines all the urls accessible for the hello plugin. It uses the `org.apache.sirona.reporting.web.plugin.api.Regex`
 annotation:
 
 <pre class="prettyprint linenums"><![CDATA[

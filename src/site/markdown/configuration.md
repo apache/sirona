@@ -18,7 +18,7 @@ under the License.
 -->
 ## Configuration features
 ### Location
-Configuration relies on `sirona.properties` file which should be found in the commons-monitoring-core classloader.
+Configuration relies on `sirona.properties` file which should be found in the sirona-core classloader.
 
 Note: you can change the file name using `org.apache.sirona.configuration` system property.
 
@@ -33,7 +33,7 @@ Using `org.apache.sirona.configuration.ioc.IoCs.newInstance` method you can
 decorate your class methods with `org.apache.sirona.configuration.Configuration.Created`
 and `org.apache.sirona.configuration.ioc.Destroying` to get lifecycle hooks.
 
-`Destroying` is called when the monitoring is stopped. Generally since commons-monitoring-core is deployed in the
+`Destroying` is called when the monitoring is stopped. Generally since sirona-core is deployed in the
 container or JVM classloader it is with the JVM but sometimes you can deploy it in your application. In this case
 you'll need to either configure the `javax.servlet.ServletContextListener`
 `org.apache.sirona.web.lifecycle.SironaLifecycle` from reporting module
@@ -46,7 +46,7 @@ You can also use `org.apache.sirona.configuration.ioc.AutoSet` to init field of 
 #### Core
 
 * org.apache.sirona.configuration: the configuration file path if not using the default
-* org.apache.sirona.shutdown.hook: boolean, true by default. Should be set to false when deploying commons-monitoring-core in an application (see Utilities part).
+* org.apache.sirona.shutdown.hook: boolean, true by default. Should be set to false when deploying sirona-core in an application (see Utilities part).
 * org.apache.sirona.gauge.max-size: int, 100 by default. Number of gauge measures to keep in memory when not persistent.
 * org.apache.sirona.gauge.memory.period: int, 4000 (ms) by default. Period for memory gauge.
 * org.apache.sirona.gauge.cpu.period: int, 4000 (ms) by default. Period for CPU gauge.

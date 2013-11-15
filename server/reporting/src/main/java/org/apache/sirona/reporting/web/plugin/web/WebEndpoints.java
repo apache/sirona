@@ -18,8 +18,8 @@ package org.apache.sirona.reporting.web.plugin.web;
 
 import org.apache.sirona.Role;
 import org.apache.sirona.counters.Unit;
-import org.apache.sirona.reporting.web.handler.api.Regex;
-import org.apache.sirona.reporting.web.handler.api.Template;
+import org.apache.sirona.reporting.web.plugin.api.Regex;
+import org.apache.sirona.reporting.web.plugin.api.Template;
 import org.apache.sirona.reporting.web.plugin.json.Jsons;
 import org.apache.sirona.repositories.Repositories;
 import org.apache.sirona.repositories.Repository;

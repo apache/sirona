@@ -34,7 +34,7 @@ Take a servlet container and deploy `sirona-collector-[version].war`. You'll get
 
 Just use the collector `DataStoreFactory`: `org.apache.sirona.store.CollectorDataStoreFactory`.
 
-For instance your `commons-monitoring.properties` can look like:
+For instance your `sirona.properties` can look like:
 
 <pre class="prettyprint linenums"><![CDATA[
 org.apache.sirona.store.DataStoreFactory = org.apache.sirona.store.CollectorDataStoreFactory

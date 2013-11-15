@@ -18,8 +18,8 @@
 package org.apache.sirona.reporting.web.plugin.report.format;
 
 import org.apache.sirona.counters.MetricData;
-import org.apache.sirona.reporting.web.handler.api.Template;
-import org.apache.sirona.reporting.web.template.MapBuilder;
+import org.apache.sirona.reporting.web.plugin.api.MapBuilder;
+import org.apache.sirona.reporting.web.plugin.api.Template;
 import org.apache.sirona.repositories.Repository;
 
 import java.util.Map;

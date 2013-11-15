@@ -16,7 +16,7 @@
  */
 package org.apache.sirona.reporting.web.plugin.jta;
 
-import org.apache.sirona.reporting.web.plugin.Plugin;
+import org.apache.sirona.reporting.web.plugin.api.Plugin;
 
 public class JTAPlugin implements Plugin {
     @Override

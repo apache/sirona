@@ -14,15 +14,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.reporting.web.handler.api;
+package org.apache.sirona.reporting.web.plugin.api;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.util.HashMap;
+import java.util.Map;
 
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface Regex {
-    String value() default ""; // root, the root page is mandatory, it is the one linked in the menu
+/**
+ * Just a helper class to build fluently maps.
+ *
+ * @param <A> key type
+ * @param <B> value type
+ */
+public class MapBuilder<A, B> {
+    private final Map<A, B> map = new HashMap<A, B>();
+
+    public MapBuilder<A, B> set(final A a, final B b) {
+        map.put(a, b);
+        return this;
+    }
+
+    public MapBuilder<A, B> set(final Map<A, B> params) {
+        map.putAll(params);
+        return this;
+    }
+
+    public Map<A, B> build() {
+        return map;
+    }
 }

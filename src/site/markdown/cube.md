@@ -29,7 +29,7 @@ org.apache.sirona.cube.CubeBuilder.collector = http://localhost:1234/collector/1
 * `org.apache.sirona.cube.CubeBuilder.proxyHost`: optionally a proxy host
 * `org.apache.sirona.cube.CubeBuilder.proxyPort`: optionally a proxy port
 
-For instance your `commons-monitoring.properties` can look like:
+For instance your `sirona.properties` can look like:
 
 <pre class="prettyprint linenums"><![CDATA[
 org.apache.sirona.cube.CubeBuilder.collector = http://localhost:1234/collector/1.0/event/put
@@ -39,7 +39,7 @@ org.apache.sirona.cube.CubeBuilder.collector = http://localhost:1234/collector/1
 
 To push metrics (Gauges + Counters) to Cube you can use the dedicated `DataStore`: `org.apache.sirona.cube.CubeDataStore`.
 
-Simply add to `commons-monitoring.properties` the line:
+Simply add to `sirona.properties` the line:
 
 <pre class="prettyprint linenums"><![CDATA[
 org.apache.sirona.store.DataStore = org.apache.sirona.cube.CubeDataStore

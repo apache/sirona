@@ -16,17 +16,17 @@
  */
 package org.apache.sirona.reporting.web.plugin.report;
 
-import org.apache.sirona.SironaException;
 import org.apache.sirona.Role;
+import org.apache.sirona.SironaException;
 import org.apache.sirona.counters.AggregatedCounter;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.counters.Unit;
-import org.apache.sirona.reporting.web.handler.api.Regex;
-import org.apache.sirona.reporting.web.handler.api.Template;
+import org.apache.sirona.reporting.web.plugin.api.MapBuilder;
+import org.apache.sirona.reporting.web.plugin.api.Regex;
+import org.apache.sirona.reporting.web.plugin.api.Template;
 import org.apache.sirona.reporting.web.plugin.report.format.Format;
 import org.apache.sirona.reporting.web.plugin.report.format.HTMLFormat;
 import org.apache.sirona.reporting.web.plugin.report.format.MapFormat;
-import org.apache.sirona.reporting.web.template.MapBuilder;
 import org.apache.sirona.repositories.Repository;
 
 import javax.servlet.http.HttpServletRequest;

@@ -17,9 +17,9 @@
 package org.apache.sirona.reporting.web.handler.internal;
 
 import org.apache.sirona.SironaException;
-import org.apache.sirona.reporting.web.handler.api.Template;
-import org.apache.sirona.reporting.web.handler.api.TemplateHelper;
-import org.apache.sirona.reporting.web.template.MapBuilder;
+import org.apache.sirona.reporting.web.handler.TemplateHelper;
+import org.apache.sirona.reporting.web.plugin.api.MapBuilder;
+import org.apache.sirona.reporting.web.plugin.api.Template;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -116,6 +116,11 @@ public class Invoker {
         } else {
             throw new IllegalArgumentException(clazz.getName() + " not handled");
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Invoker{" + method + '}';
     }
 
     protected static interface ParameterExtractor<T> {

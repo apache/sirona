@@ -269,6 +269,23 @@
         <configuration>
           <archiveClasses>true</archiveClasses>
           <attachClasses>true</attachClasses>
+          <webResources>
+            <resource>
+              <directory>${project.build.directory}/classes/META-INF</directory>
+              <includes>
+                <include>LICENSE</include>
+                <include>NOTICE</include>
+                <include>DEPENDENCIES</include>
+              </includes>
+              <targetPath>META-INF</targetPath>
+              <filtering>false</filtering>
+            </resource>
+          </webResources>
+          <packagingExcludes>
+            WEB-INF/classes/META-INF/LICENSE,
+            WEB-INF/classes/META-INF/NOTICE,
+            WEB-INF/classes/META-INF/DEPENDENCIES
+          </packagingExcludes>
         </configuration>
       </plugin>
     </plugins>

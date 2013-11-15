@@ -19,8 +19,8 @@ package org.apache.sirona.reporting.web.plugin.jvm;
 import org.apache.sirona.gauges.jvm.CPUGauge;
 import org.apache.sirona.gauges.jvm.UsedMemoryGauge;
 import org.apache.sirona.gauges.jvm.UsedNonHeapMemoryGauge;
-import org.apache.sirona.reporting.web.handler.api.Regex;
-import org.apache.sirona.reporting.web.handler.api.Template;
+import org.apache.sirona.reporting.web.plugin.api.Regex;
+import org.apache.sirona.reporting.web.plugin.api.Template;
 import org.apache.sirona.util.Environment;
 
 import java.lang.management.ManagementFactory;

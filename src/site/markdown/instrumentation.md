@@ -18,7 +18,7 @@ under the License.
 -->
 # Manually (clients)
 
-To handle manually the interception you need to import commons-monitoring-aop.
+To handle manually the interception you need to import sirona-aop.
 Then you can rely on `org.apache.sirona.aop.SironaProxyFactory`.
 
 `org.apache.commons.proxy.ProxyFactory` key defines the proxy factory to use to create proxies For instance

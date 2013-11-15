@@ -17,8 +17,8 @@
 package org.apache.sirona.reporting.web.handler.internal;
 
 import org.apache.sirona.configuration.ioc.IoCs;
-import org.apache.sirona.reporting.web.handler.api.Regex;
-import org.apache.sirona.reporting.web.handler.api.TemplateHelper;
+import org.apache.sirona.reporting.web.handler.TemplateHelper;
+import org.apache.sirona.reporting.web.plugin.api.Regex;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

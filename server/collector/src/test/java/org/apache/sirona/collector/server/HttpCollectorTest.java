@@ -21,7 +21,7 @@ import org.apache.sirona.Role;
 import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.counters.Unit;
-import org.apache.sirona.reporting.web.template.MapBuilder;
+import org.apache.sirona.reporting.web.plugin.api.MapBuilder;
 import org.apache.sirona.repositories.Repository;
 import org.apache.sirona.status.NodeStatus;
 import org.apache.sirona.status.Status;

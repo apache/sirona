@@ -18,8 +18,8 @@ package org.apache.sirona.reporting.web.plugin.jta;
 
 import org.apache.sirona.Role;
 import org.apache.sirona.counters.Unit;
-import org.apache.sirona.reporting.web.handler.api.Regex;
-import org.apache.sirona.reporting.web.handler.api.Template;
+import org.apache.sirona.reporting.web.plugin.api.Regex;
+import org.apache.sirona.reporting.web.plugin.api.Template;
 
 import static org.apache.sirona.reporting.web.graph.Line.generateReport;
 

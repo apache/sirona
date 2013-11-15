@@ -19,6 +19,8 @@ package org.apache.sirona.reporting.web.plugin;
 import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.reporting.web.handler.internal.EndpointInfo;
 import org.apache.sirona.reporting.web.handler.internal.Invoker;
+import org.apache.sirona.reporting.web.plugin.api.Local;
+import org.apache.sirona.reporting.web.plugin.api.Plugin;
 import org.apache.sirona.spi.SPI;
 import org.apache.sirona.util.Environment;
 

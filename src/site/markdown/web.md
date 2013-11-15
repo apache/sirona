@@ -22,7 +22,7 @@ Reporting module provides web listener to monitor servlet containers.
 
 ## Installation
 
-Add commons-monitoring-web to your webapp.
+Add sirona-web to your webapp.
 
 ## Monitor requests
 

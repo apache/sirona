@@ -16,7 +16,7 @@
  */
 package org.apache.sirona.reporting.web.plugin.jvm;
 
-import org.apache.sirona.reporting.web.plugin.Plugin;
+import org.apache.sirona.reporting.web.plugin.api.Plugin;
 
 public class JVMPlugin implements Plugin {
     @Override

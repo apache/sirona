@@ -47,6 +47,6 @@ public class SironaReportingInitializer implements ServletContainerInitializer {
 
         final SironaController controller = new SironaController();
         controller.setMapping(mapping);
-        ctx.addFilter("commons-monitoring-reporting", controller).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, mapping + "/*");
+        ctx.addFilter("sirona-reporting", controller).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, mapping + "/*");
     }
 }

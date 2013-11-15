@@ -16,8 +16,7 @@
  */
 package org.apache.sirona.reporting.web.handler;
 
-import org.apache.sirona.reporting.web.handler.api.Regex;
-import org.apache.sirona.reporting.web.handler.api.TemplateHelper;
+import org.apache.sirona.reporting.web.plugin.api.Regex;
 import org.apache.sirona.reporting.web.template.Templates;
 import org.apache.velocity.exception.ResourceNotFoundException;
 import org.apache.velocity.runtime.resource.loader.ResourceLoader;

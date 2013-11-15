@@ -18,9 +18,9 @@ package org.apache.sirona.reporting.web.plugin.thread;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.sirona.reporting.web.handler.api.Regex;
-import org.apache.sirona.reporting.web.handler.api.Template;
-import org.apache.sirona.reporting.web.template.MapBuilder;
+import org.apache.sirona.reporting.web.plugin.api.MapBuilder;
+import org.apache.sirona.reporting.web.plugin.api.Regex;
+import org.apache.sirona.reporting.web.plugin.api.Template;
 
 import java.util.Map;
 import java.util.TreeMap;

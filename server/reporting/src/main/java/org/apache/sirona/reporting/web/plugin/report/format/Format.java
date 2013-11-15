@@ -17,7 +17,7 @@
 
 package org.apache.sirona.reporting.web.plugin.report.format;
 
-import org.apache.sirona.reporting.web.handler.api.Template;
+import org.apache.sirona.reporting.web.plugin.api.Template;
 
 import java.util.Map;
 

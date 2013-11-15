@@ -18,8 +18,8 @@ package org.apache.sirona.reporting;
 
 import org.apache.sirona.Role;
 import org.apache.sirona.counters.Counter;
-import org.apache.sirona.reporting.web.handler.api.Template;
-import org.apache.sirona.reporting.web.handler.api.TemplateHelper;
+import org.apache.sirona.reporting.web.handler.TemplateHelper;
+import org.apache.sirona.reporting.web.plugin.api.Template;
 import org.apache.sirona.reporting.web.plugin.report.format.CSVFormat;
 import org.apache.sirona.reporting.web.plugin.report.format.Format;
 import org.apache.sirona.reporting.web.template.Templates;

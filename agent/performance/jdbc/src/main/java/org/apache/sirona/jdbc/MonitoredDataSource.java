@@ -142,6 +142,6 @@ public class MonitoredDataSource implements DataSource {
 
     public Logger getParentLogger()
         throws SQLFeatureNotSupportedException {
-        return Logger.getLogger("commons-monitoring.datasource");
+        return Logger.getLogger("org.apache.sirona.jdbc.datasource");
     }
 }

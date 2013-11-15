@@ -14,11 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.reporting.web.handler.api;
+package org.apache.sirona.reporting.web.plugin.api;
 
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Represents a template (by name/path)
+ * and its set of parameters.
+ */
 public class Template {
     private final String template;
     private final Map<String, Object> userParams;

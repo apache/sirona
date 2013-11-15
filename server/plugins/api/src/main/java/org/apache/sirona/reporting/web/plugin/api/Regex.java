@@ -14,21 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.reporting.web.plugin;
+package org.apache.sirona.reporting.web.plugin.api;
 
-public interface Plugin {
-    /**
-     * @return plugin name.
-     */
-    String name();
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-    /**
-     * @return the endpoints to call when mapping() is matched.
-     */
-    Class<?> endpoints();
-
-    /**
-     * @return the base mapping of the endpoints if not null.
-     */
-    String mapping();
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface Regex {
+    String value() default ""; // root, the root page is mandatory, it is the one linked in the menu
 }

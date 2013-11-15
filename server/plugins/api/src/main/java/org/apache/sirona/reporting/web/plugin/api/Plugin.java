@@ -14,14 +14,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.reporting.web.plugin;
+package org.apache.sirona.reporting.web.plugin.api;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+/**
+ * the main entry point to define a plugin.
+ */
+public interface Plugin {
+    /**
+     * @return plugin name.
+     */
+    String name();
 
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface Local {
+    /**
+     * List of used endpoints by this plugin.
+     * Use {@see @org.apache.sirona.reporting.web.plugin.api.Regex} to define endpoints.
+     *
+     * @return the endpoints to call when mapping() is matched.
+     */
+    Class<?> endpoints();
+
+    /**
+     * @return the base mapping of the endpoints if not null.
+     */
+    String mapping();
 }

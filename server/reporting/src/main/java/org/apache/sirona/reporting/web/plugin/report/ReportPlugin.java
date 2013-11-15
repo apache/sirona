@@ -16,7 +16,7 @@
  */
 package org.apache.sirona.reporting.web.plugin.report;
 
-import org.apache.sirona.reporting.web.plugin.Plugin;
+import org.apache.sirona.reporting.web.plugin.api.Plugin;
 
 public class ReportPlugin implements Plugin {
     @Override

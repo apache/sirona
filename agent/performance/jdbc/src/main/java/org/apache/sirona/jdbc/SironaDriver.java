@@ -93,6 +93,6 @@ public class SironaDriver implements Driver {
 
     // @Override // java 7
     public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-        return Logger.getLogger("commons-monitoring.jdbc-driver");
+        return Logger.getLogger("org.apache.sirona.jdbc.driver");
     }
 }

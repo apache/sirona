@@ -19,9 +19,9 @@ package org.apache.sirona.reporting.web.plugin.jmx;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.sirona.SironaException;
 import org.apache.sirona.configuration.Configuration;
-import org.apache.sirona.reporting.web.handler.api.Regex;
-import org.apache.sirona.reporting.web.handler.api.Template;
-import org.apache.sirona.reporting.web.template.MapBuilder;
+import org.apache.sirona.reporting.web.plugin.api.MapBuilder;
+import org.apache.sirona.reporting.web.plugin.api.Regex;
+import org.apache.sirona.reporting.web.plugin.api.Template;
 import org.apache.sirona.util.ClassLoaders;
 
 import javax.management.MBeanAttributeInfo;
@@ -45,7 +45,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.apache.sirona.reporting.web.handler.api.TemplateHelper.nullProtection;
+import static org.apache.sirona.reporting.web.handler.TemplateHelper.nullProtection;
 
 public class JMXEndpoints {
     private static final boolean METHOD_INVOCATION_ALLOWED = Configuration.is(Configuration.CONFIG_PROPERTY_PREFIX + "jmx.method.allowed", true);

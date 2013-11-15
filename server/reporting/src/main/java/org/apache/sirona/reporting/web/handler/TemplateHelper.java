@@ -14,9 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.reporting.web.handler.api;
+package org.apache.sirona.reporting.web.handler;
 
-import org.apache.sirona.reporting.web.template.MapBuilder;
+import org.apache.sirona.reporting.web.plugin.api.MapBuilder;
 import org.apache.sirona.reporting.web.template.Templates;
 
 import java.io.PrintWriter;

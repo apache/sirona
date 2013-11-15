@@ -23,14 +23,14 @@ Reporting module provides a lightweight GUI to visualize monitoring information.
 ## Installation
 ### The webapp
 
-commons-monitoring-reporting is available as a webapp (.war) so you can just drop it in your servlet container.
+sirona-reporting is available as a webapp (.war) so you can just drop it in your servlet container.
 
-Note 1: commons-monitoring-core is not provided and should be in the container.
-Note 2: if you use commons-monitoring-jdbc put it in the container too.
+Note 1: sirona-core is not provided and should be in the container.
+Note 2: if you use sirona-jdbc put it in the container too.
 
 ### Embeded in your web application
 
-Just adding commons-monitoring-reporting jar (classifier `classes` if you use maven) in your application
+Just adding sirona-reporting jar (classifier `classes` if you use maven) in your application
 you can embed it. You'll need to update your web.xml to declare the monitoring filter:
 
 <pre class="prettyprint linenums"><![CDATA[

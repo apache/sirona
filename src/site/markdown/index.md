@@ -18,7 +18,7 @@ under the License.
 -->
 ## Apache Sirona
 
-Commons-monitoring aims to provide a simple but extensible monitoring solution for Java applications.
+Sirona aims to provide a simple but extensible monitoring solution for Java applications.
 
 How to start?
 

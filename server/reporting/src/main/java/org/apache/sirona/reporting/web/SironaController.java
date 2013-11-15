@@ -22,7 +22,7 @@ import org.apache.sirona.reporting.web.handler.HomeEndpoint;
 import org.apache.sirona.reporting.web.handler.internal.EndpointInfo;
 import org.apache.sirona.reporting.web.handler.internal.Invoker;
 import org.apache.sirona.reporting.web.plugin.PluginRepository;
-import org.apache.sirona.reporting.web.template.MapBuilder;
+import org.apache.sirona.reporting.web.plugin.api.MapBuilder;
 import org.apache.sirona.reporting.web.template.Templates;
 import org.apache.sirona.repositories.Repository;
 

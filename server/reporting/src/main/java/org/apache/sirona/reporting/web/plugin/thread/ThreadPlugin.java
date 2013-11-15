@@ -16,8 +16,8 @@
  */
 package org.apache.sirona.reporting.web.plugin.thread;
 
-import org.apache.sirona.reporting.web.plugin.Local;
-import org.apache.sirona.reporting.web.plugin.Plugin;
+import org.apache.sirona.reporting.web.plugin.api.Local;
+import org.apache.sirona.reporting.web.plugin.api.Plugin;
 
 @Local
 public class ThreadPlugin implements Plugin {

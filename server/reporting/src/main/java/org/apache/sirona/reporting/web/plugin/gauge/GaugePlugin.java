@@ -16,7 +16,7 @@
  */
 package org.apache.sirona.reporting.web.plugin.gauge;
 
-import org.apache.sirona.reporting.web.plugin.Plugin;
+import org.apache.sirona.reporting.web.plugin.api.Plugin;
 
 public class GaugePlugin implements Plugin {
     @Override
