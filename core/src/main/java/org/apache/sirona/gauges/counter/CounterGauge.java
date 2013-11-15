@@ -19,18 +19,21 @@ package org.apache.sirona.gauges.counter;
 import org.apache.sirona.Role;
 import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.counters.Counter;
+import org.apache.sirona.counters.MetricData;
 import org.apache.sirona.gauges.Gauge;
 
 public abstract class CounterGauge implements Gauge {
     private final Counter counter;
+    private final MetricData metric;
     private final boolean reset;
 
     protected CounterGauge(final Counter counter) {
-        this(counter, true);
+        this(counter, MetricData.Sum, true);
     }
 
-    protected CounterGauge(final Counter counter, final boolean reset) {
+    protected CounterGauge(final Counter counter, final MetricData metric, final boolean reset) {
         this.counter = counter;
+        this.metric = metric;
         this.reset = reset;
     }
 
@@ -42,7 +45,7 @@ public abstract class CounterGauge implements Gauge {
     @Override
     public double value() {
         try {
-            return counter.getSum();
+            return metric.value(counter);
         } finally {
             if (reset) {
                 counter.reset();
