@@ -19,6 +19,7 @@ package org.apache.sirona.counters;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import org.apache.sirona.store.counter.CounterDataStore;
 
+import javax.management.ObjectName;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -31,6 +32,7 @@ public class DefaultCounter implements Counter {
     private volatile int maxConcurrency = 0;
     protected SummaryStatistics statistics;
     protected ReadWriteLock lock = new ReentrantReadWriteLock();
+    private ObjectName jmx = null;
 
     public DefaultCounter(final Key key, final CounterDataStore store) {
         this.key = key;
@@ -174,6 +176,14 @@ public class DefaultCounter implements Counter {
 
     public ReadWriteLock getLock() {
         return lock;
+    }
+
+    public void setJmx(final ObjectName jmx) {
+        this.jmx = jmx;
+    }
+
+    public ObjectName getJmx() {
+        return jmx;
     }
 
     @Override

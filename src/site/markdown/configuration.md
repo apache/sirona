@@ -57,6 +57,8 @@ You can also use `org.apache.sirona.configuration.ioc.AutoSet` to init field of 
 * org.apache.sirona.periodic.status.period: the period to use for status reporting. Note: when using another reporter (cube typically) you'll need to replace `periodic` by the specific name of the reporter (`cube`). Note too that `period` is optional to allow to share the same period between all stores.
 * org.apache.sirona.\<name>.gauge.period: the default period defining when gauge snapshots are taken (default name = `inmemory`)
 * org.apache.sirona.\<name>.aggregated.gauge.period: the default period defining when gauge snapshots are persisted/pushed (ex: graphite)
+* org.apache.sirona.counter.with-gauge: a boolean to ask to register for each counter a gauge for the max/sum/hists metrics of the counter. Only works with in memory counter stores (agent ones in general).
+* org.apache.sirona.counter.with-jmx: a boolean to ask to register a MBean for each counter. Only works with in memory counter stores.
 
 
 #### Reporting

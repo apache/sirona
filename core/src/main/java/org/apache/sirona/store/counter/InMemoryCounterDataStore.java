@@ -18,13 +18,18 @@ package org.apache.sirona.store.counter;
 
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import org.apache.sirona.configuration.Configuration;
+import org.apache.sirona.configuration.ioc.Destroying;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.counters.DefaultCounter;
 import org.apache.sirona.counters.MetricData;
+import org.apache.sirona.counters.jmx.CounterJMX;
 import org.apache.sirona.gauges.Gauge;
 import org.apache.sirona.gauges.counter.CounterGauge;
 import org.apache.sirona.repositories.Repository;
 
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+import java.lang.management.ManagementFactory;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
@@ -33,6 +38,8 @@ import java.util.concurrent.locks.Lock;
 
 public class InMemoryCounterDataStore implements CounterDataStore {
     protected final boolean gauged = Configuration.is(Configuration.CONFIG_PROPERTY_PREFIX + "counter.with-gauge", false);
+    protected final boolean jmx = Configuration.is(Configuration.CONFIG_PROPERTY_PREFIX + "counter.with-jmx", false);
+
     protected final ConcurrentMap<Counter.Key, Counter> counters = newCounterMap();
     protected final Collection<Gauge> gauges = new LinkedList<Gauge>();
 
@@ -52,14 +59,36 @@ public class InMemoryCounterDataStore implements CounterDataStore {
             final Counter previous = counters.putIfAbsent(key, counter);
             if (previous != null) {
                 counter = previous;
-            } else if (gauged) {
-                final Values values = new Values(counter);
-                newGauge(new SyncCounterGauge(counter, MetricData.Sum, values));
-                newGauge(new SyncCounterGauge(counter, MetricData.Max, values));
-                newGauge(new SyncCounterGauge(counter, MetricData.Hits, values));
+            } else { // new
+                if (gauged) {
+                    final Values values = new Values(counter);
+                    newGauge(new SyncCounterGauge(counter, MetricData.Sum, values));
+                    newGauge(new SyncCounterGauge(counter, MetricData.Max, values));
+                    newGauge(new SyncCounterGauge(counter, MetricData.Hits, values));
+                }
+                if (jmx) {
+                    final MBeanServer server = ManagementFactory.getPlatformMBeanServer();
+                    try {
+                        final ObjectName objectName = new ObjectName(
+                            Configuration.CONFIG_PROPERTY_PREFIX
+                                + "counter:role=" + escapeJmx(key.getRole().getName())
+                                + ",name=" + escapeJmx(key.getName()));
+                        DefaultCounter.class.cast(counter).setJmx(objectName);
+
+                        if (!server.isRegistered(objectName)) {
+                            server.registerMBean(new CounterJMX(counter), objectName);
+                        }
+                    } catch (final Exception e) {
+                        // no-op
+                    }
+                }
             }
         }
         return counter;
+    }
+
+    private static String escapeJmx(final String name) {
+        return name.replace('=', '_').replace(',', '_');
     }
 
     private void newGauge(final Gauge gauge) {
@@ -69,9 +98,25 @@ public class InMemoryCounterDataStore implements CounterDataStore {
         }
     }
 
+    @Destroying
+    public void cleanUp() {
+        clearCounters();
+    }
+
     @Override
     public void clearCounters() {
+        if (jmx) {
+            final MBeanServer server = ManagementFactory.getPlatformMBeanServer();
+            for (final Counter counter : counters.values()) {
+                try {
+                    server.unregisterMBean(DefaultCounter.class.cast(counter).getJmx());
+                } catch (final Exception e) {
+                    // no-op
+                }
+            }
+        }
         counters.clear();
+
         synchronized (gauges) {
             for (final Gauge g : gauges) {
                 Repository.INSTANCE.stopGauge(g);

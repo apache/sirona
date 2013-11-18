@@ -14,18 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.store;
+package org.apache.sirona.counters.jmx;
 
-import org.apache.sirona.configuration.ioc.IoCs;
-import org.apache.sirona.store.counter.InMemoryCounterDataStore;
-import org.apache.sirona.store.gauge.InMemoryGaugeDataStore;
-import org.apache.sirona.store.status.PeriodicNodeStatusDataStore;
+public interface CounterJMXMBean {
+    double getMax();
 
-public class DefaultDataStoreFactory extends DelegateDataStoreFactory {
-    public DefaultDataStoreFactory() {
-        super(
-            IoCs.processInstance(new InMemoryCounterDataStore()),
-            IoCs.processInstance(new InMemoryGaugeDataStore()),
-            IoCs.processInstance(new PeriodicNodeStatusDataStore()));
-    }
+    double getMin();
+
+    long getHits();
+
+    double getSum();
+
+    double getStandardDeviation();
+
+    double getMean();
+
+    String getRole();
+
+    String getName();
 }
