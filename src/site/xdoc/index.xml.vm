@@ -23,6 +23,12 @@
     <title>Apache Sirona</title>
   </properties>
 
+  <head>
+
+    <script src="js/index.js" type="text/javascript" ></script>
+
+  </head>
+
   <body>
     <div id="carousel-main" class="row">
 
