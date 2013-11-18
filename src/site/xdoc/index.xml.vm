@@ -30,31 +30,25 @@
         <!-- Carousel items -->
         <div class="carousel-inner">
           <div class="item active">
-            <img alt="" src="images/sirona-jvm.png" height="120px"/>
+            <img alt="" src="${project.url}/images/sirona-jvm.png" height="120px"/>
             <div class="carousel-caption">
               <p>JVM Metrics.</p>
             </div>
           </div>
-        </div>
-        <div class="carousel-inner">
-          <div class="item">
-            <img alt="" src="images/sirona-gauge-http-200.png" height="120px"/>
+            <div class="item">
+            <img alt="" src="${project.url}/images/sirona-gauge-http-200.png" height="120px"/>
             <div class="carousel-caption">
               <p>HTTP 200 Gauge.</p>
             </div>
           </div>
-        </div>
-        <div class="carousel-inner">
           <div class="item">
-            <img alt="" src="images/sirona-gauge-http-request-filtering.png" height="120px"/>
+            <img alt="" src="${project.url}/images/sirona-gauge-http-request-filtering.png" height="120px"/>
             <div class="carousel-caption">
               <p>Http Requests filtering.</p>
             </div>
           </div>
-        </div>
-        <div class="carousel-inner">
           <div class="item">
-            <img alt="" src="images/sirona-http-counter-report.png" height="120px"/>
+            <img alt="" src="${project.url}/images/sirona-http-counter-report.png" height="120px"/>
             <div class="carousel-caption">
               <p>HTTP Counter report.</p>
             </div>
@@ -73,7 +67,7 @@
 
           How to start?
 
-
+          <br/>
           <a href="./concepts.html">See Concepts</a>
           <br/>
           <a href="./basis.html">See Basis</a>
