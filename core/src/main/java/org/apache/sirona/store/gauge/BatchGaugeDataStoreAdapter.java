@@ -21,7 +21,6 @@ import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.configuration.ioc.Created;
 import org.apache.sirona.configuration.ioc.Destroying;
 import org.apache.sirona.gauges.Gauge;
-import org.apache.sirona.gauges.GaugeAware;
 import org.apache.sirona.gauges.GaugeDataStoreAdapter;
 import org.apache.sirona.store.BatchFuture;
 import org.apache.sirona.util.DaemonThreadFactory;
@@ -36,7 +35,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public abstract class BatchGaugeDataStoreAdapter extends GaugeDataStoreAdapter implements GaugeAware {
+public abstract class BatchGaugeDataStoreAdapter extends GaugeDataStoreAdapter {
     private static final Logger LOGGER = Logger.getLogger(BatchGaugeDataStoreAdapter.class.getName());
 
     protected BatchFuture scheduledTask;
