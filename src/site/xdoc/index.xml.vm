@@ -40,7 +40,7 @@
           <div class="item">
             <img alt="" src="images/sirona-gauge-http-200.png" height="120px"/>
             <div class="carousel-caption">
-              <p>JVM Metrics.</p>
+              <p>HTTP 200 Gauge.</p>
             </div>
           </div>
         </div>
@@ -48,7 +48,7 @@
           <div class="item">
             <img alt="" src="images/sirona-gauge-http-request-filtering.png" height="120px"/>
             <div class="carousel-caption">
-              <p>JVM Metrics.</p>
+              <p>Http Requests filtering.</p>
             </div>
           </div>
         </div>
@@ -56,7 +56,7 @@
           <div class="item">
             <img alt="" src="images/sirona-http-counter-report.png" height="120px"/>
             <div class="carousel-caption">
-              <p>JVM Metrics.</p>
+              <p>HTTP Counter report.</p>
             </div>
           </div>
         </div>
