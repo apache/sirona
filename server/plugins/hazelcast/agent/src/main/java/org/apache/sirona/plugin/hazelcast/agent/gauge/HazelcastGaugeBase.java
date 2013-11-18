@@ -18,13 +18,10 @@ package org.apache.sirona.plugin.hazelcast.agent.gauge;
 
 import com.hazelcast.core.HazelcastInstance;
 import org.apache.sirona.Role;
-import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.counters.Unit;
 import org.apache.sirona.gauges.Gauge;
 
 public abstract class HazelcastGaugeBase implements Gauge {
-    private static final int PERIOD = Configuration.getInteger(Configuration.CONFIG_PROPERTY_PREFIX + "hazelcast.gauge.members.period", 4000);
-
     private final Role role;
     protected final HazelcastInstance instance;
 
@@ -36,10 +33,5 @@ public abstract class HazelcastGaugeBase implements Gauge {
     @Override
     public Role role() {
         return role;
-    }
-
-    @Override
-    public long period() {
-        return PERIOD;
     }
 }

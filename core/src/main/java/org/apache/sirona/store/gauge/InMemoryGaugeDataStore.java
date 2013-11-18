@@ -28,7 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 
-public class InMemoryGaugeDataStore implements GaugeDataStore {
+public class InMemoryGaugeDataStore extends BatchGaugeDataStoreAdapter {
     protected final ConcurrentMap<Role, SortedMap<Long, Double>> gauges = new ConcurrentHashMap<Role, SortedMap<Long, Double>>();
     protected final Map<String, Role> roleMapping = new ConcurrentHashMap<String, Role>();
 
@@ -53,9 +53,9 @@ public class InMemoryGaugeDataStore implements GaugeDataStore {
     }
 
     @Override
-    public void createOrNoopGauge(final Role role) {
-        gauges.putIfAbsent(role, new FixedSizedMap());
-        roleMapping.put(role.getName(), role);
+    public void createOrNoopGauge(final Role gauge) {
+        gauges.putIfAbsent(gauge, new FixedSizedMap());
+        roleMapping.put(gauge.getName(), gauge);
     }
 
     @Override
@@ -74,7 +74,16 @@ public class InMemoryGaugeDataStore implements GaugeDataStore {
     }
 
     @Override
+    protected void pushGauges(final Map<Role, Measure> gauges) {
+        for (final Map.Entry<Role, Measure> entry : gauges.entrySet()) {
+            final Measure value = entry.getValue();
+            addToGauge(entry.getKey(), value.getTime(), value.getValue());
+        }
+    }
+
+    @Override
     public void gaugeStopped(final Role gauge) {
+        super.gaugeStopped(gauge);
         roleMapping.remove(gauge.getName());
     }
 

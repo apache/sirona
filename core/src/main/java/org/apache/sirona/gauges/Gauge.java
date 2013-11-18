@@ -29,8 +29,6 @@ public interface Gauge {
 
     double value();
 
-    long period();
-
     public static class LoaderHelper {
         private LinkedList<Gauge> gauges = new LinkedList<Gauge>();
 

@@ -36,6 +36,7 @@ import javax.ejb.Stateless;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 @RunWith(ApplicationComposer.class)
 public class GaugesTest {
@@ -68,14 +69,21 @@ public class GaugesTest {
     public void checkGauges() throws InterruptedException {
         final Role gaugeRole = Repository.INSTANCE.findGaugeRole("tomee-pool-stateless-instancesPooled-AStatelessBean");
         final Role gaugeActiveRole = Repository.INSTANCE.findGaugeRole("tomee-pool-stateless-instancesActive-AStatelessBean");
-        assertNotNull(gaugeRole);
-        assertNotNull(gaugeActiveRole);
+        assertNotNull("gauge role should be found", gaugeRole);
+        assertNotNull("gauge active role should be found", gaugeActiveRole);
         assertEquals(0, sum(gaugeRole));
         assertEquals(0, sum(gaugeActiveRole));
         bean.work();
-        Thread.sleep(125);
-        assertEquals(1, sum(gaugeRole));
-        // hard to get active > 0 in this test
+        Thread.sleep(135);
+
+        int failCount = 0;
+        while (sum(gaugeRole) < 1 && failCount < 10) {
+            Thread.sleep(20);
+            failCount++;
+        }
+        if (failCount >= 10) {
+            fail("Can't get statless pool count");
+        }
     }
 
     @Stateless

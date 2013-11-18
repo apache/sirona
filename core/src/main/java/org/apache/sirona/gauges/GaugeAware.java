@@ -14,33 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.agent.webapp.pull.gauge;
+package org.apache.sirona.gauges;
 
-import org.apache.sirona.gauges.Gauge;
-import org.apache.sirona.gauges.GaugeManager;
-
-import java.util.Collection;
-import java.util.concurrent.CopyOnWriteArrayList;
-
-public class PullGaugeManager implements GaugeManager {
-    private final Collection<Gauge> gauges = new CopyOnWriteArrayList<Gauge>();
-
-    @Override
-    public void stop() {
-        gauges.clear();
-    }
-
-    @Override
-    public void addGauge(final Gauge gauge) {
-        gauges.add(gauge);
-    }
-
-    @Override
-    public void stopGauge(final Gauge gauge) {
-        gauges.remove(gauge);
-    }
-
-    public Collection<Gauge> getGauges() {
-        return gauges;
-    }
+// allows a gauge datastore to hold gauges
+public interface GaugeAware {
+    void addGauge(Gauge gauge);
 }

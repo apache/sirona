@@ -65,7 +65,6 @@ A gauge is a way to get a measure. It is intended to get a history of a metric.
 public interface Gauge {
     Role role();
     double value();
-    long period();
 }
 ]]></pre>
 

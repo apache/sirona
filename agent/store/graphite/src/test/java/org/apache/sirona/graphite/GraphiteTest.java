@@ -41,19 +41,9 @@ public class GraphiteTest extends GraphiteTestBase {
             Thread.sleep(30);
         }
 
-        final Collection<String> messages = messages();
-        final Collection<String> counters = new ArrayList<String>(messages.size());
-        final Collection<String> gauges = new ArrayList<String>(messages.size());
-        for (final String msg : messages) {
-            final String substring = msg.substring(0, msg.lastIndexOf(" "));
-            if (msg.startsWith("counter")) {
-                counters.add(substring);
-            } else {
-                gauges.add(substring);
-            }
-        }
-
         { // counters
+            final Collection<String> counters = extract("counter");
+
             assertEquals(30, counters.size());
             assertTrue(counters.contains("counter-performances-test-Hits 2.00"));
             assertTrue(counters.contains("counter-performances-test-Max 1.60"));
@@ -63,14 +53,31 @@ public class GraphiteTest extends GraphiteTestBase {
             assertTrue(counters.contains("counter-performances-test-Sum 3.00"));
             assertTrue(counters.contains("counter-performances-test-Value 3.00"));
         }
+
         { // gauges
+            Thread.sleep(280);
+
+            final Collection<String> gauges = extract("gauge");
+
             assertEquals(3, gauges.size());
 
             final String message = gauges.toString();
             // graphite store uses an aggregated gauge store
-            assertTrue("0.5 " + message, gauges.contains("gauge-mock 0.50"));
-            assertTrue("2.0 " + message, gauges.contains("gauge-mock 2.00"));
-            assertTrue("3.0 " + message, gauges.contains("gauge-mock 3.00"));
+            assertTrue("0.0 " + message, gauges.contains("gauge-mock 0.00"));
+            assertTrue("1.5 " + message, gauges.contains("gauge-mock 1.50"));
+            assertTrue("3.5 " + message, gauges.contains("gauge-mock 3.50"));
         }
+    }
+
+    private Collection<String> extract(final String prefix) {
+        final Collection<String> messages = messages();
+        final Collection<String> list = new ArrayList<String>(messages.size());
+        for (final String msg : messages) {
+            final String substring = msg.substring(0, msg.lastIndexOf(" "));
+            if (msg.startsWith(prefix)) {
+                list.add(substring);
+            }
+        }
+        return list;
     }
 }

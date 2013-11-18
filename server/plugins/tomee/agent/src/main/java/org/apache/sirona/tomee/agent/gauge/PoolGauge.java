@@ -18,7 +18,6 @@ package org.apache.sirona.tomee.agent.gauge;
 
 import org.apache.openejb.util.reflection.Reflections;
 import org.apache.sirona.Role;
-import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.counters.Unit;
 import org.apache.sirona.gauges.Gauge;
 import org.apache.sirona.tomee.agent.Reflection;
@@ -26,8 +25,6 @@ import org.apache.sirona.tomee.agent.Reflection;
 import java.beans.Introspector;
 
 public class PoolGauge implements Gauge, Reflection {
-    private static final int PERIOD = Configuration.getInteger(Configuration.CONFIG_PROPERTY_PREFIX + "gauge.tomee.period", 4000);
-
     private final Object stats;
     private final Role role;
     private final String aggregate;
@@ -46,10 +43,5 @@ public class PoolGauge implements Gauge, Reflection {
     @Override
     public double value() {
         return Number.class.cast(Reflections.invokeByReflection(stats, aggregate, NO_PARAM_TYPES, NO_PARAM)).doubleValue();
-    }
-
-    @Override
-    public long period() {
-        return PERIOD;
     }
 }

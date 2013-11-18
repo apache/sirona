@@ -18,22 +18,28 @@ package org.apache.sirona.cube;
 
 import org.apache.sirona.Role;
 import org.apache.sirona.configuration.ioc.IoCs;
-import org.apache.sirona.gauges.GaugeDataStoreAdapter;
+import org.apache.sirona.store.gauge.BatchGaugeDataStoreAdapter;
 
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class CubeGaugeDataStore extends GaugeDataStoreAdapter {
+public class CubeGaugeDataStore extends BatchGaugeDataStoreAdapter {
     private static final Logger LOGGER = Logger.getLogger(CubeGaugeDataStore.class.getName());
 
     private final Cube cube = IoCs.findOrCreateInstance(CubeBuilder.class).build();
 
     @Override
-    public void addToGauge(final Role role, final long time, final double value) {
-        try {
-            cube.post(cube.gaugeSnapshot(time, role, value));
-        } catch (final Exception e) {
-            LOGGER.log(Level.SEVERE, e.getMessage(), e);
+    protected void pushGauges(final Map<Role, Measure> gauges) {
+        final StringBuilder events = cube.newEventStream();
+        for (final Map.Entry<Role, Measure> entry : gauges.entrySet()) {
+            try {
+                final Measure value = entry.getValue();
+                cube.gaugeSnapshot(events, value.getTime(), entry.getKey(), value.getValue());
+            } catch (final Exception e) {
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
+            }
         }
+        cube.post(events);
     }
 }

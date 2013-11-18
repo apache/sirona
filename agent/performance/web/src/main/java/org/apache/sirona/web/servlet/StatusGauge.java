@@ -17,14 +17,11 @@
 package org.apache.sirona.web.servlet;
 
 import org.apache.sirona.Role;
-import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.gauges.Gauge;
 
 import java.util.concurrent.atomic.AtomicLong;
 
 public class StatusGauge implements Gauge {
-    private static final int PERIOD = Configuration.getInteger(Configuration.CONFIG_PROPERTY_PREFIX + "web.gauge.status.period", 4000);
-
     private final Role role;
     private final AtomicLong count = new AtomicLong(0);
 
@@ -40,11 +37,6 @@ public class StatusGauge implements Gauge {
     @Override
     public double value() {
         return count.getAndSet(0);
-    }
-
-    @Override
-    public long period() {
-        return PERIOD;
     }
 
     public void incr() {

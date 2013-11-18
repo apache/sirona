@@ -18,9 +18,8 @@ package org.apache.sirona.store.gauge;
 
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import org.apache.sirona.Role;
-import org.apache.sirona.configuration.Configuration;
+import org.apache.sirona.configuration.ioc.Created;
 import org.apache.sirona.configuration.ioc.Destroying;
-import org.apache.sirona.gauges.GaugeDataStoreAdapter;
 import org.apache.sirona.store.BatchFuture;
 import org.apache.sirona.util.DaemonThreadFactory;
 
@@ -35,33 +34,39 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public abstract class AggregatedGaugeDataStoreAdapter extends GaugeDataStoreAdapter {
+public abstract class AggregatedGaugeDataStoreAdapter extends BatchGaugeDataStoreAdapter {
     private static final Logger LOGGER = Logger.getLogger(AggregatedGaugeDataStoreAdapter.class.getName());
 
     private final ConcurrentMap<Role, SummaryStatistics> gauges = new ConcurrentHashMap<Role, SummaryStatistics>();
+    private BatchFuture scheduledAggregatedTask;
 
-    protected final BatchFuture scheduledTask;
+    protected abstract void pushAggregatedGauges(final Map<Role, Value> gauges);
 
-    public AggregatedGaugeDataStoreAdapter() {
-        final String name = getClass().getSimpleName().toLowerCase(Locale.ENGLISH).replace("gaugedatastore", "");
+    @Created // call it only when main impl not in delegated mode so use IoC lifecycle management
+    public void initAggregated() {
+        final String name = getClass().getSimpleName().toLowerCase(Locale.ENGLISH).replace("gaugedatastore", "") + ".aggregated";
         final long period = getPeriod(name);
 
-        final ScheduledExecutorService ses = Executors.newSingleThreadScheduledExecutor(new DaemonThreadFactory(name + "-gauge-schedule-"));
+        final ScheduledExecutorService ses = Executors.newSingleThreadScheduledExecutor(new DaemonThreadFactory(name + "-aggregated-gauge-schedule-"));
         final ScheduledFuture<?> future = ses.scheduleAtFixedRate(new PushGaugesTask(), period, period, TimeUnit.MILLISECONDS);
-        scheduledTask = new BatchFuture(ses, future);
-    }
-
-    protected int getPeriod(final String name) {
-        return Configuration.getInteger(Configuration.CONFIG_PROPERTY_PREFIX + name + ".gauge.period",
-            Configuration.getInteger(Configuration.CONFIG_PROPERTY_PREFIX + name + ".period", 60000));
+        scheduledAggregatedTask = new BatchFuture(ses, future);
     }
 
     @Destroying
     public void shutdown() {
-        scheduledTask.done();
+        scheduledAggregatedTask.done();
     }
 
-    protected abstract void pushGauges(final Map<Role, Value> gauges);
+    @Override
+    protected void pushGauges(Map<Role, Measure> gauges) {
+
+    }
+
+    @Override
+    public void gaugeStopped(final Role gauge) {
+        gauges.remove(gauge);
+        super.gaugeStopped(gauge);
+    }
 
     @Override
     public void addToGauge(final Role role, final long time, final double value) {
@@ -92,7 +97,7 @@ public abstract class AggregatedGaugeDataStoreAdapter extends GaugeDataStoreAdap
         @Override
         public void run() {
             try {
-                pushGauges(copyAndClearGauges());
+                pushAggregatedGauges(copyAndClearGauges());
             } catch (final Exception e) {
                 LOGGER.log(Level.SEVERE, e.getMessage(), e);
             }

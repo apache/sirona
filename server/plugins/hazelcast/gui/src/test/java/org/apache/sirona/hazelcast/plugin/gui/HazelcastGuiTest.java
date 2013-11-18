@@ -98,11 +98,6 @@ public class HazelcastGuiTest {
                     latch1.countDown();
                 }
             }
-
-            @Override
-            public long period() {
-                return 100;
-            }
         };
 
         final Role role2 = new Role("hazelcast-partitions-cluster", Unit.UNARY);
@@ -120,11 +115,6 @@ public class HazelcastGuiTest {
                 } finally {
                     latch2.countDown();
                 }
-            }
-
-            @Override
-            public long period() {
-                return 100;
             }
         };
         Repository.INSTANCE.reset();

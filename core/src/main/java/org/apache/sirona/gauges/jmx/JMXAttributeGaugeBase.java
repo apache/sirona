@@ -18,7 +18,6 @@ package org.apache.sirona.gauges.jmx;
 
 import org.apache.sirona.Role;
 import org.apache.sirona.SironaException;
-import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.counters.Unit;
 import org.apache.sirona.gauges.Gauge;
 
@@ -55,10 +54,5 @@ public abstract class JMXAttributeGaugeBase implements Gauge {
         } catch (final Exception e) {
             throw new SironaException(e);
         }
-    }
-
-    @Override
-    public long period() {
-        return Configuration.getInteger(Configuration.CONFIG_PROPERTY_PREFIX + "gauge.jmx.period", 4000);
     }
 }

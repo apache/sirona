@@ -29,6 +29,7 @@ import org.junit.After;
 import org.junit.Test;
 
 import java.util.Map;
+import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.CountDownLatch;
 
@@ -43,12 +44,12 @@ public class BasicHazelcastTest {
     }
 
     @Test
-    public void gauges() throws InterruptedException {
+    public void gauges() throws Throwable {
         final HazelcastInstance instance1 = Hazelcast.newHazelcastInstance();
         final HazelcastInstance instance2 = Hazelcast.newHazelcastInstance();
         HazelcastInstance instance3 = null;
 
-        Map<Long, Double> members1 = null, members2 = null, partitions = null;
+        Map<Long, Double> members1 = null, partitions;
 
         final Gauge.LoaderHelper loader = new Gauge.LoaderHelper(false);
         try {
@@ -58,6 +59,10 @@ public class BasicHazelcastTest {
 
             members1 = gaugeValues("hazelcast-members-cluster");
             partitions = gaugeValues("hazelcast-partitions-cluster");
+
+            Thread.sleep(300);
+            assertNotNull(partitions);
+            assertEquals(instance2.getPartitionService().getPartitions().size(), partitions.values().iterator().next(), 0.);
 
             final CountDownLatch instance1Stopped = new CountDownLatch(1);
             instance1.getLifecycleService().addLifecycleListener(new LifecycleListener() {
@@ -72,10 +77,25 @@ public class BasicHazelcastTest {
             instance1Stopped.await();
             Thread.sleep(300);
 
-            assertNotNull(partitions);
-            assertEquals(instance2.getPartitionService().getPartitions().size(), partitions.values().iterator().next(), 0.);
+            assertNotNull(members1);
 
-            members2 = gaugeValues("hazelcast-members-cluster");
+            assertEquals(2., members1.values().iterator().next(), 0.);
+            assertEquals(2., gaugeValues("hazelcast-members-cluster").values().iterator().next(), 0.);
+            assertEquals(3., new TreeMap<Long, Double>(members1).lastEntry().getValue(), 0.);
+            int tryCount = 0;
+            while (true) { // we shouldn't need it but MVN+machine related things can make it fragile if not
+                try {
+                    assertEquals(2., new TreeMap<Long, Double>(gaugeValues("hazelcast-members-cluster")).lastEntry().getValue(), 0.);
+                    break;
+                } catch (final Throwable th) {
+                    if (tryCount < 10) {
+                        tryCount++;
+                        Thread.sleep(100);
+                    } else {
+                        throw th;
+                    }
+                }
+            }
         } finally {
             loader.destroy();
             instance2.getLifecycleService().shutdown();
@@ -86,17 +106,9 @@ public class BasicHazelcastTest {
                 instance1.getLifecycleService().shutdown();
             }
         }
-
-        assertNotNull(members1);
-        assertNotNull(members2);
-
-        assertEquals(2., members1.values().iterator().next(), 0.);
-        assertEquals(2., members2.values().iterator().next(), 0.);
-        assertEquals(3., new TreeMap<Long, Double>(members1).lastEntry().getValue(), 0.);
-        assertEquals(2., new TreeMap<Long, Double>(members2).lastEntry().getValue(), 0.);
     }
 
-    private static Map<Long, Double> gaugeValues(final String role) {
+    private static SortedMap<Long, Double> gaugeValues(final String role) {
         return Repository.INSTANCE.getGaugeValues(0, System.currentTimeMillis(), new Role(role, Unit.UNARY));
     }
 }

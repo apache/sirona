@@ -17,7 +17,6 @@
 package org.apache.sirona.gauges.jvm;
 
 import org.apache.sirona.Role;
-import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.counters.Unit;
 import org.apache.sirona.gauges.Gauge;
 
@@ -37,10 +36,5 @@ public class CPUGauge implements Gauge {
     @Override
     public double value() {
         return SYSTEM_MX_BEAN.getSystemLoadAverage();
-    }
-
-    @Override
-    public long period() {
-        return Configuration.getInteger(Configuration.CONFIG_PROPERTY_PREFIX + "gauge.cpu.period", 4000);
     }
 }

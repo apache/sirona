@@ -94,7 +94,7 @@ public class CubeDataStoreTest {
 
                 final String valueStr = "value\":";
                 final int start = m.indexOf(valueStr) + valueStr.length();
-                gauges.add(Double.parseDouble(m.substring(start, Math.min(m.indexOf(',', start + 1), m.indexOf('}', start + 1)))));
+                gauges.add(Double.parseDouble(m.substring(start, indexOf(m, start))));
             } else if (m.contains("\"type\": \"counter\"")) {
                 counters++;
                 aCounterMessage = m;
@@ -113,5 +113,13 @@ public class CubeDataStoreTest {
         assertThat(aCounterMessage, containsString("sum"));
         assertThat(aCounterMessage, containsString("concurrency"));
         assertThat(aCounterMessage, containsString("marker"));
+    }
+
+    private static int indexOf(String m, int start) {
+        final int i = m.indexOf(',', start + 1);
+        if (i == -1) {
+            return m.indexOf('}', start + 1);
+        }
+        return i;
     }
 }

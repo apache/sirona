@@ -16,14 +16,12 @@
  */
 package org.apache.sirona.agent.webapp.pull.repository;
 
-import org.apache.sirona.agent.webapp.pull.gauge.PullGaugeManager;
 import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.cube.Cube;
 import org.apache.sirona.cube.CubeBuilder;
 import org.apache.sirona.cube.MapBuilder;
 import org.apache.sirona.gauges.Gauge;
 import org.apache.sirona.gauges.GaugeDataStoreAdapter;
-import org.apache.sirona.gauges.GaugeManager;
 import org.apache.sirona.repositories.DefaultRepository;
 import org.apache.sirona.repositories.Repository;
 import org.apache.sirona.status.NodeStatus;
@@ -44,16 +42,11 @@ public class PullRepository extends DefaultRepository {
         cube = IoCs.findOrCreateInstance(CubeBuilder.class).build();
     }
 
-    @Override
-    protected GaugeManager findGaugeManager() {
-        return new PullGaugeManager();
-    }
-
     public Collection<Gauge> getGauges() {
-        if (gaugeManager == null) {
+        if (!GaugeDataStoreAdapter.class.isInstance(gaugeDataStore)) {
             return Collections.emptyList();
         }
-        return PullGaugeManager.class.cast(gaugeManager).getGauges();
+        return GaugeDataStoreAdapter.class.cast(gaugeDataStore).getGauges();
     }
 
     public String snapshot() {
@@ -67,7 +60,7 @@ public class PullRepository extends DefaultRepository {
         // gauges
         for (final Gauge g : getGauges()) {
             try {
-                answer.append(cube.gaugeSnapshot(time, g.role(), g.value()));
+                cube.gaugeSnapshot(answer, time, g.role(), g.value());
             } catch (final Exception e) {
                 // no-op: ignore
             }

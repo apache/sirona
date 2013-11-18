@@ -34,7 +34,7 @@ public class GraphiteGaugeDataStore extends AggregatedGaugeDataStoreAdapter {
     private final Graphite graphite = IoCs.findOrCreateInstance(GraphiteBuilder.class).build();
 
     @Override
-    protected void pushGauges(final Map<Role, Value> gauges) {
+    protected void pushAggregatedGauges(final Map<Role, Value> gauges) {
         try {
             graphite.open();
 

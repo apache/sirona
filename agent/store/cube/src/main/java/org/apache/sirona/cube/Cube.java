@@ -230,8 +230,8 @@ public class Cube {
         return events;
     }
 
-    public StringBuilder gaugeSnapshot(final long time, final Role role, final double value) {
-        return buildEvent(new StringBuilder(), GAUGE_TYPE, time,
+    public StringBuilder gaugeSnapshot(final StringBuilder base, final long time, final Role role, final double value) {
+        return buildEvent(base, GAUGE_TYPE, time,
             new MapBuilder()
                 .add("value", value)
                 .add("role", role.getName())

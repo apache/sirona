@@ -16,7 +16,6 @@
  */
 package org.apache.sirona.gauges.jvm;
 
-import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.gauges.Gauge;
 
 import java.lang.management.ManagementFactory;
@@ -24,9 +23,4 @@ import java.lang.management.MemoryMXBean;
 
 public abstract class BaseMemoryGauge implements Gauge {
     protected static final MemoryMXBean MEMORY_MX_BEAN = ManagementFactory.getMemoryMXBean();
-
-    @Override
-    public long period() {
-        return Configuration.getInteger(Configuration.CONFIG_PROPERTY_PREFIX + "gauge.memory.period", 4000);
-    }
 }

@@ -23,7 +23,8 @@ import org.apache.sirona.store.status.PeriodicNodeStatusDataStore;
 
 public class DefaultDataStoreFactory extends DelegateDataStoreFactory {
     public DefaultDataStoreFactory() {
-        super(new InMemoryCounterDataStore(), new InMemoryGaugeDataStore(),
+        super(new InMemoryCounterDataStore(),
+            IoCs.processInstance(new InMemoryGaugeDataStore()),
             IoCs.processInstance(new PeriodicNodeStatusDataStore())); // this one has hooks
     }
 }

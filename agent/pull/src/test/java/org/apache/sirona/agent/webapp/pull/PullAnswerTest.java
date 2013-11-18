@@ -88,11 +88,6 @@ public class PullAnswerTest {
             public double value() {
                 return value++;
             }
-
-            @Override
-            public long period() {
-                return -1;
-            }
         });
         return repo;
     }

@@ -23,7 +23,7 @@ public class CubeDataStoreFactory extends DelegateDataStoreFactory {
     public CubeDataStoreFactory() {
         super(
             IoCs.processInstance(new CubeCounterDataStore()),
-            new CubeGaugeDataStore(),
+            IoCs.processInstance(new CubeGaugeDataStore()),
             IoCs.processInstance(new CubeNodeStatusDataStore()));
     }
 }

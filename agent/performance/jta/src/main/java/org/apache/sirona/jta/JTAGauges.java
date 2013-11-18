@@ -63,11 +63,6 @@ public class JTAGauges implements GaugeFactory {
         public double value() {
             return counter.getAndSet(0);
         }
-
-        @Override
-        public long period() {
-            return period;
-        }
     }
 
     protected static class JTAActiveGauge extends JTAGauge {

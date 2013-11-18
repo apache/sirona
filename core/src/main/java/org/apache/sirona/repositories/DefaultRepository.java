@@ -19,12 +19,10 @@ package org.apache.sirona.repositories;
 import org.apache.sirona.Role;
 import org.apache.sirona.SironaException;
 import org.apache.sirona.configuration.Configuration;
-import org.apache.sirona.configuration.ioc.Destroying;
 import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.counters.Counter;
-import org.apache.sirona.gauges.DefaultGaugeManager;
 import org.apache.sirona.gauges.Gauge;
-import org.apache.sirona.gauges.GaugeManager;
+import org.apache.sirona.gauges.GaugeAware;
 import org.apache.sirona.gauges.jvm.CPUGauge;
 import org.apache.sirona.gauges.jvm.UsedMemoryGauge;
 import org.apache.sirona.gauges.jvm.UsedNonHeapMemoryGauge;
@@ -49,7 +47,6 @@ public class DefaultRepository implements Repository {
     protected final CounterDataStore counterDataStore;
     protected final NodeStatusDataStore nodeStatusDataStore;
     protected final CommonGaugeDataStore gaugeDataStore;
-    protected final GaugeManager gaugeManager;
 
     public DefaultRepository() {
         this(findCounterDataStore(), findGaugeDataStore(), findStatusDataStore());
@@ -76,29 +73,11 @@ public class DefaultRepository implements Repository {
             IoCs.setSingletonInstance(NodeStatusDataStore.class, status);
         }
 
-        this.gaugeManager = findGaugeManager();
-
         if (Configuration.is(Configuration.CONFIG_PROPERTY_PREFIX + "core.gauge.activated", true)) {
             addGauge(new CPUGauge());
             addGauge(new UsedMemoryGauge());
             addGauge(new UsedNonHeapMemoryGauge());
         }
-    }
-
-    protected GaugeManager findGaugeManager() {
-        final GaugeManager manager;
-        if (GaugeDataStore.class.isInstance(gaugeDataStore)) {
-            GaugeManager mgr;
-            try {
-                mgr = IoCs.findOrCreateInstance(GaugeManager.class);
-            } catch (final SironaException e) {
-                mgr = new DefaultGaugeManager();
-            }
-            manager = mgr;
-        } else {
-            manager = null;
-        }
-        return manager;
     }
 
     private static NodeStatusDataStore findStatusDataStore() {
@@ -154,13 +133,6 @@ public class DefaultRepository implements Repository {
         return counter;
     }
 
-    @Destroying
-    public void stopGaugeManager() {
-        if (gaugeManager != null) {
-            gaugeManager.stop();
-        }
-    }
-
     @Override
     public Counter getCounter(final Counter.Key key) {
         return counterDataStore.getOrCreateCounter(key);
@@ -179,10 +151,10 @@ public class DefaultRepository implements Repository {
     @Override
     public void reset() {
         clearCounters();
-        if (gaugeManager != null) {
-            gaugeManager.stop();
-        }
         nodeStatusDataStore.reset();
+        for (final Role g : gauges()) {
+            gaugeDataStore.gaugeStopped(g);
+        }
     }
 
     @Override
@@ -210,16 +182,13 @@ public class DefaultRepository implements Repository {
         if (GaugeDataStore.class.isInstance(gaugeDataStore)) {
             GaugeDataStore.class.cast(gaugeDataStore).createOrNoopGauge(gauge.role());
         }
-        if (gaugeManager != null) {
-            gaugeManager.addGauge(gauge);
+        if (GaugeAware.class.isInstance(gaugeDataStore)) {
+            GaugeAware.class.cast(gaugeDataStore).addGauge(gauge);
         }
     }
 
     @Override
     public void stopGauge(final Gauge gauge) {
-        if (gaugeManager != null) {
-            gaugeManager.stopGauge(gauge);
-        }
         if (GaugeDataStore.class.isInstance(gaugeDataStore)) {
             GaugeDataStore.class.cast(gaugeDataStore).gaugeStopped(gauge.role());
         }

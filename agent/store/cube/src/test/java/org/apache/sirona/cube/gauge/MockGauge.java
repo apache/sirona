@@ -34,9 +34,4 @@ public class MockGauge implements Gauge {
     public double value() {
         return count++;
     }
-
-    @Override
-    public long period() {
-        return 100;
-    }
 }

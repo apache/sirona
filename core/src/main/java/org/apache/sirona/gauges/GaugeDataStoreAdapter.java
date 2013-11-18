@@ -22,10 +22,14 @@ import org.apache.sirona.store.gauge.GaugeValuesRequest;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 
-public class GaugeDataStoreAdapter implements GaugeDataStore {
+public class GaugeDataStoreAdapter implements GaugeDataStore, GaugeAware {
+    protected final Map<Role, Gauge> gauges = new ConcurrentHashMap<Role, Gauge>();
+
     @Override
     public SortedMap<Long, Double> getGaugeValues(final GaugeValuesRequest gaugeValuesRequest) {
         return new TreeMap<Long, Double>();
@@ -53,6 +57,15 @@ public class GaugeDataStoreAdapter implements GaugeDataStore {
 
     @Override
     public void gaugeStopped(final Role gauge) {
-        // no-op
+        gauges.remove(gauge);
+    }
+
+    @Override
+    public void addGauge(final Gauge gauge) {
+        gauges.put(gauge.role(), gauge);
+    }
+
+    public Collection<Gauge> getGauges() {
+        return gauges.values();
     }
 }

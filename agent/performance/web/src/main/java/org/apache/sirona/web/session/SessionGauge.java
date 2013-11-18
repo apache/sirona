@@ -17,7 +17,6 @@
 package org.apache.sirona.web.session;
 
 import org.apache.sirona.Role;
-import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.counters.Unit;
 import org.apache.sirona.gauges.Gauge;
 
@@ -42,10 +41,5 @@ public class SessionGauge implements Gauge {
     @Override
     public double value() {
         return counter.get();
-    }
-
-    @Override
-    public long period() {
-        return Configuration.getInteger(Configuration.CONFIG_PROPERTY_PREFIX + "web.gauge.sessions.period", 4000);
     }
 }

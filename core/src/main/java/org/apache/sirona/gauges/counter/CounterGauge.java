@@ -17,7 +17,6 @@
 package org.apache.sirona.gauges.counter;
 
 import org.apache.sirona.Role;
-import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.counters.MetricData;
 import org.apache.sirona.counters.Unit;
@@ -46,10 +45,5 @@ public class CounterGauge implements Gauge {
     @Override
     public double value() {
         return metric.value(counter);
-    }
-
-    @Override
-    public long period() {
-        return Configuration.getInteger(Configuration.CONFIG_PROPERTY_PREFIX + "gauge.counter.period", 4000);
     }
 }
