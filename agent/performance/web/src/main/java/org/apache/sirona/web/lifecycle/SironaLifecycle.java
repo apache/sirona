@@ -22,6 +22,9 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 // needs to be activate when sirona-core is in a webapp
+// TODO? for next versions: this listener could register a custom data store
+// then a custom repo can retrieve the store by app (classloader)
+// this would allow to get a global cleanup but it would induce a light overhead
 public class SironaLifecycle implements ServletContextListener {
     @Override
     public void contextInitialized(final ServletContextEvent sce) {
