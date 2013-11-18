@@ -168,6 +168,10 @@ public class DefaultCounter implements Counter {
         }
     }
 
+    public SummaryStatistics getStatistics() {
+        return statistics;
+    }
+
     public ReadWriteLock getLock() {
         return lock;
     }
