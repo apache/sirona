@@ -19,14 +19,20 @@
 <div>
     Here is the list of available nodes with their status:
     <ul>
-        #foreach ($node in $nodes.entrySet())
-            #set($status = $node.value.status)
-            #set($statusClass = $helper.map($status))
-            <li>
-                <div class="alert alert-$statusClass">
-                    <a class="alert-$statusClass" href="$mapping/status/$node.key">$node.key ($!node.value.date)</a>: $status
-                </div>
-            </li>
+        #foreach ($nodes in $apps.entrySet())
+        <li>$nodes.key
+            <ul>
+            #foreach ($node in $nodes.value.entrySet())
+                #set($status = $node.value.status)
+                #set($statusClass = $helper.map($status))
+                <li>
+                    <div class="alert alert-$statusClass">
+                        <a class="alert-$statusClass" href="$mapping/status/$node.key">$node.key ($!node.value.date)</a>: $status
+                    </div>
+                </li>
+            #end
+            </ul>
+        </li>
         #end
     </ul>
 </div>

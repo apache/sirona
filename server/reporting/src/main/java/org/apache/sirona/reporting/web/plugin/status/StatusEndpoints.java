@@ -19,11 +19,40 @@ package org.apache.sirona.reporting.web.plugin.status;
 import org.apache.sirona.reporting.web.plugin.api.Regex;
 import org.apache.sirona.reporting.web.plugin.api.Template;
 import org.apache.sirona.repositories.Repository;
+import org.apache.sirona.status.NodeStatus;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class StatusEndpoints {
+    private static final String DEFAULT_ROOT = "-";
+    private static final String APP_DELIMITER = "#";
+
     @Regex
     public Template home() {
-        return new Template("status/home.vm").set("helper", StatusHelper.class).set("nodes", Repository.INSTANCE.statuses());
+        final Map<String, Map<String, NodeStatus>> statusesByApp = new HashMap<String, Map<String, NodeStatus>>();
+        for (final Map.Entry<String, NodeStatus> entry : Repository.INSTANCE.statuses().entrySet()) {
+            final String key = entry.getKey();
+            final String[] segments;
+            if (key.contains(APP_DELIMITER)) {
+                segments = key.split(APP_DELIMITER);
+            } else {
+                segments = new String[] { DEFAULT_ROOT, key };
+            }
+
+            Map<String, NodeStatus> statusesOfTheApp = statusesByApp.get(segments[0]);
+            if (statusesOfTheApp == null) {
+                statusesOfTheApp = new TreeMap<String, NodeStatus>();
+                statusesByApp.put(segments[0], statusesOfTheApp);
+            }
+            statusesOfTheApp.put(segments[1], entry.getValue());
+        }
+
+        return new Template("status/home.vm")
+                    .set("helper", StatusHelper.class)
+                    .set("apps", statusesByApp);
     }
 
     @Regex("/([^/]*)")
