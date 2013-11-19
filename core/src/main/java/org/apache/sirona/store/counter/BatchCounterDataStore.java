@@ -36,24 +36,36 @@ public abstract class BatchCounterDataStore extends InMemoryCounterDataStore {
     private static final Logger LOGGER = Logger.getLogger(BatchCounterDataStore.class.getName());
 
     protected final BatchFuture scheduledTask;
+    protected final boolean clearAfterCollect;
 
     protected BatchCounterDataStore() {
         final String name = getClass().getSimpleName().toLowerCase(Locale.ENGLISH).replace("counterdatastore", "");
-        final long period = getPeriod(name);
+        final String prefix = Configuration.CONFIG_PROPERTY_PREFIX + name;
+        final long period = getPeriod(prefix);
+        clearAfterCollect = isClearAfterCollect(prefix);
 
         final ScheduledExecutorService ses = Executors.newSingleThreadScheduledExecutor(new DaemonThreadFactory(name + "-counter-schedule-"));
         final ScheduledFuture<?> future = ses.scheduleAtFixedRate(new BatchPushCountersTask(), period, period, TimeUnit.MILLISECONDS);
         scheduledTask = new BatchFuture(ses, future);
     }
 
-    protected int getPeriod(final String name) {
-        return Configuration.getInteger(Configuration.CONFIG_PROPERTY_PREFIX + name + ".counter.period",
-            Configuration.getInteger(Configuration.CONFIG_PROPERTY_PREFIX + name + ".period", 60000));
+    protected boolean isClearAfterCollect(final String prefix) {
+        return Configuration.is(prefix + ".counter.clearOnCollect", false);
+    }
+
+    protected int getPeriod(final String prefix) {
+        return Configuration.getInteger(prefix + ".counter.period", Configuration.getInteger(prefix + ".period", 60000));
     }
 
     @Destroying
     public void shutdown() {
         scheduledTask.done();
+    }
+
+    protected void clearCountersIfNeeded(final Repository instance) {
+        if (clearAfterCollect) {
+            instance.clearCounters();
+        }
     }
 
     protected abstract void pushCountersByBatch(final Collection<Counter> instance);
@@ -62,7 +74,9 @@ public abstract class BatchCounterDataStore extends InMemoryCounterDataStore {
         @Override
         public void run() {
             try {
-                pushCountersByBatch(Repository.INSTANCE.counters());
+                final Repository instance = Repository.INSTANCE;
+                pushCountersByBatch(instance.counters());
+                clearCountersIfNeeded(instance);
             } catch (final Exception e) {
                 LOGGER.log(Level.SEVERE, e.getMessage(), e);
             }

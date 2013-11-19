@@ -16,6 +16,7 @@
  */
 package org.apache.sirona.agent.webapp.pull.repository;
 
+import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.cube.Cube;
 import org.apache.sirona.cube.CubeBuilder;
@@ -36,10 +37,12 @@ public class PullRepository extends DefaultRepository {
     private static final String REGISTRATION_TYPE = "registration";
 
     private final Cube cube;
+    private final boolean clearAfterCollect;
 
     public PullRepository() {
         super(new InMemoryCounterDataStore(), new GaugeDataStoreAdapter(), new EmptyStatuses());
         cube = IoCs.findOrCreateInstance(CubeBuilder.class).build();
+        clearAfterCollect = Configuration.is(Configuration.CONFIG_PROPERTY_PREFIX + "pull.counter.clearOnCollect", false);
     }
 
     public Collection<Gauge> getGauges() {
@@ -70,10 +73,15 @@ public class PullRepository extends DefaultRepository {
         final NodeStatus status = new NodeStatusReporter().computeStatus();
         answer.append(cube.statusSnapshot(time, status));
 
+        if (clearAfterCollect) {
+            clearCounters();
+        }
+
         // remove last ','
         if (answer.length() == 0) {
             return null;
         }
+
         return cube.globalPayload(answer);
     }
 

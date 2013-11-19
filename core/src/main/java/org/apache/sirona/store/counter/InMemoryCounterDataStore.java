@@ -35,6 +35,8 @@ import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class InMemoryCounterDataStore implements CounterDataStore {
     protected final boolean gauged = Configuration.is(Configuration.CONFIG_PROPERTY_PREFIX + "counter.with-gauge", false);
@@ -42,6 +44,7 @@ public class InMemoryCounterDataStore implements CounterDataStore {
 
     protected final ConcurrentMap<Counter.Key, Counter> counters = newCounterMap();
     protected final Collection<Gauge> gauges = new LinkedList<Gauge>();
+    protected final ReadWriteLock stateLock = new ReentrantReadWriteLock(); // this lock ensures consistency between createcounter and clearcounters
 
     protected ConcurrentMap<Counter.Key, Counter> newCounterMap() {
         return new ConcurrentHashMap<Counter.Key, Counter>(50);
@@ -55,33 +58,39 @@ public class InMemoryCounterDataStore implements CounterDataStore {
     public Counter getOrCreateCounter(final Counter.Key key) {
         Counter counter = counters.get(key);
         if (counter == null) {
-            counter = newCounter(key);
-            final Counter previous = counters.putIfAbsent(key, counter);
-            if (previous != null) {
-                counter = previous;
-            } else { // new
-                if (gauged) {
-                    final Values values = new Values(counter);
-                    newGauge(new SyncCounterGauge(counter, MetricData.Sum, values));
-                    newGauge(new SyncCounterGauge(counter, MetricData.Max, values));
-                    newGauge(new SyncCounterGauge(counter, MetricData.Hits, values));
-                }
-                if (jmx) {
-                    final MBeanServer server = ManagementFactory.getPlatformMBeanServer();
-                    try {
-                        final ObjectName objectName = new ObjectName(
-                            Configuration.CONFIG_PROPERTY_PREFIX
-                                + "counter:role=" + escapeJmx(key.getRole().getName())
-                                + ",name=" + escapeJmx(key.getName()));
-                        DefaultCounter.class.cast(counter).setJmx(objectName);
+            final Lock lock = stateLock.readLock();
+            lock.lock();
+            try {
+                counter = newCounter(key);
+                final Counter previous = counters.putIfAbsent(key, counter);
+                if (previous != null) {
+                    counter = previous;
+                } else { // new
+                    if (gauged) {
+                        final Values values = new Values(counter);
+                        newGauge(new SyncCounterGauge(counter, MetricData.Sum, values));
+                        newGauge(new SyncCounterGauge(counter, MetricData.Max, values));
+                        newGauge(new SyncCounterGauge(counter, MetricData.Hits, values));
+                    }
+                    if (jmx) {
+                        final MBeanServer server = ManagementFactory.getPlatformMBeanServer();
+                        try {
+                            final ObjectName objectName = new ObjectName(
+                                Configuration.CONFIG_PROPERTY_PREFIX
+                                    + "counter:role=" + escapeJmx(key.getRole().getName())
+                                    + ",name=" + escapeJmx(key.getName()));
+                            DefaultCounter.class.cast(counter).setJmx(objectName);
 
-                        if (!server.isRegistered(objectName)) {
-                            server.registerMBean(new CounterJMX(counter), objectName);
+                            if (!server.isRegistered(objectName)) {
+                                server.registerMBean(new CounterJMX(counter), objectName);
+                            }
+                        } catch (final Exception e) {
+                            // no-op
                         }
-                    } catch (final Exception e) {
-                        // no-op
                     }
                 }
+            } finally {
+                lock.unlock();
             }
         }
         return counter;
@@ -105,23 +114,29 @@ public class InMemoryCounterDataStore implements CounterDataStore {
 
     @Override
     public void clearCounters() {
-        if (jmx) {
-            final MBeanServer server = ManagementFactory.getPlatformMBeanServer();
-            for (final Counter counter : counters.values()) {
-                try {
-                    server.unregisterMBean(DefaultCounter.class.cast(counter).getJmx());
-                } catch (final Exception e) {
-                    // no-op
+        final Lock lock = stateLock.writeLock();
+        lock.lock();
+        try {
+            if (jmx) {
+                final MBeanServer server = ManagementFactory.getPlatformMBeanServer();
+                for (final Counter counter : counters.values()) {
+                    try {
+                        server.unregisterMBean(DefaultCounter.class.cast(counter).getJmx());
+                    } catch (final Exception e) {
+                        // no-op
+                    }
                 }
             }
-        }
-        counters.clear();
+            counters.clear();
 
-        synchronized (gauges) {
-            for (final Gauge g : gauges) {
-                Repository.INSTANCE.stopGauge(g);
+            synchronized (gauges) {
+                for (final Gauge g : gauges) {
+                    Repository.INSTANCE.stopGauge(g);
+                }
+                gauges.clear();
             }
-            gauges.clear();
+        } finally {
+            lock.unlock();
         }
     }
 

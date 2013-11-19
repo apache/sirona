@@ -59,6 +59,7 @@ You can also use `org.apache.sirona.configuration.ioc.AutoSet` to init field of 
 * org.apache.sirona.\<name>.aggregated.gauge.period: the default period defining when gauge snapshots are persisted/pushed (ex: graphite)
 * org.apache.sirona.counter.with-gauge: a boolean to ask to register for each counter a gauge for the max/sum/hists metrics of the counter. Only works with in memory counter stores (agent ones in general).
 * org.apache.sirona.counter.with-jmx: a boolean to ask to register a MBean for each counter. Only works with in memory counter stores.
+* org.apache.sirona.\<name>.counter.clearOnCollect: boolean to clear counter after each push/pull
 
 
 #### Reporting
