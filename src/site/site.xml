@@ -24,7 +24,7 @@
     <name>Apache Sirona</name>
     <!--<src>/images/commons-logo.png</src>-->
     <alt>Apache Sirona logo</alt>
-    <href>/index.html</href>
+    <href>http://sirona.incubator.apache.org</href>
   </bannerLeft>
   <bannerRight>
     <src>http://incubator.apache.org/images/egg-logo.png</src>
