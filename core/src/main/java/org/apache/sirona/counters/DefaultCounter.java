@@ -30,14 +30,15 @@ public class DefaultCounter implements Counter {
     private final Key key;
     private final CounterDataStore dataStore;
     private volatile int maxConcurrency = 0;
-    protected SummaryStatistics statistics;
+    protected OptimizedStatistics statistics;
     protected ReadWriteLock lock = new ReentrantReadWriteLock();
     private ObjectName jmx = null;
 
     public DefaultCounter(final Key key, final CounterDataStore store) {
         this.key = key;
-        this.statistics = new SummaryStatistics();
         this.dataStore = store;
+
+        this.statistics = new OptimizedStatistics();
     }
 
     public void addInternal(final double delta) { // should be called from a thread safe environment
