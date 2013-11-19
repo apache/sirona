@@ -35,6 +35,7 @@
     <fluidoSkin>
       <topBarEnabled>true</topBarEnabled>
       <sideBarEnabled>false</sideBarEnabled>
+      <skipGenerationDate>true</skipGenerationDate>
       <topBarIcon />
       <sourceLineNumbersEnabled>true</sourceLineNumbersEnabled>
       <ohloh>
