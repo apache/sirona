@@ -17,7 +17,6 @@
 package org.apache.sirona.counters;
 
 import org.apache.commons.math3.stat.descriptive.StatisticalSummary;
-import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import org.apache.sirona.store.counter.CounterDataStore;
 
 import javax.management.ObjectName;
@@ -31,8 +30,8 @@ public class DefaultCounter implements Counter {
     private final Key key;
     private final CounterDataStore dataStore;
     private volatile int maxConcurrency = 0;
-    protected OptimizedStatistics statistics;
-    protected ReadWriteLock lock = new ReentrantReadWriteLock();
+    protected final OptimizedStatistics statistics;
+    protected final ReadWriteLock lock = new ReentrantReadWriteLock();
     private ObjectName jmx = null;
 
     public DefaultCounter(final Key key, final CounterDataStore store) {
