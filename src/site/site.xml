@@ -56,6 +56,12 @@
   <version position="left" />
 
   <body>
+
+    <breadcrumbs>
+      <item name="Apache" href="http://www.apache.org/"/>
+      <item name="Sirona" href="http://sirona.incubator.apache.org"/>
+    </breadcrumbs>
+
     <menu ref="reports" inherit="bottom"/>
 
     <menu name="ASF">
