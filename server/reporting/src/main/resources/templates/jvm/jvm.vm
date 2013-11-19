@@ -16,7 +16,7 @@
 *#
 <div class="container-fluid">
     <div class="row">
-        <div class="col-lg-6">
+        <div class="col-lg-3">
             #graphBlock("CPU", "cpu")
 
             #if ($name)
@@ -39,7 +39,7 @@
             </div>
             #end
         </div>
-        <div class="col-lg-6">
+        <div class="col-lg-3">
             #graphBlock("Used Memory", "memory")
 
             #if ($initMemory)
@@ -60,9 +60,7 @@
             </div>
             #end
         </div>
-    </div>
-    <div class="row">
-        <div class="col-lg-6">
+        <div class="col-lg-3">
             #graphBlock("Used Non Heap Memory", "nonheapmemory")
 
             #if ($initNonHeapMemory)
@@ -84,7 +82,7 @@
             #end
         </div>
 
-        <div class="col-lg-6">
+        <div class="col-lg-3">
             #graphBlock("Active Threads", "activethreads")
         </div>
 
