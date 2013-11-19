@@ -23,5 +23,6 @@ public class OptimizedStatistics extends SummaryStatistics {
         // we don't use sumsq and sumlog so mock them to gain a lot of time in concurrent environments
         setSumsqImpl(NoopStat.INSTANCE);
         setSumLogImpl(NoopStat.INSTANCE);
+        setGeoMeanImpl(NoopStat.INSTANCE);
     }
 }
