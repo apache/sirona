@@ -15,8 +15,8 @@
   limitations under the License.
 *#
 <div class="container-fluid">
-    <div class="row-fluid">
-        <div class="col-lg-4">
+    <div class="row">
+        <div class="col-lg-6">
             #graphBlock("CPU", "cpu")
 
             #if ($name)
@@ -39,7 +39,7 @@
             </div>
             #end
         </div>
-        <div class="col-lg-4">
+        <div class="col-lg-6">
             #graphBlock("Used Memory", "memory")
 
             #if ($initMemory)
@@ -60,11 +60,12 @@
             </div>
             #end
         </div>
-
-        <div class="col-lg-4">
+    </div>
+    <div class="row">
+        <div class="col-lg-6">
             #graphBlock("Used Non Heap Memory", "nonheapmemory")
 
-            #if ($initMemory)
+            #if ($initNonHeapMemory)
                 <div class="panel panel-primary">
                     <div class="panel-heading">
                         <h3 class="panel-title">
@@ -81,6 +82,10 @@
                     </div>
                 </div>
             #end
+        </div>
+
+        <div class="col-lg-6">
+            #graphBlock("Active Threads", "activethreads")
         </div>
 
     </div>
@@ -131,10 +136,23 @@
                 }
             ]
         };
+        var activeThreadsOptions = {
+            canvas: true,
+            series: { lines: { show: true }, points: { show: true } },
+            grid: { hoverable: true, clickable: true },
+            xaxes: [ { mode: "time", timezone: "browser" } ],
+            yaxes: [ {
+                min: 0,
+                tickFormatter: function (value, axis) {
+                    return value.toFixed(axis.tickDecimals);
+                }
+            } ]
+        };
 
         // update diagram when clicking on update buttons
         Sirona.initGraph("$mapping", 'jvm', 'cpu', cpuOptions);
         Sirona.initGraph("$mapping", 'jvm', 'memory', memoryOptions);
         Sirona.initGraph("$mapping", 'jvm', 'nonheapmemory', memoryOptions);
+        Sirona.initGraph("$mapping", 'jvm', 'activethreads', activeThreadsOptions);
     });
 </script>
