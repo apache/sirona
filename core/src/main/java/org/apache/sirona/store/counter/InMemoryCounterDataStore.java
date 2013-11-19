@@ -16,7 +16,7 @@
  */
 package org.apache.sirona.store.counter;
 
-import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
+import org.apache.commons.math3.stat.descriptive.StatisticalSummary;
 import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.configuration.ioc.Destroying;
 import org.apache.sirona.counters.Counter;
@@ -202,7 +202,7 @@ public class InMemoryCounterDataStore implements CounterDataStore {
                 final Lock lock = defaultCounter.getLock().writeLock();
                 lock.lock();
                 try {
-                    final SummaryStatistics statistics = defaultCounter.getStatistics();
+                    final StatisticalSummary statistics = defaultCounter.getStatistics();
                     max = statistics.getMax();
                     sum = statistics.getSum();
                     hits = statistics.getN();
