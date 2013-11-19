@@ -16,11 +16,12 @@
  */
 package org.apache.sirona.configuration;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Properties;
+import java.util.ServiceLoader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,39 +31,28 @@ public final class Configuration {
 
     public static final String CONFIG_PROPERTY_PREFIX = "org.apache.sirona.";
 
-    private static final String SYS_PROPS_FILE_PATH = "sirona.properties";
-
     private static final String[] DEFAULT_CONFIGURATION_FILES = new String[]{ "sirona.properties", "collector-sirona.properties" };
 
     private static final Properties PROPERTIES = new Properties();
 
     static {
         try {
-            final InputStream is = findConfiguration();
-            if (is != null) {
-                PROPERTIES.load(is);
+            final List<ConfigurationProvider> providers = new LinkedList<ConfigurationProvider>();
+            for (final String source : DEFAULT_CONFIGURATION_FILES) {
+                providers.add(new FileConfigurationProvider(source));
             }
-            PROPERTIES.putAll( System.getProperties() );
+            providers.add(new PropertiesConfigurationProvider(System.getProperties()));
+            for (final ConfigurationProvider provider : ServiceLoader.load(ConfigurationProvider.class, Configuration.class.getClassLoader())) {
+                providers.add(provider);
+            }
+            Collections.sort(providers, Sorter.INSTANCE);
+
+            for (final ConfigurationProvider provider : providers) {
+                PROPERTIES.putAll(provider.configuration());
+            }
         } catch (final Exception e) {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
         }
-    }
-
-    private static InputStream findConfiguration() throws FileNotFoundException {
-
-        for (final String cf : DEFAULT_CONFIGURATION_FILES) {
-            final String filename = System.getProperty(CONFIG_PROPERTY_PREFIX + "configuration", cf);
-            if (new File(filename).exists()) {
-                return new FileInputStream(filename);
-            }
-
-            // use core classloader and not TCCL to avoid to use app loader to load config
-            final InputStream stream = Configuration.class.getClassLoader().getResourceAsStream(filename);
-            if (stream != null) {
-                return stream;
-            }
-        }
-        return null;
     }
 
     public static boolean is(final String key, final boolean defaultValue) {
@@ -79,5 +69,14 @@ public final class Configuration {
 
     private Configuration() {
         // no-op
+    }
+
+    private static class Sorter implements Comparator<ConfigurationProvider> {
+        public static final Comparator<? super ConfigurationProvider> INSTANCE = new Sorter();
+
+        @Override
+        public int compare(final ConfigurationProvider o1, final ConfigurationProvider o2) {
+            return o1.ordinal() - o2.ordinal();
+        }
     }
 }

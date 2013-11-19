@@ -18,9 +18,21 @@ under the License.
 -->
 ## Configuration features
 ### Location
+
 Configuration relies on `sirona.properties` file which should be found in the sirona-core classloader.
 
 Note: you can change the file name using `org.apache.sirona.configuration` system property.
+
+### Advanced configuration
+
+Configuration relies in fact on a SPI: `org.apache.sirona.configuration.ConfigurationProvider`.
+
+This interface providers two method:
+
+* `ordinal`: use to sort providers. The lowest is the first.
+* `configuration`: returns the properties to add in the global configuration
+
+Note: by default a provider for `sirona.properties` (ordinal = 50) and one for system properties (ordinal = 100) are added.
 
 ### Utilities
 
