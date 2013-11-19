@@ -250,6 +250,7 @@
           <pubScmUrl>scm:svn:${sirona.scmPubUrl}</pubScmUrl>
           <checkoutDirectory>${sirona.scmPubCheckoutDirectory}</checkoutDirectory>
           <tryUpdate>true</tryUpdate>
+
         </configuration>
         <executions>
           <execution>

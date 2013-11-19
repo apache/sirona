@@ -66,24 +66,6 @@
       </script>
 
     </head>
-
-    <menu name="User Guide">
-      <item name="Concepts" href="/concepts.html"/>
-      <item name="Basis" href="/basis.html"/>
-      <item name="Configuration" href="/configuration.html"/>
-      <item name="Instrumentation" href="/instrumentation.html"/>
-      <item name="Reporting" href="/reporting.html"/>
-      <item name="Plugins" href="/plugins.html"/>
-      <item name="JTA" href="/jta.html"/>
-      <item name="JPA" href="/jpa.html"/>
-      <item name="JDBC" href="/jdbc.html"/>
-      <item name="Web" href="/web.html"/>
-      <item name="Graphite" href="/graphite.html"/>
-      <item name="Cube" href="/cube.html"/>
-      <item name="Collector" href="/collector.html"/>
-      <item name="Cassandra" href="/cassandra.html"/>
-    </menu>
-
     <menu ref="reports" inherit="bottom"/>
 
     <menu name="ASF">
