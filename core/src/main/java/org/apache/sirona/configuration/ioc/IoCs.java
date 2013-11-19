@@ -119,33 +119,37 @@ public final class IoCs {
         }
 
         if (loadedClass.getAnnotation(AutoSet.class) != null) {
-            Class<?> current = loadedClass;
-            while (current != null && !current.isInterface() && !Object.class.equals(current)) {
-                for (final Field field : loadedClass.getDeclaredFields()) {
-                    if (Modifier.isFinal(field.getModifiers())) {
-                        continue;
-                    }
-
-                    final String value = Configuration.getProperty(loadedClass.getName() + "." + field.getName(), null);
-                    if (value != null) {
-                        final boolean acc = field.isAccessible();
-                        if (!acc) {
-                            field.setAccessible(true);
-                        }
-                        try {
-                            field.set(instance, convertTo(field.getType(), value));
-                        } finally {
-                            if (!acc) {
-                                field.setAccessible(false);
-                            }
-                        }
-                    }
-                }
-                current = current.getSuperclass();
-            }
+            autoSet(instance, loadedClass);
         }
 
         return instance;
+    }
+
+    public static <T> void autoSet(final T instance, final Class<?> loadedClass) throws IllegalAccessException {
+        Class<?> current = loadedClass;
+        while (current != null && !current.isInterface() && !Object.class.equals(current)) {
+            for (final Field field : loadedClass.getDeclaredFields()) {
+                if (Modifier.isFinal(field.getModifiers())) {
+                    continue;
+                }
+
+                final String value = Configuration.getProperty(loadedClass.getName() + "." + field.getName(), null);
+                if (value != null) {
+                    final boolean acc = field.isAccessible();
+                    if (!acc) {
+                        field.setAccessible(true);
+                    }
+                    try {
+                        field.set(instance, convertTo(field.getType(), value));
+                    } finally {
+                        if (!acc) {
+                            field.setAccessible(false);
+                        }
+                    }
+                }
+            }
+            current = current.getSuperclass();
+        }
     }
 
     public static void setSingletonInstance(final Class<?> clazz, final Object instance) {
