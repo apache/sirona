@@ -71,7 +71,6 @@ public class ThreadEndpoints {
 
     private static Map<String, String> listThreads() {
         final Map<String, String> out = new TreeMap<String, String>();
-
         int count = Thread.activeCount();
         final Thread[] threads = new Thread[count];
         count = Thread.enumerate(threads);

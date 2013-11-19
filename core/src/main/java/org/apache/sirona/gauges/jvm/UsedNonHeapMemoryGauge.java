@@ -19,8 +19,7 @@ package org.apache.sirona.gauges.jvm;
 import org.apache.sirona.Role;
 import org.apache.sirona.counters.Unit;
 
-public class UsedNonHeapMemoryGauge
-    extends BaseMemoryGauge {
+public class UsedNonHeapMemoryGauge extends BaseMemoryGauge {
     public static final Role USED_NONHEAPMEMORY = new Role("Used Non Heap Memory", Unit.UNARY);
 
     @Override

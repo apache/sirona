@@ -16,6 +16,7 @@
  */
 package org.apache.sirona.reporting.web.plugin.jvm;
 
+import org.apache.sirona.gauges.jvm.ActiveThreadGauge;
 import org.apache.sirona.gauges.jvm.CPUGauge;
 import org.apache.sirona.gauges.jvm.UsedMemoryGauge;
 import org.apache.sirona.gauges.jvm.UsedNonHeapMemoryGauge;
@@ -64,5 +65,10 @@ public class JVMEndpoints {
     @Regex("/nonheapmemory/([0-9]*)/([0-9]*)")
     public String nonHeapmemory(final long start, final long end) {
         return generateReport("Used Non Heap Memory", UsedNonHeapMemoryGauge.USED_NONHEAPMEMORY, start, end);
+    }
+
+    @Regex("/activethreads/([0-9]*)/([0-9]*)")
+    public String activeThreads(final long start, final long end) {
+        return generateReport("Active Thread Count", ActiveThreadGauge.ACTIVE_THREAD, start, end);
     }
 }

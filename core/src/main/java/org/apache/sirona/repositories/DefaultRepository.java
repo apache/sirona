@@ -23,6 +23,7 @@ import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.gauges.Gauge;
 import org.apache.sirona.gauges.GaugeAware;
+import org.apache.sirona.gauges.jvm.ActiveThreadGauge;
 import org.apache.sirona.gauges.jvm.CPUGauge;
 import org.apache.sirona.gauges.jvm.UsedMemoryGauge;
 import org.apache.sirona.gauges.jvm.UsedNonHeapMemoryGauge;
@@ -77,6 +78,7 @@ public class DefaultRepository implements Repository {
             addGauge(new CPUGauge());
             addGauge(new UsedMemoryGauge());
             addGauge(new UsedNonHeapMemoryGauge());
+            addGauge(new ActiveThreadGauge());
         }
     }
 
