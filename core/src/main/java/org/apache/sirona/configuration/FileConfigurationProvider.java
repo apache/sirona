@@ -43,10 +43,14 @@ public class FileConfigurationProvider implements ConfigurationProvider {
         final Properties properties = new Properties();
         final String filename = System.getProperty(Configuration.CONFIG_PROPERTY_PREFIX + "configuration." + name, name);
         if (new File(filename).exists()) {
+            FileInputStream fileInputStream = null;
             try {
-                properties.load(new FileInputStream(filename));
+                fileInputStream = new FileInputStream(filename);
+                properties.load(fileInputStream);
             } catch (final IOException e) {
                 LOGGER.log(Level.SEVERE, e.getMessage(), e);
+            } finally {
+              closeQuietly( fileInputStream );
             }
         } else {
             // use core classloader and not TCCL to avoid to use app loader to load config
@@ -60,5 +64,15 @@ public class FileConfigurationProvider implements ConfigurationProvider {
             }
         }
         return properties;
+    }
+
+    private void closeQuietly(InputStream inputStream) {
+        try {
+            if (inputStream != null) {
+                inputStream.close();
+            }
+        } catch ( IOException e ) {
+            LOGGER.log(Level.WARNING, "fail to close inputStream: " + e.getMessage(), e);
+        }
     }
 }
