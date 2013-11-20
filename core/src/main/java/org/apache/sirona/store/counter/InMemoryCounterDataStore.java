@@ -16,12 +16,12 @@
  */
 package org.apache.sirona.store.counter;
 
-import org.apache.commons.math3.stat.descriptive.StatisticalSummary;
 import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.configuration.ioc.Destroying;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.counters.DefaultCounter;
 import org.apache.sirona.counters.MetricData;
+import org.apache.sirona.counters.OptimizedStatistics;
 import org.apache.sirona.counters.jmx.CounterJMX;
 import org.apache.sirona.gauges.Gauge;
 import org.apache.sirona.gauges.counter.CounterGauge;
@@ -202,7 +202,7 @@ public class InMemoryCounterDataStore implements CounterDataStore {
                 final Lock lock = defaultCounter.getLock().writeLock();
                 lock.lock();
                 try {
-                    final StatisticalSummary statistics = defaultCounter.getStatistics();
+                    final OptimizedStatistics statistics = defaultCounter.getStatistics();
                     max = statistics.getMax();
                     sum = statistics.getSum();
                     hits = statistics.getN();

@@ -16,13 +16,119 @@
  */
 package org.apache.sirona.counters;
 
-import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
+public class OptimizedStatistics {
+    private long n = 0;
+    private double sum = 0;
+    private double min = Double.NaN;
+    private double max = Double.NaN;
 
-public class OptimizedStatistics extends SummaryStatistics {
+    // first moment (mean)
+    protected double m1 = Double.NaN;
+    protected double dev = Double.NaN;
+    protected double nDev = Double.NaN;
+
+    // second moment
+    protected double m2 = Double.NaN;
+
     public OptimizedStatistics() {
-        // we don't use sumsq and sumlog so mock them to gain a lot of time in concurrent environments
-        setSumsqImpl(NoopStat.INSTANCE);
-        setSumLogImpl(NoopStat.INSTANCE);
-        setGeoMeanImpl(NoopStat.INSTANCE);
+        // no-op
+    }
+
+    public OptimizedStatistics(final long n, final double sum, final double min,
+                               final double max, final double m1, final double dev,
+                               final double nDev, final double m2) {
+        this.n = n;
+        this.sum = sum;
+        this.min = min;
+        this.max = max;
+        this.m1 = m1;
+        this.dev = dev;
+        this.nDev = nDev;
+        this.m2 = m2;
+    }
+
+    public void addValue(double value) {
+        if (n == 0) {
+            m1 = 0.0;
+            m2 = 0.0;
+        }
+
+        n++;
+        sum += value;
+
+        // min
+        if (value < min || Double.isNaN(min)) {
+            min = value;
+        }
+
+        // max
+        if (value > max || Double.isNaN(max)) {
+            max = value;
+        }
+
+        // first moment
+        dev = value - m1;
+        nDev = dev / n;
+        m1 += nDev;
+
+        // second moment
+        m2 += dev * nDev * (n - 1);
+    }
+
+    public void clear() {
+        n = 0;
+        sum = 0;
+        min = Double.NaN;
+        max = Double.NaN;
+        dev = Double.NaN;
+        nDev = Double.NaN;
+        m1 = Double.NaN;
+        m2 = Double.NaN;
+    }
+
+    public double getMean() {
+        return m1;
+    }
+
+    public double getVariance() {
+        if (n == 0) {
+            return Double.NaN;
+        } else if (n == 1) {
+            return 0;
+        }
+        return m2 / (n - 1);
+    }
+
+    public double getStandardDeviation() {
+        if (n > 1) {
+            return Math.sqrt(getVariance());
+        } else if (n == 1) {
+            return 0.;
+        }
+        return Double.NaN;
+    }
+
+    public double getMax() {
+        return max;
+    }
+
+    public double getMin() {
+        return min;
+    }
+
+    public long getN() {
+        return n;
+    }
+
+    public double getSum() {
+        return sum;
+    }
+
+    public double getSecondMoment() {
+        return m2;
+    }
+
+    public OptimizedStatistics copy() {
+        return new OptimizedStatistics(n, sum, min, max, m1, dev, nDev, m2);
     }
 }

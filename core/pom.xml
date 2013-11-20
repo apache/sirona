@@ -32,41 +32,15 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-math3</artifactId>
-    </dependency>
-
-    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
     </dependency>
-  </dependencies>
 
-  <build>
-    <plugins>
-      <plugin> <!-- include commons-math in core to be able to install it in containers more trivially -->
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-shade-plugin</artifactId>
-        <!-- Later versions - i.e. 2.x - require Maven 3 -->
-        <version>1.7.1</version>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>shade</goal>
-            </goals>
-            <configuration>
-              <dependencyReducedPomLocation>${project.build.directory}/dependency-reduced-pom.xml</dependencyReducedPomLocation>
-              <relocations>
-                <relocation>
-                  <pattern>org.apache.commons.math3</pattern>
-                  <shadedPattern>org.apache.sirona.math3</shadedPattern>
-                </relocation>
-              </relocations>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-math3</artifactId>
+      <version>3.2</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 </project>

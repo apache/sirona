@@ -16,10 +16,10 @@
  */
 package org.apache.sirona.store.gauge;
 
-import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import org.apache.sirona.Role;
 import org.apache.sirona.configuration.ioc.Created;
 import org.apache.sirona.configuration.ioc.Destroying;
+import org.apache.sirona.counters.OptimizedStatistics;
 import org.apache.sirona.store.BatchFuture;
 import org.apache.sirona.util.DaemonThreadFactory;
 
@@ -37,7 +37,7 @@ import java.util.logging.Logger;
 public abstract class AggregatedGaugeDataStoreAdapter extends BatchGaugeDataStoreAdapter {
     private static final Logger LOGGER = Logger.getLogger(AggregatedGaugeDataStoreAdapter.class.getName());
 
-    private final ConcurrentMap<Role, SummaryStatistics> gauges = new ConcurrentHashMap<Role, SummaryStatistics>();
+    private final ConcurrentMap<Role, OptimizedStatistics> gauges = new ConcurrentHashMap<Role, OptimizedStatistics>();
     private BatchFuture scheduledAggregatedTask;
 
     protected abstract void pushAggregatedGauges(final Map<Role, Value> gauges);
@@ -70,10 +70,10 @@ public abstract class AggregatedGaugeDataStoreAdapter extends BatchGaugeDataStor
 
     @Override
     public void addToGauge(final Role role, final long time, final double value) {
-        SummaryStatistics stat = gauges.get(role);
+        OptimizedStatistics stat = gauges.get(role);
         if (stat == null) {
-            stat = new SummaryStatistics();
-            final SummaryStatistics existing = gauges.putIfAbsent(role, stat);
+            stat = new OptimizedStatistics();
+            final OptimizedStatistics existing = gauges.putIfAbsent(role, stat);
             if (existing != null) {
                 stat = existing;
             }
@@ -82,12 +82,12 @@ public abstract class AggregatedGaugeDataStoreAdapter extends BatchGaugeDataStor
     }
 
     private ConcurrentMap<Role, Value> copyAndClearGauges() {
-        final ConcurrentMap<Role, SummaryStatistics> copy = new ConcurrentHashMap<Role, SummaryStatistics>();
+        final ConcurrentMap<Role, OptimizedStatistics> copy = new ConcurrentHashMap<Role, OptimizedStatistics>();
         copy.putAll(gauges);
         gauges.clear();
 
         final ConcurrentMap<Role, Value> toPush = new ConcurrentHashMap<Role, Value>();
-        for (final Map.Entry<Role, SummaryStatistics> entry : copy.entrySet()) {
+        for (final Map.Entry<Role, OptimizedStatistics> entry : copy.entrySet()) {
             toPush.put(entry.getKey(), new ValueImpl(entry.getValue()));
         }
         return toPush;
@@ -105,9 +105,9 @@ public abstract class AggregatedGaugeDataStoreAdapter extends BatchGaugeDataStor
     }
 
     private static class ValueImpl implements Value {
-        private final SummaryStatistics delegate;
+        private final OptimizedStatistics delegate;
 
-        public ValueImpl(final SummaryStatistics value) {
+        public ValueImpl(final OptimizedStatistics value) {
             delegate = value;
         }
 

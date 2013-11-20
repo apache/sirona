@@ -24,23 +24,27 @@ import static org.junit.Assert.assertEquals;
 public class OptimizedStatisticsTest {
     @Test
     public void checkConsistency() {
-        final SummaryStatistics normal = new SummaryStatistics();
+        final SummaryStatistics normal = new SummaryStatistics(); // considered as reference
         final OptimizedStatistics optimized = new OptimizedStatistics();
 
         for (int i = 0; i < 100; i++) {
             final double value = Math.random() * 100;
             normal.addValue(value);
             optimized.addValue(value);
-        }
 
-        // Counter only relies on a subset of all stats of SummarryStatistics
-        assertEquals(normal.getN(), optimized.getN(), 0.);
-        assertEquals(normal.getMax(), optimized.getMax(), 0.);
-        assertEquals(normal.getMin(), optimized.getMin(), 0.);
-        assertEquals(normal.getSum(), optimized.getSum(), 0.);
-        assertEquals(normal.getStandardDeviation(), optimized.getStandardDeviation(), 0.);
-        assertEquals(normal.getVariance(), optimized.getVariance(), 0.);
-        assertEquals(normal.getMean(), optimized.getMean(), 0.);
-        assertEquals(normal.getSecondMoment(), optimized.getSecondMoment(), 0.);
+            doAssert(normal, optimized); // important to assert for 0, 1 and n > 1
+        }
+    }
+
+    private static void doAssert(final SummaryStatistics normal, OptimizedStatistics optimized) {
+        double delta = Math.pow(10, -10);
+        assertEquals(normal.getN(), optimized.getN(), delta);
+        assertEquals(normal.getMax(), optimized.getMax(), delta);
+        assertEquals(normal.getMin(), optimized.getMin(), delta);
+        assertEquals(normal.getSum(), optimized.getSum(), delta);
+        assertEquals(normal.getMean(), optimized.getMean(), delta);
+        assertEquals(normal.getSecondMoment(), optimized.getSecondMoment(), delta);
+        assertEquals(normal.getVariance(), optimized.getVariance(), delta);
+        assertEquals(normal.getStandardDeviation(), optimized.getStandardDeviation(), delta);
     }
 }

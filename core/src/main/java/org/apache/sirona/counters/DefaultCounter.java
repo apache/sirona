@@ -16,7 +16,6 @@
  */
 package org.apache.sirona.counters;
 
-import org.apache.commons.math3.stat.descriptive.StatisticalSummary;
 import org.apache.sirona.store.counter.CounterDataStore;
 
 import javax.management.ObjectName;
@@ -171,7 +170,7 @@ public class DefaultCounter implements Counter {
         }
     }
 
-    public StatisticalSummary getStatistics() {
+    public OptimizedStatistics getStatistics() {
         final Lock rl = lock.readLock();
         rl.lock();
         try {
