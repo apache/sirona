@@ -203,4 +203,22 @@ public class DefaultCounter implements Counter {
             ", statistics=" + statistics +
             '}';
     }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!Counter.class.isInstance(o)) {
+            return false;
+        }
+
+        final Counter that = Counter.class.cast(o);
+        return key.equals(that.getKey());
+    }
+
+    @Override
+    public int hashCode() {
+        return key.hashCode();
+    }
 }

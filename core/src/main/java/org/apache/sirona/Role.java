@@ -81,28 +81,21 @@ public class Role implements Comparable<Role>, Serializable {
             return false;
         }
 
-        Role role = (Role) o;
+        final Role role = Role.class.cast(o);
+        return name.equals(role.name);
 
-        if (!name.equals(role.name)) {
-            return false;
-        }
-
-        return true;
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public int compareTo(final Role o) {
         return name.compareTo(o.name);
     }
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Role{");
-        sb.append("name='").append(name).append('\'');
-        sb.append(", unit=").append(unit);
-        sb.append('}');
-        return sb.toString();
+        return "Role{" + "name='" + name + '\'' + ", unit=" + unit + '}';
     }
 }

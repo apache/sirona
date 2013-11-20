@@ -16,27 +16,27 @@
  */
 package org.apache.sirona.cube;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Locale;
-
 import org.apache.sirona.Role;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.gauges.Gauge;
 import org.apache.sirona.repositories.Repository;
+import org.apache.sirona.util.Localhosts;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.io.IOException;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Locale;
+
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class CubeDataStoreTest {
     private CubeServer server;
@@ -80,7 +80,7 @@ public class CubeDataStoreTest {
             Thread.sleep(1500);
         }
 
-        final String host = InetAddress.getLocalHost().getHostName();
+        final String host = Localhosts.get();
 
         final Collection<String> messages = server.getMessages();
         final Collection<Double> gauges = new ArrayList<Double>(4);

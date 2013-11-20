@@ -18,6 +18,7 @@ package org.apache.sirona.cube;
 
 import org.apache.sirona.SironaException;
 import org.apache.sirona.configuration.ioc.AutoSet;
+import org.apache.sirona.util.Localhosts;
 
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
@@ -27,14 +28,10 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.xml.bind.DatatypeConverter;
 import java.io.FileInputStream;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.security.KeyStore;
 
 @AutoSet
 public class CubeBuilder {
-    private static final String DEFAULT_MARKER = "sirona";
-
     private String proxyHost;
     private int proxyPort;
     private String collector;
@@ -54,11 +51,7 @@ public class CubeBuilder {
 
     public synchronized Cube build() {
         if (marker == null) {
-            try {
-                marker = InetAddress.getLocalHost().getHostName();
-            } catch (final UnknownHostException e) {
-                marker = DEFAULT_MARKER;
-            }
+            marker = Localhosts.get();
         }
 
         if (sslKeyStore != null || sslTrustStore != null) {

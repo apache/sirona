@@ -29,7 +29,7 @@ import java.util.concurrent.locks.Lock;
 public class AggregatedCollectorCounter extends CollectorCounter implements AggregatedCounter {
     private final ConcurrentMap<String, LeafCollectorCounter> aggregation = new ConcurrentHashMap<String, LeafCollectorCounter>(50);
 
-    public AggregatedCollectorCounter(Key key) {
+    public AggregatedCollectorCounter(final Key key) {
         super(key);
     }
 

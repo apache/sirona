@@ -16,6 +16,7 @@
  */
 package org.apache.sirona.status;
 
+import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.spi.SpiTestImpl;
 import org.apache.sirona.store.status.PeriodicNodeStatusDataStore;
 import org.junit.Test;
@@ -37,12 +38,12 @@ public class ValidationTest {
 
     @Test
     public void periodicNodeReporter() throws InterruptedException {
-        final PeriodicNodeStatusDataStore store = new PeriodicNodeStatusDataStore() {
+        final PeriodicNodeStatusDataStore store = IoCs.processInstance(new PeriodicNodeStatusDataStore() {
             @Override
             protected int getPeriod(final String name) {
                 return 100;
             }
-        };
+        });
         Thread.sleep(200);
         assertEquals(Status.OK, store.statuses().values().iterator().next().getStatus());
 

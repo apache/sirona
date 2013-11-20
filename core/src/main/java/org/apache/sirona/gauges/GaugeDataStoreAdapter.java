@@ -47,7 +47,7 @@ public class GaugeDataStoreAdapter implements GaugeDataStore, GaugeAware {
 
     @Override
     public Collection<Role> gauges() {
-        return Collections.emptyList();
+        return gauges.keySet();
     }
 
     @Override

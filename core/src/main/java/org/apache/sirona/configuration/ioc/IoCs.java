@@ -101,25 +101,33 @@ public final class IoCs {
 
     private static <T> T internalProcessInstance(final T instance) throws IllegalAccessException, InvocationTargetException {
         final Class<?> loadedClass = instance.getClass();
-        for (final Method m : loadedClass.getMethods()) {
-            if (m.getAnnotation(Created.class) != null) {
-                m.invoke(instance);
-            } else if (m.getAnnotation(Destroying.class) != null) {
-                if (shutdownHook == null == Configuration.is(Configuration.CONFIG_PROPERTY_PREFIX + "shutdown.hook", true)) {
-                    shutdownHook = new Thread() {
-                        @Override
-                        public void run() {
-                            shutdown();
-                        }
-                    };
-                    Runtime.getRuntime().addShutdownHook(shutdownHook);
-                }
-                INSTANCES.add(new ToDestroy(m, instance));
-            }
-        }
 
+        // autoset before invoking @Created
         if (loadedClass.getAnnotation(AutoSet.class) != null) {
             autoSet(instance, loadedClass);
+        }
+
+        Class<?> clazz = loadedClass;
+        while (clazz != null && !Object.class.equals(clazz)) {
+            for (final Method m : clazz.getDeclaredMethods()) {
+                if (m.getAnnotation(Created.class) != null) {
+                    m.setAccessible(true);
+                    m.invoke(instance);
+                } else if (m.getAnnotation(Destroying.class) != null) {
+                    m.setAccessible(true);
+                    if (shutdownHook == null == Configuration.is(Configuration.CONFIG_PROPERTY_PREFIX + "shutdown.hook", true)) {
+                        shutdownHook = new Thread() {
+                            @Override
+                            public void run() {
+                                shutdown();
+                            }
+                        };
+                        Runtime.getRuntime().addShutdownHook(shutdownHook);
+                    }
+                    INSTANCES.add(new ToDestroy(m, instance));
+                }
+            }
+            clazz = clazz.getSuperclass();
         }
 
         return instance;
@@ -180,6 +188,9 @@ public final class IoCs {
         }
         if (long.class.equals(type)) {
             return Long.parseLong(value);
+        }
+        if (boolean.class.equals(type)) {
+            return Boolean.parseBoolean(value);
         }
         throw new IllegalArgumentException("Type " + type.getName() + " not supported");
     }

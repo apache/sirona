@@ -17,6 +17,7 @@
 package org.apache.sirona.store.status;
 
 import org.apache.sirona.configuration.Configuration;
+import org.apache.sirona.configuration.ioc.Created;
 import org.apache.sirona.configuration.ioc.Destroying;
 import org.apache.sirona.status.NodeStatus;
 import org.apache.sirona.status.NodeStatusReporter;
@@ -38,13 +39,21 @@ public class PeriodicNodeStatusDataStore implements NodeStatusDataStore {
     private static final Logger LOGGER = Logger.getLogger(PeriodicNodeStatusDataStore.class.getName());
 
     private final AtomicReference<BatchFuture> scheduledTask = new AtomicReference<BatchFuture>();
-    private final AtomicReference<NodeStatus> status = new AtomicReference<NodeStatus>();
-    private final HashMap<String, NodeStatus> statusAsMap = new HashMap<String, NodeStatus>();
-    private final NodeStatusReporter nodeStatusReporter;
+    protected final AtomicReference<NodeStatus> status = new AtomicReference<NodeStatus>();
+    protected final HashMap<String, NodeStatus> statusAsMap = new HashMap<String, NodeStatus>();
+    protected final NodeStatusReporter nodeStatusReporter;
 
     public PeriodicNodeStatusDataStore() {
-        nodeStatusReporter = new NodeStatusReporter();
+        nodeStatusReporter = newNodeStatusReporter();
+    }
+
+    @Created
+    public void run() {
         reload();
+    }
+
+    protected NodeStatusReporter newNodeStatusReporter() {
+        return new NodeStatusReporter();
     }
 
     @Destroying

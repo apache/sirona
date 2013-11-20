@@ -199,6 +199,10 @@ public class CassandraCollectorCounterDataStore extends InMemoryCollectorCounter
         return cassandra.generateKey(key.getRole().getName(), key.getRole().getUnit().getName(), key.getName(), marker);
     }
 
+    public CassandraSirona getCassandra() {
+        return cassandra;
+    }
+
     protected static Number getOrDefault(final DynamicDelegatedSerializer delegatedSerializer, final HColumn<?, ?> col, final Serializer<?> serializer) {
         delegatedSerializer.setDelegate(serializer);
         if (col == null || col.getValue() == null) {
