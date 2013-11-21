@@ -22,3 +22,5 @@ Apache Sirona provides a simple, lightweight toolkit to instrument java applicat
 performances and thread concurrency.
 
 More documentation is available in the [Main site](http://sirona.incubator.apache.org)
+
+Changelog for the current version available [Here](./jira-report.html)
