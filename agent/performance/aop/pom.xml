@@ -26,7 +26,6 @@
   </parent>
 
   <artifactId>sirona-aop</artifactId>
-  <version>0.1-incubating-SNAPSHOT</version>
   <name>Apache Sirona Incubator :: Agent :: Performance :: AOP</name>
 
   <dependencies>

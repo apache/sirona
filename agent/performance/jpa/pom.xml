@@ -26,7 +26,6 @@
   </parent>
 
   <artifactId>sirona-jpa</artifactId>
-  <version>0.1-incubating-SNAPSHOT</version>
   <name>Apache Sirona Incubator :: Agent :: Performance  :: JPA</name>
 
   <dependencies>

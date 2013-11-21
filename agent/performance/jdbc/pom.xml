@@ -24,14 +24,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>sirona-jdbc</artifactId>
-  <version>0.1-incubating-SNAPSHOT</version>
   <name>Apache Sirona Incubator :: Agent :: Performance  :: JDBC</name>
-
-  <properties>
-    <!-- Java6 required for JDBC 4 -->
-    <maven.compile.source>1.6</maven.compile.source>
-    <maven.compile.target>1.6</maven.compile.target>
-  </properties>
 
   <dependencies>
     <dependency>

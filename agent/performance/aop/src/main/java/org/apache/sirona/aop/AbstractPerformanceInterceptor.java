@@ -79,6 +79,19 @@ public abstract class AbstractPerformanceInterceptor<T> implements Serializable 
             return proceed(invocation);
         }
 
+        final Context ctx = before(invocation, name);
+        Throwable error = null;
+        try {
+            return proceed(invocation);
+        } catch (final Throwable t) {
+            error = t;
+            throw t;
+        } finally {
+            ctx.stop(error);
+        }
+    }
+
+    protected Context before(final T invocation, final String name) {
         final ActivationContext context = doFindContext(invocation);
 
         final StopWatch stopwatch;
@@ -89,27 +102,7 @@ public abstract class AbstractPerformanceInterceptor<T> implements Serializable 
             stopwatch = null;
         }
 
-        Throwable error = null;
-        try {
-            return proceed(invocation);
-        } catch (final Throwable t) {
-            error = t;
-            throw t;
-        } finally {
-            if (stopwatch != null) {
-                stopwatch.stop();
-
-                final long elapsedTime = stopwatch.getElapsedTime();
-
-                if (error != null) {
-                    final ByteArrayOutputStream writer = new ByteArrayOutputStream();
-                    error.printStackTrace(new PrintStream(writer));
-                    Repository.INSTANCE.getCounter(new Counter.Key(Role.FAILURES, writer.toString())).add(elapsedTime);
-                }
-
-                context.elapsedTime(elapsedTime);
-            }
-        }
+        return new Context(context, stopwatch);
     }
 
     protected boolean isAdaptive() {
@@ -177,6 +170,35 @@ public abstract class AbstractPerformanceInterceptor<T> implements Serializable 
         this.monitorNameExtractor = monitorNameExtractor;
     }
 
+    /**
+     * The handler for cases where interception is not possible and you need to pass the "before"object to be able to monitor.
+     */
+    protected static class Context {
+        private final ActivationContext activationContext;
+        private final StopWatch stopWatch;
+
+        public Context(final ActivationContext activationContext, final StopWatch stopWatch) {
+            this.activationContext = activationContext;
+            this.stopWatch = stopWatch;
+        }
+
+        public void stop(final Throwable error) {
+            if (stopWatch != null) {
+                stopWatch.stop();
+
+                final long elapsedTime = stopWatch.getElapsedTime();
+
+                if (error != null) {
+                    final ByteArrayOutputStream writer = new ByteArrayOutputStream();
+                    error.printStackTrace(new PrintStream(writer));
+                    Repository.INSTANCE.getCounter(new Counter.Key(Role.FAILURES, writer.toString())).add(elapsedTime);
+                }
+
+                activationContext.elapsedTime(elapsedTime);
+            }
+        }
+    }
+
     protected static class SerializableMethod implements Serializable {
         protected final String clazz;
         protected final String method;
@@ -236,6 +258,9 @@ public abstract class AbstractPerformanceInterceptor<T> implements Serializable 
         }
     }
 
+    /**
+     * This class contains the activation/deactivation logic.
+     */
     protected static class ActivationContext implements Serializable {
         protected final long forceIteration;
         protected final long threshold;

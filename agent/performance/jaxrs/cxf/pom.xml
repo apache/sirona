@@ -15,30 +15,30 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
   <parent>
-    <artifactId>sirona-agent</artifactId>
+    <artifactId>sirona-jaxrs</artifactId>
     <groupId>org.apache.sirona</groupId>
     <version>0.1-incubating-SNAPSHOT</version>
   </parent>
 
-  <modelVersion>4.0.0</modelVersion>
+  <artifactId>sirona-jaxrs-cxf-26</artifactId>
+  <name>Apache Sirona Incubator :: Agent :: Performance  :: JAXRS :: CXF 2.6.x</name>
 
-  <artifactId>sirona-performance</artifactId>
-  <name>Apache Sirona Incubator :: Agent :: Performance</name>
-  <packaging>pom</packaging>
+  <properties>
+    <cxf.version>2.6.9</cxf.version>
+    <cxf.scope>provided</cxf.scope>
+  </properties>
 
-  <modules>
-    <module>aop</module>
-    <module>aspectj</module>
-    <module>cdi</module>
-    <module>jdbc</module>
-    <module>jpa</module>
-    <module>jta</module>
-    <module>spring</module>
-    <module>web</module>
-    <module>jaxrs</module>
-  </modules>
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-jaxrs_1.1_spec</artifactId>
+      <version>1.0</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
 </project>
