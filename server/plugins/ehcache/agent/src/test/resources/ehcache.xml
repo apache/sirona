@@ -15,25 +15,18 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <parent>
-    <artifactId>sirona-server</artifactId>
-    <groupId>org.apache.sirona</groupId>
-    <version>0.1-incubating-SNAPSHOT</version>
-  </parent>
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="../config/ehcache.xsd">
+  <diskStore path="java.io.tmpdir"/>
 
-  <modelVersion>4.0.0</modelVersion>
-
-  <artifactId>sirona-plugins</artifactId>
-  <name>Apache Sirona Incubator :: Server :: Plugins</name>
-  <packaging>pom</packaging>
-
-  <modules>
-    <module>tomee</module>
-    <module>api</module>
-    <module>hazelcast</module>
-    <module>ehcache</module>
-  </modules>
-</project>
+  <defaultCache
+    maxElementsInMemory="10000"
+    eternal="false"
+    timeToIdleSeconds="120"
+    timeToLiveSeconds="120"
+    maxElementsOnDisk="10000000"
+    diskExpiryThreadIntervalSeconds="120"
+    memoryStoreEvictionPolicy="LRU">
+    <persistence strategy="localTempSwap"/>
+  </defaultCache>
+</ehcache>

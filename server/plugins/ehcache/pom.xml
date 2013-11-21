@@ -19,21 +19,33 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
-    <artifactId>sirona-server</artifactId>
+    <artifactId>sirona-plugins</artifactId>
     <groupId>org.apache.sirona</groupId>
     <version>0.1-incubating-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>sirona-plugins</artifactId>
-  <name>Apache Sirona Incubator :: Server :: Plugins</name>
+  <artifactId>sirona-ehcache</artifactId>
+  <name>Apache Sirona Incubator :: Server :: Plugins :: EhCache</name>
   <packaging>pom</packaging>
 
   <modules>
-    <module>tomee</module>
-    <module>api</module>
-    <module>hazelcast</module>
-    <module>ehcache</module>
+    <module>agent</module>
   </modules>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>net.sf.ehcache</groupId>
+        <artifactId>ehcache</artifactId>
+        <version>${ehcache.version}</version>
+        <scope>provided</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <properties>
+    <ehcache.version>2.7.4</ehcache.version>
+  </properties>
 </project>
