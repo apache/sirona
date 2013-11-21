@@ -26,14 +26,22 @@ import org.apache.sirona.repositories.Repository;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class EhCacheCachesCountManagerGauge extends EhCacheManagerGaugeBase {
-    public EhCacheCachesCountManagerGauge(final CacheManager cacheManager) {
+    public EhCacheCachesCountManagerGauge(final CacheManager cacheManager, final Gauge... relatedGauges) {
         super("caches-count", cacheManager);
-        cacheManager.getCacheManagerEventListenerRegistry().registerListener(new DynamicCacheGauges(cacheManager));
+
+        final Collection<Gauge> gauges = new ArrayList<Gauge>(1 + (relatedGauges == null ? 0 : relatedGauges.length));
+        if (relatedGauges != null) {
+            gauges.addAll(Arrays.<Gauge>asList(relatedGauges));
+        }
+        gauges.add(this);
+
+        cacheManager.getCacheManagerEventListenerRegistry().registerListener(new DynamicCacheGauges(cacheManager, gauges.toArray(new Gauge[gauges.size()])));
     }
 
     @Override
@@ -43,10 +51,12 @@ public class EhCacheCachesCountManagerGauge extends EhCacheManagerGaugeBase {
 
     private static class DynamicCacheGauges implements CacheManagerEventListener {
         private final CacheManager manager;
+        private final Gauge[] relatedGauges;
         private final Map<String, Collection<Gauge>> children = new ConcurrentHashMap<String, Collection<Gauge>>();
 
-        public DynamicCacheGauges(final CacheManager cacheManager) {
+        public DynamicCacheGauges(final CacheManager cacheManager, final Gauge... relatedGauges) {
             this.manager = cacheManager;
+            this.relatedGauges = relatedGauges;
         }
 
         @Override
@@ -63,6 +73,11 @@ public class EhCacheCachesCountManagerGauge extends EhCacheManagerGaugeBase {
         public void dispose() throws CacheException {
             for (final String gauge : children.keySet()) {
                 notifyCacheRemoved(gauge);
+            }
+            for (final Gauge gauge : relatedGauges) {
+                if (Repository.INSTANCE.gauges().contains(gauge.role())) {
+                    Repository.INSTANCE.stopGauge(gauge);
+                }
             }
         }
 

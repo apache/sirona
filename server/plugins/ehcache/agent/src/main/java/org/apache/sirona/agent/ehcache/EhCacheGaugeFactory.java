@@ -51,10 +51,11 @@ public class EhCacheGaugeFactory implements GaugeFactory {
 
     // utility method user can reuse for custom managers
     public static Collection<Gauge> register(final CacheManager manager) {
+        final EhCacheTransactionCommittedCountManagerGauge commits = new EhCacheTransactionCommittedCountManagerGauge(manager);
+        final EhCacheTransactionRollbackedCountManagerGauge rollbacks = new EhCacheTransactionRollbackedCountManagerGauge(manager);
         return Arrays.<Gauge>asList(
-            new EhCacheCachesCountManagerGauge(manager),
-            new EhCacheTransactionCommittedCountManagerGauge(manager),
-            new EhCacheTransactionRollbackedCountManagerGauge(manager)
+            new EhCacheCachesCountManagerGauge(manager, commits, rollbacks),
+            commits, rollbacks
         );
     }
 }
