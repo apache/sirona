@@ -29,7 +29,7 @@
   <name>Apache Sirona Incubator :: Agent :: Performance  :: Spring Integration</name>
 
   <properties>
-    <spring.version>3.2.3.RELEASE</spring.version>
+    <spring.version>3.2.5.RELEASE</spring.version>
   </properties>
 
   <dependencies>
