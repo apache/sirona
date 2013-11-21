@@ -17,12 +17,10 @@
 package org.apache.sirona.gauges;
 
 import org.apache.sirona.Role;
-import org.apache.sirona.counters.Unit;
 import org.apache.sirona.store.gauge.GaugeDataStore;
 import org.apache.sirona.store.gauge.GaugeValuesRequest;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
