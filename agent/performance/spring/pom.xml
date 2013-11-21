@@ -26,7 +26,7 @@
   </parent>
 
   <artifactId>sirona-spring</artifactId>
-  <name>Apache Sirona Incubator :: Agent :: Performance  :: Spring Integration</name>
+  <name>Apache Sirona Incubator :: Agent :: Performance :: Spring Integration</name>
 
   <properties>
     <spring.version>3.2.5.RELEASE</spring.version>

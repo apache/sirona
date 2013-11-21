@@ -24,7 +24,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>sirona-jdbc</artifactId>
-  <name>Apache Sirona Incubator :: Agent :: Performance  :: JDBC</name>
+  <name>Apache Sirona Incubator :: Agent :: Performance :: JDBC</name>
 
   <dependencies>
     <dependency>

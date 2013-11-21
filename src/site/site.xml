@@ -62,6 +62,8 @@
       <item name="Sirona" href="http://sirona.incubator.apache.org"/>
     </breadcrumbs>
 
+    <menu ref="modules" />
+
     <menu ref="reports" inherit="bottom"/>
 
     <menu name="ASF">
