@@ -60,6 +60,7 @@
   <modules>
     <module>core</module>
     <module>agent</module>
+    <module>plugins</module>
     <module>server</module>
   </modules>
 

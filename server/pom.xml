@@ -33,7 +33,6 @@
   <modules>
     <module>collector</module>
     <module>reporting</module>
-    <module>plugins</module>
     <module>store</module>
   </modules>
 </project>
