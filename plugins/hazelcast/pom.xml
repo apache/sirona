@@ -27,7 +27,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>sirona-hazelcast</artifactId>
-  <name>Apache Sirona Incubator :: Server :: Plugins :: Hazelcast</name>
+  <name>Apache Sirona Incubator :: Plugins :: Hazelcast</name>
   <packaging>pom</packaging>
 
   <modules>

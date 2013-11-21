@@ -27,7 +27,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>sirona-ehcache</artifactId>
-  <name>Apache Sirona Incubator :: Server :: Plugins :: EhCache</name>
+  <name>Apache Sirona Incubator :: Plugins :: EhCache</name>
   <packaging>pom</packaging>
 
   <modules>

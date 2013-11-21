@@ -27,7 +27,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>sirona-hazelcast-gui</artifactId>
-  <name>Apache Sirona Incubator :: Server :: Plugins :: Hazelcast :: GUI</name>
+  <name>Apache Sirona Incubator :: Plugins :: Hazelcast :: GUI</name>
 
   <dependencies>
     <dependency>

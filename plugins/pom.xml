@@ -27,7 +27,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>sirona-plugins</artifactId>
-  <name>Apache Sirona Incubator :: Server :: Plugins</name>
+  <name>Apache Sirona Incubator :: Plugins</name>
   <packaging>pom</packaging>
 
   <modules>

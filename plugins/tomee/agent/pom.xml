@@ -27,7 +27,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>sirona-tomee-agent</artifactId>
-  <name>Apache Sirona Incubator :: Server :: Plugins :: TomEE :: Agent</name>
+  <name>Apache Sirona Incubator :: Plugins :: TomEE :: Agent</name>
 
   <dependencies>
     <dependency>

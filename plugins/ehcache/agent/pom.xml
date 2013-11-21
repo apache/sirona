@@ -27,7 +27,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>sirona-ehcache-agent</artifactId>
-  <name>Apache Sirona Incubator :: Server :: Plugins :: EhCache :: Agent</name>
+  <name>Apache Sirona Incubator :: Plugins :: EhCache :: Agent</name>
 
   <dependencies>
     <dependency>
