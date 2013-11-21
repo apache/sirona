@@ -67,4 +67,17 @@ public class CassandraGaugeDataStore extends BatchGaugeDataStoreAdapter {
         all.addAll(super.gauges()); // override by more recent ones
         return all;
     }
+
+    @Override
+    public Role findGaugeRole(final String name) {
+        if (name== null || name.length()<1){
+            return null;
+        }
+        for (Role role: delegate.gauges()){
+            if (name.equals( role.getName() )){
+                return role;
+            }
+        }
+        return null;
+    }
 }
