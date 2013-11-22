@@ -34,6 +34,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class EhCacheGaugeFactory implements GaugeFactory {
+
+    private static String[] DEFAULT_EHCACHE_METHOD_NAMES = new String[]{
+        "cacheHitCount", "cacheMissCount", "cacheHitRatio", "getSize", "getLocalHeapSizeInBytes", "getLocalDiskSizeInBytes" };
+
     @Override
     public Gauge[] gauges() {
         if (!Configuration.is(Configuration.CONFIG_PROPERTY_PREFIX + "ehcache.activated", true)) {
@@ -69,26 +73,12 @@ public class EhCacheGaugeFactory implements GaugeFactory {
     public static Collection<Gauge> register(Cache cache){
 
         try {
-            Collection<Gauge> gauges = new ArrayList<Gauge>( 6 );
+            Collection<Gauge> gauges = new ArrayList<Gauge>( DEFAULT_EHCACHE_METHOD_NAMES.length );
 
-            Method method = FlatStatistics.class.getMethod( "cacheHitCount", null );
-            gauges.add( new EhCacheCacheGauge(method, cache) );
-
-            method = FlatStatistics.class.getMethod( "cacheMissCount", null );
-            gauges.add( new EhCacheCacheGauge(method, cache) );
-
-            method = FlatStatistics.class.getMethod( "cacheHitRatio", null );
-            gauges.add( new EhCacheCacheGauge(method, cache) );
-
-            method = FlatStatistics.class.getMethod( "getSize", null );
-            gauges.add( new EhCacheCacheGauge(method, cache) );
-
-            method = FlatStatistics.class.getMethod( "getLocalHeapSizeInBytes", null );
-            gauges.add( new EhCacheCacheGauge(method, cache) );
-
-            method = FlatStatistics.class.getMethod( "getLocalDiskSizeInBytes", null );
-            gauges.add( new EhCacheCacheGauge(method, cache) );
-
+            for (String methodNames:DEFAULT_EHCACHE_METHOD_NAMES) {
+                Method method = FlatStatistics.class.getMethod( methodNames, null );
+                gauges.add( new EhCacheCacheGauge(method, cache) );
+            }
             return gauges;
         } catch ( NoSuchMethodException e ) {
 
