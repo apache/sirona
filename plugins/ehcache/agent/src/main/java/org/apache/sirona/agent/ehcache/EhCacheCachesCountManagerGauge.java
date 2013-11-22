@@ -90,7 +90,7 @@ public class EhCacheCachesCountManagerGauge extends EhCacheManagerGaugeBase {
                 if (m.getParameterTypes().length == 0 &&
                     (returnType.equals(Long.TYPE) || returnType.equals(Double.TYPE))
                     && !name.startsWith("get") && !name.startsWith("local") && !name.startsWith("xa")) {
-                    gauges.add(new EhCacheCacheGauge(m, manager, cacheName));
+                    gauges.add(new EhCacheCacheGauge(m, manager.getCache( cacheName)));
                 }
             }
             children.put(cacheName, gauges);

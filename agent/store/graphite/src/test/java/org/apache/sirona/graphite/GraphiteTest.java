@@ -38,7 +38,7 @@ public class GraphiteTest extends GraphiteTestBase {
             Thread.sleep(140);
             counter.add(2.3);
             counter.add(2.9);
-            Thread.sleep(30);
+            Thread.sleep(130);
         }
 
         { // counters

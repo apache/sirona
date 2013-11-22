@@ -16,17 +16,19 @@
  */
 package org.apache.sirona.agent.ehcache;
 
+import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import org.apache.sirona.SironaException;
 
 import java.lang.reflect.Method;
 
 public class EhCacheCacheGauge extends EhCacheManagerGaugeBase {
-    private final String cache;
+    private final Cache cache;
     private final Method method;
 
-    public EhCacheCacheGauge(final Method method, final CacheManager cacheManager, final String cache) {
-        super(method.getName(), cacheManager);
+    public EhCacheCacheGauge(final Method method, final Cache cache) {
+        super(method.getName(), cache.getCacheManager());
+
         this.cache = cache;
         this.method = method;
     }
@@ -34,7 +36,7 @@ public class EhCacheCacheGauge extends EhCacheManagerGaugeBase {
     @Override
     public double value() {
         try {
-            return Number.class.cast(method.invoke(manager.getCache(cache).getStatistics())).doubleValue();
+            return Number.class.cast(method.invoke(cache.getStatistics())).doubleValue();
         } catch (final Exception e) {
             throw new SironaException(e);
         }
