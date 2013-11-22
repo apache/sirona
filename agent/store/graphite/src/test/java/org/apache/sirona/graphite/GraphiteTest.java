@@ -55,7 +55,7 @@ public class GraphiteTest extends GraphiteTestBase {
         }
 
         { // gauges
-            Thread.sleep(300);
+            Thread.sleep(400);
 
             final Collection<String> gauges = extract("gauge");
 
