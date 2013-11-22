@@ -55,7 +55,7 @@ public class EhCacheGaugeFactory implements GaugeFactory {
                 for (String name:manager.getCacheNames()){
                     Cache cache = manager.getCache( name );
                     if (cache!=null){
-                        gauges.addAll(register( cache ));
+                        gauges.addAll( register( cache ) );
                     }
                 }
             }
@@ -72,11 +72,18 @@ public class EhCacheGaugeFactory implements GaugeFactory {
      */
     public static Collection<Gauge> register(Cache cache){
 
-        try {
-            Collection<Gauge> gauges = new ArrayList<Gauge>( DEFAULT_EHCACHE_METHOD_NAMES.length );
+        List<String> methodNames = new ArrayList<String>( Arrays.asList( DEFAULT_EHCACHE_METHOD_NAMES ) );
+        String[] userMethodNames= Configuration.getArray( "org.apache.sirona.ehcache.methods", new String[0] );
 
-            for (String methodNames:DEFAULT_EHCACHE_METHOD_NAMES) {
-                Method method = FlatStatistics.class.getMethod( methodNames, null );
+        if (userMethodNames!=null && userMethodNames.length>0){
+          methodNames.addAll( Arrays.asList( userMethodNames ) );
+        }
+
+        try {
+            Collection<Gauge> gauges = new ArrayList<Gauge>( methodNames.size() );
+
+            for (String methodName:methodNames) {
+                Method method = FlatStatistics.class.getMethod( methodName, null );
                 gauges.add( new EhCacheCacheGauge(method, cache) );
             }
             return gauges;

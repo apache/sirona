@@ -67,6 +67,14 @@ public final class Configuration {
         return PROPERTIES.getProperty(key, defaultValue);
     }
 
+    public static String[] getArray(final String key, final String[] defaultValue) {
+        String property = PROPERTIES.getProperty( key );
+        if (property == null){
+            return defaultValue;
+        }
+        return property.split( ";" );
+    }
+
     private Configuration() {
         // no-op
     }
