@@ -19,19 +19,17 @@ package org.apache.sirona.agent.jaxrs.jaxrs2;
 import org.apache.sirona.Role;
 import org.apache.sirona.aop.AbstractPerformanceInterceptor;
 
+import javax.ws.rs.Path;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.PathSegment;
-import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.ext.Provider;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.Method;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 @Provider
 public class PerformanceServerFilter extends AbstractPerformanceInterceptor<ContainerRequestContext> implements ContainerRequestFilter, ContainerResponseFilter {
@@ -39,6 +37,10 @@ public class PerformanceServerFilter extends AbstractPerformanceInterceptor<Cont
 
     private static final String SIRONA_PERFORMANCE_PROP = "sirona-performance";
     private static final String NO_METHOD = "X";
+    private final ConcurrentMap<Method, Mapping> mappings = new ConcurrentHashMap<Method, Mapping>();
+
+    @javax.ws.rs.core.Context
+    private ResourceInfo info;
 
     @Override
     public void filter(final ContainerRequestContext context) throws IOException {
@@ -55,58 +57,39 @@ public class PerformanceServerFilter extends AbstractPerformanceInterceptor<Cont
 
     @Override
     protected String getCounterName(final ContainerRequestContext context) {
-        final UriInfo uriInfo = context.getUriInfo();
-
-        String base = uriInfo.getBaseUri().getPath();
-        if (!base.endsWith("/")) {
-            base += "/";
+        final String base = context.getUriInfo().getBaseUri().getPath();
+        final Method rm = info.getResourceMethod();
+        if (rm == null) {
+            return base + "?";
         }
 
-        String method = context.getMethod();
-        if (method == null) {
-            method = NO_METHOD;
-        }
+        Mapping mapping = mappings.get(rm);
 
-        return computePath(method, base, uriInfo.getPathSegments(), uriInfo.getPathParameters());
-    }
+        if (mapping == null) {
+            String method = context.getMethod();
+            if (method == null) {
+                method = NO_METHOD;
+            }
 
-    // if JAX-RS 2 provides a better way to do it just change it please!
-    private String computePath(final String method, final String base, final List<PathSegment> pathSegments, final MultivaluedMap<String, String> pathParameters) {
-        final StringBuilder builder = new StringBuilder(method).append("-").append(base);
-        final Collection<String> alreadyUsed = new HashSet<String>();
-        for (final PathSegment segment : pathSegments) {
-            String found = null;
+            final StringBuilder builder = new StringBuilder();
 
-            final String path = segment.getPath();
-
-            for (final Map.Entry<String, List<String>> entry : pathParameters.entrySet()) {
-                boolean newSegment = false;
-                for (final String value : entry.getValue()) {
-                    if (value != null && value.equals(path)) {
-                        found = entry.getKey();
-                        newSegment = !alreadyUsed.contains(found);
-                        if (found != null) {
-                            break;
-                        }
-                    }
-                }
-                if (newSegment) {
-                    break;
+            final Class<?> rc = info.getResourceClass();
+            if (rc != null && rc.getAnnotation(Path.class) != null) {
+                builder.append(rc.getAnnotation(Path.class).value());
+                if (builder.length() > 0 && builder.charAt(builder.length() - 1) != '/') {
+                    builder.append('/');
                 }
             }
 
-            if (found == null) {
-                builder.append(path);
-            } else {
-                builder.append("{").append(found).append("}");
-                alreadyUsed.add(found);
+            if (rm.getAnnotation(Path.class) != null) {
+                builder.append(rm.getAnnotation(Path.class).value());
             }
-            builder.append("/");
+
+            mapping = new Mapping(method, builder.toString());
+            mappings.putIfAbsent(rm, mapping);
         }
-        if (builder.charAt(builder.length() - 1) == '/') {
-            builder.setLength(builder.length() - 1);
-        }
-        return builder.toString();
+
+        return mapping.map(base);
     }
 
     @Override
@@ -117,5 +100,19 @@ public class PerformanceServerFilter extends AbstractPerformanceInterceptor<Cont
     @Override
     protected Object proceed(final ContainerRequestContext context) throws Throwable {
         throw new UnsupportedOperationException("shouldn't be called");
+    }
+
+    protected static class Mapping {
+        protected final String method;
+        protected final String path;
+
+        protected Mapping(final String method, final String path) {
+            this.method = method + '-';
+            this.path = path;
+        }
+
+        public String map(final String base) {
+            return method + base + path;
+        }
     }
 }
