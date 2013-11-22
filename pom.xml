@@ -57,6 +57,13 @@
     <slf4j.version>1.7.5</slf4j.version>
   </properties>
 
+  <distributionManagement>
+    <site>
+      <id>apache.website.svnpub</id>
+      <url>scm:svn:${sirona.scmPubUrl}</url>
+    </site>
+  </distributionManagement>
+
   <modules>
     <module>core</module>
     <module>agent</module>
