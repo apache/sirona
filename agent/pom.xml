@@ -34,5 +34,6 @@
     <module>performance</module>
     <module>store</module>
     <module>pull</module>
+    <module>javaagent</module>
   </modules>
 </project>
