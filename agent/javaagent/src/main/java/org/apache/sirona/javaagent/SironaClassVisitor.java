@@ -16,7 +16,6 @@
  */
 package org.apache.sirona.javaagent;
 
-import org.apache.sirona.Role;
 import org.apache.sirona.aop.AbstractPerformanceInterceptor;
 import org.apache.sirona.counters.Counter;
 import org.objectweb.asm.ClassVisitor;
@@ -48,7 +47,7 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
     private static final Type AGENT_COUNTER = Type.getType(AgentPerformanceInterceptor.class);
 
     private final String javaName;
-    private final Map<String, Counter.Key> keys = new HashMap<String, Counter.Key>();
+    private final Map<String, String> keys = new HashMap<String, String>();
     private Type classType;
 
     public SironaClassVisitor(final ClassWriter writer, final String javaName) {
@@ -75,10 +74,10 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
         { // generate "proxy" method and store the associated field for counter key (generated at the end)
             final String fieldName = name + FIELD_SUFFIX;
             if (!keys.containsKey(fieldName)) {
-                keys.put(fieldName, new Counter.Key(Role.PERFORMANCES, label));
+                keys.put(fieldName, label);
             }
 
-            final ProxyMethodsVisitor sironaVisitor = new ProxyMethodsVisitor(visitor, label, access, new Method(name, desc), classType);
+            final ProxyMethodsVisitor sironaVisitor = new ProxyMethodsVisitor(visitor, access, new Method(name, desc), classType);
             sironaVisitor.visitCode();
             sironaVisitor.visitEnd();
         }
@@ -120,10 +119,10 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
         private static final Type STRING_TYPE = Type.getType(String.class);
         private static final String KEY_METHOD = "key";
 
-        private final Map<String, Counter.Key> keys;
+        private final Map<String, String> keys;
         private final Type clazz;
 
-        public AddConstantsFieldVisitor(final MethodVisitor methodVisitor, final Type classType, final Map<String, Counter.Key> keys) {
+        public AddConstantsFieldVisitor(final MethodVisitor methodVisitor, final Type classType, final Map<String, String> keys) {
             super(ASM4, methodVisitor, ACC_STATIC, STATIC_INIT, NO_PARAM_RETURN_VOID);
             this.keys = keys;
             this.clazz = classType;
@@ -133,8 +132,8 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
         public void visitCode() {
             super.visitCode();
 
-            for (final Map.Entry<String, Counter.Key> key : keys.entrySet()) {
-                push(key.getValue().getName());
+            for (final Map.Entry<String, String> key : keys.entrySet()) {
+                push(key.getValue());
                 invokeStatic(AGENT_COUNTER, new Method(KEY_METHOD, "(" + STRING_TYPE + ")" + KEY_TYPE));
                 putStatic(clazz, key.getKey(), KEY_TYPE);
             }
@@ -156,7 +155,7 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
         private final boolean isVoid;
         private final Method method;
 
-        public ProxyMethodsVisitor(final MethodVisitor methodVisitor, final String label,
+        public ProxyMethodsVisitor(final MethodVisitor methodVisitor,
                                    final int access, final Method method, final Type clazz) {
             super(ASM4, methodVisitor, access, method.getName(), method.getDescriptor());
             this.clazz = clazz;
