@@ -51,7 +51,7 @@ public class PerformanceServerFilter extends AbstractPerformanceInterceptor<Cont
     public void filter(final ContainerRequestContext requestContext, final ContainerResponseContext responseContext) throws IOException {
         final Context context = Context.class.cast(requestContext.getProperty(SIRONA_PERFORMANCE_PROP));
         if (context != null) {
-            context.stop(null);
+            context.stop();
         }
     }
 

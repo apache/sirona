@@ -17,42 +17,37 @@
 package org.apache.sirona.javaagent;
 
 import org.apache.sirona.Role;
+import org.apache.sirona.aop.AbstractPerformanceInterceptor;
 import org.apache.sirona.counters.Counter;
-import org.apache.sirona.repositories.Repository;
-import org.apache.sirona.stopwatches.StopWatch;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-// just a helper to ease ASM work
-public class AgentCounter {
-    private final StopWatch watch;
+// just a helper to ease ASM work and reuse AbstractPerformanceInterceptor logic
+public class AgentPerformanceInterceptor extends AbstractPerformanceInterceptor<String> {
     private static final ConcurrentMap<String, Counter.Key> KEYS = new ConcurrentHashMap<String, Counter.Key>();
 
-    public AgentCounter(final StopWatch watch) {
-        this.watch = watch;
+    public static void initKey(final String name) {
+        KEYS.putIfAbsent(name, new Counter.Key(Role.PERFORMANCES, name));
     }
 
     // called by agent
-    public static AgentCounter start(final String name) {
-        final Counter.Key key = findKey(name);
-        final Counter monitor = Repository.INSTANCE.getCounter(key);
-        return new AgentCounter(Repository.INSTANCE.start(monitor));
+    public static Context start(final String name) {
+        return new AgentPerformanceInterceptor().before(name, name);
     }
 
-    private static Counter.Key findKey(final String name) {
-        final Counter.Key found = KEYS.get(name);
-        if (found != null) {
-            return found;
-        }
-
-        final Counter.Key key = new Counter.Key(Role.PERFORMANCES, name);
-        KEYS.putIfAbsent(name, key);
-        return key;
+    @Override
+    protected Counter.Key getKey(final String name) {
+        return KEYS.get(name);
     }
 
-    // called by agent
-    public void stop() {
-        watch.stop();
+    @Override
+    protected Object proceed(final String invocation) throws Throwable {
+        throw new UnsupportedOperationException("shouldn't be called directly");
+    }
+
+    @Override
+    protected String getCounterName(final String invocation) {
+        return invocation;
     }
 }

@@ -64,20 +64,19 @@ public class SironaAgent {
         private byte[] doTransform(final String className, final byte[] classfileBuffer) {
             final ClassReader reader = new ClassReader(classfileBuffer);
             final ClassWriter writer = new ClassWriter(reader, ClassWriter.COMPUTE_FRAMES);
-            final CounterAdvisor advisor = new CounterAdvisor(writer, className);
+            final SironaClassVisitor advisor = new SironaClassVisitor(writer, className);
             reader.accept(advisor, ClassReader.SKIP_DEBUG);
             return writer.toByteArray();
         }
 
         private boolean shouldTransform(final String className) {
-            if (className.startsWith("sun/")
-                || className.startsWith("com/sun/")
-                || className.startsWith("java/")
-                || className.startsWith("org/apache/sirona")) {
-                return false;
-            }
+            return !( // internals exclusions
+                     className.startsWith("sun/")
+                  || className.startsWith("com/sun/")
+                  || className.startsWith("java/")
+                  || className.startsWith("org/apache/sirona")
+                ) && evaluator.matches(className.replace("/", "."));
 
-            return evaluator.matches(className.replace("/", "."));
         }
     }
 }

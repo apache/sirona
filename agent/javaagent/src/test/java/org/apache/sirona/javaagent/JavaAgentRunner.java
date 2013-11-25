@@ -21,6 +21,7 @@ import org.junit.runner.JUnitCore;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.BlockJUnit4ClassRunner;
+import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
 
@@ -83,7 +84,10 @@ public class JavaAgentRunner extends BlockJUnit4ClassRunner {
                 } catch (final Exception e) {
                     notifier.fireTestFailure(new Failure(description, e));
                 } finally {
-                    notifier.fireTestFinished(description);
+                    // little hack to get the right test number in surefire
+                    for (final FrameworkMethod mtd : getChildren()) {
+                        notifier.fireTestFinished(describeChild(mtd));
+                    }
                 }
             }
         };

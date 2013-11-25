@@ -57,7 +57,7 @@ public final class JPAProxyFactory {
             final Object o = doInvoke(new Invocation(instance, method, args));
             final Class<?> returnType = method.getReturnType();
             if (cascade && returnType.isInterface()) { // not java.*
-                return monitor(classes(returnType, o), o, role, cascade);
+                return monitor(classes(returnType, o), o, role, true);
             }
             return o;
         }

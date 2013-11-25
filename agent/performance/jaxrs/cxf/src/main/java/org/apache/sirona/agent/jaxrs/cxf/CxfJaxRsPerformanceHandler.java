@@ -48,7 +48,7 @@ public class CxfJaxRsPerformanceHandler extends AbstractPerformanceInterceptor<M
     public Response handleResponse(final Message m, final OperationResourceInfo ori, final Response response) {
         final Context context = Context.class.cast(m.getExchange().get(PROP_KEY));
         if (context != null) {
-            context.stop(null);
+            context.stop();
         }
         return null;
     }

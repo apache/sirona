@@ -24,20 +24,26 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 @RunWith(JavaAgentRunner.class)
 public class SimpleTest {
     @Test
-    public void counters() {
+    public void noReturn() {
         assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.noReturn", 0);
-
         new ServiceTransform().noReturn();
         assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.noReturn", 1);
+    }
 
+    @Test
+    public void withReturn() {
         assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.withReturn", 0);
         new ServiceTransform().withReturn();
         assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.withReturn", 1);
+    }
 
+    @Test
+    public void nested() {
         assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.nest", 0);
         assertHits("org.apache.test.sirona.javaagent.SimpleTest$Service2Transform.nested", 0);
         new ServiceTransform().nest();
@@ -45,7 +51,38 @@ public class SimpleTest {
         assertHits("org.apache.test.sirona.javaagent.SimpleTest$Service2Transform.nested", 1);
     }
 
-    private void assertHits(final String name, final int expected) {
+    @Test
+    public void exception() {
+        assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.exception", 0);
+        try {
+            new ServiceTransform().exception();
+            fail();
+        } catch (final IllegalArgumentException iae) {
+            // OK
+        }
+        assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.exception", 1);
+        assertException(1, IllegalArgumentException.class);
+    }
+
+    @Test
+    public void alreadyTryCatch() {
+        assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.alreadyTryCatch", 0);
+        new ServiceTransform().alreadyTryCatch();
+        assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.alreadyTryCatch", 1);
+        assertException(0, NullPointerException.class);
+    }
+
+    private static void assertException(final int count, final Class<?> exception) {
+        int iae = 0;
+        for (final Counter c : Repository.INSTANCE.counters()) {
+            if (c.getKey().getName().contains(exception.getName())) {
+                iae++;
+            }
+        }
+        assertEquals(count, iae);
+    }
+
+    private static void assertHits(final String name, final int expected) {
         assertEquals(expected, Repository.INSTANCE.getCounter(new Counter.Key(Role.PERFORMANCES, name)).getHits());
     }
 
@@ -60,6 +97,18 @@ public class SimpleTest {
 
         public String nest() {
             return new Service2Transform().nested();
+        }
+
+        public void exception() {
+            throw new IllegalArgumentException();
+        }
+
+        public void alreadyTryCatch() {
+            try {
+                throw new NullPointerException();
+            } catch (final NullPointerException iae) {
+                // no-op
+            }
         }
     }
 

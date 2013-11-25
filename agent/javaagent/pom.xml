@@ -32,7 +32,7 @@
   <dependencies>
     <dependency>
       <groupId>org.apache.sirona</groupId>
-      <artifactId>sirona-core</artifactId>
+      <artifactId>sirona-aop</artifactId>
     </dependency>
     <dependency>
       <groupId>org.ow2.asm</groupId>

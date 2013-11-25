@@ -17,8 +17,8 @@
 
 package org.apache.sirona.aop;
 
-import org.apache.sirona.SironaException;
 import org.apache.sirona.Role;
+import org.apache.sirona.SironaException;
 import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.repositories.Repository;
@@ -87,7 +87,11 @@ public abstract class AbstractPerformanceInterceptor<T> implements Serializable 
             error = t;
             throw t;
         } finally {
-            ctx.stop(error);
+            if (error == null) {
+                ctx.stop();
+            } else {
+                ctx.stopWithException(error);
+            }
         }
     }
 
@@ -96,13 +100,17 @@ public abstract class AbstractPerformanceInterceptor<T> implements Serializable 
 
         final StopWatch stopwatch;
         if (context.shouldExecute()) {
-            final Counter monitor = Repository.INSTANCE.getCounter(new Counter.Key(getRole(), name));
+            final Counter monitor = Repository.INSTANCE.getCounter(getKey(name));
             stopwatch = Repository.INSTANCE.start(monitor);
         } else {
             stopwatch = null;
         }
 
         return new Context(context, stopwatch);
+    }
+
+    protected Counter.Key getKey(final String name) {
+        return new Counter.Key(getRole(), name);
     }
 
     protected boolean isAdaptive() {
@@ -173,7 +181,7 @@ public abstract class AbstractPerformanceInterceptor<T> implements Serializable 
     /**
      * The handler for cases where interception is not possible and you need to pass the "before"object to be able to monitor.
      */
-    protected static class Context {
+    public static class Context {
         private final ActivationContext activationContext;
         private final StopWatch stopWatch;
 
@@ -182,7 +190,14 @@ public abstract class AbstractPerformanceInterceptor<T> implements Serializable 
             this.stopWatch = stopWatch;
         }
 
-        public void stop(final Throwable error) {
+        public void stop() {
+            if (stopWatch != null) {
+                final long elapsedTime = stopWatch.stop().getElapsedTime();
+                activationContext.elapsedTime(elapsedTime);
+            }
+        }
+
+        public void stopWithException(final Throwable error) {
             if (stopWatch != null) {
                 stopWatch.stop();
 
