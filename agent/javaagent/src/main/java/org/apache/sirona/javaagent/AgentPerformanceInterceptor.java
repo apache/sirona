@@ -19,6 +19,7 @@ package org.apache.sirona.javaagent;
 import org.apache.sirona.Role;
 import org.apache.sirona.aop.AbstractPerformanceInterceptor;
 import org.apache.sirona.counters.Counter;
+import org.apache.sirona.stopwatches.StopWatch;
 
 // just a helper to ease ASM work and reuse AbstractPerformanceInterceptor logic
 public class AgentPerformanceInterceptor extends AbstractPerformanceInterceptor<Counter.Key> {
@@ -57,7 +58,28 @@ public class AgentPerformanceInterceptor extends AbstractPerformanceInterceptor<
     }
 
     @Override
+    protected Context newContext(final ActivationContext context, final StopWatch stopwatch) {
+        return new AgentContext(context, stopwatch);
+    }
+
+    @Override
     protected Object proceed(final Counter.Key invocation) throws Throwable {
         throw new UnsupportedOperationException("shouldn't be called directly");
+    }
+
+    protected static class AgentContext extends Context {
+        protected AgentContext(final ActivationContext activationContext, final StopWatch stopWatch) {
+            super(activationContext, stopWatch);
+        }
+
+        @Override
+        public void stop() {
+            super.stop();
+        }
+
+        @Override
+        public void stopWithException(final Throwable error) {
+            super.stopWithException(error);
+        }
     }
 }

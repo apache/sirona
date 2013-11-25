@@ -17,6 +17,7 @@
 package org.apache.test.sirona.javaagent;
 
 import org.apache.sirona.Role;
+import org.apache.sirona.aop.AbstractPerformanceInterceptor;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.javaagent.AgentPerformanceInterceptor;
 import org.apache.sirona.repositories.Repository;
@@ -35,7 +36,9 @@ public class AgentPerfInterceptorAgentContractTest {
     @Test
     public void start() {
         final Counter.Key key = AgentPerformanceInterceptor.key("start");
-        AgentPerformanceInterceptor.start(key).stop();
+        final AbstractPerformanceInterceptor.Context context = AgentPerformanceInterceptor.start(key);
+        context.stop();
+        assertEquals("org.apache.sirona.javaagent.AgentPerformanceInterceptor$AgentContext", context.getClass().getName());
         assertEquals(1, Repository.INSTANCE.getCounter(key).getHits());
     }
 }
