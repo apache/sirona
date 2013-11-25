@@ -56,6 +56,13 @@ public class SimpleTest {
     }
 
     @Test
+    public void staticMethod() {
+        assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.staticMethod", 0);
+        ServiceTransform.staticMethod();
+        assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.staticMethod", 1);
+    }
+
+    @Test
     public void nested() {
         assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.nest", 0);
         assertHits("org.apache.test.sirona.javaagent.SimpleTest$Service2Transform.nested", 0);
@@ -108,6 +115,10 @@ public class SimpleTest {
 
         public void noReturn() {
             // no-op
+        }
+
+        public static String staticMethod() {
+            return "ok";
         }
 
         public String withReturn() {

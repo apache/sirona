@@ -17,9 +17,8 @@
 package org.apache.test.sirona.javaagent;
 
 import org.apache.sirona.Role;
-import org.apache.sirona.aop.AbstractPerformanceInterceptor;
 import org.apache.sirona.counters.Counter;
-import org.apache.sirona.javaagent.AgentPerformanceInterceptor;
+import org.apache.sirona.javaagent.AgentContext;
 import org.apache.sirona.repositories.Repository;
 import org.junit.Test;
 
@@ -28,17 +27,28 @@ import static org.junit.Assert.assertEquals;
 public class AgentPerfInterceptorAgentContractTest {
     @Test
     public void key() {
-        final Counter.Key key = AgentPerformanceInterceptor.key("key");
+        final Counter.Key key = AgentContext.key("key");
         assertEquals(Role.PERFORMANCES, key.getRole());
         assertEquals("key", key.getName());
     }
 
     @Test
     public void start() {
-        final Counter.Key key = AgentPerformanceInterceptor.key("start");
-        final AbstractPerformanceInterceptor.Context context = AgentPerformanceInterceptor.start(key);
+        final Counter.Key key = AgentContext.key("start");
+        final AgentContext context = AgentContext.startOn(key, null);
         context.stop();
-        assertEquals("org.apache.sirona.javaagent.AgentPerformanceInterceptor$AgentContext", context.getClass().getName());
+        assertEquals("org.apache.sirona.javaagent.AgentContext", context.getClass().getName());
+        assertEquals(1, Repository.INSTANCE.getCounter(key).getHits());
+    }
+
+    @Test
+    public void attributes() {
+        final Counter.Key key = AgentContext.key("ref");
+        final Object instance = new Object();
+        final AgentContext context = AgentContext.startOn(key, instance);
+        context.stop();
+        assertEquals(instance, context.getReference());
+        assertEquals(key, context.getKey());
         assertEquals(1, Repository.INSTANCE.getCounter(key).getHits());
     }
 }

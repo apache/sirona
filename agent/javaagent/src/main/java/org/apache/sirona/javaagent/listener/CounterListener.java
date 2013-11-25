@@ -14,23 +14,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.javaagent;
+package org.apache.sirona.javaagent.listener;
 
-import org.apache.sirona.Role;
 import org.apache.sirona.aop.AbstractPerformanceInterceptor;
 import org.apache.sirona.counters.Counter;
-import org.apache.sirona.stopwatches.StopWatch;
+import org.apache.sirona.javaagent.AgentContext;
+import org.apache.sirona.javaagent.spi.InvocationListener;
 
-// just a helper to ease ASM work and reuse AbstractPerformanceInterceptor logic
-public class AgentPerformanceInterceptor extends AbstractPerformanceInterceptor<Counter.Key> {
-    // called by agent
-    public static Context start(final Counter.Key key) {
-        return new AgentPerformanceInterceptor().before(key, key.getName());
+public class CounterListener extends AbstractPerformanceInterceptor<Counter.Key> implements InvocationListener {
+    private static final int KEY = 0;
+
+    @Override // TODO: add config here?
+    public boolean accept(final Counter.Key key, final Object instance) {
+        return true;
     }
 
-    // helper to init keys in javaagent
-    public static Counter.Key key(final String name) {
-        return new Counter.Key(Role.PERFORMANCES, name);
+    @Override
+    public void before(final AgentContext ctx) {
+        final Counter.Key key = ctx.getKey();
+        ctx.put(KEY, new CounterListener().before(key, key.getName()));
+    }
+
+    @Override
+    public void after(final AgentContext context, final Throwable error) {
+        final Context perfCtx = context.get(KEY, Context.class);
+        if (error == null) {
+            perfCtx.stop();
+        } else {
+            perfCtx.stopWithException(error);
+        }
     }
 
     @Override
@@ -58,28 +70,11 @@ public class AgentPerformanceInterceptor extends AbstractPerformanceInterceptor<
     }
 
     @Override
-    protected Context newContext(final ActivationContext context, final StopWatch stopwatch) {
-        return new AgentContext(context, stopwatch);
-    }
-
-    @Override
     protected Object proceed(final Counter.Key invocation) throws Throwable {
-        throw new UnsupportedOperationException("shouldn't be called directly");
+        return unsupportedOperation();
     }
 
-    protected static class AgentContext extends Context {
-        protected AgentContext(final ActivationContext activationContext, final StopWatch stopWatch) {
-            super(activationContext, stopWatch);
-        }
-
-        @Override
-        public void stop() {
-            super.stop();
-        }
-
-        @Override
-        public void stopWithException(final Throwable error) {
-            super.stopWithException(error);
-        }
+    private static <T> T unsupportedOperation() {
+        throw new UnsupportedOperationException("shouldn't be called directly");
     }
 }

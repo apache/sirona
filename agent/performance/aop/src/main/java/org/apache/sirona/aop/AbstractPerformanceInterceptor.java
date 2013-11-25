@@ -100,16 +100,20 @@ public abstract class AbstractPerformanceInterceptor<T> implements Serializable 
 
         final StopWatch stopwatch;
         if (context.shouldExecute()) {
-            final Counter monitor = Repository.INSTANCE.getCounter(getKey(name));
+            final Counter monitor = Repository.INSTANCE.getCounter(getKey(invocation, name));
             stopwatch = Repository.INSTANCE.start(monitor);
         } else {
             stopwatch = null;
         }
 
+        return newContext(invocation, context, stopwatch);
+    }
+
+    protected Context newContext(final T invocation, final ActivationContext context, final StopWatch stopwatch) {
         return new Context(context, stopwatch);
     }
 
-    protected Counter.Key getKey(final String name) {
+    protected Counter.Key getKey(final T invocation, final String name) {
         return new Counter.Key(getRole(), name);
     }
 
@@ -182,8 +186,8 @@ public abstract class AbstractPerformanceInterceptor<T> implements Serializable 
      * The handler for cases where interception is not possible and you need to pass the "before"object to be able to monitor.
      */
     public static class Context {
-        private final ActivationContext activationContext;
-        private final StopWatch stopWatch;
+        protected final ActivationContext activationContext;
+        protected final StopWatch stopWatch;
 
         public Context(final ActivationContext activationContext, final StopWatch stopWatch) {
             this.activationContext = activationContext;

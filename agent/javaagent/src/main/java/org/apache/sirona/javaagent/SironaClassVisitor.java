@@ -16,7 +16,6 @@
  */
 package org.apache.sirona.javaagent;
 
-import org.apache.sirona.aop.AbstractPerformanceInterceptor;
 import org.apache.sirona.counters.Counter;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
@@ -44,7 +43,7 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
     private static final String STATIC_CLINT_MERGE_PREFIX = "_$_$irona_static_merge";
 
     private static final Type KEY_TYPE = Type.getType(Counter.Key.class);
-    private static final Type AGENT_COUNTER = Type.getType(AgentPerformanceInterceptor.class);
+    private static final Type AGENT_CONTEXT = Type.getType(AgentContext.class);
 
     private final String javaName;
     private final Map<String, String> keys = new HashMap<String, String>();
@@ -134,19 +133,20 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
 
             for (final Map.Entry<String, String> key : keys.entrySet()) {
                 push(key.getValue());
-                invokeStatic(AGENT_COUNTER, new Method(KEY_METHOD, "(" + STRING_TYPE + ")" + KEY_TYPE));
+                invokeStatic(AGENT_CONTEXT, new Method(KEY_METHOD, "(" + STRING_TYPE + ")" + KEY_TYPE));
                 putStatic(clazz, key.getKey(), KEY_TYPE);
             }
         }
     }
 
     private static class ProxyMethodsVisitor extends GeneratorAdapter {
-        private static final Type CONTEXT_TYPE = Type.getType(AbstractPerformanceInterceptor.Context.class);
         private static final Type THROWABLE_TYPE = Type.getType(Throwable.class);
-        private static final String CONTEXT_NAME = CONTEXT_TYPE.getDescriptor();
+        private static final Type[] STOP_WITH_THROWABLE_ARGS_TYPES = new Type[]{ THROWABLE_TYPE };
+        private static final Type OBJECT_TYPE = Type.getType(Object.class);
+        private static final Type[] START_ARGS_TYPES = new Type[]{ KEY_TYPE, OBJECT_TYPE };
 
         // methods
-        private static final String START_METHOD = "start";
+        private static final String START_METHOD = "startOn";
         private static final String STOP_WITH_EXCEPTION_METHOD = "stopWithException";
         private static final String STOP_METHOD = "stop";
 
@@ -166,9 +166,14 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
 
         @Override
         public void visitCode() {
-            final int agentIdx = newLocal(CONTEXT_TYPE);
+            final int agentIdx = newLocal(AGENT_CONTEXT);
             getStatic(clazz, method.getName() + FIELD_SUFFIX, KEY_TYPE);
-            invokeStatic(AGENT_COUNTER, new Method(START_METHOD, "(" + KEY_TYPE + ")" + CONTEXT_NAME));
+            if (!isStatic) {
+                loadThis();
+            } else {
+                visitInsn(ACONST_NULL); // this == null for static methods
+            }
+            invokeStatic(AGENT_CONTEXT, new Method(START_METHOD, AGENT_CONTEXT, START_ARGS_TYPES));
             storeLocal(agentIdx);
 
             final Label tryStart = mark();
@@ -180,7 +185,7 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
 
             // take metrics before returning
             loadLocal(agentIdx);
-            invokeVirtual(CONTEXT_TYPE, new Method(STOP_METHOD, NO_PARAM_RETURN_VOID));
+            invokeVirtual(AGENT_CONTEXT, new Method(STOP_METHOD, NO_PARAM_RETURN_VOID));
 
             // return result
             returnResult(result);
@@ -193,7 +198,7 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
             storeLocal(throwableId);
             loadLocal(agentIdx);
             loadLocal(throwableId);
-            invokeVirtual(CONTEXT_TYPE, new Method(STOP_WITH_EXCEPTION_METHOD, Type.getType(Void.TYPE), new Type[]{THROWABLE_TYPE}));
+            invokeVirtual(AGENT_CONTEXT, new Method(STOP_WITH_EXCEPTION_METHOD, Type.VOID_TYPE, STOP_WITH_THROWABLE_ARGS_TYPES));
 
             // rethrow throwable
             loadLocal(throwableId);

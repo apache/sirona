@@ -65,7 +65,12 @@ public class SironaAgent {
             final ClassReader reader = new ClassReader(classfileBuffer);
             final ClassWriter writer = new ClassWriter(reader, ClassWriter.COMPUTE_FRAMES);
             final SironaClassVisitor advisor = new SironaClassVisitor(writer, className);
-            reader.accept(advisor, ClassReader.SKIP_DEBUG);
+            try {
+                reader.accept(advisor, ClassReader.SKIP_DEBUG);
+            } catch (final RuntimeException re) {
+                re.printStackTrace(); // log it otherwise hard to know if it fails
+                throw re;
+            }
             return writer.toByteArray();
         }
 
