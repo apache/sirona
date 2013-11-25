@@ -16,7 +16,9 @@
  */
 package org.apache.sirona.javaagent;
 
+import org.apache.sirona.Role;
 import org.apache.sirona.aop.AbstractPerformanceInterceptor;
+import org.apache.sirona.counters.Counter;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
@@ -25,19 +27,32 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
+import org.objectweb.asm.commons.StaticInitMerger;
 
 import java.lang.reflect.Modifier;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SironaClassVisitor extends ClassVisitor implements Opcodes {
+    private static final int CONSTANT_ACCESS = ACC_PRIVATE | ACC_STATIC | ACC_FINAL;
+
     private static final String STATIC_INIT = "<clinit>";
     private static final String CONSTRUCTOR = "<init>";
+    private static final String NO_PARAM_RETURN_VOID = "()V";
+
     private static final String METHOD_SUFFIX = "_$_$irona_$_internal_$_original_$_";
+    private static final String FIELD_SUFFIX = "_$_$IRONA_$_INTERNAL_$_KEY";
+    private static final String STATIC_CLINT_MERGE_PREFIX = "_$_$irona_static_merge";
+
+    private static final Type KEY_TYPE = Type.getType(Counter.Key.class);
+    private static final Type AGENT_COUNTER = Type.getType(AgentPerformanceInterceptor.class);
 
     private final String javaName;
+    private final Map<String, Counter.Key> keys = new HashMap<String, Counter.Key>();
     private Type classType;
 
     public SironaClassVisitor(final ClassWriter writer, final String javaName) {
-        super(ASM4, writer);
+        super(ASM4, new StaticInitMerger(STATIC_CLINT_MERGE_PREFIX, writer));
         this.javaName = javaName;
     }
 
@@ -50,16 +65,20 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
 
     @Override
     public MethodVisitor visitMethod(int access, final String name, final String desc, final String signature, final String[] exceptions) {
-        final MethodVisitor methodVisitor = super.visitMethod(access, name, desc, signature, exceptions);
+        final MethodVisitor visitor = super.visitMethod(access, name, desc, signature, exceptions);
         if (!isSironable(access, name)) {
-            return methodVisitor;
+            return visitor;
         }
 
         final String label = javaName.replace("/", ".") + "." + name;
-        AgentPerformanceInterceptor.initKey(label);
 
-        { // generate "proxy" method
-            final SironaMethodVisitor sironaVisitor = new SironaMethodVisitor(methodVisitor, label, access, new Method(name, desc), classType);
+        { // generate "proxy" method and store the associated field for counter key (generated at the end)
+            final String fieldName = name + FIELD_SUFFIX;
+            if (!keys.containsKey(fieldName)) {
+                keys.put(fieldName, new Counter.Key(Role.PERFORMANCES, label));
+            }
+
+            final ProxyMethodsVisitor sironaVisitor = new ProxyMethodsVisitor(visitor, label, access, new Method(name, desc), classType);
             sironaVisitor.visitCode();
             sironaVisitor.visitEnd();
         }
@@ -68,21 +87,63 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
         return super.visitMethod(forcePrivate(access), name + METHOD_SUFFIX, desc, signature, exceptions);
     }
 
-    private int forcePrivate(final int access) {
+    @Override
+    public void visitEnd() {
+        if (!keys.isEmpty()) {
+            for (final String key : keys.keySet()) {
+                visitField(CONSTANT_ACCESS, key, KEY_TYPE.getDescriptor(), null, null).visitEnd();
+            }
+
+            final AddConstantsFieldVisitor visitor = new AddConstantsFieldVisitor(super.visitMethod(ACC_STATIC, STATIC_INIT, NO_PARAM_RETURN_VOID, null, null), classType, keys);
+            visitor.visitCode();
+            visitor.visitInsn(RETURN);
+            visitor.visitMaxs(0, 0);
+            visitor.visitEnd();
+
+            keys.clear();
+        }
+
+        super.visitEnd();
+    }
+
+    private static int forcePrivate(final int access) {
         return (access & ~(Modifier.PRIVATE | Modifier.PUBLIC | Modifier.PROTECTED)) | Modifier.PRIVATE;
     }
 
-    private boolean isSironable(final int access, final String name) {
-        return !name.equals(STATIC_INIT) && !name.equals(CONSTRUCTOR)
+    private static boolean isSironable(final int access, final String name) {
+        return !name.equals(STATIC_INIT) &&
+            !name.equals(CONSTRUCTOR)
             && !Modifier.isAbstract(access) && !Modifier.isNative(access);
     }
 
-    private static class SironaMethodVisitor extends GeneratorAdapter {
-        // types
-        private static final Type AGENT_COUNTER = Type.getType(AgentPerformanceInterceptor.class);
+    private static class AddConstantsFieldVisitor extends GeneratorAdapter {
+        private static final Type STRING_TYPE = Type.getType(String.class);
+        private static final String KEY_METHOD = "key";
+
+        private final Map<String, Counter.Key> keys;
+        private final Type clazz;
+
+        public AddConstantsFieldVisitor(final MethodVisitor methodVisitor, final Type classType, final Map<String, Counter.Key> keys) {
+            super(ASM4, methodVisitor, ACC_STATIC, STATIC_INIT, NO_PARAM_RETURN_VOID);
+            this.keys = keys;
+            this.clazz = classType;
+        }
+
+        @Override
+        public void visitCode() {
+            super.visitCode();
+
+            for (final Map.Entry<String, Counter.Key> key : keys.entrySet()) {
+                push(key.getValue().getName());
+                invokeStatic(AGENT_COUNTER, new Method(KEY_METHOD, "(" + STRING_TYPE + ")" + KEY_TYPE));
+                putStatic(clazz, key.getKey(), KEY_TYPE);
+            }
+        }
+    }
+
+    private static class ProxyMethodsVisitor extends GeneratorAdapter {
         private static final Type CONTEXT_TYPE = Type.getType(AbstractPerformanceInterceptor.Context.class);
         private static final Type THROWABLE_TYPE = Type.getType(Throwable.class);
-        private static final Type STRING_TYPE = Type.getType(String.class);
         private static final String CONTEXT_NAME = CONTEXT_TYPE.getDescriptor();
 
         // methods
@@ -90,16 +151,14 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
         private static final String STOP_WITH_EXCEPTION_METHOD = "stopWithException";
         private static final String STOP_METHOD = "stop";
 
-        private final String label;
         private final boolean isStatic;
         private final Type clazz;
         private final boolean isVoid;
         private final Method method;
 
-        public SironaMethodVisitor(final MethodVisitor methodVisitor, final String label,
+        public ProxyMethodsVisitor(final MethodVisitor methodVisitor, final String label,
                                    final int access, final Method method, final Type clazz) {
             super(ASM4, methodVisitor, access, method.getName(), method.getDescriptor());
-            this.label = label;
             this.clazz = clazz;
             this.method = method;
             this.isStatic = Modifier.isStatic(access);
@@ -109,8 +168,8 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
         @Override
         public void visitCode() {
             final int agentIdx = newLocal(CONTEXT_TYPE);
-            push(label);
-            invokeStatic(AGENT_COUNTER, new Method(START_METHOD, "(" + STRING_TYPE + ")" + CONTEXT_NAME));
+            getStatic(clazz, method.getName() + FIELD_SUFFIX, KEY_TYPE);
+            invokeStatic(AGENT_COUNTER, new Method(START_METHOD, "(" + KEY_TYPE + ")" + CONTEXT_NAME));
             storeLocal(agentIdx);
 
             final Label tryStart = mark();
@@ -122,7 +181,7 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
 
             // take metrics before returning
             loadLocal(agentIdx);
-            invokeVirtual(CONTEXT_TYPE, new Method(STOP_METHOD, "()V"));
+            invokeVirtual(CONTEXT_TYPE, new Method(STOP_METHOD, NO_PARAM_RETURN_VOID));
 
             // return result
             returnResult(result);

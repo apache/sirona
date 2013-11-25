@@ -20,34 +20,44 @@ import org.apache.sirona.Role;
 import org.apache.sirona.aop.AbstractPerformanceInterceptor;
 import org.apache.sirona.counters.Counter;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-
 // just a helper to ease ASM work and reuse AbstractPerformanceInterceptor logic
-public class AgentPerformanceInterceptor extends AbstractPerformanceInterceptor<String> {
-    private static final ConcurrentMap<String, Counter.Key> KEYS = new ConcurrentHashMap<String, Counter.Key>();
-
-    public static void initKey(final String name) {
-        KEYS.putIfAbsent(name, new Counter.Key(Role.PERFORMANCES, name));
-    }
-
+public class AgentPerformanceInterceptor extends AbstractPerformanceInterceptor<Counter.Key> {
     // called by agent
-    public static Context start(final String name) {
-        return new AgentPerformanceInterceptor().before(name, name);
+    public static Context start(final Counter.Key key) {
+        return new AgentPerformanceInterceptor().before(key, key.getName());
+    }
+
+    // helper to init keys in javaagent
+    public static Counter.Key key(final String name) {
+        return new Counter.Key(Role.PERFORMANCES, name);
     }
 
     @Override
-    protected Counter.Key getKey(final String name) {
-        return KEYS.get(name);
+    protected Counter.Key getKey(final Counter.Key key, final String name) {
+        return key;
     }
 
     @Override
-    protected Object proceed(final String invocation) throws Throwable {
-        throw new UnsupportedOperationException("shouldn't be called directly");
+    protected String getCounterName(final Counter.Key invocation) {
+        return invocation.getName();
     }
 
     @Override
-    protected String getCounterName(final String invocation) {
+    protected Object extractContextKey(final Counter.Key invocation) {
         return invocation;
+    }
+
+    @Override
+    protected ActivationContext getOrCreateContext(final Object m) {
+        final ActivationContext c = CONTEXTS.get(m);
+        if (c == null) {
+            return putAndGetActivationContext(m, new ActivationContext(true, Counter.Key.class.cast(m).getName()));
+        }
+        return c;
+    }
+
+    @Override
+    protected Object proceed(final Counter.Key invocation) throws Throwable {
+        throw new UnsupportedOperationException("shouldn't be called directly");
     }
 }

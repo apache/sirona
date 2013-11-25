@@ -16,8 +16,10 @@
  */
 package org.apache.sirona.javaagent;
 
+import org.junit.internal.TextListener;
 import org.junit.runner.Description;
 import org.junit.runner.JUnitCore;
+import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.BlockJUnit4ClassRunner;
@@ -25,75 +27,116 @@ import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 // only works with standard runner and surefire
 public class JavaAgentRunner extends BlockJUnit4ClassRunner {
-    private static final String MARKER = "javaagent.test";
-
     public JavaAgentRunner(final Class<?> klass) throws InitializationError {
         super(klass);
     }
 
+    // internal call to execute a single test
+    public static void main(final String[] args) throws Exception {
+        final Class<?> testClass = Class.forName(args[0]);
+
+        final BlockJUnit4ClassRunner filteredRunner = new BlockJUnit4ClassRunner(testClass) {
+            @Override
+            protected List<FrameworkMethod> getChildren() {
+                try {
+                    return Arrays.asList(new FrameworkMethod(testClass.getMethod(args[1])));
+                } catch (final NoSuchMethodException e) {
+                    throw new IllegalArgumentException(e);
+                }
+            }
+        };
+
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        final JUnitCore jUnitCore = new JUnitCore();
+        jUnitCore.addListener(new TextListener(new PrintStream(baos)));
+        final Result result = jUnitCore.run(filteredRunner);
+
+        if (result.wasSuccessful()) {
+            System.exit(0);
+        }
+        System.err.println(new String(baos.toByteArray()));
+        System.exit(-1);
+    }
+
     @Override
     protected Statement classBlock(final RunNotifier notifier) {
-        if (System.getProperty(MARKER) != null) {
-            return super.classBlock(notifier);
-        }
-
-        final Description description = Description.createTestDescription(getTestClass().getName(), "runner");
         return new Statement() {
             @Override
             public void evaluate() throws Throwable {
-                notifier.fireTestRunStarted(description);
-                try {
-                    final Collection<String> args = new ArrayList<String>();
-                    args.add(findJava());
-                    args.add("-javaagent:" + buildJavaagent() + "=includes=regex:org.apache.test.sirona.*Transform");
-                    args.add("-D" + MARKER);
-                    if (Boolean.getBoolean("test.debug.remote")) {
-                        args.add("-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005");
-                    }
-                    args.add("-cp");
-                    args.add(System.getProperty("surefire.test.class.path", System.getProperty("java.class.path")));
-                    args.add(JUnitCore.class.getName());
-                    args.add(getTestClass().getName());
-
-                    if ("true".equalsIgnoreCase(System.getProperty("test.debug", "false"))) {
-                        System.out.println(args.toString().substring(1).replace(",", "").replace("]", ""));
-                    }
-                    final Process process = Runtime.getRuntime().exec(args.toArray(new String[args.size()]));
-
-                    slurp(process.getInputStream()).await();
-                    slurp(process.getErrorStream()).await();
-
-                    process.waitFor();
-
-                    if (process.exitValue() != 0) {
-                        notifier.fireTestFailure(new Failure(description, new RuntimeException("exit code = " + process.exitValue())));
-                    }
-                } catch (final Exception e) {
-                    notifier.fireTestFailure(new Failure(description, e));
-                } finally {
-                    // little hack to get the right test number in surefire
-                    for (final FrameworkMethod mtd : getChildren()) {
-                        notifier.fireTestFinished(describeChild(mtd));
+                for (final FrameworkMethod mtd : getChildren()) {
+                    final Description description = describeChild(mtd);
+                    notifier.fireTestRunStarted(description);
+                    try {
+                        executeMethod(mtd, description, notifier);
+                    } catch (final Exception e) {
+                        notifier.fireTestFailure(new Failure(description, e));
+                    } finally {
+                        notifier.fireTestFinished(description);
                     }
                 }
             }
         };
     }
 
-    private CountDownLatch slurp(final InputStream in) {
+    private void executeMethod(final FrameworkMethod mtd, final Description description, final RunNotifier notifier) throws IOException, InterruptedException {
+        final Process process = Runtime.getRuntime().exec(buildProcessArgs(mtd));
+
+        slurp(process.getInputStream()).await();
+        slurp(process.getErrorStream()).await();
+
+        Runtime.getRuntime().addShutdownHook(new Thread() { // ctrl+x during the build
+            @Override
+            public void run() {
+                try {
+                    process.exitValue();
+                } catch (final IllegalStateException ise) {
+                    process.destroy();
+                }
+            }
+        });
+
+        process.waitFor();
+
+        if (process.exitValue() != 0) {
+            notifier.fireTestFailure(new Failure(description, new RuntimeException("exit code = " + process.exitValue())));
+        }
+    }
+
+    private static String[] buildProcessArgs(final FrameworkMethod mtd) throws IOException {
+        final Collection<String> args = new ArrayList<String>();
+        args.add(findJava());
+        args.add("-javaagent:" + buildJavaagent() + "=includes=regex:org.apache.test.sirona.*Transform");
+        if (Boolean.getBoolean("test.debug.remote")) {
+            args.add("-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005");
+        }
+        args.add("-cp");
+        args.add(System.getProperty("surefire.test.class.path", System.getProperty("java.class.path")));
+        args.add(JavaAgentRunner.class.getName());
+        args.add(mtd.getMethod().getDeclaringClass().getName());
+        args.add(mtd.getName());
+
+        return args.toArray(new String[args.size()]);
+    }
+
+    private static CountDownLatch slurp(final InputStream in) {
         final CountDownLatch latch = new CountDownLatch(1);
         new Thread() {
             @Override
@@ -112,8 +155,11 @@ public class JavaAgentRunner extends BlockJUnit4ClassRunner {
         return latch;
     }
 
-    private String buildJavaagent() throws IOException {
+    private static String buildJavaagent() throws IOException {
         final File file = new File("target/sirona-javaagent-test.jar");
+        if (file.exists() && !file.delete()) {
+            Logger.getLogger(JavaAgentRunner.class.getName()).warning("Reusing existing javaagent test jar");
+        }
         if (!file.exists()) {
             zip(new File("target/classes"), file);
         }

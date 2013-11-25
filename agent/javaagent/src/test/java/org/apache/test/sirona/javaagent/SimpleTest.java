@@ -24,10 +24,23 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 @RunWith(JavaAgentRunner.class)
 public class SimpleTest {
+    @Test
+    public void ensureStaticBlocksAreKept() throws Exception {
+        assertTrue(ServiceTransform.staticInit);
+    }
+
+    @Test
+    public void noReturnWithoutStatic() {
+        assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceNoStaticTransform.noReturn", 0);
+        new ServiceNoStaticTransform().noReturn();
+        assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceNoStaticTransform.noReturn", 1);
+    }
+
     @Test
     public void noReturn() {
         assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.noReturn", 0);
@@ -87,8 +100,14 @@ public class SimpleTest {
     }
 
     public static class ServiceTransform {
-        public void noReturn() {
+        public static boolean staticInit = false;
 
+        static {
+            staticInit = true;
+        }
+
+        public void noReturn() {
+            // no-op
         }
 
         public String withReturn() {
@@ -109,6 +128,12 @@ public class SimpleTest {
             } catch (final NullPointerException iae) {
                 // no-op
             }
+        }
+    }
+
+    public static class ServiceNoStaticTransform {
+        public void noReturn() {
+            // no-op
         }
     }
 
