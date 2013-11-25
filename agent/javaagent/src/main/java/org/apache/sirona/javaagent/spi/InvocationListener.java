@@ -19,7 +19,6 @@ package org.apache.sirona.javaagent.spi;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.javaagent.AgentContext;
 
-@Order(0)
 public interface InvocationListener {
     void before(AgentContext context);
     void after(AgentContext context, Throwable error);

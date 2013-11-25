@@ -20,7 +20,9 @@ import org.apache.sirona.aop.AbstractPerformanceInterceptor;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.javaagent.AgentContext;
 import org.apache.sirona.javaagent.spi.InvocationListener;
+import org.apache.sirona.javaagent.spi.Order;
 
+@Order(0)
 public class CounterListener extends AbstractPerformanceInterceptor<Counter.Key> implements InvocationListener {
     private static final int KEY = 0;
 
