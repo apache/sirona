@@ -16,6 +16,7 @@
  */
 package org.apache.sirona.javaagent;
 
+import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.configuration.predicate.PredicateEvaluator;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
@@ -31,6 +32,9 @@ public class SironaAgent {
     }
 
     public static void agentmain(final String agentArgs, final Instrumentation instrumentation) {
+        AgentContext.touch(); // important otherwise we can get NoClassDefFound if initialized lazily
+        Configuration.is("", true); // a touch to force eager init
+
         instrumentation.addTransformer(new SironaTransformer(agentArgs));
     }
 
@@ -40,22 +44,28 @@ public class SironaAgent {
     }
 
     private static class SironaTransformer implements ClassFileTransformer {
-        private final PredicateEvaluator evaluator;
+        private static final String DELEGATING_CLASS_LOADER = "sun.reflect.DelegatingClassLoader";
+
+        private final PredicateEvaluator includeEvaluator;
+        private final PredicateEvaluator excludeEvaluator;
 
         private SironaTransformer(final String agentArgs) {
-            final String includeStr = "includes=";
-            if (agentArgs != null && agentArgs.contains(includeStr)) {
-                final int start = agentArgs.indexOf(includeStr) + includeStr.length();
-                evaluator = new PredicateEvaluator(agentArgs.substring(start, Math.max(agentArgs.length(), agentArgs.indexOf('|', start))), ",");
-            } else {
-                evaluator = new PredicateEvaluator("regex:.*", ",");
+            includeEvaluator = createEvaluator(agentArgs, "includes=", new PredicateEvaluator("regex:.*", ","));
+            excludeEvaluator = createEvaluator(agentArgs, "excludes=", new PredicateEvaluator(null, null)); // no matching
+        }
+
+        private PredicateEvaluator createEvaluator(final String agentArgs, final String str, final PredicateEvaluator defaultEvaluator) {
+            if (agentArgs != null && agentArgs.contains(str)) {
+                final int start = agentArgs.indexOf(str) + str.length();
+                return new PredicateEvaluator(agentArgs.substring(start, Math.max(agentArgs.length(), agentArgs.indexOf('|', start))), ",");
             }
+            return defaultEvaluator;
         }
 
         @Override
         public byte[] transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined,
                                 final ProtectionDomain protectionDomain, final byte[] classfileBuffer) throws IllegalClassFormatException {
-            if (shouldTransform(className)) {
+            if (shouldTransform(className, loader)) {
                 return doTransform(className, classfileBuffer);
             }
             return classfileBuffer;
@@ -74,13 +84,16 @@ public class SironaAgent {
             return writer.toByteArray();
         }
 
-        private boolean shouldTransform(final String className) {
-            return !( // internals exclusions
-                     className.startsWith("sun/")
-                  || className.startsWith("com/sun/")
-                  || className.startsWith("java/")
-                  || className.startsWith("org/apache/sirona")
-                ) && evaluator.matches(className.replace("/", "."));
+        private boolean shouldTransform(final String className, final ClassLoader loader) {
+            return !(
+                           loader == null
+                        || className == null
+                        || loader.getClass().getName().equals(DELEGATING_CLASS_LOADER)
+                        || className.startsWith("org/apache/sirona")
+                        || className.startsWith("com/sun/proxy")
+                    )
+                && includeEvaluator.matches(className.replace("/", "."))
+                && !excludeEvaluator.matches(className.replace("/", "."));
 
         }
     }

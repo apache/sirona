@@ -123,7 +123,7 @@ public class JavaAgentRunner extends BlockJUnit4ClassRunner {
     private static String[] buildProcessArgs(final FrameworkMethod mtd) throws IOException {
         final Collection<String> args = new ArrayList<String>();
         args.add(findJava());
-        args.add("-javaagent:" + buildJavaagent() + "=includes=regex:org.apache.test.sirona.*Transform");
+        args.add("-javaagent:" + buildJavaagent() + "=excludes=regex:org.apache.test.*Test" /*+ "=includes=regex:org.apache.test.sirona.*Transform"*/);
         if (Boolean.getBoolean("test.debug.remote")) {
             args.add("-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005");
         }

@@ -129,6 +129,10 @@ public class AgentContext {
         }
     }
 
+    public static void touch() {
+        // no-op
+    }
+
     private static class ListenerComparator implements Comparator<InvocationListener> {
         private static final ListenerComparator INSTANCE = new ListenerComparator();
 
