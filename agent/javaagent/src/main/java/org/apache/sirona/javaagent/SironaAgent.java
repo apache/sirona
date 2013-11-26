@@ -24,6 +24,7 @@ import org.objectweb.asm.ClassWriter;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.lang.instrument.Instrumentation;
+import java.lang.instrument.UnmodifiableClassException;
 import java.security.ProtectionDomain;
 
 public class SironaAgent {
@@ -36,6 +37,13 @@ public class SironaAgent {
         Configuration.is("", true); // a touch to force eager init
 
         instrumentation.addTransformer(new SironaTransformer(agentArgs), true);
+        try {
+            instrumentation.retransformClasses(SironaAgent.class.getClassLoader().loadClass("sun.net.www.protocol.http.HttpURLConnection"));
+        } catch (UnmodifiableClassException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -79,29 +87,30 @@ public class SironaAgent {
         }
 
         private byte[] doTransform(final String className, final byte[] classfileBuffer) {
-            final ClassReader reader = new ClassReader(classfileBuffer);
-            final ClassWriter writer = new ClassWriter(reader, ClassWriter.COMPUTE_FRAMES);
-            final SironaClassVisitor advisor = new SironaClassVisitor(writer, className);
             try {
+                final ClassReader reader = new ClassReader(classfileBuffer);
+                final ClassWriter writer = new ClassWriter(reader, ClassWriter.COMPUTE_FRAMES);
+                final SironaClassVisitor advisor = new SironaClassVisitor(writer, className);
                 reader.accept(advisor, ClassReader.SKIP_DEBUG);
+                return writer.toByteArray();
             } catch (final RuntimeException re) {
-                re.printStackTrace(); // log it otherwise hard to know if it fails
+                if (Boolean.getBoolean("sirona.agent.debug")) {
+                    re.printStackTrace();
+                }
                 throw re;
             }
-            return writer.toByteArray();
         }
 
         private boolean shouldTransform(final String className, final ClassLoader loader) {
-            return !(
-                           loader == null
-                        || className == null
-                        || loader.getClass().getName().equals(DELEGATING_CLASS_LOADER)
-                        || className.startsWith("org/apache/sirona")
-                        || className.startsWith("com/sun/proxy")
-                    )
+            return !(loader == null // bootstrap classloader
+                || className == null // framework with bug
+                || loader.getClass().getName().equals(DELEGATING_CLASS_LOADER)
+                || className.startsWith("sun/reflect")
+                || className.startsWith("com/sun/proxy")
+                || className.startsWith("org/apache/sirona"))
+
                 && includeEvaluator.matches(className.replace("/", "."))
                 && !excludeEvaluator.matches(className.replace("/", "."));
-
         }
     }
 }

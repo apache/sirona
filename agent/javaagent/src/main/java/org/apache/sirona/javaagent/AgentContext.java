@@ -134,18 +134,18 @@ public class AgentContext {
         context.put(key, data);
     }
 
-    public void stop() {
-        stopListeners(null);
+    public void stop(final Object result) {
+        stopListeners(result, null);
     }
 
     public void stopWithException(final Throwable error) {
-        stopListeners(error);
+        stopListeners(null, error);
     }
 
-    private void stopListeners(final Throwable error) {
+    private void stopListeners(final Object result, final Throwable error) {
         if (hasListeners) {
             for (final InvocationListener listener : listeners) {
-                listener.after(this, error);
+                listener.after(this, result, error);
             }
         }
     }

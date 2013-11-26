@@ -17,8 +17,11 @@
 package org.apache.test.sirona.javaagent;
 
 import org.apache.sirona.javaagent.SironaAgent;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.lang.instrument.ClassDefinition;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
@@ -30,6 +33,18 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 public class IncludeExcludeTest {
+    private static PrintStream err;
+
+    @BeforeClass
+    public static void noDebug() {
+        System.setProperty("sirona.agent.debug", "false");
+    }
+
+    @BeforeClass
+    public static void resetDebug() {
+        System.clearProperty("sirona.agent.debug");
+    }
+
     @Test
     public void include() throws IllegalClassFormatException {
         final InstrumentationForTestPurpose instrumentation = new InstrumentationForTestPurpose();

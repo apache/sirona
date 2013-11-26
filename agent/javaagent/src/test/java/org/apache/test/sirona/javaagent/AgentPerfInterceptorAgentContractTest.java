@@ -36,7 +36,7 @@ public class AgentPerfInterceptorAgentContractTest {
     public void start() {
         final Counter.Key key = AgentContext.key("start");
         final AgentContext context = AgentContext.startOn(key, null);
-        context.stop();
+        context.stop(null);
         assertEquals("org.apache.sirona.javaagent.AgentContext", context.getClass().getName());
         assertEquals(1, Repository.INSTANCE.getCounter(key).getHits());
     }
@@ -46,7 +46,7 @@ public class AgentPerfInterceptorAgentContractTest {
         final Counter.Key key = AgentContext.key("ref");
         final Object instance = new Object();
         final AgentContext context = AgentContext.startOn(key, instance);
-        context.stop();
+        context.stop(null);
         assertEquals(instance, context.getReference());
         assertEquals(key, context.getKey());
         assertEquals(1, Repository.INSTANCE.getCounter(key).getHits());

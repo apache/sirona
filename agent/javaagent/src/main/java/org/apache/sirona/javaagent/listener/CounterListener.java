@@ -55,7 +55,7 @@ public class CounterListener extends AbstractPerformanceInterceptor<Counter.Key>
     }
 
     @Override
-    public void after(final AgentContext context, final Throwable error) {
+    public void after(final AgentContext context, final Object result, final Throwable error) {
         final Context perfCtx = context.get(KEY, Context.class);
         if (error == null) {
             perfCtx.stop();

@@ -143,6 +143,7 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
         private static final Type THROWABLE_TYPE = Type.getType(Throwable.class);
         private static final Type[] STOP_WITH_THROWABLE_ARGS_TYPES = new Type[]{ THROWABLE_TYPE };
         private static final Type OBJECT_TYPE = Type.getType(Object.class);
+        private static final Type[] STOP_WITH_OBJECT_ARGS_TYPES = new Type[]{ OBJECT_TYPE };
         private static final Type[] START_ARGS_TYPES = new Type[]{ KEY_TYPE, OBJECT_TYPE };
 
         // methods
@@ -185,7 +186,12 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
 
             // take metrics before returning
             loadLocal(agentIdx);
-            invokeVirtual(AGENT_CONTEXT, new Method(STOP_METHOD, NO_PARAM_RETURN_VOID));
+            if (result != -1) {
+                loadLocal(result);
+            } else {
+                visitInsn(ACONST_NULL); // result == null for static methods
+            }
+            invokeVirtual(AGENT_CONTEXT, new Method(STOP_METHOD, Type.VOID_TYPE, STOP_WITH_OBJECT_ARGS_TYPES));
 
             // return result
             returnResult(result);

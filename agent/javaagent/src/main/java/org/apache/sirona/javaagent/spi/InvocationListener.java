@@ -21,6 +21,6 @@ import org.apache.sirona.javaagent.AgentContext;
 
 public interface InvocationListener {
     void before(AgentContext context);
-    void after(AgentContext context, Throwable error);
+    void after(AgentContext context, Object result, Throwable error);
     boolean accept(Counter.Key key, Object instance);
 }
