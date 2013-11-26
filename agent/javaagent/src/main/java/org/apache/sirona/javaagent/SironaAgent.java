@@ -35,7 +35,7 @@ public class SironaAgent {
         AgentContext.touch(); // important otherwise we can get NoClassDefFound if initialized lazily
         Configuration.is("", true); // a touch to force eager init
 
-        instrumentation.addTransformer(new SironaTransformer(agentArgs));
+        instrumentation.addTransformer(new SironaTransformer(agentArgs), true);
     }
 
 
@@ -57,7 +57,14 @@ public class SironaAgent {
         private PredicateEvaluator createEvaluator(final String agentArgs, final String str, final PredicateEvaluator defaultEvaluator) {
             if (agentArgs != null && agentArgs.contains(str)) {
                 final int start = agentArgs.indexOf(str) + str.length();
-                return new PredicateEvaluator(agentArgs.substring(start, Math.max(agentArgs.length(), agentArgs.indexOf('|', start))), ",");
+                final int separator = agentArgs.indexOf('|', start);
+                final int endIdx;
+                if (separator > 0) {
+                    endIdx = separator;
+                } else {
+                    endIdx = agentArgs.length();
+                }
+                return new PredicateEvaluator(agentArgs.substring(start, endIdx), ",");
             }
             return defaultEvaluator;
         }
