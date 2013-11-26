@@ -106,7 +106,7 @@ public final class IoCs {
 
         // autoset before invoking @Created
         if (loadedClass.getAnnotation(AutoSet.class) != null) {
-            autoSet(instance, loadedClass);
+            autoSet(null, instance, loadedClass);
         }
 
         Class<?> clazz = loadedClass;
@@ -136,10 +136,14 @@ public final class IoCs {
     }
 
     public static <T> T autoSet(final T instance) throws Exception {
-        return autoSet(instance, instance.getClass());
+        return autoSet(null, instance);
     }
 
-    public static <T> T autoSet(final T instance, final Class<?> loadedClass) throws Exception {
+    public static <T> T autoSet(final String key, final T instance) throws Exception {
+        return autoSet(key, instance, instance.getClass());
+    }
+
+    public static <T> T autoSet(final String key, final T instance, final Class<?> loadedClass) throws Exception {
         Class<?> current = loadedClass;
         while (current != null && !current.isInterface() && !Object.class.equals(current)) {
             final Collection<String> done = new LinkedList<String>();
@@ -152,7 +156,15 @@ public final class IoCs {
                 }
 
                 final String name = Introspector.decapitalize(method.getName().substring(3));
-                final String value = Configuration.getProperty(loadedClass.getName() + "." + name, null);
+
+                final String configKey;
+                if (key == null) {
+                    configKey = loadedClass.getName() + "." + name;
+                } else {
+                    configKey = key + "." + name;
+                }
+
+                final String value = Configuration.getProperty(configKey, null);
                 if (value != null) {
                     done.add(name);
 

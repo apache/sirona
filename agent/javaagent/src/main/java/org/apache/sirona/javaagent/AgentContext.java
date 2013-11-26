@@ -20,6 +20,7 @@ import org.apache.sirona.Role;
 import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.javaagent.spi.InvocationListener;
+import org.apache.sirona.javaagent.spi.InvocationListenerFactory;
 import org.apache.sirona.javaagent.spi.Order;
 import org.apache.sirona.spi.SPI;
 
@@ -51,16 +52,29 @@ public class AgentContext {
 
     private static InvocationListener[] loadAllListeners() {
         final Collection<InvocationListener> listeners = new LinkedList<InvocationListener>();
-        for (final InvocationListener listener : SPI.INSTANCE.find(InvocationListener.class, AgentContext.class.getClassLoader())) {
-            InvocationListener autoset;
-            try {
-                autoset = IoCs.autoSet(listener);
-            } catch (final Exception e) {
-                autoset = listener;
+        final ClassLoader agentLoader = AgentContext.class.getClassLoader();
+        for (final InvocationListener listener : SPI.INSTANCE.find(InvocationListener.class, agentLoader)) {
+            addListener(listeners, null, listener);
+        }
+        for (final InvocationListenerFactory factory : SPI.INSTANCE.find(InvocationListenerFactory.class, agentLoader)) {
+            final Map<String, InvocationListener> listenerMap = factory.listeners();
+            if (listenerMap != null) {
+                for (final Map.Entry<String, InvocationListener> listener : listenerMap.entrySet()) {
+                    addListener(listeners, listener.getKey(), listener.getValue());
+                }
             }
-            listeners.add(autoset);
         }
         return listeners.toArray(new InvocationListener[listeners.size()]);
+    }
+
+    private static void addListener(final Collection<InvocationListener> listeners, final String key, final InvocationListener listener) {
+        InvocationListener autoset;
+        try {
+            autoset = IoCs.autoSet(key, listener);
+        } catch (final Exception e) {
+            autoset = listener;
+        }
+        listeners.add(autoset);
     }
 
     private static InvocationListener[] listeners(final Counter.Key key, final Object that) {
