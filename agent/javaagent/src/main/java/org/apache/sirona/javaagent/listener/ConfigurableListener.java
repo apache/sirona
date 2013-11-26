@@ -23,7 +23,7 @@ import org.apache.sirona.javaagent.spi.InvocationListener;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public abstract class ConfigurableListener implements InvocationListener {
+public abstract class ConfigurableListener<I, R> implements InvocationListener {
     private static final AtomicInteger ID_GENERATOR = new AtomicInteger(1); // 0 is reserved for CounterListener
 
     private int id = ID_GENERATOR.incrementAndGet();
@@ -31,32 +31,32 @@ public abstract class ConfigurableListener implements InvocationListener {
     private PredicateEvaluator includes = new PredicateEvaluator("true:true", ",");
     private PredicateEvaluator excludes = new PredicateEvaluator(null, null);
 
-    protected void before(final Counter.Key key, final Object reference) {
+    protected void before(final Counter.Key key, final I reference) {
         // no-op
     }
 
-    protected void onSuccess(final Counter.Key key, final Object reference, final Object result) {
+    protected void onSuccess(final Counter.Key key, final I reference, final R result) {
         // no-op
     }
 
-    protected void onError(final Counter.Key key, final Object reference, final Throwable error) {
+    protected void onError(final Counter.Key key, final I reference, final Throwable error) {
         // no-op
     }
 
     @Override
     public void before(final AgentContext context) {
         context.put(id, this);
-        before(context.getKey(), context.getReference());
+        before(context.getKey(), (I) context.getReference());
     }
 
     @Override
     public void after(final AgentContext context, final Object result, final Throwable error) {
-        final ConfigurableListener listener = context.get(id, ConfigurableListener.class);
+        final ConfigurableListener<I, R> listener = context.get(id, ConfigurableListener.class);
         if (listener != null) {
             if (error != null) {
-                listener.onSuccess(context.getKey(), context.getReference(), result);
+                listener.onSuccess(context.getKey(), (I) context.getReference(), (R) result);
             } else {
-                listener.onError(context.getKey(), context.getReference(), error);
+                listener.onError(context.getKey(), (I) context.getReference(), error);
             }
         }
     }
