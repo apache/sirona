@@ -17,6 +17,7 @@
 package org.apache.sirona.javaagent;
 
 import org.apache.sirona.Role;
+import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.javaagent.spi.InvocationListener;
 import org.apache.sirona.javaagent.spi.Order;
@@ -51,7 +52,13 @@ public class AgentContext {
     private static InvocationListener[] loadAllListeners() {
         final Collection<InvocationListener> listeners = new LinkedList<InvocationListener>();
         for (final InvocationListener listener : SPI.INSTANCE.find(InvocationListener.class, AgentContext.class.getClassLoader())) {
-            listeners.add(listener);
+            InvocationListener autoset;
+            try {
+                autoset = IoCs.autoSet(listener);
+            } catch (final Exception e) {
+                autoset = listener;
+            }
+            listeners.add(autoset);
         }
         return listeners.toArray(new InvocationListener[listeners.size()]);
     }
@@ -129,7 +136,7 @@ public class AgentContext {
         }
     }
 
-    public static void touch() {
+    static void touch() {
         // no-op
     }
 

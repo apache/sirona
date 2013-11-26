@@ -20,13 +20,14 @@ import org.apache.sirona.SironaException;
 import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.util.ClassLoaders;
 
+import java.beans.Introspector;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -34,6 +35,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class IoCs {
     private static final Map<Class<?>, Object> SINGLETONS = new ConcurrentHashMap<Class<?>, Object>();
     private static final Collection<ToDestroy> INSTANCES = new ArrayList<ToDestroy>();
+    public static final String SETTER_PREFIX = "set";
     private static Thread shutdownHook = null;
 
     public static <T> T[] newInstances(final Class<T> api) {
@@ -81,7 +83,7 @@ public final class IoCs {
         }
     }
 
-    private static <T> T newInstance(final Class<T> clazz, final String config) throws InstantiationException, IllegalAccessException, InvocationTargetException {
+    private static <T> T newInstance(final Class<T> clazz, final String config) throws Exception {
         Class<?> loadedClass;
         try {
             loadedClass = ClassLoaders.current().loadClass(config);
@@ -99,7 +101,7 @@ public final class IoCs {
         }
     }
 
-    private static <T> T internalProcessInstance(final T instance) throws IllegalAccessException, InvocationTargetException {
+    private static <T> T internalProcessInstance(final T instance) throws Exception {
         final Class<?> loadedClass = instance.getClass();
 
         // autoset before invoking @Created
@@ -133,16 +135,49 @@ public final class IoCs {
         return instance;
     }
 
-    public static <T> void autoSet(final T instance, final Class<?> loadedClass) throws IllegalAccessException {
+    public static <T> T autoSet(final T instance) throws Exception {
+        return autoSet(instance, instance.getClass());
+    }
+
+    public static <T> T autoSet(final T instance, final Class<?> loadedClass) throws Exception {
         Class<?> current = loadedClass;
         while (current != null && !current.isInterface() && !Object.class.equals(current)) {
+            final Collection<String> done = new LinkedList<String>();
+            for (final Method method : loadedClass.getDeclaredMethods()) {
+                if (!(Void.TYPE.equals(method.getReturnType())
+                    && method.getName().startsWith(SETTER_PREFIX)
+                    && method.getParameterTypes().length == 1
+                    && !Modifier.isStatic(method.getModifiers()))) {
+                    continue;
+                }
+
+                final String name = Introspector.decapitalize(method.getName().substring(3));
+                final String value = Configuration.getProperty(loadedClass.getName() + "." + name, null);
+                if (value != null) {
+                    done.add(name);
+
+                    final boolean acc = method.isAccessible();
+                    if (!acc) {
+                        method.setAccessible(true);
+                    }
+                    try {
+                        method.invoke(instance, convertTo(method.getParameterTypes()[0], value));
+                    } finally {
+                        if (!acc) {
+                            method.setAccessible(false);
+                        }
+                    }
+                }
+            }
             for (final Field field : loadedClass.getDeclaredFields()) {
-                if (Modifier.isFinal(field.getModifiers())) {
+                if (Modifier.isFinal(field.getModifiers()) || done.contains(field.getName())) {
                     continue;
                 }
 
                 final String value = Configuration.getProperty(loadedClass.getName() + "." + field.getName(), null);
                 if (value != null) {
+                    done.add(field.getName());
+
                     final boolean acc = field.isAccessible();
                     if (!acc) {
                         field.setAccessible(true);
@@ -158,6 +193,7 @@ public final class IoCs {
             }
             current = current.getSuperclass();
         }
+        return instance;
     }
 
     public static void setSingletonInstance(final Class<?> clazz, final Object instance) {

@@ -17,18 +17,35 @@
 package org.apache.sirona.javaagent.listener;
 
 import org.apache.sirona.aop.AbstractPerformanceInterceptor;
+import org.apache.sirona.configuration.ioc.AutoSet;
+import org.apache.sirona.configuration.predicate.PredicateEvaluator;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.javaagent.AgentContext;
 import org.apache.sirona.javaagent.spi.InvocationListener;
 import org.apache.sirona.javaagent.spi.Order;
 
 @Order(0)
+@AutoSet
 public class CounterListener extends AbstractPerformanceInterceptor<Counter.Key> implements InvocationListener {
     private static final int KEY = 0;
 
-    @Override // TODO: add config here?
+    private PredicateEvaluator includes = new PredicateEvaluator("true:true", ",");
+    private PredicateEvaluator excludes = new PredicateEvaluator(null, null);
+
+    @Override
     public boolean accept(final Counter.Key key, final Object instance) {
-        return true;
+        final String name = key.getName();
+        return includes.matches(name) && !excludes.matches(name);
+    }
+
+    // @AutoSet
+    public void setIncludes(final String includes) {
+        this.includes = new PredicateEvaluator(includes, ",");
+    }
+
+    // @AutoSet
+    public void setExcludes(final String excludes) {
+        this.excludes = new PredicateEvaluator(excludes, ",");
     }
 
     @Override

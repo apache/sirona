@@ -19,6 +19,7 @@ package org.apache.sirona.configuration.predicate;
 import org.apache.sirona.spi.SPI;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -27,6 +28,7 @@ public final class PredicateEvaluator {
     private static final char SEPARATOR = ':';
 
     private final Map<String, Predicate> predicates = new HashMap<String, Predicate>();
+    private final boolean truePredicate;
 
     public PredicateEvaluator(final String configuration, final String sep) {
         if (configuration != null && !configuration.isEmpty()) {
@@ -38,6 +40,7 @@ public final class PredicateEvaluator {
             predicates.put(prefixPredicate.prefix(), prefixPredicate);
             predicates.put(suffixPredicate.prefix(), suffixPredicate);
             predicates.put(regexPredicate.prefix(), regexPredicate);
+            predicates.put(TruePredicate.INSTANCE.prefix(), TruePredicate.INSTANCE);
 
             // SPI
             for (final Predicate predicate : SPI.INSTANCE.find(Predicate.class, PredicateEvaluator.class.getClassLoader())) {
@@ -61,6 +64,11 @@ public final class PredicateEvaluator {
                     throw new IllegalArgumentException("Can't find prefix '" + prefix + "'");
                 }
 
+                if (predicate == TruePredicate.INSTANCE) {
+                    truePredicate = true;
+                    predicates.clear(); // no need to keep it in mem since we'll always return true
+                    return;
+                }
 
                 final String value = trim.substring(separator + 1);
                 if (!value.startsWith(NOT)) {
@@ -69,16 +77,47 @@ public final class PredicateEvaluator {
                     predicate.addConfiguration(value.substring(1), false);
                 }
             }
+            truePredicate = false;
+        } else {
+            truePredicate = false;
         }
+        predicates.remove(TruePredicate.INSTANCE.prefix()); // no need to keep it in mem
     }
 
     public boolean matches(final String value) {
+        if (truePredicate) {
+            return true;
+        }
+
         for (final Predicate predicate : predicates.values()) {
             if (predicate.matches(value)) {
                 return true;
             }
         }
         return false;
+    }
+
+    private static class TruePredicate implements Predicate {
+        private static final TruePredicate INSTANCE = new TruePredicate();
+
+        private TruePredicate() {
+            // no-op
+        }
+
+        @Override
+        public String prefix() {
+            return "true";
+        }
+
+        @Override
+        public boolean matches(final String value) {
+            return true;
+        }
+
+        @Override
+        public void addConfiguration(final String value, final boolean negative) {
+            // no-op
+        }
     }
 
     private static class SuffixPredicate implements Predicate {

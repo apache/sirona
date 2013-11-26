@@ -50,7 +50,7 @@ public class SironaAgent {
         private final PredicateEvaluator excludeEvaluator;
 
         private SironaTransformer(final String agentArgs) {
-            includeEvaluator = createEvaluator(agentArgs, "includes=", new PredicateEvaluator("regex:.*", ","));
+            includeEvaluator = createEvaluator(agentArgs, "includes=", new PredicateEvaluator("true:true", ","));
             excludeEvaluator = createEvaluator(agentArgs, "excludes=", new PredicateEvaluator(null, null)); // no matching
         }
 
