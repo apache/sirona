@@ -38,16 +38,22 @@ import java.util.concurrent.ConcurrentMap;
 public class AgentContext {
     private static final InvocationListener[] EXISTING_LISTENERS = loadAllListeners();
 
-    private static final ConcurrentMap<Counter.Key, InvocationListener[]> LISTENERS_BY_KEY = new ConcurrentHashMap<Counter.Key, InvocationListener[]>();
+    private static final ConcurrentMap<String, InvocationListener[]> LISTENERS_BY_KEY = new ConcurrentHashMap<String, InvocationListener[]>();
+    private static final ConcurrentMap<String, Counter.Key> KEYS_CACHE = new ConcurrentHashMap<String, Counter.Key>();
 
     // called by agent
-    public static AgentContext startOn(final Counter.Key key, final Object that) {
-        return new AgentContext(key, that, listeners(key, that));
+    public static AgentContext startOn(final String key, final Object that) {
+        return new AgentContext(key, that, listeners(key));
     }
 
     // helper to init keys in javaagent
     public static Counter.Key key(final String name) {
-        return new Counter.Key(Role.PERFORMANCES, name);
+        Counter.Key key = KEYS_CACHE.get(name);
+        if (key == null) {
+            key = new Counter.Key(Role.PERFORMANCES, name);
+            KEYS_CACHE.putIfAbsent(name, key);
+        }
+        return key;
     }
 
     private static InvocationListener[] loadAllListeners() {
@@ -77,10 +83,10 @@ public class AgentContext {
         listeners.add(autoset);
     }
 
-    private static InvocationListener[] listeners(final Counter.Key key, final Object that) {
+    private static InvocationListener[] listeners(final String key) {
         InvocationListener[] listeners = LISTENERS_BY_KEY.get(key);
         if (listeners == null) {
-            listeners = findListeners(key, that);
+            listeners = findListeners(key);
             final InvocationListener[] old = LISTENERS_BY_KEY.putIfAbsent(key, listeners);
             if (old != null) {
                 listeners = old;
@@ -89,10 +95,10 @@ public class AgentContext {
         return listeners;
     }
 
-    private static InvocationListener[] findListeners(final Counter.Key key, final Object that) {
+    private static InvocationListener[] findListeners(final String key) {
         final List<InvocationListener> listeners = new LinkedList<InvocationListener>();
         for (final InvocationListener listener : EXISTING_LISTENERS) {
-            if (listener.accept(key, that)) {
+            if (listener.accept(key)) {
                 listeners.add(listener);
             }
         }
@@ -100,13 +106,13 @@ public class AgentContext {
         return listeners.toArray(new InvocationListener[listeners.size()]);
     }
 
-    private final Counter.Key key;
+    private final String key;
     private final Object reference;
     private final InvocationListener[] listeners;
     private final boolean hasListeners;
     private final Map<Integer, Object> context = new HashMap<Integer, Object>();
 
-    public AgentContext(final Counter.Key key, final Object that, final InvocationListener[] listeners) {
+    public AgentContext(final String key, final Object that, final InvocationListener[] listeners) {
         this.key = key;
         this.reference = that;
         this.listeners = listeners;
@@ -122,7 +128,7 @@ public class AgentContext {
         return reference;
     }
 
-    public Counter.Key getKey() {
+    public String getKey() {
         return key;
     }
 

@@ -16,7 +16,6 @@
  */
 package org.apache.test.sirona.javaagent;
 
-import org.apache.sirona.counters.Counter;
 import org.apache.sirona.javaagent.AgentContext;
 import org.apache.sirona.javaagent.JavaAgentRunner;
 import org.apache.sirona.javaagent.spi.InvocationListener;
@@ -77,8 +76,8 @@ public class HttpUrlConnectionAddHeaderTest {
         }
 
         @Override
-        public boolean accept(final Counter.Key key, final Object instance) { // static => instance == null
-            return key.getName().equals("org.apache.test.sirona.javaagent.HttpUrlConnectionAddHeaderTest$ConnectionFactory.createConnection");
+        public boolean accept(final String key) { // static => instance == null
+            return key.equals("org.apache.test.sirona.javaagent.HttpUrlConnectionAddHeaderTest$ConnectionFactory.createConnection");
         }
     }
 }

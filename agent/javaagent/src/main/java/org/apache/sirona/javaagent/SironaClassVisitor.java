@@ -16,7 +16,6 @@
  */
 package org.apache.sirona.javaagent;
 
-import org.apache.sirona.counters.Counter;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
@@ -42,7 +41,7 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
     private static final String FIELD_SUFFIX = "_$_$IRONA_$_INTERNAL_$_KEY";
     private static final String STATIC_CLINT_MERGE_PREFIX = "_$_$irona_static_merge";
 
-    private static final Type KEY_TYPE = Type.getType(Counter.Key.class);
+    private static final Type KEY_TYPE = Type.getType(String.class);
     private static final Type AGENT_CONTEXT = Type.getType(AgentContext.class);
 
     private final String javaName;
@@ -115,9 +114,6 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
     }
 
     private static class AddConstantsFieldVisitor extends GeneratorAdapter {
-        private static final Type STRING_TYPE = Type.getType(String.class);
-        private static final String KEY_METHOD = "key";
-
         private final Map<String, String> keys;
         private final Type clazz;
 
@@ -133,7 +129,6 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
 
             for (final Map.Entry<String, String> key : keys.entrySet()) {
                 push(key.getValue());
-                invokeStatic(AGENT_CONTEXT, new Method(KEY_METHOD, "(" + STRING_TYPE + ")" + KEY_TYPE));
                 putStatic(clazz, key.getKey(), KEY_TYPE);
             }
         }

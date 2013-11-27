@@ -17,7 +17,6 @@
 package org.apache.sirona.javaagent.listener;
 
 import org.apache.sirona.configuration.predicate.PredicateEvaluator;
-import org.apache.sirona.counters.Counter;
 import org.apache.sirona.javaagent.AgentContext;
 import org.apache.sirona.javaagent.spi.InvocationListener;
 
@@ -31,15 +30,15 @@ public abstract class ConfigurableListener<I, R> implements InvocationListener {
     private PredicateEvaluator includes = new PredicateEvaluator("true:true", ",");
     private PredicateEvaluator excludes = new PredicateEvaluator(null, null);
 
-    protected void before(final Counter.Key key, final I reference) {
+    protected void before(final String key, final I reference) {
         // no-op
     }
 
-    protected void onSuccess(final Counter.Key key, final I reference, final R result) {
+    protected void onSuccess(final String key, final I reference, final R result) {
         // no-op
     }
 
-    protected void onError(final Counter.Key key, final I reference, final Throwable error) {
+    protected void onError(final String key, final I reference, final Throwable error) {
         // no-op
     }
 
@@ -62,8 +61,7 @@ public abstract class ConfigurableListener<I, R> implements InvocationListener {
     }
 
     @Override
-    public boolean accept(final Counter.Key key, final Object instance) {
-        final String name = key.getName();
+    public boolean accept(final String name) {
         return includes.matches(name) && !excludes.matches(name);
     }
 

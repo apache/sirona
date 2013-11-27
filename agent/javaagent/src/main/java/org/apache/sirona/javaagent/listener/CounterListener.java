@@ -26,16 +26,15 @@ import org.apache.sirona.javaagent.spi.Order;
 
 @Order(0)
 @AutoSet
-public class CounterListener extends AbstractPerformanceInterceptor<Counter.Key> implements InvocationListener {
+public class CounterListener extends AbstractPerformanceInterceptor<String> implements InvocationListener {
     private static final int KEY = 0;
 
     private PredicateEvaluator includes = new PredicateEvaluator("true:true", ",");
     private PredicateEvaluator excludes = new PredicateEvaluator(null, null);
 
     @Override
-    public boolean accept(final Counter.Key key, final Object instance) {
-        final String name = key.getName();
-        return includes.matches(name) && !excludes.matches(name);
+    public boolean accept(final String key) {
+        return includes.matches(key) && !excludes.matches(key);
     }
 
     // @AutoSet
@@ -50,8 +49,8 @@ public class CounterListener extends AbstractPerformanceInterceptor<Counter.Key>
 
     @Override
     public void before(final AgentContext ctx) {
-        final Counter.Key key = ctx.getKey();
-        ctx.put(KEY, new CounterListener().before(key, key.getName()));
+        final String key = ctx.getKey();
+        ctx.put(KEY, new CounterListener().before(key, key));
     }
 
     @Override
@@ -65,18 +64,18 @@ public class CounterListener extends AbstractPerformanceInterceptor<Counter.Key>
     }
 
     @Override
-    protected Counter.Key getKey(final Counter.Key key, final String name) {
-        return key;
+    protected Counter.Key getKey(final String key, final String name) {
+        return AgentContext.key(key);
     }
 
     @Override
-    protected String getCounterName(final Counter.Key invocation) {
-        return invocation.getName();
-    }
-
-    @Override
-    protected Object extractContextKey(final Counter.Key invocation) {
+    protected String getCounterName(final String invocation) {
         return invocation;
+    }
+
+    @Override
+    protected Object extractContextKey(final String invocation) {
+        return AgentContext.key(invocation);
     }
 
     @Override
@@ -89,7 +88,7 @@ public class CounterListener extends AbstractPerformanceInterceptor<Counter.Key>
     }
 
     @Override
-    protected Object proceed(final Counter.Key invocation) throws Throwable {
+    protected Object proceed(final String invocation) throws Throwable {
         return unsupportedOperation();
     }
 

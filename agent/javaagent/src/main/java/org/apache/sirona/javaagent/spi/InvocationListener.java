@@ -16,11 +16,10 @@
  */
 package org.apache.sirona.javaagent.spi;
 
-import org.apache.sirona.counters.Counter;
 import org.apache.sirona.javaagent.AgentContext;
 
 public interface InvocationListener {
     void before(AgentContext context);
     void after(AgentContext context, Object result, Throwable error);
-    boolean accept(Counter.Key key, Object instance);
+    boolean accept(String key);
 }

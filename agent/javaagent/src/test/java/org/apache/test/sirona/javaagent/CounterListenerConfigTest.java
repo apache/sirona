@@ -16,8 +16,6 @@
  */
 package org.apache.test.sirona.javaagent;
 
-import org.apache.sirona.Role;
-import org.apache.sirona.counters.Counter;
 import org.apache.sirona.javaagent.listener.CounterListener;
 import org.apache.sirona.repositories.Repository;
 import org.junit.AfterClass;
@@ -28,7 +26,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class CounterListenerConfigTest {
-    private static final Counter.Key KEY = new Counter.Key(Role.PERFORMANCES, "org.apache.test.sirona.javaagent.CounterListenerConfigTest$Foo.fake");
+    private static final String KEY = "org.apache.test.sirona.javaagent.CounterListenerConfigTest$Foo.fake";
 
     private CounterListener listener;
 
@@ -46,25 +44,25 @@ public class CounterListenerConfigTest {
     @Test
     public void include() {
         listener.setExcludes(null);
-        listener.setIncludes("prefix:" + KEY.getName());
-        assertTrue(listener.accept(KEY, null));
+        listener.setIncludes("prefix:" + KEY);
+        assertTrue(listener.accept(KEY));
     }
 
     @Test
     public void exclude() {
-        listener.setExcludes("prefix:" + KEY.getName());
+        listener.setExcludes("prefix:" + KEY);
         listener.setIncludes(null);
-        assertFalse(listener.accept(KEY, null));
+        assertFalse(listener.accept(KEY));
     }
 
     @Test
     public void includeExclude() {
-        listener.setExcludes("prefix:" + KEY.getName());
-        listener.setIncludes("prefix:" + KEY.getName());
-        assertFalse(listener.accept(KEY, null));
+        listener.setExcludes("prefix:" + KEY);
+        listener.setIncludes("prefix:" + KEY);
+        assertFalse(listener.accept(KEY));
 
-        listener.setExcludes("prefix:" + KEY.getName() + "_");
-        listener.setIncludes("prefix:" + KEY.getName());
-        assertTrue(listener.accept(KEY, null));
+        listener.setExcludes("prefix:" + KEY + "_");
+        listener.setIncludes("prefix:" + KEY);
+        assertTrue(listener.accept(KEY));
     }
 }
