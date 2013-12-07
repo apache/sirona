@@ -29,8 +29,7 @@ import org.junit.runners.model.Statement;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -39,9 +38,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
-import java.util.logging.Logger;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 // only works with standard runner and surefire
 public class JavaAgentRunner extends BlockJUnit4ClassRunner {
@@ -123,17 +119,31 @@ public class JavaAgentRunner extends BlockJUnit4ClassRunner {
     private static String[] buildProcessArgs(final FrameworkMethod mtd) throws IOException {
         final Collection<String> args = new ArrayList<String>();
         args.add(findJava());
-        args.add("-javaagent:" + buildJavaagent() + "=excludes=regex:org.apache.test.*Test,prefix:org.junit,prefix:junit" /*+ "=includes=regex:org.apache.test.sirona.*Transform"*/);
+        args.add("-javaagent:" + buildJavaagent() + "=excludes=regex:org.apache.test.*Test,prefix:org.junit,prefix:junit" /*+ "|=includes=regex:org.apache.test.sirona.*Transform"*/);
         if (Boolean.getBoolean("test.debug.remote")) {
             args.add("-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005");
         }
         args.add("-cp");
-        args.add(System.getProperty("surefire.test.class.path", System.getProperty("java.class.path")));
+        args.add(removeAgentFromCp(System.getProperty("surefire.test.class.path", System.getProperty("java.class.path"))));
         args.add(JavaAgentRunner.class.getName());
         args.add(mtd.getMethod().getDeclaringClass().getName());
         args.add(mtd.getName());
 
         return args.toArray(new String[args.size()]);
+    }
+
+    private static String removeAgentFromCp(final String property) {
+        final String path = "target" + File.separator + "classes";
+        final String sep = System.getProperty("path.separator");
+        final String[] segments = property.split(sep);
+        final StringBuilder builder = new StringBuilder(property.length());
+        for (final String segment : segments) {
+            if (!segment.endsWith(path)) {
+                builder.append(segment).append(sep);
+            }
+        }
+        builder.setLength(builder.length() - 1);
+        return builder.toString();
     }
 
     private static CountDownLatch slurp(final InputStream in) {
@@ -156,63 +166,12 @@ public class JavaAgentRunner extends BlockJUnit4ClassRunner {
     }
 
     private static String buildJavaagent() throws IOException {
-        final File file = new File("target/sirona-javaagent-test.jar");
-        if (file.exists() && !file.delete()) {
-            Logger.getLogger(JavaAgentRunner.class.getName()).warning("Reusing existing javaagent test jar");
-        }
-        if (!file.exists()) {
-            zip(new File("target/classes"), file);
-        }
-        return file.getAbsolutePath();
-    }
-
-    public static void zip(final File dir, final File zipName) throws IOException, IllegalArgumentException {
-        final String[] entries = dir.list();
-        final ZipOutputStream out = new ZipOutputStream(new FileOutputStream(zipName));
-
-        String prefix = dir.getAbsolutePath();
-        if (!prefix.endsWith(File.separator)) {
-            prefix += File.separator;
-        }
-
-        for (final String entry : entries) {
-            File f = new File(dir, entry);
-            zip(out, f, prefix);
-        }
-        final String manifest = "Premain-Class: " + SironaAgent.class.getName() + "\n"
-            + "Agent-Class: " + SironaAgent.class.getName() + " \n"
-            + "Can-Redefine-Classes: true\n"
-            + "Can-Retransform-Classes: true\n";
-        final ZipEntry entry = new ZipEntry("META-INF/MANIFEST.MF");
-        out.putNextEntry(entry);
-        out.write(manifest.getBytes(), 0, manifest.length());
-        out.close();
-    }
-
-    private static void zip(final ZipOutputStream out, final File f, final String prefix) throws IOException {
-        if (f.isDirectory()) {
-            final File[] files = f.listFiles();
-            if (files != null) {
-                for (File child : files) {
-                    zip(out, child, prefix);
+        return new File("target").listFiles(new FilenameFilter() {
+                @Override
+                public boolean accept(File dir, String name) {
+                    return name.startsWith("sirona-javaagent-") && name.endsWith(".jar") && !name.contains("sources");
                 }
-            }
-        } else {
-            final byte[] buffer = new byte[1024];
-            int bytesRead;
-
-            final String path = f.getPath().replace(prefix, "");
-
-            final FileInputStream in = new FileInputStream(f);
-            final ZipEntry entry = new ZipEntry(path);
-            out.putNextEntry(entry);
-            while ((bytesRead = in.read(buffer)) != -1) {
-                out.write(buffer, 0, bytesRead);
-            }
-
-
-            in.close();
-        }
+            })[0].getAbsolutePath();
     }
 
     private static String findJava() {

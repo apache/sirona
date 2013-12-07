@@ -31,6 +31,12 @@
     <dependency>
       <groupId>org.apache.sirona</groupId>
       <artifactId>sirona-aop</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.commons</groupId>
+          <artifactId>commons-proxy</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.ow2.asm</groupId>
@@ -54,6 +60,13 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>pre-build-jar</id>
+            <phase>test-compile</phase>
+            <goals><goal>jar</goal></goals>
+          </execution>
+        </executions>
         <configuration>
           <archive>
             <manifestEntries>
@@ -72,7 +85,7 @@
         <version>2.1</version>
         <executions>
           <execution>
-            <phase>package</phase>
+            <phase>test-compile</phase>
             <goals>
               <goal>shade</goal>
             </goals>

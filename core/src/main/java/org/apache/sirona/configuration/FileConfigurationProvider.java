@@ -54,7 +54,11 @@ public class FileConfigurationProvider implements ConfigurationProvider {
             }
         } else {
             // use core classloader and not TCCL to avoid to use app loader to load config
-            final InputStream stream = FileConfigurationProvider.class.getClassLoader().getResourceAsStream(filename);
+            ClassLoader classLoader = FileConfigurationProvider.class.getClassLoader();
+            if (classLoader == null) {
+                classLoader = ClassLoader.getSystemClassLoader();
+            }
+            final InputStream stream = classLoader.getResourceAsStream(filename);
             if (stream != null) {
                 try {
                     properties.load(stream);

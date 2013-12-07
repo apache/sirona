@@ -58,7 +58,12 @@ public class AgentContext {
 
     private static InvocationListener[] loadAllListeners() {
         final Collection<InvocationListener> listeners = new LinkedList<InvocationListener>();
-        final ClassLoader agentLoader = AgentContext.class.getClassLoader();
+
+        ClassLoader agentLoader = AgentContext.class.getClassLoader();
+        if (agentLoader == null) {
+            agentLoader = ClassLoader.getSystemClassLoader();
+        }
+
         for (final InvocationListener listener : SPI.INSTANCE.find(InvocationListener.class, agentLoader)) {
             addListener(listeners, null, listener);
         }
@@ -156,7 +161,7 @@ public class AgentContext {
         }
     }
 
-    static void touch() {
+    public static void touch() {
         // no-op
     }
 
