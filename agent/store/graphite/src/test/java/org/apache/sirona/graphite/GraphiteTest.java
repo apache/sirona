@@ -42,24 +42,24 @@ public class GraphiteTest extends GraphiteTestBase {
         }
 
         { // counters
-            final Collection<String> counters = extract("counter");
+            final Collection<String> counters = extract(extract(messages(), "counter"), "counter"); // don't keep values
 
-            assertEquals(30, counters.size());
-            assertTrue(counters.contains("counter-performances-test-Hits 2.00"));
-            assertTrue(counters.contains("counter-performances-test-Max 1.60"));
-            assertTrue(counters.contains("counter-performances-test-Mean 1.50"));
-            assertTrue(counters.contains("counter-performances-test-Min 1.40"));
-            assertTrue(counters.contains("counter-performances-test-StandardDeviation 0.14"));
-            assertTrue(counters.contains("counter-performances-test-Sum 3.00"));
-            assertTrue(counters.contains("counter-performances-test-Value 3.00"));
+            assertTrue(counters.size() >= 30);
+            assertTrue(counters.contains("counter-performances-test-Hits"));
+            assertTrue(counters.contains("counter-performances-test-Max"));
+            assertTrue(counters.contains("counter-performances-test-Mean"));
+            assertTrue(counters.contains("counter-performances-test-Min"));
+            assertTrue(counters.contains("counter-performances-test-StandardDeviation"));
+            assertTrue(counters.contains("counter-performances-test-Sum"));
+            assertTrue(counters.contains("counter-performances-test-Value"));
         }
 
         { // gauges
             Thread.sleep(400);
 
-            final Collection<String> gauges = extract("gauge");
+            final Collection<String> gauges = extract(messages(), "gauge");
 
-            assertEquals(3, gauges.size());
+            assertTrue(gauges.size() >= 3);
 
             final String message = gauges.toString();
             // graphite store uses an aggregated gauge store
@@ -69,13 +69,11 @@ public class GraphiteTest extends GraphiteTestBase {
         }
     }
 
-    private Collection<String> extract(final String prefix) {
-        final Collection<String> messages = messages();
+    private static Collection<String> extract(final Collection<String> messages, final String prefix) {
         final Collection<String> list = new ArrayList<String>(messages.size());
         for (final String msg : messages) {
-            final String substring = msg.substring(0, msg.lastIndexOf(" "));
             if (msg.startsWith(prefix)) {
-                list.add(substring);
+                list.add(msg.substring(0, msg.lastIndexOf(" ")));
             }
         }
         return list;
