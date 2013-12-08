@@ -16,12 +16,7 @@
  */
 package org.apache.sirona.javaagent;
 
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.Label;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.Type;
+import org.objectweb.asm.*;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 import org.objectweb.asm.commons.StaticInitMerger;
@@ -155,10 +150,24 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
         private static final String START_METHOD = "startOn";
         private static final String STOP_WITH_EXCEPTION_METHOD = "stopWithException";
         private static final String STOP_METHOD = "stop";
+        private static final String VALUE_OF = "valueOf";
+
+        private static final Map<String, Type> PRIMITIVES = new HashMap<String, Type>();
+        static {
+            PRIMITIVES.put("short", Type.getType(Short.class));
+            PRIMITIVES.put("int", Type.getType(Integer.class));
+            PRIMITIVES.put("long", Type.getType(Long.class));
+            PRIMITIVES.put("char", Type.getType(Character.class));
+            PRIMITIVES.put("float", Type.getType(Float.class));
+            PRIMITIVES.put("double", Type.getType(Double.class));
+            PRIMITIVES.put("boolean", Type.getType(Boolean.class));
+            PRIMITIVES.put("byte", Type.getType(Byte.class));
+        }
 
         private final boolean isStatic;
         private final Type clazz;
         private final boolean isVoid;
+        private final Type primitiveWrapper;
         private final Method method;
 
         public ProxyMethodsVisitor(final MethodVisitor methodVisitor,
@@ -168,6 +177,7 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
             this.method = method;
             this.isStatic = Modifier.isStatic(access);
             this.isVoid = Type.VOID_TYPE.equals(method.getReturnType());
+            this.primitiveWrapper = PRIMITIVES.get(method.getReturnType().getClassName());
         }
 
         @Override
@@ -191,8 +201,12 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
 
             // take metrics before returning
             loadLocal(agentIdx);
+
             if (result != -1) {
                 loadLocal(result);
+                if (primitiveWrapper != null) { // we call agentContext.stop(Object) so we need to wrap primitives
+                    invokeStatic(primitiveWrapper, new Method(VALUE_OF, primitiveWrapper, new Type[]{ method.getReturnType() }));
+                }
             } else {
                 visitInsn(ACONST_NULL); // result == null for static methods
             }

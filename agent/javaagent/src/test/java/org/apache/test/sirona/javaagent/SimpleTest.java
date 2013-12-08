@@ -92,6 +92,13 @@ public class SimpleTest {
         assertException(0, NullPointerException.class);
     }
 
+    @Test
+    public void primitive() {
+        assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.soPrimitive", 0);
+        new ServiceTransform().soPrimitive();
+        assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.soPrimitive", 1);
+    }
+
     private static void assertException(final int count, final Class<?> exception) {
         int iae = 0;
         for (final Counter c : Repository.INSTANCE.counters()) {
@@ -115,6 +122,10 @@ public class SimpleTest {
 
         public void noReturn() {
             // no-op
+        }
+
+        public static int soPrimitive() {
+            return 1;
         }
 
         public static String staticMethod() {
