@@ -61,6 +61,12 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
     }
 
     @Override
+    public void visitSource(final String source, final String debug) {
+        super.visitSource(source, debug);
+        visitAnnotation("L" + Instrumented.class.getName().replace('.', '/') + ";", true).visitEnd();
+    }
+
+    @Override
     public MethodVisitor visitMethod(int access, final String name, final String desc, final String signature, final String[] exceptions) {
         final MethodVisitor visitor = super.visitMethod(access, name, desc, signature, exceptions);
         if (!isSironable(access, name)) {
@@ -68,25 +74,27 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
         }
 
         final String label = javaName.replace("/", ".") + "." + name;
+        if (AgentContext.listeners(label) != null) {
+            { // generate "proxy" method and store the associated field for counter key (generated at the end)
+                final String fieldName = name + FIELD_SUFFIX;
+                if (!keys.containsKey(fieldName)) {
+                    keys.put(fieldName, label);
+                }
 
-        { // generate "proxy" method and store the associated field for counter key (generated at the end)
-            final String fieldName = name + FIELD_SUFFIX;
-            if (!keys.containsKey(fieldName)) {
-                keys.put(fieldName, label);
+                final ProxyMethodsVisitor sironaVisitor = new ProxyMethodsVisitor(visitor, access, new Method(name, desc), classType);
+                sironaVisitor.visitCode();
+                sironaVisitor.visitEnd();
             }
 
-            final ProxyMethodsVisitor sironaVisitor = new ProxyMethodsVisitor(visitor, access, new Method(name, desc), classType);
-            sironaVisitor.visitCode();
-            sironaVisitor.visitEnd();
+            // generate internal method - the proxy (previous one) delegates to this one
+            return super.visitMethod(forcePrivate(access), name + METHOD_SUFFIX, desc, signature, exceptions);
         }
-
-        // generate internal method - the proxy (previous one) delegates to this one
-        return super.visitMethod(forcePrivate(access), name + METHOD_SUFFIX, desc, signature, exceptions);
+        return visitor;
     }
 
     @Override
     public void visitEnd() {
-        if (!keys.isEmpty()) {
+        if (hasAdviced()) {
             for (final String key : keys.keySet()) {
                 visitField(CONSTANT_ACCESS, key, KEY_TYPE.getDescriptor(), null, null).visitEnd();
             }
@@ -96,11 +104,13 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
             visitor.visitInsn(RETURN);
             visitor.visitMaxs(0, 0);
             visitor.visitEnd();
-
-            keys.clear();
         }
 
         super.visitEnd();
+    }
+
+    public boolean hasAdviced() {
+        return !keys.isEmpty();
     }
 
     private static int forcePrivate(final int access) {

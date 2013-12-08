@@ -24,13 +24,7 @@ import org.apache.sirona.javaagent.spi.InvocationListenerFactory;
 import org.apache.sirona.javaagent.spi.Order;
 import org.apache.sirona.spi.SPI;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -88,10 +82,14 @@ public class AgentContext {
         listeners.add(autoset);
     }
 
-    private static InvocationListener[] listeners(final String key) {
+    public static InvocationListener[] listeners(final String key) {
         InvocationListener[] listeners = LISTENERS_BY_KEY.get(key);
         if (listeners == null) {
             listeners = findListeners(key);
+            if (listeners.length == 0) {
+                return null;
+            }
+
             final InvocationListener[] old = LISTENERS_BY_KEY.putIfAbsent(key, listeners);
             if (old != null) {
                 listeners = old;

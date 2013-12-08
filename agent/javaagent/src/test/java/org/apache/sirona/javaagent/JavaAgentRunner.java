@@ -119,15 +119,17 @@ public class JavaAgentRunner extends BlockJUnit4ClassRunner {
     private static String[] buildProcessArgs(final FrameworkMethod mtd) throws IOException {
         final Collection<String> args = new ArrayList<String>();
         args.add(findJava());
-        args.add("-javaagent:" + buildJavaagent() + "=excludes=regex:org.apache.test.*Test,prefix:org.junit,prefix:junit" /*+ "|=includes=regex:org.apache.test.sirona.*Transform"*/);
+        args.add("-javaagent:" + buildJavaagent());
         if (Boolean.getBoolean("test.debug.remote")) {
-            args.add("-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005");
+            args.add("-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=" + System.getProperty("test.debug.remote.port", "5005"));
         }
         args.add("-cp");
         args.add(removeAgentFromCp(System.getProperty("surefire.test.class.path", System.getProperty("java.class.path"))));
         args.add(JavaAgentRunner.class.getName());
         args.add(mtd.getMethod().getDeclaringClass().getName());
         args.add(mtd.getName());
+
+        //  System.out.println("Running " + args.toString().replace(",", "").substring(1).replace("]", ""));
 
         return args.toArray(new String[args.size()]);
     }

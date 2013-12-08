@@ -16,28 +16,15 @@
  */
 package org.apache.sirona.javaagent;
 
-import org.apache.sirona.configuration.predicate.PredicateEvaluator;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassWriter;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.lang.instrument.ClassFileTransformer;
-import java.lang.instrument.IllegalClassFormatException;
+import java.lang.annotation.Annotation;
 import java.lang.instrument.Instrumentation;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
-import java.security.ProtectionDomain;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.jar.JarFile;
 
 public class SironaAgent {
-    private static final Collection<String> JVM_ENHANCED = Arrays.asList(
-        "sun/net/www/protocol/http/HttpURLConnection"
-    );
-
     public static void premain(final String agentArgs, final Instrumentation instrumentation) {
         agentmain(agentArgs, instrumentation);
     }
@@ -77,23 +64,32 @@ public class SironaAgent {
             }
         }
 
-        try { // eager init
-            loader.loadClass("org.apache.sirona.javaagent.AgentContext")
-                    .getMethod("touch").invoke(null);
-            loader.loadClass("org.apache.sirona.configuration.Configuration")
-                    .getMethod("is", String.class, boolean.class).invoke(null, "", true);
+        try { // eager init of static blocks
+            Class.forName("org.apache.sirona.configuration.Configuration", true, loader);
+            Class.forName("org.apache.sirona.javaagent.AgentContext", true, loader);
         } catch (final Exception e) {
             e.printStackTrace();
         }
 
         try {
-            instrumentation.addTransformer(
-                    ClassFileTransformer.class.cast(loader.loadClass("org.apache.sirona.javaagent.SironaAgent$SironaTransformer")
-                        .getConstructor(String.class).newInstance(agentArgs)),
-                    instrumentation.isRetransformClassesSupported());
+            final SironaTransformer transformer = SironaTransformer.class.cast(loader.loadClass("org.apache.sirona.javaagent.SironaTransformer").newInstance());
+            instrumentation.addTransformer(transformer, instrumentation.isRetransformClassesSupported());
 
-            for (final String jvm : JVM_ENHANCED) {
-                instrumentation.retransformClasses(loader.loadClass(jvm.replace('/', '.')));
+            final Class<? extends Annotation> instrumentedMarker = (Class<? extends Annotation>) loader.loadClass("org.apache.sirona.javaagent.Instrumented");
+            final Class<?> listener = loader.loadClass("org.apache.sirona.javaagent.spi.InvocationListener");
+            if (instrumentation.isRetransformClassesSupported()) {
+                for (final Class<?> jvm : instrumentation.getAllLoadedClasses()) {
+                    if (!jvm.isArray()
+                            && !listener.isAssignableFrom(jvm)
+                            && jvm.getAnnotation(instrumentedMarker) == null
+                            && instrumentation.isModifiableClass(jvm)) {
+                        try {
+                            instrumentation.retransformClasses(jvm);
+                        } catch (final Exception e) {
+                            System.err.println("Can't instrument: " + jvm.getName() + "[" + e.getMessage() + "]");
+                        }
+                    }
+                }
             }
         } catch (final Exception e) {
             e.printStackTrace();
@@ -152,63 +148,5 @@ public class SironaAgent {
             return agentArgs.substring(start, endIdx);
         }
         return null;
-    }
-
-    public static class SironaTransformer implements ClassFileTransformer {
-        private static final String DELEGATING_CLASS_LOADER = "sun.reflect.DelegatingClassLoader";
-
-        private final PredicateEvaluator includeEvaluator;
-        private final PredicateEvaluator excludeEvaluator;
-
-        // used by reflection so don't change visibility without testing
-        public SironaTransformer(final String agentArgs) {
-            includeEvaluator = createEvaluator(agentArgs, "includes=", new PredicateEvaluator("true:true", ","));
-            excludeEvaluator = createEvaluator(agentArgs, "excludes=", new PredicateEvaluator(null, null)); // no matching
-        }
-
-        private PredicateEvaluator createEvaluator(final String agentArgs, final String str, final PredicateEvaluator defaultEvaluator) {
-            final String configuration = extractConfig(agentArgs, str);
-            if (configuration != null) {
-                return new PredicateEvaluator(configuration, ",");
-            }
-            return defaultEvaluator;
-        }
-
-        @Override
-        public byte[] transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined,
-                                final ProtectionDomain protectionDomain, final byte[] classfileBuffer) throws IllegalClassFormatException {
-            if (shouldTransform(className, loader)) {
-                return doTransform(className, classfileBuffer);
-            }
-            return classfileBuffer;
-        }
-
-        private byte[] doTransform(final String className, final byte[] classfileBuffer) {
-            try {
-                final ClassReader reader = new ClassReader(classfileBuffer);
-                final ClassWriter writer = new ClassWriter(reader, ClassWriter.COMPUTE_FRAMES);
-                final SironaClassVisitor advisor = new SironaClassVisitor(writer, className);
-                reader.accept(advisor, ClassReader.SKIP_DEBUG);
-                return writer.toByteArray();
-            } catch (final RuntimeException re) {
-                if (Boolean.getBoolean("sirona.agent.debug")) {
-                    re.printStackTrace();
-                }
-                throw re;
-            }
-        }
-
-        private boolean shouldTransform(final String className, final ClassLoader loader) {
-            return JVM_ENHANCED.contains(className)
-                || !(loader == null // bootstrap classloader
-                    || className == null // framework with bug
-                    || loader.getClass().getName().equals(DELEGATING_CLASS_LOADER)
-                    || className.startsWith("sun/reflect")
-                    || className.startsWith("com/sun/proxy")
-                    || className.startsWith("org/apache/sirona"))
-
-                    && includeEvaluator.matches(className.replace("/", "."))
-                    && !excludeEvaluator.matches(className.replace("/", "."));
-        }
     }
 }
