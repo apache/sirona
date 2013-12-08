@@ -24,6 +24,7 @@ import org.apache.sirona.javaagent.spi.InvocationListenerFactory;
 import org.apache.sirona.javaagent.spi.Order;
 import org.apache.sirona.spi.SPI;
 
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -112,18 +113,15 @@ public class AgentContext {
     private final String key;
     private final Object reference;
     private final InvocationListener[] listeners;
-    private final boolean hasListeners;
     private final Map<Integer, Object> context = new HashMap<Integer, Object>();
+    private Method method = null;
 
     public AgentContext(final String key, final Object that, final InvocationListener[] listeners) {
         this.key = key;
         this.reference = that;
         this.listeners = listeners;
-        this.hasListeners = listeners.length > 0;
-        if (this.hasListeners) {
-            for (final InvocationListener listener : listeners) {
-                listener.before(this);
-            }
+        for (final InvocationListener listener : this.listeners) {
+            listener.before(this);
         }
     }
 
@@ -133,6 +131,36 @@ public class AgentContext {
 
     public String getKey() {
         return key;
+    }
+
+    public Class<?> keyAsClass() {
+        try {
+            return keyAsMethod().getDeclaringClass();
+        } catch (final Throwable th) {
+            return null;
+        }
+    }
+
+    public Method keyAsMethod() {
+        if (method != null) {
+            return method;
+        }
+
+        final int lastDot = key.lastIndexOf('.');
+        try {
+            method = tccl().loadClass(key.substring(0, lastDot)).getDeclaredMethod(key.substring(lastDot + 1));
+        } catch (final Throwable th) {
+            return null;
+        }
+        return method;
+    }
+
+    private static ClassLoader tccl() {
+        ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+        if (contextClassLoader == null) {
+            contextClassLoader = ClassLoader.getSystemClassLoader();
+        }
+        return contextClassLoader;
     }
 
     public <T> T get(final Integer key, final Class<T> clazz) {
@@ -152,15 +180,9 @@ public class AgentContext {
     }
 
     private void stopListeners(final Object result, final Throwable error) {
-        if (hasListeners) {
-            for (final InvocationListener listener : listeners) {
-                listener.after(this, result, error);
-            }
+        for (final InvocationListener listener : listeners) {
+            listener.after(this, result, error);
         }
-    }
-
-    public static void touch() {
-        // no-op
     }
 
     private static class ListenerComparator implements Comparator<InvocationListener> {
