@@ -152,22 +152,30 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
         private static final String STOP_METHOD = "stop";
         private static final String VALUE_OF = "valueOf";
 
-        private static final Map<String, Type> PRIMITIVES = new HashMap<String, Type>();
+        private static final Map<Type, Primitive> PRIMITIVES = new HashMap<Type, Primitive>();
         static {
-            PRIMITIVES.put("short", Type.getType(Short.class));
-            PRIMITIVES.put("int", Type.getType(Integer.class));
-            PRIMITIVES.put("long", Type.getType(Long.class));
-            PRIMITIVES.put("char", Type.getType(Character.class));
-            PRIMITIVES.put("float", Type.getType(Float.class));
-            PRIMITIVES.put("double", Type.getType(Double.class));
-            PRIMITIVES.put("boolean", Type.getType(Boolean.class));
-            PRIMITIVES.put("byte", Type.getType(Byte.class));
+            final Type shortType = Type.getType(short.class);
+            PRIMITIVES.put(shortType, new Primitive(Type.getType(Short.class), shortType));
+            final Type intType = Type.getType(int.class);
+            PRIMITIVES.put(intType, new Primitive(Type.getType(Integer.class), intType));
+            final Type longType = Type.getType(long.class);
+            PRIMITIVES.put(longType, new Primitive(Type.getType(Long.class), longType));
+            final Type charType = Type.getType(char.class);
+            PRIMITIVES.put(charType, new Primitive(Type.getType(Character.class), charType));
+            final Type floatType = Type.getType(float.class);
+            PRIMITIVES.put(floatType, new Primitive(Type.getType(Float.class), floatType));
+            final Type doubleType = Type.getType(double.class);
+            PRIMITIVES.put(doubleType, new Primitive(Type.getType(Double.class), doubleType));
+            final Type boolType = Type.getType(boolean.class);
+            PRIMITIVES.put(boolType, new Primitive(Type.getType(Boolean.class), boolType));
+            final Type byteType = Type.getType(byte.class);
+            PRIMITIVES.put(boolType, new Primitive(Type.getType(Byte.class), byteType));
         }
 
         private final boolean isStatic;
         private final Type clazz;
         private final boolean isVoid;
-        private final Type primitiveWrapper;
+        private final Primitive primitiveWrapper;
         private final Method method;
 
         public ProxyMethodsVisitor(final MethodVisitor methodVisitor,
@@ -176,8 +184,10 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
             this.clazz = clazz;
             this.method = method;
             this.isStatic = Modifier.isStatic(access);
-            this.isVoid = Type.VOID_TYPE.equals(method.getReturnType());
-            this.primitiveWrapper = PRIMITIVES.get(method.getReturnType().getClassName());
+
+            final Type returnType = method.getReturnType();
+            this.isVoid = Type.VOID_TYPE.equals(returnType);
+            this.primitiveWrapper = PRIMITIVES.get(returnType);
         }
 
         @Override
@@ -205,7 +215,7 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
             if (result != -1) {
                 loadLocal(result);
                 if (primitiveWrapper != null) { // we call agentContext.stop(Object) so we need to wrap primitives
-                    invokeStatic(primitiveWrapper, new Method(VALUE_OF, primitiveWrapper, new Type[]{ method.getReturnType() }));
+                    invokeStatic(primitiveWrapper.wrapper, primitiveWrapper.method);
                 }
             } else {
                 visitInsn(ACONST_NULL); // result == null for static methods
@@ -261,6 +271,16 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
                 loadLocal(result);
             }
             returnValue();
+        }
+
+        private static class Primitive {
+            private Type wrapper;
+            private Method method;
+
+            private Primitive(final Type wrapper, final Type params) {
+                this.wrapper = wrapper;
+                this.method = new Method(VALUE_OF, wrapper, new Type[]{ params });
+            }
         }
     }
 }
