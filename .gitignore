@@ -3,3 +3,4 @@ target
 *.iml
 .site-content/
 out/
+agent/javaagent/dependency-reduced-pom.xml
