@@ -139,6 +139,16 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
         }
     }
 
+    public String getJavaName()
+    {
+        return javaName;
+    }
+
+    public Type getClassType()
+    {
+        return classType;
+    }
+
     private static class ProxyMethodsVisitor extends GeneratorAdapter {
         private static final Type THROWABLE_TYPE = Type.getType(Throwable.class);
         private static final Type[] STOP_WITH_THROWABLE_ARGS_TYPES = new Type[]{ THROWABLE_TYPE };
