@@ -121,7 +121,7 @@ public class JavaAgentRunner extends BlockJUnit4ClassRunner {
         args.add(findJava());
         args.add("-javaagent:" + buildJavaagent());
         if (Boolean.getBoolean("test.debug.remote")) {
-            args.add("-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=" + System.getProperty("test.debug.remote.port", "5005"));
+            args.add("-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=" + Integer.getInteger("test.debug.remote.port", 5005));
         }
         args.add("-cp");
         args.add(removeAgentFromCp(System.getProperty("surefire.test.class.path", System.getProperty("java.class.path"))));
