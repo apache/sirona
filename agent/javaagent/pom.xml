@@ -78,7 +78,14 @@
           <execution>
             <id>pre-build-jar</id>
             <phase>test-compile</phase>
-            <goals><goal>jar</goal></goals>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+          <execution>
+            <goals>
+              <goal>test-jar</goal>
+            </goals>
           </execution>
         </executions>
         <configuration>
