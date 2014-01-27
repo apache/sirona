@@ -21,7 +21,11 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.instrument.Instrumentation;
+import java.lang.reflect.Method;
 import java.net.URL;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.jar.JarFile;
 
 public class SironaAgent {
@@ -70,6 +74,20 @@ public class SironaAgent {
         } catch (final Exception e) {
             e.printStackTrace();
         }
+
+        try {
+            // setup agent parameters
+            Class<?> clazz = Class.forName("org.apache.sirona.javaagent.AgentContext", true, loader);
+            Method addAgentParameterMethod = clazz.getMethod( "addAgentParameter", new Class[]{ String.class, String.class } );
+            Map<String,String> agentParameters=extractParameters( agentArgs );
+            for (Map.Entry<String,String> entry : agentParameters.entrySet() ){
+                addAgentParameterMethod.invoke( null, new String[]{entry.getKey(), entry.getValue() == null ? "" : entry.getValue()} );
+
+            }
+        } catch ( final Exception e ) {
+            e.printStackTrace();
+        }
+
 
         try {
             final SironaTransformer transformer = SironaTransformer.class.cast(loader.loadClass("org.apache.sirona.javaagent.SironaTransformer").newInstance());
@@ -148,5 +166,33 @@ public class SironaAgent {
             return agentArgs.substring(start, endIdx);
         }
         return null;
+    }
+
+    /**
+     *
+     * @param agentArgs foo=bar|beer=palepale|etc...
+     * @return
+     */
+    protected static Map<String, String> extractParameters(String agentArgs){
+        if(agentArgs==null||agentArgs.length()<1){
+            return Collections.emptyMap();
+        }
+
+        String[] separatorSplitted = agentArgs.split( "\\|" );
+
+        Map<String,String> params = new HashMap<String, String>( separatorSplitted.length / 2 );
+
+        for (final String agentArg:separatorSplitted){
+            int idx = agentArg.indexOf( '=' );
+            if (idx>=0){
+                String key = agentArg.substring( 0, idx);
+                String value = agentArg.substring(idx+1, agentArg.length());
+                params.put( key, value);
+            } else {
+                params.put( agentArg, "" );
+            }
+        }
+
+        return params;
     }
 }

@@ -25,16 +25,37 @@ import org.apache.sirona.javaagent.spi.Order;
 import org.apache.sirona.spi.SPI;
 
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 // just a helper to ease ASM work and reuse AbstractPerformanceInterceptor logic
 public class AgentContext {
+
     private static final InvocationListener[] EXISTING_LISTENERS = loadAllListeners();
 
     private static final ConcurrentMap<String, InvocationListener[]> LISTENERS_BY_KEY = new ConcurrentHashMap<String, InvocationListener[]>();
     private static final ConcurrentMap<String, Counter.Key> KEYS_CACHE = new ConcurrentHashMap<String, Counter.Key>();
+
+    private static Map<String, String> agentParameters = new HashMap<String, String>( );
+
+    public static void addAgentParameter( String key, String value){
+        agentParameters.put( key, value );
+    }
+
+    /**
+     *
+     * @return a copy of the Agent parameters
+     */
+    public static Map<String,String> getAgentParameters(){
+        return new HashMap<String, String>( agentParameters );
+    }
 
     // called by agent
     public static AgentContext startOn(final String key, final Object that) {
@@ -106,7 +127,7 @@ public class AgentContext {
                 listeners.add(listener);
             }
         }
-        Collections.sort(listeners, ListenerComparator.INSTANCE);
+        Collections.sort( listeners, ListenerComparator.INSTANCE );
         return listeners.toArray(new InvocationListener[listeners.size()]);
     }
 
@@ -185,7 +206,8 @@ public class AgentContext {
         }
     }
 
-    private static class ListenerComparator implements Comparator<InvocationListener> {
+    private static class ListenerComparator implements Comparator<InvocationListener>
+    {
         private static final ListenerComparator INSTANCE = new ListenerComparator();
 
         private ListenerComparator() {

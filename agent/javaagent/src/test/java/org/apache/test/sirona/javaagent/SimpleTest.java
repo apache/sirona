@@ -18,7 +18,9 @@ package org.apache.test.sirona.javaagent;
 
 import org.apache.sirona.Role;
 import org.apache.sirona.counters.Counter;
+import org.apache.sirona.javaagent.AgentArgs;
 import org.apache.sirona.javaagent.JavaAgentRunner;
+import org.apache.sirona.javaagent.listener.CounterListener;
 import org.apache.sirona.repositories.Repository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -97,6 +99,14 @@ public class SimpleTest {
         assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.soPrimitive", 0);
         new ServiceTransform().soPrimitive();
         assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.soPrimitive", 1);
+    }
+
+    @Test
+    @AgentArgs( value = CounterListener.DISABLE_PARAMETER_KEY)
+    public void primitiveDisable() {
+        assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.soPrimitive", 0);
+        new ServiceTransform().soPrimitive();
+        assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.soPrimitive", 0);
     }
 
     private static void assertException(final int count, final Class<?> exception) {

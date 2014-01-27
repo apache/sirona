@@ -16,6 +16,7 @@
  */
 package org.apache.sirona.javaagent;
 
+import org.apache.commons.lang3.text.StrSubstitutor;
 import org.junit.internal.TextListener;
 import org.junit.runner.Description;
 import org.junit.runner.JUnitCore;
@@ -118,12 +119,39 @@ public class JavaAgentRunner extends BlockJUnit4ClassRunner {
 
     private static String[] buildProcessArgs(final FrameworkMethod mtd) throws IOException {
         final Collection<String> args = new ArrayList<String>();
-        args.add(findJava());
-        args.add("-javaagent:" + buildJavaagent());
-        if (Boolean.getBoolean("test.debug.remote")) {
-            args.add("-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=" + Integer.getInteger("test.debug.remote.port", 5005));
+
+        args.add( findJava() );
+
+        AgentArgs agentArgs = mtd.getAnnotation( AgentArgs.class );
+
+        String maxMem = agentArgs == null ? "" : agentArgs.maxMem();
+
+        if ( maxMem.length() > 1 )
+        {
+            args.add( "-Xmx" + maxMem );
         }
-        args.add("-cp");
+
+        String minMem = agentArgs == null ? "" : agentArgs.minMem();
+
+        if ( minMem.length() > 1 )
+        {
+            args.add( "-Xms" + minMem );
+        }
+
+        String javaAgentArgs =
+            agentArgs == null ? null : StrSubstitutor.replace( agentArgs.value(), System.getProperties() );
+        args.add( "-javaagent:" + buildJavaagent() + "=" + ( javaAgentArgs == null ? "" : javaAgentArgs ) );
+
+        if ( Boolean.getBoolean( "test.debug.remote" ) )
+        {
+            args.add( "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=" + Integer.getInteger(
+                "test.debug.remote.port", 8080 ) );
+        }
+        if ( agentArgs != null && agentArgs.noVerify() )
+        {
+            args.add( "-noverify" );
+        }
+        args.add( "-cp" );
         args.add(removeAgentFromCp(System.getProperty("surefire.test.class.path", System.getProperty("java.class.path"))));
         args.add(JavaAgentRunner.class.getName());
         args.add(mtd.getMethod().getDeclaringClass().getName());

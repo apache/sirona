@@ -27,6 +27,9 @@ import org.apache.sirona.javaagent.spi.Order;
 @Order(0)
 @AutoSet
 public class CounterListener extends AbstractPerformanceInterceptor<String> implements InvocationListener {
+
+    public static final String DISABLE_PARAMETER_KEY = "disable-counter-listener";
+
     private static final int KEY = 0;
 
     private PredicateEvaluator includes = new PredicateEvaluator("true:true", ",");
@@ -34,7 +37,8 @@ public class CounterListener extends AbstractPerformanceInterceptor<String> impl
 
     @Override
     public boolean accept(final String key) {
-        return includes.matches(key) && !excludes.matches(key);
+        return !AgentContext.getAgentParameters().containsKey( DISABLE_PARAMETER_KEY ) //
+                && includes.matches(key) && !excludes.matches(key);
     }
 
     // @AutoSet
