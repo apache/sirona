@@ -199,7 +199,9 @@ public class JavaAgentRunner extends BlockJUnit4ClassRunner {
         return new File("target").listFiles(new FilenameFilter() {
                 @Override
                 public boolean accept(File dir, String name) {
-                    return name.startsWith("sirona-javaagent-") && name.endsWith(".jar") && !name.contains("sources");
+                    return name.startsWith( System.getProperty( "javaagent.jar.name.start", "sirona-javaagent-" )) //
+                        && name.endsWith(".jar") //
+                        && !name.contains("sources");
                 }
             })[0].getAbsolutePath();
     }
