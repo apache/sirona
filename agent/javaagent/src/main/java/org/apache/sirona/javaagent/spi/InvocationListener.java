@@ -21,5 +21,11 @@ import org.apache.sirona.javaagent.AgentContext;
 public interface InvocationListener {
     void before(AgentContext context);
     void after(AgentContext context, Object result, Throwable error);
+
+    /**
+     *
+     * @param key has the format of fqcn.methodName
+     * @return to use this InvocationListener or not for this method
+     */
     boolean accept(String key);
 }
