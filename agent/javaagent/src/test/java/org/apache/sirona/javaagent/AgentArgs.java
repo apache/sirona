@@ -35,4 +35,10 @@ public @interface AgentArgs
     String minMem() default "";
 
     boolean noVerify() default false;
+
+    /**
+     *
+     * @return system properties to use in the forked agent format: props1=value|props2=value
+     */
+    String sysProps() default "";
 }

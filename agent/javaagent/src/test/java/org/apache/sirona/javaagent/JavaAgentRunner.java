@@ -16,6 +16,7 @@
  */
 package org.apache.sirona.javaagent;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.StrSubstitutor;
 import org.junit.internal.TextListener;
 import org.junit.runner.Description;
@@ -126,14 +127,14 @@ public class JavaAgentRunner extends BlockJUnit4ClassRunner {
 
         String maxMem = agentArgs == null ? "" : agentArgs.maxMem();
 
-        if ( maxMem.length() > 1 )
+        if ( maxMem.length() > 0 )
         {
             args.add( "-Xmx" + maxMem );
         }
 
         String minMem = agentArgs == null ? "" : agentArgs.minMem();
 
-        if ( minMem.length() > 1 )
+        if ( minMem.length() > 0 )
         {
             args.add( "-Xms" + minMem );
         }
@@ -151,6 +152,23 @@ public class JavaAgentRunner extends BlockJUnit4ClassRunner {
         {
             args.add( "-noverify" );
         }
+
+        String sysProps = agentArgs == null ? "" : agentArgs.sysProps();
+
+        if (sysProps.length() > 0){
+             String[] splittedProps = StringUtils.split( sysProps, "|" );
+            for (String props : splittedProps)
+            {
+                String[] prop = StringUtils.split( props, "=" );
+                String key = prop[0];
+                String value = "";
+                if (prop.length>1){
+                    value = prop[1];
+                }
+                args.add( "-D" + key + "=" + StrSubstitutor.replace(  value, System.getProperties() ) );
+            }
+        }
+
         args.add( "-cp" );
         args.add(removeAgentFromCp(System.getProperty("surefire.test.class.path", System.getProperty("java.class.path"))));
         args.add(JavaAgentRunner.class.getName());
