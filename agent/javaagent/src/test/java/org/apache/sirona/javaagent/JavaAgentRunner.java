@@ -214,7 +214,7 @@ public class JavaAgentRunner extends BlockJUnit4ClassRunner {
     }
 
     private static String buildJavaagent() throws IOException {
-        return new File("target").listFiles(new FilenameFilter() {
+        return new File(System.getProperty( "javaagent.jar.directory", "target" )).listFiles(new FilenameFilter() {
                 @Override
                 public boolean accept(File dir, String name) {
                     return name.startsWith( System.getProperty( "javaagent.jar.name.start", "sirona-javaagent-" )) //
