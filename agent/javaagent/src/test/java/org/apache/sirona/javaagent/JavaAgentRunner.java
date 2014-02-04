@@ -124,7 +124,7 @@ public class JavaAgentRunner extends BlockJUnit4ClassRunner {
         }
     }
 
-    private static String[] buildProcessArgs(final FrameworkMethod mtd) throws IOException {
+    protected String[] buildProcessArgs(final FrameworkMethod mtd) throws IOException {
         final Collection<String> args = new ArrayList<String>();
 
         args.add( findJava() );
@@ -219,14 +219,13 @@ public class JavaAgentRunner extends BlockJUnit4ClassRunner {
         return latch;
     }
 
-    private static String buildJavaagent() throws IOException {
+    protected String buildJavaagent() throws IOException {
         final File[] files = new File(System.getProperty("javaagent.jar.directory", "target")).listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
                 return name.startsWith( System.getProperty( "javaagent.jar.name.start", "sirona-javaagent-" )) //
                         && name.endsWith(".jar") //
-                        && !name.contains("-sources") //
-                        && !name.contains("-tests");
+                        && name.endsWith("-shaded.jar");
             }
         });
         return files[0].getAbsolutePath();
