@@ -214,14 +214,14 @@ public class JavaAgentRunner extends BlockJUnit4ClassRunner {
     }
 
     private static String buildJavaagent() throws IOException {
-        return new File(System.getProperty( "javaagent.jar.directory", "target" )).listFiles(new FilenameFilter() {
-                @Override
-                public boolean accept(File dir, String name) {
-                    return name.startsWith( System.getProperty( "javaagent.jar.name.start", "sirona-javaagent-" )) //
-                        && name.endsWith(".jar") //
-                        && !name.contains("sources");
-                }
-            })[0].getAbsolutePath();
+        final File[] files = new File(System.getProperty("javaagent.jar.directory", "target")).listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.startsWith(System.getProperty("javaagent.jar.name.start", "sirona-javaagent-"))
+                        && name.endsWith("-shaded.jar");
+            }
+        });
+        return files[0].getAbsolutePath();
     }
 
     private static String findJava() {
