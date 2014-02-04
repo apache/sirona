@@ -18,9 +18,10 @@ package org.apache.sirona.configuration.predicate;
 
 import org.apache.sirona.spi.SPI;
 
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.regex.Pattern;
 
 public final class PredicateEvaluator {
@@ -35,11 +36,13 @@ public final class PredicateEvaluator {
             final PrefixPredicate prefixPredicate = new PrefixPredicate();
             final SuffixPredicate suffixPredicate = new SuffixPredicate();
             final RegexPredicate regexPredicate = new RegexPredicate();
+            final ContainersPredicate containersPredicate = new ContainersPredicate();
 
             // defaults
             predicates.put(prefixPredicate.prefix(), prefixPredicate);
             predicates.put(suffixPredicate.prefix(), suffixPredicate);
             predicates.put(regexPredicate.prefix(), regexPredicate);
+            predicates.put(containersPredicate.prefix(), containersPredicate);
             predicates.put(TruePredicate.INSTANCE.prefix(), TruePredicate.INSTANCE);
 
             // SPI
@@ -95,6 +98,81 @@ public final class PredicateEvaluator {
             }
         }
         return false;
+    }
+
+    // exclude only filter, just an optimized version of N prefixes
+    // a lot of prefixes uses the same prefix
+    // so chaining them using substring is really faster when intrumenting a lot of classes
+    private static class ContainersPredicate implements Predicate {
+        private final Collection<String> containers = new CopyOnWriteArraySet<String>();
+
+        @Override
+        public String prefix() {
+            return "container";
+        }
+
+        @Override
+        public boolean matches(final String value) {
+            for (final String container : containers) {
+                if ("tomee".equalsIgnoreCase(container) || "openejb".equalsIgnoreCase(container)) {
+                    if (value.startsWith("org.")) {
+                        final String org = value.substring("org.".length());
+                        if (org.startsWith("apache.")) {
+                            final String apache = org.substring("apache.".length());
+                            if (isTomcat(apache)
+                                    || apache.startsWith("tomee") || apache.startsWith("openejb")
+                                    || apache.startsWith("xbean") || apache.startsWith("bval")
+                                    || apache.startsWith("openjpa") || apache.startsWith("geronimo")
+                                    || apache.startsWith("webbeans") || apache.startsWith("myfaces")
+                                    || apache.startsWith("cxf") || apache.startsWith("neethi")
+                                    || apache.startsWith("activemq") || apache.startsWith("commons")) {
+                                return true;
+                            }
+                        } else if (org.startsWith("slf4j.") || org.startsWith("metatype") || org.startsWith("hsqldb")) {
+                            return true;
+                        }
+                    } else if (value.startsWith("serp")) {
+                        return true;
+                    }
+                } else if ("tomcat".equalsIgnoreCase(container)) {
+                    if (value.startsWith("org.apache.")) {
+                        final String sub = value.substring("org.apache.".length());
+                        if (isTomcat(sub)) {
+                            return true;
+                        }
+                    }
+                } else if ("jvm".equalsIgnoreCase(container)) {
+                    if (value.startsWith("java") || value.startsWith("sun") || value.startsWith("com.sun")) {
+                        return true;
+                    }
+                    if (value.startsWith("org.")) {
+                        final String sub = value.substring("org.".length());
+                        if (sub.startsWith("omg") || sub.startsWith("xml.sax.")
+                                || sub.startsWith("ietf") || sub.startsWith("jcp")
+                                || sub.startsWith("apache.xerces")) {
+                            return true;
+                        }
+                    }
+                    final String sub = value.substring("org.apache.".length());
+                    if (sub.startsWith("xerces")) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        private static boolean isTomcat(final String sub) {
+            return sub.startsWith("juli.") || sub.startsWith("catalina.")
+                    || sub.startsWith("tomcat.") || sub.startsWith("jasper.")
+                    || sub.startsWith("coyote.") || sub.startsWith("naming.")
+                    || sub.startsWith("el.");
+        }
+
+        @Override
+        public void addConfiguration(final String value, final boolean negative) {
+            containers.add(value);
+        }
     }
 
     private static class TruePredicate implements Predicate {

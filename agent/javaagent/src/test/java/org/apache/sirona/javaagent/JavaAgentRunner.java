@@ -18,6 +18,7 @@ package org.apache.sirona.javaagent;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.StrSubstitutor;
+import org.junit.Ignore;
 import org.junit.internal.TextListener;
 import org.junit.runner.Description;
 import org.junit.runner.JUnitCore;
@@ -80,6 +81,11 @@ public class JavaAgentRunner extends BlockJUnit4ClassRunner {
             @Override
             public void evaluate() throws Throwable {
                 for (final FrameworkMethod mtd : getChildren()) {
+                    if (mtd.getAnnotation(Ignore.class) != null) {
+                        notifier.fireTestIgnored(describeChild(mtd));
+                        continue;
+                    }
+
                     final Description description = describeChild(mtd);
                     notifier.fireTestRunStarted(description);
                     try {
@@ -146,7 +152,7 @@ public class JavaAgentRunner extends BlockJUnit4ClassRunner {
         if ( Boolean.getBoolean( "test.debug.remote" ) )
         {
             args.add( "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=" + Integer.getInteger(
-                "test.debug.remote.port", 8080 ) );
+                "test.debug.remote.port", 5005 ) );
         }
         if ( agentArgs != null && agentArgs.noVerify() )
         {

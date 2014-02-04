@@ -32,8 +32,8 @@ public class CounterListener extends AbstractPerformanceInterceptor<String> impl
 
     private static final int KEY = 0;
 
-    private PredicateEvaluator includes = new PredicateEvaluator("true:true", ",");
-    private PredicateEvaluator excludes = new PredicateEvaluator("prefix:java,prefix:sun,prefix:com.sun", ",");
+    private PredicateEvaluator includes = ConfigurableListener.DEFAULT_INCLUDES;
+    private PredicateEvaluator excludes = ConfigurableListener.DEFAULT_EXCLUDES;
 
     @Override
     public boolean accept(final String key) {

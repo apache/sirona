@@ -42,8 +42,9 @@ public class AgentContext {
 
     private static final ConcurrentMap<String, InvocationListener[]> LISTENERS_BY_KEY = new ConcurrentHashMap<String, InvocationListener[]>();
     private static final ConcurrentMap<String, Counter.Key> KEYS_CACHE = new ConcurrentHashMap<String, Counter.Key>();
+	private static final AgentContext FAKE_CONTEXT = new AgentContext("init", null, new InvocationListener[0]);
 
-    private static Map<String, String> agentParameters = new HashMap<String, String>( );
+	private static Map<String, String> agentParameters = new HashMap<String, String>( );
 
     public static void addAgentParameter( String key, String value){
         agentParameters.put( key, value );
@@ -59,6 +60,9 @@ public class AgentContext {
 
     // called by agent
     public static AgentContext startOn(final String key, final Object that) {
+		if (key == null) { // possible in static inits, the best would be to ignore it in instrumentation
+			return FAKE_CONTEXT;
+		}
         return new AgentContext(key, that, listeners(key));
     }
 
@@ -113,8 +117,8 @@ public class AgentContext {
             }
 
             final InvocationListener[] old = LISTENERS_BY_KEY.putIfAbsent(key, listeners);
-            if (old != null) {
-                listeners = old;
+			if (old != null) {
+				listeners = old;
             }
         }
         return listeners;
