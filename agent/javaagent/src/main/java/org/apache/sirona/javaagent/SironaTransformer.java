@@ -37,11 +37,11 @@ public class SironaTransformer implements ClassFileTransformer {
 
     private byte[] doTransform(final String className, final byte[] classfileBuffer) {
         try {
-            final ClassReader reader = new ClassReader(classfileBuffer);
-            final ClassWriter writer = new ClassWriter(reader, ClassWriter.COMPUTE_FRAMES);
             final SironaClassVisitor.SironaKeyVisitor keyVisitor = new SironaClassVisitor.SironaKeyVisitor(className);
             new ClassReader(classfileBuffer).accept(keyVisitor, ClassReader.SKIP_DEBUG);
             if (keyVisitor.hasAdviced()) {
+                final ClassReader reader = new ClassReader(classfileBuffer);
+                final ClassWriter writer = new ClassWriter(reader, ClassWriter.COMPUTE_FRAMES);
                 final SironaClassVisitor advisor = new SironaClassVisitor(writer, className, keyVisitor.getKeys());
                 reader.accept(advisor, ClassReader.SKIP_DEBUG);
                 return writer.toByteArray();

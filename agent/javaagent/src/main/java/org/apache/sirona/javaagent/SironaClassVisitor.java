@@ -61,7 +61,7 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
                       final String[] interfaces) {
         cv.visit(version, access, name, signature, superName, interfaces);
         classType = Type.getType("L" + name.replace('.', '/') + ";");
-        SironaStaticInitMerger.class.cast(cv).setClassType(classType);
+        SironaStaticInitMerger.class.cast(cv).initSironaFields(classType);
     }
 
 	@Override
@@ -93,28 +93,6 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
 
 	private static boolean isSironable(final int access, final String name) {
 		return !name.equals(STATIC_INIT) && !name.equals(CONSTRUCTOR) && !Modifier.isAbstract(access) && !Modifier.isNative(access);
-	}
-
-	private static class AddConstantsFieldVisitor extends GeneratorAdapter {
-		private final Map<String, String> keys;
-		private final Type clazz;
-
-		public AddConstantsFieldVisitor(final MethodVisitor methodVisitor, final Type classType, final Map<String, String> keys) {
-			super(ASM4, methodVisitor, ACC_STATIC, STATIC_INIT, NO_PARAM_RETURN_VOID);
-			this.keys = keys;
-			this.clazz = classType;
-		}
-
-		@Override
-		public void visitCode() {
-            // constants for runtime monitoring
-            for (final Map.Entry<String, String> key : keys.entrySet()) {
-                push(key.getValue());
-                putStatic(clazz, key.getKey(), KEY_TYPE);
-            }
-
-			super.visitCode();
-		}
 	}
 
 	private static class ProxyMethodsVisitor extends GeneratorAdapter {
@@ -532,7 +510,6 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
     // fork from org.objectweb.asm.commons.StaticInitMerger to force our contants to be first
     private static class SironaStaticInitMerger extends ClassVisitor {
         private final Map<String, String> keys;
-        private Type classType;
 
         private String name;
         private MethodVisitor clinit;
@@ -555,50 +532,34 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
         public MethodVisitor visitMethod(final int access, final String name,
                                          final String desc, final String signature, final String[] exceptions) {
             if (STATIC_INIT.equals(name)) {
-                if (clinit == null) {
-                    generateKeys();
-                }
-
                 final String n = STATIC_CLINT_MERGE_PREFIX + counter++;
-                clinit.visitMethodInsn(Opcodes.INVOKESTATIC, this.name, n, desc);
-                return cv.visitMethod(Opcodes.ACC_PRIVATE + Opcodes.ACC_STATIC, n, desc, signature, exceptions);
+                final MethodVisitor mv = cv.visitMethod(ACC_PRIVATE + ACC_STATIC, n, desc, signature, exceptions);
+                clinit.visitMethodInsn(INVOKESTATIC, this.name, n, desc);
+                return mv;
             }
             return cv.visitMethod(access, name, desc, signature, exceptions);
         }
 
         @Override
         public void visitEnd() {
-            // if no static block was present for it at the end
-            generateKeys();
+            clinit.visitInsn(Opcodes.RETURN);
+            clinit.visitMaxs(0, 0);
 
-            if (clinit != null) {
-                clinit.visitInsn(Opcodes.RETURN);
-                clinit.visitMaxs(0, 0);
-            }
             cv.visitEnd();
         }
 
-        private void generateKeys() {
+        public void initSironaFields(final Type classType) {
             // generate keys first
-            if (!keys.isEmpty()) {
-                for (final String key : keys.keySet()) {
-                    visitField(CONSTANT_ACCESS, key, KEY_TYPE.getDescriptor(), null, null).visitEnd();
-                }
-
-                clinit = cv.visitMethod(ACC_STATIC, STATIC_INIT, NO_PARAM_RETURN_VOID, null, null);
-
-                final AddConstantsFieldVisitor visitor = new AddConstantsFieldVisitor(clinit, classType, keys);
-                visitor.visitCode();
-                visitor.visitInsn(RETURN);
-                visitor.visitMaxs(0, 0);
-                visitor.visitEnd();
-
-                keys.clear();
+            for (final String key : keys.keySet()) {
+                visitField(CONSTANT_ACCESS, key, KEY_TYPE.getDescriptor(), null, null).visitEnd();
             }
-        }
 
-        public void setClassType(final Type classType) {
-            this.classType = classType;
+            // init them in static block
+            clinit = cv.visitMethod(ACC_PRIVATE + ACC_STATIC, STATIC_INIT, NO_PARAM_RETURN_VOID, null, null);
+            for (final Map.Entry<String, String> key : keys.entrySet()) {
+                clinit.visitLdcInsn(key.getValue());
+                clinit.visitFieldInsn(PUTSTATIC, classType.getInternalName(), key.getKey(), KEY_TYPE.getDescriptor());
+            }
         }
     }
 }
