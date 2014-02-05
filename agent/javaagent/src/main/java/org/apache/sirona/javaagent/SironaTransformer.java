@@ -35,7 +35,7 @@ public class SironaTransformer implements ClassFileTransformer {
         return classfileBuffer;
     }
 
-    private byte[] doTransform(final String className, final byte[] classfileBuffer) {
+    protected byte[] doTransform(final String className, final byte[] classfileBuffer) {
         try {
             final SironaClassVisitor.SironaKeyVisitor keyVisitor = new SironaClassVisitor.SironaKeyVisitor(className);
             new ClassReader(classfileBuffer).accept(keyVisitor, ClassReader.SKIP_DEBUG);
@@ -55,7 +55,7 @@ public class SironaTransformer implements ClassFileTransformer {
         }
     }
 
-    private static boolean shouldTransform(final String className, final ClassLoader loader) {
+    protected boolean shouldTransform(final String className, final ClassLoader loader) {
         return !(className == null // framework with bug
                 || (loader != null && loader.getClass().getName().equals(DELEGATING_CLASS_LOADER))
                 || className.startsWith("sun/reflect")
