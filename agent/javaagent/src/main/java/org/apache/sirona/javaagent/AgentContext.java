@@ -160,7 +160,8 @@ public class AgentContext {
 
     public Class<?> keyAsClass() {
         try {
-            return keyAsMethod().getDeclaringClass();
+            Method method = keyAsMethod();
+            return method == null ? null : method.getDeclaringClass();
         } catch (final Throwable th) {
             return null;
         }
