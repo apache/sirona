@@ -20,6 +20,7 @@ import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.repositories.Repository;
 import org.apache.sirona.util.Environment;
 import org.apache.sirona.web.discovery.GaugeDiscoveryListener;
+import org.apache.sirona.web.lifecycle.LazyJspMonitoringFilterActivator;
 import org.apache.sirona.web.lifecycle.SironaLifecycle;
 import org.apache.sirona.web.servlet.SironaFilter;
 import org.apache.sirona.web.session.SironaSessionListener;
@@ -33,8 +34,8 @@ import java.util.EnumSet;
 import java.util.Set;
 
 public class WebSironaInitializer implements ServletContainerInitializer {
+    private static final String JSP_ACTIVATED = Configuration.CONFIG_PROPERTY_PREFIX + "web.jsp.activated";
     private static final String ACTIVATED = Configuration.CONFIG_PROPERTY_PREFIX + "web.activated";
-    private static final String FALSE = Boolean.FALSE.toString();
 
     @Override
     public void onStartup(final Set<Class<?>> classes, final ServletContext ctx) throws ServletException {
@@ -42,12 +43,14 @@ public class WebSironaInitializer implements ServletContainerInitializer {
             return;
         }
 
+        final String falseStr = Boolean.FALSE.toString();
+
         final String activated = ctx.getInitParameter(ACTIVATED);
-        if (FALSE.equalsIgnoreCase(Configuration.getProperty(ACTIVATED, activated))) {
+        if (falseStr.equalsIgnoreCase(Configuration.getProperty(ACTIVATED, activated))) {
             return;
         }
 
-        final String monStatus = Boolean.toString(!FALSE.equalsIgnoreCase(ctx.getInitParameter(SironaFilter.MONITOR_STATUS)));
+        final String monStatus = Boolean.toString(!falseStr.equalsIgnoreCase(ctx.getInitParameter(SironaFilter.MONITOR_STATUS)));
         ctx.setAttribute(SironaFilter.MONITOR_STATUS, monStatus);
 
         ctx.addListener(SironaSessionListener.class);
@@ -58,7 +61,7 @@ public class WebSironaInitializer implements ServletContainerInitializer {
 
         String ignoredUrls = ctx.getInitParameter(SironaFilter.IGNORED_URLS);
         String monitoredUrls = ctx.getInitParameter(Configuration.CONFIG_PROPERTY_PREFIX + "web.monitored-urls");
-        if (!"false".equalsIgnoreCase(monitoredUrls)) {
+        if (!falseStr.equalsIgnoreCase(monitoredUrls)) {
             if (monitoredUrls == null) {
                 monitoredUrls = "/*";
             }
@@ -81,6 +84,12 @@ public class WebSironaInitializer implements ServletContainerInitializer {
                 filter.setInitParameter(SironaFilter.MONITOR_STATUS, monStatus);
                 filter.setInitParameter(SironaFilter.IGNORED_URLS, ignoredUrls);
             }
+        }
+
+        // default is false for jsp monitoring since it brings things only in specific cases
+        if (Boolean.TRUE.toString().equalsIgnoreCase(Configuration.getProperty(JSP_ACTIVATED, ctx.getInitParameter(JSP_ACTIVATED)))) {
+            ctx.addFilter("sirona-jsp-activator", LazyJspMonitoringFilterActivator.class)
+                    .addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), false, "*.jsp");
         }
     }
 }

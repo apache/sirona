@@ -41,6 +41,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Map;
 
+import static org.apache.sirona.test.web.Clients.newClient;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(Arquillian.class)
@@ -92,15 +93,6 @@ public class RequestPerformanceTest {
         assertEquals(4567, page.getWebResponse().getStatusCode());
         Thread.sleep(1000);
         assertEquals(0, statusGaugeSum(new Role("/sirona-test-HTTP-4567", Unit.UNARY)));
-    }
-
-    private static WebClient newClient() {
-        final WebClient webClient = new WebClient();
-        webClient.getOptions().setJavaScriptEnabled(false);
-        webClient.getOptions().setCssEnabled(false);
-        webClient.getOptions().setAppletEnabled(false);
-        webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
-        return webClient;
     }
 
     private static int statusGaugeSum(final Role role) {
