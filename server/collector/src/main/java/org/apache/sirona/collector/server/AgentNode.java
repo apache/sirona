@@ -55,12 +55,12 @@ public class AgentNode {
         }
 
         final AgentNode agentNode = AgentNode.class.cast(o);
-        return !(url != null ? !url.equals(agentNode.url) : agentNode.url != null);
+        return url.equals(agentNode.url);
 
     }
 
     @Override
     public int hashCode() {
-        return url != null ? url.hashCode() : 0;
+        return url.hashCode();
     }
 }
