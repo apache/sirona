@@ -36,6 +36,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URL;
 
@@ -65,7 +69,15 @@ public class JspMonitoringTest {
                         .up()
                         .createFilterMapping()
                             .filterName("jsp-mon-on")
-                            .urlPattern("*.jsp")
+                            .urlPattern("*")
+                        .up()
+                        .createServlet()
+                            .servletName("redir")
+                            .servletClass(RedirectServlet.class.getName())
+                        .up()
+                        .createServletMapping()
+                            .servletName("redir")
+                            .urlPattern("/test")
                         .up()
                         .exportAsString()));
     }
@@ -92,5 +104,27 @@ public class JspMonitoringTest {
         assertEquals(Role.JSP, counter.getKey().getRole());
         assertEquals(url.getPath() + "test.jsp", counter.getKey().getName());
         assertEquals(3, counter.getHits());
+    }
+
+    @Test
+    public void redirect() throws IOException {
+        final String testUrl = url.toExternalForm() + "test";
+        for (int i = 0; i < 2; i++) {
+            assertEquals("Hello", newClient().getPage(testUrl).getWebResponse().getContentAsString());
+        }
+        assertEquals("Hello", newClient().getPage(testUrl + "?ignoredQuery=yes&ofcourse=itis").getWebResponse().getContentAsString());
+
+        assertFalse(Repository.INSTANCE.counters().isEmpty());
+        final Counter counter = Repository.INSTANCE.counters().iterator().next();
+        assertEquals(Role.JSP, counter.getKey().getRole());
+        assertEquals(url.getPath() + "test.jsp", counter.getKey().getName());
+        assertEquals(3, counter.getHits());
+    }
+
+    public static class RedirectServlet extends HttpServlet {
+        @Override
+        protected void service(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
+            req.getRequestDispatcher("test.jsp").forward(req, resp);
+        }
     }
 }

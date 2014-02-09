@@ -89,7 +89,7 @@ public class WebSironaInitializer implements ServletContainerInitializer {
         // default is false for jsp monitoring since it brings things only in specific cases
         if (Boolean.TRUE.toString().equalsIgnoreCase(Configuration.getProperty(JSP_ACTIVATED, ctx.getInitParameter(JSP_ACTIVATED)))) {
             ctx.addFilter("sirona-jsp-activator", LazyJspMonitoringFilterActivator.class)
-                    .addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), false, "*.jsp");
+                    .addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), false, "*");
         }
     }
 }
