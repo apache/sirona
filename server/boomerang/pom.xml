@@ -17,21 +17,24 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
-    <artifactId>sirona</artifactId>
+    <artifactId>sirona-server</artifactId>
     <groupId>org.apache.sirona</groupId>
     <version>0.2-incubating-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>sirona-server</artifactId>
-  <name>Apache Sirona Incubator :: Server</name>
-  <packaging>pom</packaging>
+  <artifactId>sirona-boomerang</artifactId>
+  <name>Apache Sirona Incubator :: Server :: Boomerang</name>
 
-  <modules>
-    <module>collector</module>
-    <module>reporting</module>
-    <module>store</module>
-    <module>boomerang</module>
-  </modules>
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-servlet_3.0_spec</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.sirona</groupId>
+      <artifactId>sirona-core</artifactId>
+    </dependency>
+  </dependencies>
 </project>

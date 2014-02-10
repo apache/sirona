@@ -24,8 +24,6 @@ public class OptimizedStatistics {
 
     // first moment (mean)
     protected double m1 = Double.NaN;
-    protected double dev = Double.NaN;
-    protected double nDev = Double.NaN;
 
     // second moment
     protected double m2 = Double.NaN;
@@ -35,19 +33,16 @@ public class OptimizedStatistics {
     }
 
     public OptimizedStatistics(final long n, final double sum, final double min,
-                               final double max, final double m1, final double dev,
-                               final double nDev, final double m2) {
+                               final double max, final double m1, final double m2) {
         this.n = n;
         this.sum = sum;
         this.min = min;
         this.max = max;
         this.m1 = m1;
-        this.dev = dev;
-        this.nDev = nDev;
         this.m2 = m2;
     }
 
-    public void addValue(double value) {
+    public OptimizedStatistics addValue(double value) {
         if (n == 0) {
             m1 = 0.0;
             m2 = 0.0;
@@ -67,12 +62,14 @@ public class OptimizedStatistics {
         }
 
         // first moment
-        dev = value - m1;
-        nDev = dev / n;
+        final double dev = value - m1;
+        final double nDev = dev / n;
         m1 += nDev;
 
         // second moment
         m2 += dev * nDev * (n - 1);
+
+        return this;
     }
 
     public void clear() {
@@ -80,8 +77,6 @@ public class OptimizedStatistics {
         sum = 0;
         min = Double.NaN;
         max = Double.NaN;
-        dev = Double.NaN;
-        nDev = Double.NaN;
         m1 = Double.NaN;
         m2 = Double.NaN;
     }
@@ -129,6 +124,6 @@ public class OptimizedStatistics {
     }
 
     public OptimizedStatistics copy() {
-        return new OptimizedStatistics(n, sum, min, max, m1, dev, nDev, m2);
+        return new OptimizedStatistics(n, sum, min, max, m1, m2);
     }
 }
