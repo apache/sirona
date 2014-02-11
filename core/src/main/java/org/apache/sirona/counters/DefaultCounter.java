@@ -34,10 +34,13 @@ public class DefaultCounter implements Counter {
     private ObjectName jmx = null;
 
     public DefaultCounter(final Key key, final CounterDataStore store) {
+        this(key, store, new OptimizedStatistics());
+    }
+    public DefaultCounter(final Key key, final CounterDataStore store, final OptimizedStatistics statistics) {
         this.key = key;
         this.dataStore = store;
 
-        this.statistics = new OptimizedStatistics();
+        this.statistics = statistics;
     }
 
     public void addInternal(final double delta) { // should be called from a thread safe environment
