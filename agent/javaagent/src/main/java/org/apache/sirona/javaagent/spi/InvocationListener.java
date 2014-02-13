@@ -19,8 +19,6 @@ package org.apache.sirona.javaagent.spi;
 import org.apache.sirona.javaagent.AgentContext;
 
 public interface InvocationListener {
-    void before(AgentContext context);
-    void after(AgentContext context, Object result, Throwable error);
 
     /**
      *
@@ -28,4 +26,20 @@ public interface InvocationListener {
      * @return to use this InvocationListener or not for this method
      */
     boolean accept(String key);
+
+    /**
+     * Method called before the real object method called
+     * @param context
+     */
+    void before(AgentContext context);
+
+    /**
+     *
+     * @param context the {@link org.apache.sirona.javaagent.AgentContext used for this listener}
+     * @param result  the object return by the method can be <code>null</code> if void method
+     * @param error   the exception (if any) throw by the method
+     */
+    void after(AgentContext context, Object result, Throwable error);
+
+
 }
