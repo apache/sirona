@@ -4,3 +4,4 @@ target
 .site-content/
 out/
 agent/javaagent/dependency-reduced-pom.xml
+.java-version
