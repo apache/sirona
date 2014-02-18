@@ -29,6 +29,9 @@ import java.util.Map;
 import java.util.jar.JarFile;
 
 public class SironaAgent {
+
+    public static boolean AGENT_DEBUG = Boolean.getBoolean( "sirona.agent.debug" );
+
     public static void premain(final String agentArgs, final Instrumentation instrumentation) {
         agentmain(agentArgs, instrumentation);
     }
@@ -105,13 +108,13 @@ public class SironaAgent {
                             && clazz.getAnnotation(instrumentedMarker) == null
                             && instrumentation.isModifiableClass(clazz)) {
                         try {
-                            if (Boolean.getBoolean("sirona.agent.debug")) {
+                            if (AGENT_DEBUG) {
                                 System.out.println( "reload clazz:" + clazz.getName() );
                             }
                             instrumentation.retransformClasses(clazz);
                         } catch (final Exception e) {
                             System.err.println("Can't instrument: " + clazz.getName() + "[" + e.getMessage() + "]");
-                            if (Boolean.getBoolean("sirona.agent.debug")) {
+                            if (AGENT_DEBUG) {
                                 e.printStackTrace();
                             }
                         }
@@ -119,7 +122,7 @@ public class SironaAgent {
                 }
             }
         } catch (final Exception e) {
-            if (Boolean.getBoolean("sirona.agent.debug")) {
+            if (AGENT_DEBUG) {
                 System.out.println( "finished instrumentation setup with exception:" + e.getMessage() );
             }
             e.printStackTrace();

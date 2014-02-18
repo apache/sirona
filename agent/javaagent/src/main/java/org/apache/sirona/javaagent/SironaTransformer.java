@@ -48,7 +48,7 @@ public class SironaTransformer implements ClassFileTransformer {
             }
             return classfileBuffer;
         } catch (final RuntimeException re) {
-            if (Boolean.getBoolean("sirona.agent.debug")) {
+            if (SironaAgent.AGENT_DEBUG) {
                 re.printStackTrace();
             }
             throw re;

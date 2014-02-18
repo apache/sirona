@@ -19,6 +19,7 @@ package org.apache.sirona.pathtracking;
 import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.javaagent.AgentContext;
+import org.apache.sirona.javaagent.SironaAgent;
 import org.apache.sirona.javaagent.listener.ConfigurableListener;
 import org.apache.sirona.javaagent.spi.InvocationListener;
 import org.apache.sirona.store.DataStoreFactory;
@@ -39,8 +40,6 @@ public class PathTrackingInvocationListener
     private static final boolean TRACKING_ACTIVATED =
         Configuration.is( Configuration.CONFIG_PROPERTY_PREFIX + "javaagent.path.tracking.activate", false );
 
-    private static final boolean DEBUG = Boolean.getBoolean( "sirona.agent.debug" );
-
     PathTrackingDataStore pathTrackingDataStore = IoCs.findOrCreateInstance( DataStoreFactory.class )
                                                         .getPathTrackingDataStore();
 
@@ -59,7 +58,7 @@ public class PathTrackingInvocationListener
             return false;
         }
 
-        if ( DEBUG )
+        if ( SironaAgent.AGENT_DEBUG )
         {
             System.out.println(
                 "PathTrackingInvocationListener#accept, TRACKING_ACTIVATED:" + TRACKING_ACTIVATED + ", key: " + key );
@@ -77,7 +76,7 @@ public class PathTrackingInvocationListener
     @Override
     public void before( AgentContext context )
     {
-        if ( DEBUG )
+        if ( SironaAgent.AGENT_DEBUG )
         {
             System.out.println( "PathTrackingInvocationListener#before:" + context.getKey() );
         }
@@ -89,7 +88,7 @@ public class PathTrackingInvocationListener
     public void after( AgentContext context, Object result, Throwable error )
     {
 
-        if ( DEBUG )
+        if ( SironaAgent.AGENT_DEBUG )
         {
             System.out.println( "PathTrackingInvocationListener#after: " + context.getKey() );
         }
@@ -107,7 +106,7 @@ public class PathTrackingInvocationListener
             new PathTrackingEntry( PathTrackingThreadLocal.get(), "node", className, methodName, start, ( end - start ), 0 );
 
 
-        if ( DEBUG )
+        if ( SironaAgent.AGENT_DEBUG )
         {
             System.out.println( "PathTrackingInvocationListener: after: " + pathTrackingEntry.toString()
                                     + ", pathTrackingDataStore type:" + pathTrackingDataStore.getClass().getName() );
