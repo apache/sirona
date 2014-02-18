@@ -19,18 +19,22 @@ package org.apache.sirona.store;
 import org.apache.sirona.store.counter.CounterDataStore;
 import org.apache.sirona.store.gauge.CommonGaugeDataStore;
 import org.apache.sirona.store.status.NodeStatusDataStore;
+import org.apache.sirona.store.tracking.PathTrackingDataStore;
 
 public class DelegateDataStoreFactory implements DataStoreFactory {
     private final CounterDataStore counterDataStore;
     private final CommonGaugeDataStore gaugeDataStore;
     private final NodeStatusDataStore nodeStatusDataStore;
+    private final PathTrackingDataStore pathTrackingDataStore;
 
     public DelegateDataStoreFactory(final CounterDataStore counterDataStore,
                                     final CommonGaugeDataStore gaugeDataStore,
-                                    final NodeStatusDataStore nodeStatusDataStore) {
+                                    final NodeStatusDataStore nodeStatusDataStore,
+                                    final PathTrackingDataStore pathTrackingDataStore) {
         this.counterDataStore = counterDataStore;
         this.gaugeDataStore = gaugeDataStore;
         this.nodeStatusDataStore = nodeStatusDataStore;
+        this.pathTrackingDataStore = pathTrackingDataStore;
     }
 
     @Override
@@ -46,5 +50,10 @@ public class DelegateDataStoreFactory implements DataStoreFactory {
     @Override
     public NodeStatusDataStore getNodeStatusDataStore() {
         return nodeStatusDataStore;
+    }
+
+    @Override
+    public PathTrackingDataStore getPathTrackingDataStore() {
+        return pathTrackingDataStore;
     }
 }

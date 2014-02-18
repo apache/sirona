@@ -95,6 +95,7 @@ public class AgentContext {
                 }
             }
         }
+        //System.out.println("listeners:" + listeners.toString());
         return listeners.toArray(new InvocationListener[listeners.size()]);
     }
 

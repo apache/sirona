@@ -14,20 +14,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.store;
+package org.apache.sirona.store.tracking;
 
-import org.apache.sirona.store.counter.CounterDataStore;
-import org.apache.sirona.store.gauge.CommonGaugeDataStore;
-import org.apache.sirona.store.status.NodeStatusDataStore;
-import org.apache.sirona.store.tracking.PathTrackingDataStore;
+import org.apache.sirona.tracking.PathTrackingEntry;
 
-public interface DataStoreFactory {
+import java.util.Date;
+import java.util.List;
 
-    CounterDataStore getCounterDataStore();
+/**
+ * @author Olivier Lamy
+ */
+public interface PathTrackingDataStore
+{
+    void store( PathTrackingEntry pathTrackingEntry );
 
-    CommonGaugeDataStore getGaugeDataStore();
+    /**
+     * the result will be orderer by startTime
+     *
+     * @param trackingId
+     * @return {@link List} of {@link org.apache.sirona.tracking.PathTrackingEntry} related to a tracking id
+     */
+    List<PathTrackingEntry> retrieve( String trackingId );
 
-    NodeStatusDataStore getNodeStatusDataStore();
+    /**
+     * @param startTime
+     * @param endTime
+     * @return {@link java.lang.String} of all trackingIds available in the system between startTime and endTime
+     */
+    List<String> retrieveTrackingIds( Date startTime, Date endTime );
 
-    PathTrackingDataStore getPathTrackingDataStore();
 }

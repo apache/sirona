@@ -58,10 +58,13 @@ public class SironaAgent {
                 final File[] children = root.listFiles();
                 if (children != null) {
                     for (final File f : children) {
-                        try {
-                            instrumentation.appendToBootstrapClassLoaderSearch(new JarFile(f));
-                        } catch (final IOException e) {
-                            e.printStackTrace();
+                        if (!f.isDirectory()) {
+                            try {
+                                System.out.println("load file:" + f.getPath());
+                                instrumentation.appendToBootstrapClassLoaderSearch(new JarFile(f));
+                            } catch (final IOException e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
                 }
@@ -96,20 +99,29 @@ public class SironaAgent {
             final Class<? extends Annotation> instrumentedMarker = (Class<? extends Annotation>) loader.loadClass("org.apache.sirona.javaagent.Instrumented");
             final Class<?> listener = loader.loadClass("org.apache.sirona.javaagent.spi.InvocationListener");
             if (instrumentation.isRetransformClassesSupported()) {
-                for (final Class<?> jvm : instrumentation.getAllLoadedClasses()) {
-                    if (!jvm.isArray()
-                            && !listener.isAssignableFrom(jvm)
-                            && jvm.getAnnotation(instrumentedMarker) == null
-                            && instrumentation.isModifiableClass(jvm)) {
+                for (final Class<?> clazz : instrumentation.getAllLoadedClasses()) {
+                    if (!clazz.isArray()
+                            && !listener.isAssignableFrom(clazz)
+                            && clazz.getAnnotation(instrumentedMarker) == null
+                            && instrumentation.isModifiableClass(clazz)) {
                         try {
-                            instrumentation.retransformClasses(jvm);
+                            if (Boolean.getBoolean("sirona.agent.debug")) {
+                                System.out.println( "reload clazz:" + clazz.getName() );
+                            }
+                            instrumentation.retransformClasses(clazz);
                         } catch (final Exception e) {
-                            System.err.println("Can't instrument: " + jvm.getName() + "[" + e.getMessage() + "]");
+                            System.err.println("Can't instrument: " + clazz.getName() + "[" + e.getMessage() + "]");
+                            if (Boolean.getBoolean("sirona.agent.debug")) {
+                                e.printStackTrace();
+                            }
                         }
                     }
                 }
             }
         } catch (final Exception e) {
+            if (Boolean.getBoolean("sirona.agent.debug")) {
+                System.out.println( "finished instrumentation setup with exception:" + e.getMessage() );
+            }
             e.printStackTrace();
         }
     }

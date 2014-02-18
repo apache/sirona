@@ -20,9 +20,11 @@ import org.apache.sirona.store.counter.InMemoryCollectorCounterStore;
 import org.apache.sirona.store.gauge.DelegatedCollectorGaugeDataStore;
 import org.apache.sirona.store.status.InMemoryCollectorNodeStatusDataStore;
 import org.apache.sirona.store.DelegateDataStoreFactory;
+import org.apache.sirona.store.tracking.InMemoryPathTrackingDataStore;
 
 public class CollectorDataStoreFactory extends DelegateDataStoreFactory {
     public CollectorDataStoreFactory() {
-        super(new InMemoryCollectorCounterStore(), new DelegatedCollectorGaugeDataStore(), new InMemoryCollectorNodeStatusDataStore());
+        super(new InMemoryCollectorCounterStore(), new DelegatedCollectorGaugeDataStore(), new InMemoryCollectorNodeStatusDataStore(),
+                new InMemoryPathTrackingDataStore());
     }
 }

@@ -42,6 +42,7 @@ public class FileConfigurationProvider implements ConfigurationProvider {
     public Properties configuration() {
         final Properties properties = new Properties();
         final String filename = System.getProperty(Configuration.CONFIG_PROPERTY_PREFIX + "configuration." + name, name);
+        System.out.println( "file:" + filename );
         if (new File(filename).exists()) {
             FileInputStream fileInputStream = null;
             try {
