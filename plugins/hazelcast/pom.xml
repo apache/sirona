@@ -28,6 +28,10 @@
   <name>Apache Sirona Incubator :: Plugins :: Hazelcast</name>
   <packaging>pom</packaging>
 
+  <properties>
+    <hazelcast.version>3.1.5</hazelcast.version>
+  </properties>
+
   <modules>
     <module>agent</module>
     <module>gui</module>
@@ -50,7 +54,4 @@
     </dependencies>
   </dependencyManagement>
 
-  <properties>
-    <hazelcast.version>3.1.1</hazelcast.version>
-  </properties>
 </project>
