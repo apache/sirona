@@ -40,8 +40,8 @@ public class PathTrackingInvocationListener
 
     private static final boolean DEBUG = Boolean.getBoolean( "sirona.agent.debug" );
 
-
-
+    PathTrackingDataStore pathTrackingDataStore = IoCs.findOrCreateInstance( DataStoreFactory.class )
+                                                        .getPathTrackingDataStore();
 
     /**
      * fqcn.methodName
@@ -51,24 +51,17 @@ public class PathTrackingInvocationListener
     @Override
     public boolean accept( String key )
     {
+
         boolean include = super.accept( key );
         if ( !include )
         {
             return false;
         }
+
         if ( DEBUG )
         {
             System.out.println(
                 "PathTrackingInvocationListener#accept, TRACKING_ACTIVATED:" + TRACKING_ACTIVATED + ", key: " + key );
-            //+ "super accept:" + accept );
-        }
-
-        // FIXME here really for testing purpose!!!
-        if ( key.startsWith( "java." )
-            || key.startsWith( "sun." )
-            || key.startsWith( "com.sun." ))
-        {
-            return false;
         }
 
         if ( !TRACKING_ACTIVATED )
@@ -107,14 +100,11 @@ public class PathTrackingInvocationListener
         String className = this.key.substring( 0, lastDot );
         String methodName = this.key.substring( lastDot + 1, this.key.length() );
 
-        // FIXME get node from configuration
-        //
+        // FIXME get node from configuration!
+        // FIXME correctly configure the level!
         PathTrackingEntry pathTrackingEntry =
-            new PathTrackingEntry( PathTrackingThreadLocal.get(), "node", className, methodName, start, ( end - start ) );
+            new PathTrackingEntry( PathTrackingThreadLocal.get(), "node", className, methodName, start, ( end - start ), 0 );
 
-        DataStoreFactory dataStoreFactory = IoCs.findOrCreateInstance( DataStoreFactory.class );
-
-        PathTrackingDataStore pathTrackingDataStore = dataStoreFactory.getPathTrackingDataStore();
 
         if ( DEBUG )
         {

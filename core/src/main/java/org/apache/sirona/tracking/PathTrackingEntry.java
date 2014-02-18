@@ -16,26 +16,19 @@
  */
 package org.apache.sirona.tracking;
 
+import java.io.Serializable;
+
 /**
  * @author Olivier Lamy
  */
 public class PathTrackingEntry
+    implements Serializable
 {
 
     /**
      * a generated id to follow up the path call
      */
     private String trackingId;
-
-    /**
-     * the current entry id
-     */
-    private String pathTrakingEntryId;
-
-    /**
-     * the parent entry id
-     */
-    private String parentPathTrakingEntryId;
 
     /**
      * server instance for this call
@@ -62,8 +55,13 @@ public class PathTrackingEntry
      */
     private long executionTime;
 
+    /**
+     * the tree level in the hierarchy
+     */
+    private int level;
+
     public PathTrackingEntry( String trackingId, String nodeId, String className, String methodName, long startTime,
-                              long executionTime )
+                              long executionTime, int level )
     {
         this.trackingId = trackingId;
         this.nodeId = nodeId;
@@ -71,6 +69,7 @@ public class PathTrackingEntry
         this.methodName = methodName;
         this.startTime = startTime;
         this.executionTime = executionTime;
+        this.level = level;
     }
 
     public String getTrackingId()
@@ -133,24 +132,14 @@ public class PathTrackingEntry
         this.executionTime = executionTime;
     }
 
-    public String getPathTrakingEntryId()
+    public int getLevel()
     {
-        return pathTrakingEntryId;
+        return level;
     }
 
-    public void setPathTrakingEntryId( String pathTrakingEntryId )
+    public void setLevel( int level )
     {
-        this.pathTrakingEntryId = pathTrakingEntryId;
-    }
-
-    public String getParentPathTrakingEntryId()
-    {
-        return parentPathTrakingEntryId;
-    }
-
-    public void setParentPathTrakingEntryId( String parentPathTrakingEntryId )
-    {
-        this.parentPathTrakingEntryId = parentPathTrakingEntryId;
+        this.level = level;
     }
 
     @Override
@@ -158,13 +147,12 @@ public class PathTrackingEntry
     {
         final StringBuilder sb = new StringBuilder( "PathTrackingEntry{" );
         sb.append( "trackingId='" ).append( trackingId ).append( '\'' );
-        sb.append( ", pathTrakingEntryId='" ).append( pathTrakingEntryId ).append( '\'' );
-        sb.append( ", parentPathTrakingEntryId='" ).append( parentPathTrakingEntryId ).append( '\'' );
         sb.append( ", nodeId='" ).append( nodeId ).append( '\'' );
         sb.append( ", className='" ).append( className ).append( '\'' );
         sb.append( ", methodName='" ).append( methodName ).append( '\'' );
         sb.append( ", startTime=" ).append( startTime );
         sb.append( ", executionTime=" ).append( executionTime );
+        sb.append( ", level=" ).append( level );
         sb.append( '}' );
         return sb.toString();
     }

@@ -23,6 +23,7 @@ import org.apache.sirona.store.DataStoreFactory;
 import org.apache.sirona.store.tracking.InMemoryPathTrackingDataStore;
 import org.apache.sirona.store.tracking.PathTrackingDataStore;
 import org.apache.sirona.tracking.PathTrackingEntry;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -53,7 +54,11 @@ public class PathTrackingInvocationListenerTest
 
         Map<String, List<PathTrackingEntry>> all = ptds.retrieveAll();
 
-        System.out.println ("simpleTest end:" + all.toString());
+        Assert.assertTrue( !all.isEmpty() );
+
+        PathTrackingEntry first = all.entrySet().iterator().next().getValue().get( 0 );
+
+        System.out.println("first entry: " + first);
 
     }
 

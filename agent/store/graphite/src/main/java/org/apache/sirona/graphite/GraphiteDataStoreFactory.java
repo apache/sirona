@@ -19,12 +19,15 @@ package org.apache.sirona.graphite;
 import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.store.DelegateDataStoreFactory;
 import org.apache.sirona.store.status.EmptyStatuses;
+import org.apache.sirona.store.tracking.InMemoryPathTrackingDataStore;
 
 public class GraphiteDataStoreFactory extends DelegateDataStoreFactory {
     public GraphiteDataStoreFactory() {
         super(
             IoCs.processInstance(new GraphiteCounterDataStore()),
             IoCs.processInstance(new GraphiteGaugeDataStore()),
-            new EmptyStatuses());
+            new EmptyStatuses(),
+            // FIXME real implementation in Graphite. olamy: not sure it's really supported
+            new InMemoryPathTrackingDataStore());
     }
 }

@@ -19,10 +19,14 @@ package org.apache.sirona.cassandra;
 import org.apache.sirona.cassandra.collector.counter.CassandraCollectorCounterDataStore;
 import org.apache.sirona.cassandra.collector.gauge.CassandraCollectorGaugeDataStore;
 import org.apache.sirona.cassandra.collector.status.CassandraCollectorNodeStatusDataStore;
+import org.apache.sirona.cassandra.pathtracking.CassandraPathTrackingDataStore;
 import org.apache.sirona.store.DelegateDataStoreFactory;
 
 public class CassandraCollectorDataStoreFactory extends DelegateDataStoreFactory {
     public CassandraCollectorDataStoreFactory() {
-        super(new CassandraCollectorCounterDataStore(), new CassandraCollectorGaugeDataStore(), new CassandraCollectorNodeStatusDataStore());
+        super(new CassandraCollectorCounterDataStore(),
+              new CassandraCollectorGaugeDataStore(),
+              new CassandraCollectorNodeStatusDataStore(),
+              new CassandraPathTrackingDataStore());
     }
 }

@@ -18,12 +18,15 @@ package org.apache.sirona.cube;
 
 import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.store.DelegateDataStoreFactory;
+import org.apache.sirona.store.tracking.InMemoryPathTrackingDataStore;
 
 public class CubeDataStoreFactory extends DelegateDataStoreFactory {
     public CubeDataStoreFactory() {
         super(
             IoCs.processInstance(new CubeCounterDataStore()),
             IoCs.processInstance(new CubeGaugeDataStore()),
-            IoCs.processInstance(new CubeNodeStatusDataStore()));
+            IoCs.processInstance(new CubeNodeStatusDataStore()),
+            // FIXME real implementation in Cube. olamy: not sure it's really supported
+            new InMemoryPathTrackingDataStore());
     }
 }
