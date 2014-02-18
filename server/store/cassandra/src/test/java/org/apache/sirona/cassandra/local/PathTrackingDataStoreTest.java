@@ -28,7 +28,7 @@ import org.junit.runner.RunWith;
 import java.util.Date;
 
 /**
- * @author Olivier Lamy
+ *
  */
 @RunWith( CassandraRunner.class )
 public class PathTrackingDataStoreTest

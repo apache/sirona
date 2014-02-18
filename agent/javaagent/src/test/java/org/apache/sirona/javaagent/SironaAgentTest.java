@@ -22,7 +22,7 @@ import org.junit.Test;
 import java.util.Map;
 
 /**
- * @author Olivier Lamy
+ *
  */
 public class SironaAgentTest
 {

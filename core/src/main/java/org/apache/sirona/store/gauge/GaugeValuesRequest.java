@@ -19,7 +19,7 @@ package org.apache.sirona.store.gauge;
 import org.apache.sirona.Role;
 
 /**
- * @author Olivier Lamy
+ *
  */
 public class GaugeValuesRequest {
 

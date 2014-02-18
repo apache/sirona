@@ -43,7 +43,7 @@ import java.util.TreeSet;
 import static org.apache.sirona.cassandra.collector.CassandraSirona.*;
 
 /**
- * @author Olivier Lamy
+ *
  */
 public class CassandraPathTrackingDataStore
     implements PathTrackingDataStore

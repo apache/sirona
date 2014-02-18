@@ -19,7 +19,7 @@ package org.apache.sirona.tracking;
 import java.io.Serializable;
 
 /**
- * @author Olivier Lamy
+ *
  */
 public class PathTrackingEntry
     implements Serializable

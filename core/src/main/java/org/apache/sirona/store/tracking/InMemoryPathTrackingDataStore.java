@@ -33,7 +33,7 @@ import java.util.concurrent.ConcurrentMap;
  * Very simple in memory storage for Path tracking feature
  * <b>MUST NOT be used in production</b>
  *
- * @author Olivier Lamy
+ *
  */
 public class InMemoryPathTrackingDataStore
     implements PathTrackingDataStore

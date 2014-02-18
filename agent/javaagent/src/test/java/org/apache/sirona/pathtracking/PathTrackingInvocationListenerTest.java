@@ -32,7 +32,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * @author Olivier Lamy
+ *
  */
 @RunWith(JavaAgentRunner.class)
 public class PathTrackingInvocationListenerTest

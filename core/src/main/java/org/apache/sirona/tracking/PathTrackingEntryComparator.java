@@ -19,7 +19,7 @@ package org.apache.sirona.tracking;
 import java.util.Comparator;
 
 /**
- * @author Olivier Lamy
+ *
  */
 public class PathTrackingEntryComparator
     implements Comparator<PathTrackingEntry>

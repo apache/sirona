@@ -24,7 +24,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * @author Olivier Lamy
+ *
  */
 public class PathTracker
 {

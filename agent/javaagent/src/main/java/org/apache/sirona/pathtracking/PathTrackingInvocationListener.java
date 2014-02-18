@@ -27,7 +27,7 @@ import org.apache.sirona.tracking.PathTracker;
 import org.apache.sirona.tracking.PathTrackingEntry;
 
 /**
- * @author Olivier Lamy
+ *
  */
 public class PathTrackingInvocationListener extends ConfigurableListener {
 

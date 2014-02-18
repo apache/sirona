@@ -20,7 +20,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 /**
- * @author Olivier Lamy
+ *
  */
 public class ConfigurationTest {
 
