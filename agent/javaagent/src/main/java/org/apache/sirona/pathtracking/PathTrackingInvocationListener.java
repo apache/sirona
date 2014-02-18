@@ -37,11 +37,16 @@ public class PathTrackingInvocationListener
 
     private static final Integer TIMESTAMP_KEY = "Sirona-path-tracking-key".hashCode();
 
+    private static final Integer PATH_TRACKING_LEVEL_KEY = "Sirona-path-tracking-level-key".hashCode();
+
     private static final boolean TRACKING_ACTIVATED =
         Configuration.is( Configuration.CONFIG_PROPERTY_PREFIX + "javaagent.path.tracking.activate", false );
 
-    PathTrackingDataStore pathTrackingDataStore = IoCs.findOrCreateInstance( DataStoreFactory.class )
-                                                        .getPathTrackingDataStore();
+    private PathTrackingDataStore pathTrackingDataStore =
+        IoCs.findOrCreateInstance( DataStoreFactory.class ).getPathTrackingDataStore();
+
+
+    private PathTracker.PathTrackingInformation pathTrackingInformation;
 
     /**
      * fqcn.methodName
@@ -70,6 +75,14 @@ public class PathTrackingInvocationListener
         }
 
         this.key = key;
+
+        int lastDot = this.key.lastIndexOf( "." );
+
+        String className = this.key.substring( 0, lastDot );
+        String methodName = this.key.substring( lastDot + 1, this.key.length() );
+
+        this.pathTrackingInformation = new PathTracker.PathTrackingInformation( className, methodName );
+
         return true;
     }
 
@@ -81,6 +94,8 @@ public class PathTrackingInvocationListener
             System.out.println( "PathTrackingInvocationListener#before:" + context.getKey() );
         }
         context.put( TIMESTAMP_KEY, Long.valueOf( System.nanoTime() ) );
+        context.put( PATH_TRACKING_LEVEL_KEY, PathTracker.start( this.pathTrackingInformation ) );
+
         context.getKey();
     }
 
@@ -95,22 +110,22 @@ public class PathTrackingInvocationListener
 
         Long end = System.nanoTime();
         Long start = Long.class.cast( context.get( TIMESTAMP_KEY, Long.class ) );
-        int lastDot = this.key.lastIndexOf( "." );
 
-        String className = this.key.substring( 0, lastDot );
-        String methodName = this.key.substring( lastDot + 1, this.key.length() );
+        String uuid = PathTracker.get();
 
         // FIXME get node from configuration!
         // FIXME correctly configure the level!
         PathTrackingEntry pathTrackingEntry =
-            new PathTrackingEntry( PathTracker.get(), "node", className, methodName, start, ( end - start ), 0 );
-
+            new PathTrackingEntry( uuid, "node", pathTrackingInformation.getClassName(), pathTrackingInformation.getMethodName(),
+                                   start, ( end - start ),
+                                   context.get( PATH_TRACKING_LEVEL_KEY, Integer.class ) );
 
         if ( SironaAgent.AGENT_DEBUG )
         {
             System.out.println( "PathTrackingInvocationListener: after: " + pathTrackingEntry.toString()
                                     + ", pathTrackingDataStore type:" + pathTrackingDataStore.getClass().getName() );
         }
+        PathTracker.stop( pathTrackingInformation );
 
         pathTrackingDataStore.store( pathTrackingEntry );
 

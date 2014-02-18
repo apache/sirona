@@ -17,6 +17,7 @@
 package org.apache.sirona.tracking;
 
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author Olivier Lamy
@@ -24,12 +25,14 @@ import java.util.UUID;
 public class PathTracker
 {
 
-    private static final boolean DEBUG = Boolean.getBoolean( "sirona.agent.debug" );
-
     // FIXME olamy: so not using InheritableThreadLocal will create a new uuid in case of thread creation
     // whereas it's technically the same "transaction" (ie jvm call path)
-    //private static final InheritableThreadLocal<String> THREAD_LOCAL = new InheritableThreadLocal<String>()
-    private static final ThreadLocal<String> THREAD_LOCAL = new ThreadLocal<String>()
+    //private static final InheritableThreadLocal<String> THREAD_LOCAL_TX = new InheritableThreadLocal<String>()
+
+    /**
+     * Thread local to store a "transaction id" (i.e a java call)
+     */
+    private static final ThreadLocal<String> THREAD_LOCAL_TX = new ThreadLocal<String>()
     {
         @Override
         protected String initialValue()
@@ -47,25 +50,150 @@ public class PathTracker
 
     };
 
+    // FIXME olamy: AtomicInteger because of starting multiple level but that's not supported with the THREAD_LOCAL_TX
+    // because it doesn't use an InheritableThreadLocal so really sure :-)
+
+    /**
+     * Thread Local to store current call tree level
+     */
+    private static final ThreadLocal<AtomicInteger> THREAD_LOCAL_LEVEL = new ThreadLocal<AtomicInteger>()
+    {
+        @Override
+        protected AtomicInteger initialValue()
+        {
+            return new AtomicInteger( 1 );
+        }
+    };
+
+    public static class PathTrackingInformation
+    {
+        private String className;
+
+        private String methodName;
+
+        private PathTrackingInformation parent;
+
+        public PathTrackingInformation( String className, String methodName )
+        {
+            this.className = className;
+            this.methodName = methodName;
+        }
+
+        public String getClassName()
+        {
+            return className;
+        }
+
+        public String getMethodName()
+        {
+            return methodName;
+        }
+
+        public PathTrackingInformation getParent()
+        {
+            return parent;
+        }
+
+        public void setParent( PathTrackingInformation parent )
+        {
+            this.parent = parent;
+        }
+
+        @Override
+        public String toString()
+        {
+            final StringBuilder sb = new StringBuilder( "PathTrackingInformation{" );
+            sb.append( "className='" ).append( className ).append( '\'' );
+            sb.append( ", methodName='" ).append( methodName ).append( '\'' );
+            sb.append( ", parent=" ).append( parent );
+            sb.append( '}' );
+            return sb.toString();
+        }
+    }
+
+    /**
+     * Thread local to store the current Class#Method used
+     * prevent to inc level in same class used
+     */
+    private static final ThreadLocal<PathTrackingInformation> THREAD_LOCAL_LEVEL_INFO =
+        new ThreadLocal<PathTrackingInformation>()
+        {
+            // no op
+        };
+
+
     // Returns the current thread's unique ID, assigning it if necessary
     public static String get()
     {
-        return THREAD_LOCAL.get();
+        return THREAD_LOCAL_TX.get();
     }
 
     public static void set( String uuid )
     {
-        THREAD_LOCAL.set( uuid );
+        THREAD_LOCAL_TX.set( uuid );
     }
 
-    public static void start()
+    /**
+     * FIXME not sure we really need the uuid but just in case for future usage :-)
+     */
+    public static int start( PathTrackingInformation pathTrackingInformation )
     {
+        int level = 0;
+        PathTrackingInformation current = THREAD_LOCAL_LEVEL_INFO.get();
+        if ( current  == null )
+        {
+            level = THREAD_LOCAL_LEVEL.get().incrementAndGet();
+        }
+        else
+        {
+            // same class so no inc
+            if ( current.className.equals( pathTrackingInformation.className ) //
+                && current.methodName.equals( pathTrackingInformation.methodName ) )
+            {
+                // yup sounds to be the same level so no level inc!
+                level = THREAD_LOCAL_LEVEL.get().get();
+            }
+            else
+            {
+                level = THREAD_LOCAL_LEVEL.get().incrementAndGet();
+            }
 
+            pathTrackingInformation.setParent( current );
+        }
+
+        THREAD_LOCAL_LEVEL_INFO.set( pathTrackingInformation );
+
+        //System.out.println("start level: " + level + " for key " + key);
+
+        return level;
     }
 
-
-    public static void stop()
+    /**
+     * FIXME not sure we really need the uuid but just in case for future usage :-)
+     */
+    public static int stop( PathTrackingInformation pathTrackingInformation )
     {
+        int level = 0;
 
+        PathTrackingInformation current = THREAD_LOCAL_LEVEL_INFO.get();
+        // same class so no inc
+        if ( current.className.equals( pathTrackingInformation.className ) //
+            && current.methodName.equals( pathTrackingInformation.methodName ) )
+        {
+            // yup sounds to be the same level so no level inc!
+            level = THREAD_LOCAL_LEVEL.get().get();
+        }
+        else
+        {
+            level = THREAD_LOCAL_LEVEL.get().decrementAndGet();
+        }
+
+        THREAD_LOCAL_LEVEL_INFO.set( pathTrackingInformation );
+
+        //System.out.println("start level: " + level + " for key " + key);
+
+        return level;
     }
+
+
 }

@@ -21,27 +21,28 @@ import org.apache.sirona.javaagent.AgentArgs;
 import org.apache.sirona.javaagent.JavaAgentRunner;
 import org.apache.sirona.store.DataStoreFactory;
 import org.apache.sirona.store.tracking.InMemoryPathTrackingDataStore;
-import org.apache.sirona.store.tracking.PathTrackingDataStore;
 import org.apache.sirona.tracking.PathTrackingEntry;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Olivier Lamy
  */
-@RunWith( JavaAgentRunner.class )
+@RunWith(JavaAgentRunner.class)
 public class PathTrackingInvocationListenerTest
 {
 
     @Test
-    @AgentArgs( value ="",
-    sysProps = "project.build.directory=${project.build.directory}|sirona.agent.debug=${sirona.agent.debug}|org.apache.sirona.configuration.sirona.properties=${project.build.directory}/test-classes/pathtracking/sirona.properties")
+    @AgentArgs(value = "",
+               sysProps = "project.build.directory=${project.build.directory}|sirona.agent.debug=${sirona.agent.debug}|org.apache.sirona.configuration.sirona.properties=${project.build.directory}/test-classes/pathtracking/sirona.properties")
     public void simpleTest()
-    throws Exception
+        throws Exception
     {
 
         App app = new App();
@@ -52,25 +53,41 @@ public class PathTrackingInvocationListenerTest
         InMemoryPathTrackingDataStore ptds =
             InMemoryPathTrackingDataStore.class.cast( dataStoreFactory.getPathTrackingDataStore() );
 
-        Map<String, List<PathTrackingEntry>> all = ptds.retrieveAll();
+        Map<String, Set<PathTrackingEntry>> all = ptds.retrieveAll();
 
         Assert.assertTrue( !all.isEmpty() );
 
-        PathTrackingEntry first = all.entrySet().iterator().next().getValue().get( 0 );
+        List<PathTrackingEntry> entries = new ArrayList<PathTrackingEntry>( all.values().iterator().next() );
 
-        System.out.println("first entry: " + first);
+        PathTrackingEntry first = entries.get( 0 );
 
+        System.out.println( "first entry: " + first );
+
+        PathTrackingEntry second = entries.get( 1 );
+
+        System.out.println( "second entry: " + second );
+
+        PathTrackingEntry last = entries.get( entries.size() - 1 );
+
+        System.out.println( "last entry: " + last );
+
+        for ( PathTrackingEntry entry : entries )
+        {
+            System.out.println( "entry:" + entry );
+        }
     }
 
 
     public static class App
     {
-        public void foo() throws Exception
+        public void foo()
+            throws Exception
         {
             Thread.sleep( 1000 );
         }
 
-        public void beer() throws Exception
+        public void beer()
+            throws Exception
         {
             this.foo();
         }

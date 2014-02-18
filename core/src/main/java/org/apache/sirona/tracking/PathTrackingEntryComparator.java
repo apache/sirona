@@ -14,38 +14,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.sirona.tracking;
 
-package org.apache.sirona.cassandra.pathtracking;
-
-import org.apache.sirona.store.tracking.PathTrackingDataStore;
-import org.apache.sirona.tracking.PathTrackingEntry;
-
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.Comparator;
 
 /**
  * @author Olivier Lamy
  */
-public class CassandraPathTrackingDataStore
-    implements PathTrackingDataStore
+public class PathTrackingEntryComparator
+    implements Comparator<PathTrackingEntry>
 {
 
-    @Override
-    public void store( PathTrackingEntry pathTrackingEntry )
-    {
-
-    }
+    public static final PathTrackingEntryComparator INSTANCE = new PathTrackingEntryComparator();
 
     @Override
-    public Collection<PathTrackingEntry> retrieve( String trackingId )
+    public int compare( PathTrackingEntry pathTrackingEntry, PathTrackingEntry pathTrackingEntry2 )
     {
-        return null;
-    }
-
-    @Override
-    public Collection<String> retrieveTrackingIds( Date startTime, Date endTime )
-    {
-        return null;
+        // TODO add level in comparator
+        return Long.valueOf( pathTrackingEntry.getStartTime() ).compareTo(
+            Long.valueOf( pathTrackingEntry2.getStartTime() ) );
     }
 }

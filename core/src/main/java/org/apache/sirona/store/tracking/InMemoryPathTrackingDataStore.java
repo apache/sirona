@@ -17,39 +17,48 @@
 package org.apache.sirona.store.tracking;
 
 import org.apache.sirona.tracking.PathTrackingEntry;
+import org.apache.sirona.tracking.PathTrackingEntryComparator;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * Very simple in memory storage for Path tracking feature
  * <b>MUST NOT be used in production</b>
+ *
  * @author Olivier Lamy
  */
-public class InMemoryPathTrackingDataStore implements PathTrackingDataStore
+public class InMemoryPathTrackingDataStore
+    implements PathTrackingDataStore
 {
     /**
      * store path track tracking entries list per path tracking id
      */
-    private ConcurrentHashMap<String, List<PathTrackingEntry>> pathTrackingEntries = new ConcurrentHashMap<String, List<PathTrackingEntry>>( 50 );
+    private ConcurrentMap<String, Set<PathTrackingEntry>> pathTrackingEntries =
+        new ConcurrentHashMap<String, Set<PathTrackingEntry>>( 50 );
 
     @Override
     public void store( PathTrackingEntry pathTrackingEntry )
     {
-        List<PathTrackingEntry> pathTrackingEntries = this.pathTrackingEntries.get( pathTrackingEntry.getTrackingId() );
+        Set<PathTrackingEntry> pathTrackingEntries = this.pathTrackingEntries.get( pathTrackingEntry.getTrackingId() );
 
-        if (pathTrackingEntries == null) {
-            pathTrackingEntries = new ArrayList<PathTrackingEntry>( );
+        if ( pathTrackingEntries == null )
+        {
+            pathTrackingEntries = new TreeSet<PathTrackingEntry>( PathTrackingEntryComparator.INSTANCE );
         }
         pathTrackingEntries.add( pathTrackingEntry );
         this.pathTrackingEntries.put( pathTrackingEntry.getTrackingId(), pathTrackingEntries );
     }
 
     @Override
-    public List<PathTrackingEntry> retrieve( String trackingId )
+    public Collection<PathTrackingEntry> retrieve( String trackingId )
     {
         return this.pathTrackingEntries.get( trackingId );
     }
@@ -57,27 +66,33 @@ public class InMemoryPathTrackingDataStore implements PathTrackingDataStore
     @Override
     public List<String> retrieveTrackingIds( Date startTime, Date endTime )
     {
-        List<String> trackingIds = new ArrayList<String>(  );
-        for ( List<PathTrackingEntry> pathTrackingEntries : this.pathTrackingEntries.values() )
+        List<String> trackingIds = new ArrayList<String>();
+        for ( Set<PathTrackingEntry> pathTrackingEntries : this.pathTrackingEntries.values() )
         {
-            if (pathTrackingEntries.isEmpty()) {
+            if ( pathTrackingEntries.isEmpty() )
+            {
                 continue;
             }
-            if (pathTrackingEntries.get( 0 ).getStartTime() / 1000000 > startTime.getTime() //
-                && pathTrackingEntries.get( 0 ).getStartTime() / 1000000 < endTime.getTime()) {
-              trackingIds.add( pathTrackingEntries.get( 0 ).getTrackingId() );
+
+            PathTrackingEntry first = pathTrackingEntries.iterator().next();
+
+            if ( first.getStartTime() / 1000000 > startTime.getTime() //
+                && first.getStartTime() / 1000000 < endTime.getTime() )
+            {
+                trackingIds.add( first.getTrackingId() );
             }
         }
         return trackingIds;
     }
 
     /**
-     *
      * <b>use with CAUTION as can return a lot of data</b>
      * <p>This method is use for testing purpose</p>
+     *
      * @return {@link List} containing all {@link PathTrackingEntry}
      */
-    public Map<String, List<PathTrackingEntry>> retrieveAll() {
+    public Map<String, Set<PathTrackingEntry>> retrieveAll()
+    {
         return this.pathTrackingEntries;
     }
 }
