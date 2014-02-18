@@ -102,12 +102,9 @@ public class PathTracker
         @Override
         public String toString()
         {
-            final StringBuilder sb = new StringBuilder( "PathTrackingInformation{" );
-            sb.append( "className='" ).append( className ).append( '\'' );
-            sb.append( ", methodName='" ).append( methodName ).append( '\'' );
-            sb.append( ", parent=" ).append( parent );
-            sb.append( '}' );
-            return sb.toString();
+            return "PathTrackingInformation{className='" + className
+                    + "', methodName='" + methodName
+                    + "\', parent=" + parent + '}';
         }
     }
 
