@@ -23,6 +23,9 @@ import java.util.UUID;
  */
 public class PathTrackingThreadLocal
 {
+
+    private static final boolean DEBUG = Boolean.getBoolean( "sirona.agent.debug" );
+
     //private static final InheritableThreadLocal<String> THREAD_LOCAL = new InheritableThreadLocal<String>()
     private static final ThreadLocal<String> THREAD_LOCAL = new ThreadLocal<String>()
     {

@@ -21,6 +21,7 @@ import org.apache.sirona.tracking.PathTrackingEntry;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -68,5 +69,15 @@ public class InMemoryPathTrackingDataStore implements PathTrackingDataStore
             }
         }
         return trackingIds;
+    }
+
+    /**
+     *
+     * <b>use with CAUTION as can return a lot of data</b>
+     * <p>This method is use for testing purpose</p>
+     * @return {@link List} containing all {@link PathTrackingEntry}
+     */
+    public Map<String, List<PathTrackingEntry>> retrieveAll() {
+        return this.pathTrackingEntries;
     }
 }

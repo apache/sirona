@@ -19,6 +19,7 @@ package org.apache.sirona.pathtracking;
 import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.javaagent.AgentContext;
+import org.apache.sirona.javaagent.listener.ConfigurableListener;
 import org.apache.sirona.javaagent.spi.InvocationListener;
 import org.apache.sirona.store.tracking.PathTrackingDataStore;
 import org.apache.sirona.tracking.PathTrackingEntry;
@@ -27,13 +28,16 @@ import org.apache.sirona.tracking.PathTrackingEntry;
  * @author Olivier Lamy
  */
 public class PathTrackingInvocationListener
+    extends ConfigurableListener
     implements InvocationListener
 {
 
     private static final Integer TIMESTAMP_KEY = "Sirona-path-tracking-key".hashCode();
 
-    private boolean trackingActivated =
+    private static final boolean TRACKING_ACTIVATED =
         Configuration.is( Configuration.CONFIG_PROPERTY_PREFIX + "javaagent.path.tracking.activate", false );
+
+    private static final boolean DEBUG = Boolean.getBoolean( "sirona.agent.debug" );
 
     /**
      * fqcn.methodName
@@ -43,11 +47,15 @@ public class PathTrackingInvocationListener
     @Override
     public boolean accept( String key )
     {
-        if ( Boolean.getBoolean( "sirona.agent.debug" ) )
+
+        if ( DEBUG )
         {
-            System.out.println( "PathTrackingInvocationListener#accept, trackingActivated:" + trackingActivated+ ", key: " + key );
+            System.out.println(
+                "PathTrackingInvocationListener#accept, TRACKING_ACTIVATED:" + TRACKING_ACTIVATED + ", key: " + key );
+            //+ "super accept:" + accept );
         }
-        if ( !trackingActivated )
+
+        if ( !TRACKING_ACTIVATED )
         {
             return false;
         }
@@ -59,11 +67,7 @@ public class PathTrackingInvocationListener
     @Override
     public void before( AgentContext context )
     {
-        if ( !trackingActivated )
-        {
-            return;
-        }
-        if ( Boolean.getBoolean( "sirona.agent.debug" ) )
+        if ( DEBUG )
         {
             System.out.println( "PathTrackingInvocationListener#before:" + context.getKey() );
         }
@@ -74,12 +78,9 @@ public class PathTrackingInvocationListener
     @Override
     public void after( AgentContext context, Object result, Throwable error )
     {
-        if ( !trackingActivated )
-        {
-            return;
-        }
 
-        if (Boolean.getBoolean("sirona.agent.debug")) {
+        if ( DEBUG )
+        {
             System.out.println( "PathTrackingInvocationListener#after: " + context.getKey() );
         }
 
@@ -91,11 +92,12 @@ public class PathTrackingInvocationListener
         String methodName = this.key.substring( lastDot + 1, this.key.length() );
 
         // FIXME get node from configuration
+        // PathTrackingThreadLocal.get()
         PathTrackingEntry pathTrackingEntry =
-            new PathTrackingEntry( PathTrackingThreadLocal.get(), "node", className, methodName, start,
-                                   ( end - start ) );
+            new PathTrackingEntry( "1", "node", className, methodName, start, ( end - start ) );
 
-        if (Boolean.getBoolean("sirona.agent.debug")) {
+        if ( DEBUG )
+        {
             System.out.println( "PathTrackingInvocationListener: after: " + pathTrackingEntry.toString() );
         }
 

@@ -19,9 +19,14 @@ package org.apache.sirona.pathtracking;
 import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.javaagent.AgentArgs;
 import org.apache.sirona.javaagent.JavaAgentRunner;
+import org.apache.sirona.store.tracking.InMemoryPathTrackingDataStore;
 import org.apache.sirona.store.tracking.PathTrackingDataStore;
+import org.apache.sirona.tracking.PathTrackingEntry;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Olivier Lamy
@@ -31,7 +36,7 @@ public class PathTrackingInvocationListenerTest
 {
 
     @Test
-    @AgentArgs( value ="libs=${project.build.directory}/lib",
+    @AgentArgs( value ="",
     sysProps = "project.build.directory=${project.build.directory}|sirona.agent.debug=${sirona.agent.debug}|org.apache.sirona.configuration.sirona.properties=${project.build.directory}/test-classes/pathtracking/sirona.properties")
     public void simpleTest()
     throws Exception
@@ -40,9 +45,12 @@ public class PathTrackingInvocationListenerTest
         App app = new App();
         app.beer();
 
-        PathTrackingDataStore ptds = IoCs.getInstance( PathTrackingDataStore.class );
+        InMemoryPathTrackingDataStore ptds =
+            InMemoryPathTrackingDataStore.class.cast( IoCs.getInstance( PathTrackingDataStore.class ) );
 
-        System.out.println ("simpleTest end");
+        Map<String, List<PathTrackingEntry>> all = ptds.retrieveAll();
+
+        System.out.println ("simpleTest end:" + all.toString());
 
     }
 
