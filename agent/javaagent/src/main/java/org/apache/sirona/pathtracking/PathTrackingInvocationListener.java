@@ -24,8 +24,8 @@ import org.apache.sirona.javaagent.listener.ConfigurableListener;
 import org.apache.sirona.javaagent.spi.InvocationListener;
 import org.apache.sirona.store.DataStoreFactory;
 import org.apache.sirona.store.tracking.PathTrackingDataStore;
+import org.apache.sirona.tracking.PathTracker;
 import org.apache.sirona.tracking.PathTrackingEntry;
-import org.apache.sirona.tracking.PathTrackingThreadLocal;
 
 /**
  * @author Olivier Lamy
@@ -103,7 +103,7 @@ public class PathTrackingInvocationListener
         // FIXME get node from configuration!
         // FIXME correctly configure the level!
         PathTrackingEntry pathTrackingEntry =
-            new PathTrackingEntry( PathTrackingThreadLocal.get(), "node", className, methodName, start, ( end - start ), 0 );
+            new PathTrackingEntry( PathTracker.get(), "node", className, methodName, start, ( end - start ), 0 );
 
 
         if ( SironaAgent.AGENT_DEBUG )

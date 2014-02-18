@@ -21,12 +21,13 @@ import java.util.UUID;
 /**
  * @author Olivier Lamy
  */
-public class PathTrackingThreadLocal
+public class PathTracker
 {
 
     private static final boolean DEBUG = Boolean.getBoolean( "sirona.agent.debug" );
 
-
+    // FIXME olamy: so not using InheritableThreadLocal will create a new uuid in case of thread creation
+    // whereas it's technically the same "transaction" (ie jvm call path)
     //private static final InheritableThreadLocal<String> THREAD_LOCAL = new InheritableThreadLocal<String>()
     private static final ThreadLocal<String> THREAD_LOCAL = new ThreadLocal<String>()
     {
@@ -52,8 +53,19 @@ public class PathTrackingThreadLocal
         return THREAD_LOCAL.get();
     }
 
-    public static void set(String uuid)
+    public static void set( String uuid )
     {
         THREAD_LOCAL.set( uuid );
+    }
+
+    public static void start()
+    {
+
+    }
+
+
+    public static void stop()
+    {
+
     }
 }
