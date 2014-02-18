@@ -153,9 +153,12 @@ public final class PredicateEvaluator {
                             return true;
                         }
                     }
-                    final String sub = value.substring("org.apache.".length());
-                    if (sub.startsWith("xerces")) {
-                        return true;
+                    final int length = "org.apache.".length();
+                    if (value.length() >= length) {
+                        final String sub = value.substring("org.apache.".length());
+                        if (sub.startsWith("xerces")) {
+                            return true;
+                        }
                     }
                 }
             }
