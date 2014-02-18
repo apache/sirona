@@ -16,6 +16,8 @@
 */
 package org.apache.sirona.tracking;
 
+import java.util.UUID;
+
 /**
  * @author Olivier Lamy
  */
@@ -24,13 +26,14 @@ public class PathTrackingThreadLocal
 
     private static final boolean DEBUG = Boolean.getBoolean( "sirona.agent.debug" );
 
+
     //private static final InheritableThreadLocal<String> THREAD_LOCAL = new InheritableThreadLocal<String>()
     private static final ThreadLocal<String> THREAD_LOCAL = new ThreadLocal<String>()
     {
         @Override
         protected String initialValue()
         {
-            return "Sirona-" + System.nanoTime();// + UUID.randomUUID().toString();
+            return "Sirona-" + UUID.randomUUID().toString();// + System.nanoTime();//
         }
 
         /*
