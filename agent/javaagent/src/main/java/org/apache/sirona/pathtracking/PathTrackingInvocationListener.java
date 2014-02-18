@@ -24,6 +24,7 @@ import org.apache.sirona.javaagent.spi.InvocationListener;
 import org.apache.sirona.store.DataStoreFactory;
 import org.apache.sirona.store.tracking.PathTrackingDataStore;
 import org.apache.sirona.tracking.PathTrackingEntry;
+import org.apache.sirona.tracking.PathTrackingThreadLocal;
 
 /**
  * @author Olivier Lamy
