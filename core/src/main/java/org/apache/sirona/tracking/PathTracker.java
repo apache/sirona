@@ -136,9 +136,6 @@ public class PathTracker
 
     // An other solution could be using Thread.currentThread().getStackTrace()
 
-    /**
-     * FIXME not sure we really need the uuid but just in case for future usage :-)
-     */
     public static int start( PathTrackingInformation pathTrackingInformation )
     {
         int level = 0;
@@ -171,9 +168,6 @@ public class PathTracker
         return level;
     }
 
-    /**
-     * FIXME not sure we really need the uuid but just in case for future usage :-)
-     */
     public static int stop( PathTrackingInformation pathTrackingInformation )
     {
         int level = 0;
