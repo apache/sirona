@@ -135,7 +135,7 @@ public class PathTracker
 
     public static int start( PathTrackingInformation pathTrackingInformation )
     {
-        int level = 0;
+        final int level;
         PathTrackingInformation current = THREAD_LOCAL_LEVEL_INFO.get();
         if ( current  == null )
         {
@@ -167,7 +167,7 @@ public class PathTracker
 
     public static int stop( PathTrackingInformation pathTrackingInformation )
     {
-        int level = 0;
+        final int level;
 
         PathTrackingInformation current = THREAD_LOCAL_LEVEL_INFO.get();
         // same class so no inc
