@@ -17,6 +17,7 @@
 package org.apache.sirona.cassandra.collector;
 
 import me.prettyprint.cassandra.model.ConfigurableConsistencyLevel;
+import me.prettyprint.cassandra.serializers.DoubleSerializer;
 import me.prettyprint.cassandra.serializers.SerializerTypeInferer;
 import me.prettyprint.cassandra.service.CassandraHostConfigurator;
 import me.prettyprint.cassandra.service.StringKeyIterator;
@@ -29,6 +30,7 @@ import me.prettyprint.hector.api.ddl.ColumnFamilyDefinition;
 import me.prettyprint.hector.api.ddl.ComparatorType;
 import me.prettyprint.hector.api.factory.HFactory;
 import org.apache.sirona.cassandra.CassandraBuilder;
+import org.apache.sirona.cassandra.DynamicDelegatedSerializer;
 import org.apache.sirona.configuration.ioc.Destroying;
 import org.apache.sirona.configuration.ioc.IoCs;
 
@@ -60,19 +62,36 @@ public class CassandraSirona {
         consistencyLevelPolicy.setDefaultWriteConsistencyLevel(builder.getWriteConsistencyLevel());
         keyspace = HFactory.createKeyspace(keyspaceName, cluster, consistencyLevelPolicy);
 
-        final ColumnFamilyDefinition gauges = HFactory.createColumnFamilyDefinition(keyspaceName, builder.getGaugeValuesColumnFamily(), ComparatorType.LONGTYPE);
-        final ColumnFamilyDefinition markersGauges = HFactory.createColumnFamilyDefinition(keyspaceName, builder.getMarkerGaugesColumFamily(), ComparatorType.UTF8TYPE);
-        final ColumnFamilyDefinition counters = HFactory.createColumnFamilyDefinition(keyspaceName, builder.getCounterColumnFamily(), ComparatorType.UTF8TYPE);
-        final ColumnFamilyDefinition markersCounters = HFactory.createColumnFamilyDefinition(keyspaceName, builder.getMarkerCountersColumnFamily(), ComparatorType.UTF8TYPE);
-        final ColumnFamilyDefinition statuses = HFactory.createColumnFamilyDefinition(keyspaceName, builder.getStatusColumnFamily(), ComparatorType.UTF8TYPE);
-        final ColumnFamilyDefinition markersStatuses = HFactory.createColumnFamilyDefinition(keyspaceName, builder.getMarkerStatusesColumnFamily(), ComparatorType.UTF8TYPE);
+        final ColumnFamilyDefinition gauges =
+            HFactory.createColumnFamilyDefinition(keyspaceName, builder.getGaugeValuesColumnFamily(), ComparatorType.LONGTYPE);
+
+        final ColumnFamilyDefinition markersGauges =
+            HFactory.createColumnFamilyDefinition(keyspaceName, builder.getMarkerGaugesColumFamily(), ComparatorType.UTF8TYPE);
+
+        final ColumnFamilyDefinition counters =
+            HFactory.createColumnFamilyDefinition(keyspaceName, builder.getCounterColumnFamily(), ComparatorType.UTF8TYPE);
+
+        final ColumnFamilyDefinition markersCounters =
+            HFactory.createColumnFamilyDefinition(keyspaceName, builder.getMarkerCountersColumnFamily(), ComparatorType.UTF8TYPE);
+
+        final ColumnFamilyDefinition statuses =
+            HFactory.createColumnFamilyDefinition(keyspaceName, builder.getStatusColumnFamily(), ComparatorType.UTF8TYPE);
+
+        final ColumnFamilyDefinition markersStatuses =
+            HFactory.createColumnFamilyDefinition(keyspaceName, builder.getMarkerStatusesColumnFamily(), ComparatorType.UTF8TYPE);
+
+        final ColumnFamilyDefinition pathTracking =
+            HFactory.createColumnFamilyDefinition( keyspaceName, builder.getPathTrackingColumFamily(), ComparatorType.UTF8TYPE);
+
+        final ColumnFamilyDefinition markerPathTracking =
+            HFactory.createColumnFamilyDefinition( keyspaceName, builder.getMarkerPathTrackingColumFamily(), ComparatorType.UTF8TYPE);
 
         { // ensure keyspace exists, here if the keyspace doesn't exist we suppose nothing exist
             if (cluster.describeKeyspace(keyspaceName) == null) {
                 LOGGER.info("Creating Sirona Cassandra '" + keyspaceName + "' keyspace.");
                 cluster.addKeyspace(
                     HFactory.createKeyspaceDefinition(keyspaceName, ThriftKsDef.DEF_STRATEGY_CLASS, builder.getReplicationFactor(),
-                        asList(counters, markersCounters, gauges, markersGauges, statuses, markersStatuses)));
+                        asList(counters, markersCounters, gauges, markersGauges, statuses, markersStatuses,pathTracking,markerPathTracking)));
             }
         }
     }
@@ -119,6 +138,14 @@ public class CassandraSirona {
         return builder.getMarkerGaugesColumFamily();
     }
 
+    public String getPathTrackingColumFamily() {
+        return builder.getPathTrackingColumFamily();
+    }
+
+    public String getMarkerPathTrackingColumFamily() {
+        return builder.getMarkerPathTrackingColumFamily();
+    }
+
     public String getMarkerCountersColumnFamily() {
         return builder.getMarkerCountersColumnFamily();
     }
@@ -130,6 +157,10 @@ public class CassandraSirona {
     public String keySeparator() {
         return SEPARATOR;
     }
+
+    //---------------------------------------------------------
+    // utils static methods
+    //---------------------------------------------------------
 
     public static HColumn<String, ?> emptyColumn(final String name) {
         return column(name, EMPTY_VALUE);
@@ -145,5 +176,20 @@ public class CassandraSirona {
             set.add(item);
         }
         return set;
+    }
+
+    public static Number getOrDefault(final DynamicDelegatedSerializer delegatedSerializer, final HColumn<?, ?> col, final Serializer<?> serializer) {
+        delegatedSerializer.setDelegate(serializer);
+        if (col == null || col.getValue() == null) {
+            if ( DoubleSerializer.get() == serializer) {
+                return Double.NaN;
+            }
+            return 0;
+        }
+        final Object value = col.getValue();
+        if (Number.class.isInstance(value)) {
+            return Number.class.cast(value);
+        }
+        throw new IllegalArgumentException("not a number " + value);
     }
 }

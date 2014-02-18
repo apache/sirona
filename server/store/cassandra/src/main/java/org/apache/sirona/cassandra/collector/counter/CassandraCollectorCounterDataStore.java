@@ -21,10 +21,8 @@ import me.prettyprint.cassandra.serializers.IntegerSerializer;
 import me.prettyprint.cassandra.serializers.LongSerializer;
 import me.prettyprint.cassandra.serializers.StringSerializer;
 import me.prettyprint.hector.api.Keyspace;
-import me.prettyprint.hector.api.Serializer;
 import me.prettyprint.hector.api.beans.ColumnSlice;
 import me.prettyprint.hector.api.beans.HColumn;
-import me.prettyprint.hector.api.beans.HSuperColumn;
 import me.prettyprint.hector.api.factory.HFactory;
 import me.prettyprint.hector.api.query.QueryResult;
 import org.apache.sirona.Role;
@@ -43,9 +41,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import static org.apache.sirona.cassandra.collector.CassandraSirona.column;
-import static org.apache.sirona.cassandra.collector.CassandraSirona.emptyColumn;
-import static org.apache.sirona.cassandra.collector.CassandraSirona.keys;
+import static org.apache.sirona.cassandra.collector.CassandraSirona.*;
 
 public class CassandraCollectorCounterDataStore extends InMemoryCollectorCounterStore {
     private final Keyspace keyspace;
@@ -161,14 +157,15 @@ public class CassandraCollectorCounterDataStore extends InMemoryCollectorCounter
                                            final String marker) {
         return new CassandraLeafCounter(ckey, this, marker)
             .sync(new M2AwareStatisticalSummary(
-                getOrDefault(serializer, map.getColumnByName("mean"), DoubleSerializer.get()).doubleValue(),
-                getOrDefault(serializer, map.getColumnByName("variance"), DoubleSerializer.get()).doubleValue(),
-                getOrDefault(serializer, map.getColumnByName("n"), LongSerializer.get()).longValue(),
-                getOrDefault(serializer, map.getColumnByName("max"), DoubleSerializer.get()).doubleValue(),
-                getOrDefault(serializer, map.getColumnByName("min"), DoubleSerializer.get()).doubleValue(),
-                getOrDefault(serializer, map.getColumnByName("sum"), DoubleSerializer.get()).doubleValue(),
-                getOrDefault(serializer, map.getColumnByName("m2"), DoubleSerializer.get()).doubleValue()),
-                getOrDefault(serializer, map.getColumnByName("maxConcurrency"), IntegerSerializer.get()).intValue());
+                getOrDefault( serializer, map.getColumnByName( "mean" ), DoubleSerializer.get() ).doubleValue(),
+                getOrDefault( serializer, map.getColumnByName( "variance" ), DoubleSerializer.get() ).doubleValue(),
+                getOrDefault( serializer, map.getColumnByName( "n" ), LongSerializer.get() ).longValue(),
+                getOrDefault( serializer, map.getColumnByName( "max" ), DoubleSerializer.get() ).doubleValue(),
+                getOrDefault( serializer, map.getColumnByName( "min" ), DoubleSerializer.get() ).doubleValue(),
+                getOrDefault( serializer, map.getColumnByName( "sum" ), DoubleSerializer.get() ).doubleValue(),
+                getOrDefault( serializer, map.getColumnByName( "m2" ), DoubleSerializer.get() ).doubleValue()),
+                getOrDefault( serializer, map.getColumnByName( "maxConcurrency" ),
+                                              IntegerSerializer.get() ).intValue());
     }
 
     protected CassandraLeafCounter save(final CassandraLeafCounter counter, final String marker) {
@@ -203,19 +200,5 @@ public class CassandraCollectorCounterDataStore extends InMemoryCollectorCounter
         return cassandra;
     }
 
-    protected static Number getOrDefault(final DynamicDelegatedSerializer delegatedSerializer, final HColumn<?, ?> col, final Serializer<?> serializer) {
-        delegatedSerializer.setDelegate(serializer);
-        if (col == null || col.getValue() == null) {
-            if (DoubleSerializer.get() == serializer) {
-                return Double.NaN;
-            }
-            return 0;
-        }
 
-        final Object value = col.getValue();
-        if (Number.class.isInstance(value)) {
-            return Number.class.cast(value);
-        }
-        throw new IllegalArgumentException("not a number " + value);
-    }
 }

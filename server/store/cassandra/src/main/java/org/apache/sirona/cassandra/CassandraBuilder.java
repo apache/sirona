@@ -28,9 +28,11 @@ public class CassandraBuilder {
     private String counterColumnFamily = "counters_values";
     private String gaugeValuesColumnFamily = "gauges_values";
     private String statusColumnFamily = "statuses_values";
+    private String pathTrackingColumFamily = "path_tracking";
     private String markerCountersColumnFamily = "markers_counters";
     private String markerStatusesColumnFamily = "markers_statuses";
     private String markerGaugesColumFamily = "markers_gauges";
+    private String markerPathTrackingColumFamily = "markers_path_tracking";
     private String writeConsistencyLevel = HConsistencyLevel.QUORUM.name();
     private String readConsistencyLevel = HConsistencyLevel.QUORUM.name();
     private int replicationFactor = 1;
@@ -74,6 +76,14 @@ public class CassandraBuilder {
 
     public String getMarkerStatusesColumnFamily() {
         return markerStatusesColumnFamily;
+    }
+
+    public String getPathTrackingColumFamily() {
+        return pathTrackingColumFamily;
+    }
+
+    public String getMarkerPathTrackingColumFamily() {
+        return markerPathTrackingColumFamily;
     }
 
     public HConsistencyLevel getWriteConsistencyLevel() {

@@ -133,6 +133,9 @@ public class PathTracker
         THREAD_LOCAL_TX.set( uuid );
     }
 
+
+    // An other solution could be using Thread.currentThread().getStackTrace()
+
     /**
      * FIXME not sure we really need the uuid but just in case for future usage :-)
      */
