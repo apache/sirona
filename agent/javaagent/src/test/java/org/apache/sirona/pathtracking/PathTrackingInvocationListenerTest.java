@@ -19,6 +19,7 @@ package org.apache.sirona.pathtracking;
 import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.javaagent.AgentArgs;
 import org.apache.sirona.javaagent.JavaAgentRunner;
+import org.apache.sirona.store.DataStoreFactory;
 import org.apache.sirona.store.tracking.InMemoryPathTrackingDataStore;
 import org.apache.sirona.store.tracking.PathTrackingDataStore;
 import org.apache.sirona.tracking.PathTrackingEntry;
@@ -45,8 +46,10 @@ public class PathTrackingInvocationListenerTest
         App app = new App();
         app.beer();
 
+        DataStoreFactory dataStoreFactory = IoCs.findOrCreateInstance( DataStoreFactory.class );
+
         InMemoryPathTrackingDataStore ptds =
-            InMemoryPathTrackingDataStore.class.cast( IoCs.getInstance( PathTrackingDataStore.class ) );
+            InMemoryPathTrackingDataStore.class.cast( dataStoreFactory.getPathTrackingDataStore() );
 
         Map<String, List<PathTrackingEntry>> all = ptds.retrieveAll();
 

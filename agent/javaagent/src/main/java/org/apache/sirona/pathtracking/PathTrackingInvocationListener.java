@@ -21,6 +21,7 @@ import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.javaagent.AgentContext;
 import org.apache.sirona.javaagent.listener.ConfigurableListener;
 import org.apache.sirona.javaagent.spi.InvocationListener;
+import org.apache.sirona.store.DataStoreFactory;
 import org.apache.sirona.store.tracking.PathTrackingDataStore;
 import org.apache.sirona.tracking.PathTrackingEntry;
 
@@ -39,6 +40,9 @@ public class PathTrackingInvocationListener
 
     private static final boolean DEBUG = Boolean.getBoolean( "sirona.agent.debug" );
 
+
+
+
     /**
      * fqcn.methodName
      */
@@ -47,12 +51,24 @@ public class PathTrackingInvocationListener
     @Override
     public boolean accept( String key )
     {
-
+        boolean include = super.accept( key );
+        if ( !include )
+        {
+            return false;
+        }
         if ( DEBUG )
         {
             System.out.println(
                 "PathTrackingInvocationListener#accept, TRACKING_ACTIVATED:" + TRACKING_ACTIVATED + ", key: " + key );
             //+ "super accept:" + accept );
+        }
+
+        // FIXME here really for testing purpose!!!
+        if ( key.startsWith( "java." )
+            || key.startsWith( "sun." )
+            || key.startsWith( "com.sun." ))
+        {
+            return false;
         }
 
         if ( !TRACKING_ACTIVATED )
@@ -92,16 +108,21 @@ public class PathTrackingInvocationListener
         String methodName = this.key.substring( lastDot + 1, this.key.length() );
 
         // FIXME get node from configuration
-        // PathTrackingThreadLocal.get()
+        //
         PathTrackingEntry pathTrackingEntry =
-            new PathTrackingEntry( "1", "node", className, methodName, start, ( end - start ) );
+            new PathTrackingEntry( PathTrackingThreadLocal.get(), "node", className, methodName, start, ( end - start ) );
+
+        DataStoreFactory dataStoreFactory = IoCs.findOrCreateInstance( DataStoreFactory.class );
+
+        PathTrackingDataStore pathTrackingDataStore = dataStoreFactory.getPathTrackingDataStore();
 
         if ( DEBUG )
         {
-            System.out.println( "PathTrackingInvocationListener: after: " + pathTrackingEntry.toString() );
+            System.out.println( "PathTrackingInvocationListener: after: " + pathTrackingEntry.toString()
+                                    + ", pathTrackingDataStore type:" + pathTrackingDataStore.getClass().getName() );
         }
 
-        IoCs.getInstance( PathTrackingDataStore.class ).store( pathTrackingEntry );
+        pathTrackingDataStore.store( pathTrackingEntry );
 
     }
 }
