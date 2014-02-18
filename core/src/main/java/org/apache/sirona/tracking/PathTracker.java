@@ -16,6 +16,10 @@
 */
 package org.apache.sirona.tracking;
 
+import org.apache.sirona.configuration.ioc.IoCs;
+import org.apache.sirona.store.DataStoreFactory;
+import org.apache.sirona.store.tracking.PathTrackingDataStore;
+
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -24,6 +28,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class PathTracker
 {
+    private static final PathTrackingDataStore PATH_TRACKING_DATA_STORE =
+            IoCs.findOrCreateInstance(DataStoreFactory.class).getPathTrackingDataStore();
 
     // FIXME olamy: so not using InheritableThreadLocal will create a new uuid in case of thread creation
     // whereas it's technically the same "transaction" (ie jvm call path)
@@ -61,9 +67,16 @@ public class PathTracker
         @Override
         protected AtomicInteger initialValue()
         {
-            return new AtomicInteger( 1 );
+            return new AtomicInteger( 0 );
         }
     };
+
+    // TODO: we should use a single threadlocal  (PatTracker itself?, other info are in it normally) and not 3
+    private static void cleanUp() {
+        THREAD_LOCAL_TX.remove();
+        THREAD_LOCAL_LEVEL_INFO.remove();
+        THREAD_LOCAL_LEVEL.remove();
+    }
 
     public static class PathTrackingInformation
     {
@@ -72,6 +85,11 @@ public class PathTracker
         private String methodName;
 
         private PathTrackingInformation parent;
+
+        private long start;
+        private long end;
+
+        private int level;
 
         public PathTrackingInformation( String className, String methodName )
         {
@@ -99,6 +117,30 @@ public class PathTracker
             this.parent = parent;
         }
 
+        public void setStart(final long start) {
+            this.start = start;
+        }
+
+        public long getStart() {
+            return start;
+        }
+
+        public long getEnd() {
+            return end;
+        }
+
+        public void setEnd(final long end) {
+            this.end = end;
+        }
+
+        public int getLevel() {
+            return level;
+        }
+
+        public void setLevel(final int level) {
+            this.level = level;
+        }
+
         @Override
         public String toString()
         {
@@ -113,10 +155,7 @@ public class PathTracker
      * prevent to inc level in same class used
      */
     private static final ThreadLocal<PathTrackingInformation> THREAD_LOCAL_LEVEL_INFO =
-        new ThreadLocal<PathTrackingInformation>()
-        {
-            // no op
-        };
+        new ThreadLocal<PathTrackingInformation>();
 
 
     // Returns the current thread's unique ID, assigning it if necessary
@@ -131,62 +170,64 @@ public class PathTracker
     }
 
 
-    // An other solution could be using Thread.currentThread().getStackTrace()
+    // An other solution could be using Thread.currentThread().getStackTrace() <- very slow
 
-    public static int start( PathTrackingInformation pathTrackingInformation )
+    public static PathTracker start( PathTrackingInformation pathTrackingInformation )
     {
         final int level;
         PathTrackingInformation current = THREAD_LOCAL_LEVEL_INFO.get();
         if ( current  == null )
         {
             level = THREAD_LOCAL_LEVEL.get().incrementAndGet();
+            pathTrackingInformation.setLevel(level);
         }
         else
         {
             // same class so no inc
-            if ( current.className.equals( pathTrackingInformation.className ) //
-                && current.methodName.equals( pathTrackingInformation.methodName ) )
-            {
-                // yup sounds to be the same level so no level inc!
-                level = THREAD_LOCAL_LEVEL.get().get();
-            }
-            else
+            if ( current != pathTrackingInformation )
             {
                 level = THREAD_LOCAL_LEVEL.get().incrementAndGet();
+                pathTrackingInformation.setLevel(level);
             }
 
             pathTrackingInformation.setParent( current );
         }
+        pathTrackingInformation.setStart(System.nanoTime());
 
         THREAD_LOCAL_LEVEL_INFO.set( pathTrackingInformation );
 
         //System.out.println("start level: " + level + " for key " + key);
 
-        return level;
+        return new PathTracker(); // TODO: see if this shouldn't be it which should be in *the* ThreadLocal
     }
 
-    public static int stop( PathTrackingInformation pathTrackingInformation )
+    public void stop( PathTrackingInformation pathTrackingInformation )
     {
-        final int level;
+        final long end = System.nanoTime();
+        final long start = pathTrackingInformation.getStart();
 
-        PathTrackingInformation current = THREAD_LOCAL_LEVEL_INFO.get();
-        // same class so no inc
-        if ( current.className.equals( pathTrackingInformation.className ) //
-            && current.methodName.equals( pathTrackingInformation.methodName ) )
+        final String uuid = PathTracker.get();
+
+        // FIXME get node from configuration!
+        // FIXME correctly configure the level!
+        final PathTrackingEntry pathTrackingEntry =
+                new PathTrackingEntry( uuid, "node", pathTrackingInformation.getClassName(), pathTrackingInformation.getMethodName(),
+                        start, ( end - start ), THREAD_LOCAL_LEVEL.get().get());
+
+        final PathTrackingInformation current = THREAD_LOCAL_LEVEL_INFO.get();
+        // same invocation so no inc, class can do recursion so don't use classname/methodname
+        if ( pathTrackingInformation != current )
         {
-            // yup sounds to be the same level so no level inc!
-            level = THREAD_LOCAL_LEVEL.get().get();
-        }
-        else
-        {
-            level = THREAD_LOCAL_LEVEL.get().decrementAndGet();
+            THREAD_LOCAL_LEVEL.get().decrementAndGet();
         }
 
         THREAD_LOCAL_LEVEL_INFO.set( pathTrackingInformation );
 
-        //System.out.println("start level: " + level + " for key " + key);
-
-        return level;
+        // FIXME: same all duration/level browsing the tree, do we need TrackingEntry or should information just be used?
+        if (pathTrackingInformation.getLevel() == 1) { // 0 is never reached so 1 is first
+            PATH_TRACKING_DATA_STORE.store(pathTrackingEntry);
+            PathTracker.cleanUp();
+        }
     }
 
 

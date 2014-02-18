@@ -21,7 +21,6 @@ import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.javaagent.AgentContext;
 import org.apache.sirona.javaagent.SironaAgent;
 import org.apache.sirona.javaagent.listener.ConfigurableListener;
-import org.apache.sirona.javaagent.spi.InvocationListener;
 import org.apache.sirona.store.DataStoreFactory;
 import org.apache.sirona.store.tracking.PathTrackingDataStore;
 import org.apache.sirona.tracking.PathTracker;
@@ -30,10 +29,7 @@ import org.apache.sirona.tracking.PathTrackingEntry;
 /**
  * @author Olivier Lamy
  */
-public class PathTrackingInvocationListener
-    extends ConfigurableListener
-    implements InvocationListener
-{
+public class PathTrackingInvocationListener extends ConfigurableListener {
 
     private static final Integer TIMESTAMP_KEY = "Sirona-path-tracking-key".hashCode();
 
@@ -42,16 +38,8 @@ public class PathTrackingInvocationListener
     private static final boolean TRACKING_ACTIVATED =
         Configuration.is( Configuration.CONFIG_PROPERTY_PREFIX + "javaagent.path.tracking.activate", false );
 
-    private PathTrackingDataStore pathTrackingDataStore =
-        IoCs.findOrCreateInstance( DataStoreFactory.class ).getPathTrackingDataStore();
-
 
     private PathTracker.PathTrackingInformation pathTrackingInformation;
-
-    /**
-     * fqcn.methodName
-     */
-    private String key;
 
     @Override
     public boolean accept( String key )
@@ -74,12 +62,10 @@ public class PathTrackingInvocationListener
             return false;
         }
 
-        this.key = key;
+        int lastDot = key.lastIndexOf( "." );
 
-        int lastDot = this.key.lastIndexOf( "." );
-
-        String className = this.key.substring( 0, lastDot );
-        String methodName = this.key.substring( lastDot + 1, this.key.length() );
+        String className = key.substring( 0, lastDot );
+        String methodName = key.substring(lastDot + 1, key.length());
 
         this.pathTrackingInformation = new PathTracker.PathTrackingInformation( className, methodName );
 
@@ -93,10 +79,7 @@ public class PathTrackingInvocationListener
         {
             System.out.println( "PathTrackingInvocationListener#before:" + context.getKey() );
         }
-        context.put( TIMESTAMP_KEY, Long.valueOf( System.nanoTime() ) );
         context.put( PATH_TRACKING_LEVEL_KEY, PathTracker.start( this.pathTrackingInformation ) );
-
-        context.getKey();
     }
 
     @Override
@@ -108,26 +91,6 @@ public class PathTrackingInvocationListener
             System.out.println( "PathTrackingInvocationListener#after: " + context.getKey() );
         }
 
-        Long end = System.nanoTime();
-        Long start = Long.class.cast( context.get( TIMESTAMP_KEY, Long.class ) );
-
-        String uuid = PathTracker.get();
-
-        // FIXME get node from configuration!
-        // FIXME correctly configure the level!
-        PathTrackingEntry pathTrackingEntry =
-            new PathTrackingEntry( uuid, "node", pathTrackingInformation.getClassName(), pathTrackingInformation.getMethodName(),
-                                   start, ( end - start ),
-                                   context.get( PATH_TRACKING_LEVEL_KEY, Integer.class ) );
-
-        if ( SironaAgent.AGENT_DEBUG )
-        {
-            System.out.println( "PathTrackingInvocationListener: after: " + pathTrackingEntry.toString()
-                                    + ", pathTrackingDataStore type:" + pathTrackingDataStore.getClass().getName() );
-        }
-        PathTracker.stop( pathTrackingInformation );
-
-        pathTrackingDataStore.store( pathTrackingEntry );
-
+        context.get(PATH_TRACKING_LEVEL_KEY, PathTracker.class).stop(pathTrackingInformation);
     }
 }

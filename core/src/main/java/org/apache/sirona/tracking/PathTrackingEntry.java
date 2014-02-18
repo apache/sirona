@@ -145,15 +145,12 @@ public class PathTrackingEntry
     @Override
     public String toString()
     {
-        final StringBuilder sb = new StringBuilder( "PathTrackingEntry{" );
-        sb.append( "trackingId='" ).append( trackingId ).append( '\'' );
-        sb.append( ", nodeId='" ).append( nodeId ).append( '\'' );
-        sb.append( ", className='" ).append( className ).append( '\'' );
-        sb.append( ", methodName='" ).append( methodName ).append( '\'' );
-        sb.append( ", startTime=" ).append( startTime );
-        sb.append( ", executionTime=" ).append( executionTime );
-        sb.append( ", level=" ).append( level );
-        sb.append( '}' );
-        return sb.toString();
+        return "PathTrackingEntry{" + "trackingId='" + trackingId
+                + '\'' + ", nodeId='" + nodeId
+                + '\'' + ", className='" + className + '\''
+                + ", methodName='" + methodName
+                + '\'' + ", startTime=" + startTime
+                + ", executionTime=" + executionTime
+                + ", level=" + level + '}';
     }
 }
