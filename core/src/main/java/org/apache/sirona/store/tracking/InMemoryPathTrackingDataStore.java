@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -53,16 +54,19 @@ public class InMemoryPathTrackingDataStore
     @Override
     public void store( Collection<PathTrackingEntry> pathTrackingEntries )
     {
+        if ( pathTrackingEntries == null )
+        {
+            return;
+        }
+
         // possible different trackingId so get that
         Map<String, Set<PathTrackingEntry>> entries = new HashMap<String, Set<PathTrackingEntry>>();
 
         for ( PathTrackingEntry pathTrackingEntry : pathTrackingEntries )
         {
             Set<PathTrackingEntry> entriesList = entries.get( pathTrackingEntry.getTrackingId() );
-
-            if ( pathTrackingEntries == null )
-            {
-                pathTrackingEntries = new TreeSet<PathTrackingEntry>( PathTrackingEntryComparator.INSTANCE );
+            if (entriesList == null) {
+                entriesList = new HashSet<PathTrackingEntry>();
             }
             entriesList.add( pathTrackingEntry );
             entries.put( pathTrackingEntry.getTrackingId(), entriesList );

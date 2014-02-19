@@ -41,7 +41,7 @@ import java.util.Set;
 public class PathTrackingInvocationListenerTest
 {
 
-    @Test @Ignore("NPE to fix")
+    @Test
     @AgentArgs(value = "",
                sysProps = "project.build.directory=${project.build.directory}|sirona.agent.debug=${sirona.agent.debug}|org.apache.sirona.configuration.sirona.properties=${project.build.directory}/test-classes/pathtracking/sirona.properties")
     public void simpleTest()
