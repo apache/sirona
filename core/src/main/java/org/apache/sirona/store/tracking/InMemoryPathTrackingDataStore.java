@@ -58,7 +58,6 @@ public class InMemoryPathTrackingDataStore
 
         for ( PathTrackingEntry pathTrackingEntry : pathTrackingEntries )
         {
-
             Set<PathTrackingEntry> entriesList = entries.get( pathTrackingEntry.getTrackingId() );
 
             if ( pathTrackingEntries == null )
