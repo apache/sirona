@@ -17,29 +17,25 @@
 package org.apache.sirona.javaagent.listener;
 
 import org.apache.sirona.configuration.Configuration;
-import org.apache.sirona.configuration.ioc.IoCs;
+import org.apache.sirona.configuration.ioc.AutoSet;
 import org.apache.sirona.javaagent.AgentContext;
 import org.apache.sirona.javaagent.SironaAgent;
-import org.apache.sirona.javaagent.listener.ConfigurableListener;
-import org.apache.sirona.store.DataStoreFactory;
-import org.apache.sirona.store.tracking.PathTrackingDataStore;
+import org.apache.sirona.javaagent.spi.Order;
 import org.apache.sirona.tracking.PathTracker;
-import org.apache.sirona.tracking.PathTrackingEntry;
 
-/**
- *
- */
+@Order(1)
+@AutoSet
 public class PathTrackingInvocationListener extends ConfigurableListener {
 
-    private static final Integer TIMESTAMP_KEY = "Sirona-path-tracking-key".hashCode();
-
-    private static final Integer PATH_TRACKING_LEVEL_KEY = "Sirona-path-tracking-level-key".hashCode();
+    private static final Integer PATH_TRACKER_KEY = "Sirona-path-tracker-key".hashCode();
+    private static final Integer PATH_TRACKING_INFO_LEVEL_KEY = "Sirona-path-tracking-info-key".hashCode();
 
     private static final boolean TRACKING_ACTIVATED =
         Configuration.is( Configuration.CONFIG_PROPERTY_PREFIX + "javaagent.path.tracking.activate", false );
 
 
-    private PathTracker.PathTrackingInformation pathTrackingInformation;
+    private String className;
+    private String methodName;
 
     @Override
     public boolean accept( String key )
@@ -64,10 +60,8 @@ public class PathTrackingInvocationListener extends ConfigurableListener {
 
         int lastDot = key.lastIndexOf( "." );
 
-        String className = key.substring( 0, lastDot );
-        String methodName = key.substring(lastDot + 1, key.length());
-
-        this.pathTrackingInformation = new PathTracker.PathTrackingInformation( className, methodName );
+        className = key.substring( 0, lastDot );
+        methodName = key.substring(lastDot + 1, key.length());
 
         return true;
     }
@@ -79,7 +73,9 @@ public class PathTrackingInvocationListener extends ConfigurableListener {
         {
             System.out.println( "PathTrackingInvocationListener#before:" + context.getKey() );
         }
-        context.put( PATH_TRACKING_LEVEL_KEY, PathTracker.start( this.pathTrackingInformation ) );
+        final PathTracker.PathTrackingInformation pathTrackingInformation = new PathTracker.PathTrackingInformation(className, methodName);
+        context.put(PATH_TRACKING_INFO_LEVEL_KEY, pathTrackingInformation);
+        context.put(PATH_TRACKER_KEY, PathTracker.start(pathTrackingInformation));
     }
 
     @Override
@@ -91,6 +87,7 @@ public class PathTrackingInvocationListener extends ConfigurableListener {
             System.out.println( "PathTrackingInvocationListener#after: " + context.getKey() );
         }
 
-        context.get(PATH_TRACKING_LEVEL_KEY, PathTracker.class).stop(pathTrackingInformation);
+        context.get(PATH_TRACKER_KEY, PathTracker.class)
+                .stop(context.get(PATH_TRACKING_INFO_LEVEL_KEY, PathTracker.PathTrackingInformation.class));
     }
 }

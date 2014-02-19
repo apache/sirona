@@ -147,7 +147,7 @@ public final class IoCs {
         Class<?> current = loadedClass;
         while (current != null && !current.isInterface() && !Object.class.equals(current)) {
             final Collection<String> done = new LinkedList<String>();
-            for (final Method method : loadedClass.getDeclaredMethods()) {
+            for (final Method method : current.getDeclaredMethods()) {
                 if (!(Void.TYPE.equals(method.getReturnType())
                     && method.getName().startsWith(SETTER_PREFIX)
                     && method.getParameterTypes().length == 1
@@ -156,7 +156,6 @@ public final class IoCs {
                 }
 
                 final String name = Introspector.decapitalize(method.getName().substring(3));
-
                 final String configKey;
                 if (key == null) {
                     configKey = loadedClass.getName() + "." + name;
@@ -181,7 +180,7 @@ public final class IoCs {
                     }
                 }
             }
-            for (final Field field : loadedClass.getDeclaredFields()) {
+            for (final Field field : current.getDeclaredFields()) {
                 if (Modifier.isFinal(field.getModifiers()) || done.contains(field.getName())) {
                     continue;
                 }

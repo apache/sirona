@@ -58,16 +58,21 @@ public class FileConfigurationProvider implements ConfigurationProvider {
             if (classLoader == null) {
                 classLoader = ClassLoader.getSystemClassLoader();
             }
-            final InputStream stream = classLoader.getResourceAsStream(filename);
-            if (stream != null) {
-                try {
-                    properties.load(stream);
-                } catch (final IOException e) {
-                    LOGGER.log(Level.SEVERE, e.getMessage(), e);
-                }
-            }
+            load(properties, filename, classLoader);
         }
         return properties;
+    }
+
+    private boolean load(final Properties properties, final String filename, final ClassLoader classLoader) {
+        final InputStream stream = classLoader.getResourceAsStream(filename);
+        if (stream != null) {
+            try {
+                properties.load(stream);
+            } catch (final IOException e) {
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
+            }
+        }
+        return stream != null;
     }
 
     private void closeQuietly(InputStream inputStream) {

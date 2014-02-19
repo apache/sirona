@@ -64,7 +64,11 @@ public final class Configuration {
     }
 
     public static String getProperty(final String key, final String defaultValue) {
-        return PROPERTIES.getProperty(key, defaultValue);
+        final String property = PROPERTIES.getProperty(key, defaultValue);
+        if (property != null && property.startsWith("${") && property.endsWith("}")) {
+            return getProperty(property.substring("${".length(), property.length() - 1), defaultValue);
+        }
+        return property;
     }
 
     public static String[] getArray(final String key, final String[] defaultValue) {

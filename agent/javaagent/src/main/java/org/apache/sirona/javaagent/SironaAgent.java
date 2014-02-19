@@ -32,6 +32,8 @@ public class SironaAgent {
 
     public static boolean AGENT_DEBUG = Boolean.getBoolean( "sirona.agent.debug" );
 
+    private static final boolean FORCE_RELOAD = Boolean.getBoolean("sirona.javaagent.force.reload");
+
     public static void premain(final String agentArgs, final Instrumentation instrumentation) {
         agentmain(agentArgs, instrumentation);
     }
@@ -101,7 +103,7 @@ public class SironaAgent {
 
             final Class<? extends Annotation> instrumentedMarker = (Class<? extends Annotation>) loader.loadClass("org.apache.sirona.javaagent.Instrumented");
             final Class<?> listener = loader.loadClass("org.apache.sirona.javaagent.spi.InvocationListener");
-            if (instrumentation.isRetransformClassesSupported()) {
+            if (instrumentation.isRetransformClassesSupported() && FORCE_RELOAD) {
                 for (final Class<?> clazz : instrumentation.getAllLoadedClasses()) {
                     if (!clazz.isArray()
                             && !listener.isAssignableFrom(clazz)
