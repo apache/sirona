@@ -20,6 +20,8 @@ import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.store.DataStoreFactory;
 import org.apache.sirona.store.tracking.PathTrackingDataStore;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -71,11 +73,20 @@ public class PathTracker
         }
     };
 
+    private static final ThreadLocal<List<PathTrackingEntry>> THREAD_LOCAL_ENTRIES = new ThreadLocal<List<PathTrackingEntry>>(){
+        @Override
+        protected List<PathTrackingEntry> initialValue()
+        {
+            return new ArrayList<PathTrackingEntry>(  );
+        }
+    };
+
     // TODO: we should use a single threadlocal  (PatTracker itself?, other info are in it normally) and not 3
     private static void cleanUp() {
         THREAD_LOCAL_TX.remove();
         THREAD_LOCAL_LEVEL_INFO.remove();
         THREAD_LOCAL_LEVEL.remove();
+        THREAD_LOCAL_ENTRIES.remove();
     }
 
     public static class PathTrackingInformation
@@ -188,9 +199,10 @@ public class PathTracker
             {
                 level = THREAD_LOCAL_LEVEL.get().incrementAndGet();
                 pathTrackingInformation.setLevel(level);
+                pathTrackingInformation.setParent( current );
             }
 
-            pathTrackingInformation.setParent( current );
+
         }
         pathTrackingInformation.setStart(System.nanoTime());
 
@@ -219,14 +231,17 @@ public class PathTracker
         if ( pathTrackingInformation != current )
         {
             THREAD_LOCAL_LEVEL.get().decrementAndGet();
+            THREAD_LOCAL_LEVEL_INFO.set( pathTrackingInformation.getParent() );
         }
 
-        THREAD_LOCAL_LEVEL_INFO.set( pathTrackingInformation );
+        //THREAD_LOCAL_LEVEL_INFO.set( pathTrackingInformation );
 
         // FIXME: same all duration/level browsing the tree, do we need TrackingEntry or should information just be used?
-        if (pathTrackingInformation.getLevel() == 1) { // 0 is never reached so 1 is first
-            PATH_TRACKING_DATA_STORE.store(pathTrackingEntry);
+        if (pathTrackingInformation.getLevel() == 1 && pathTrackingInformation.getParent() == null) { // 0 is never reached so 1 is first
+            PATH_TRACKING_DATA_STORE.store(THREAD_LOCAL_ENTRIES.get());
             PathTracker.cleanUp();
+        } else {
+            THREAD_LOCAL_ENTRIES.get().add( pathTrackingEntry );
         }
     }
 

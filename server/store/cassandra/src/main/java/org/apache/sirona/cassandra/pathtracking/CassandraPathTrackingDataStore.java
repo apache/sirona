@@ -34,6 +34,7 @@ import org.apache.sirona.store.tracking.PathTrackingDataStore;
 import org.apache.sirona.tracking.PathTrackingEntry;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
@@ -69,21 +70,32 @@ public class CassandraPathTrackingDataStore
     @Override
     public void store( PathTrackingEntry pathTrackingEntry )
     {
+        store( Collections.singletonList( pathTrackingEntry ) );
+    }
+
+    @Override
+    public void store( Collection<PathTrackingEntry> pathTrackingEntries )
+    {
+
         final Mutator<String> mutator = HFactory.createMutator( keyspace, StringSerializer.get() );
 
-        final String id = id( pathTrackingEntry );
+        for ( PathTrackingEntry pathTrackingEntry : pathTrackingEntries )
 
-        HFactory.createMutator( keyspace, StringSerializer.get() )
-            //  values
-            .addInsertion( id, family, column( "trackingId", pathTrackingEntry.getTrackingId() ) ) //
-            .addInsertion( id, family, column( "nodeId", pathTrackingEntry.getNodeId() ) ) //
-            .addInsertion( id, family, column( "className", pathTrackingEntry.getClassName() ) ) //
-            .addInsertion( id, family, column( "methodName", pathTrackingEntry.getMethodName() ) ) //
-            .addInsertion( id, family, column( "startTime", pathTrackingEntry.getStartTime() ) ) //
-            .addInsertion( id, family, column( "executionTime", pathTrackingEntry.getExecutionTime() ) ) //
-            .addInsertion( id, family, column( "level", pathTrackingEntry.getLevel() ) ) //
-            .addInsertion( "PATH_TRACKING", markerFamilly, emptyColumn( id ) ) //
-            .execute();
+        {
+            final String id = id( pathTrackingEntry );
+
+            HFactory.createMutator( keyspace, StringSerializer.get() )
+                //  values
+                .addInsertion( id, family, column( "trackingId", pathTrackingEntry.getTrackingId() ) ) //
+                .addInsertion( id, family, column( "nodeId", pathTrackingEntry.getNodeId() ) ) //
+                .addInsertion( id, family, column( "className", pathTrackingEntry.getClassName() ) ) //
+                .addInsertion( id, family, column( "methodName", pathTrackingEntry.getMethodName() ) ) //
+                .addInsertion( id, family, column( "startTime", pathTrackingEntry.getStartTime() ) ) //
+                .addInsertion( id, family, column( "executionTime", pathTrackingEntry.getExecutionTime() ) ) //
+                .addInsertion( id, family, column( "level", pathTrackingEntry.getLevel() ) ) //
+                .addInsertion( "PATH_TRACKING", markerFamilly, emptyColumn( id ) ) //
+                .execute();
+        }
     }
 
     protected String id( PathTrackingEntry pathTrackingEntry )
@@ -169,5 +181,15 @@ public class CassandraPathTrackingDataStore
         }
 
         return entries;
+    }
+
+    protected Keyspace getKeyspace()
+    {
+        return keyspace;
+    }
+
+    protected String getFamily()
+    {
+        return family;
     }
 }

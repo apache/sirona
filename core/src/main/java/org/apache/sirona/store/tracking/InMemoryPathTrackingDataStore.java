@@ -21,7 +21,9 @@ import org.apache.sirona.tracking.PathTrackingEntryComparator;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -32,8 +34,6 @@ import java.util.concurrent.ConcurrentMap;
 /**
  * Very simple in memory storage for Path tracking feature
  * <b>MUST NOT be used in production</b>
- *
- *
  */
 public class InMemoryPathTrackingDataStore
     implements PathTrackingDataStore
@@ -47,14 +47,39 @@ public class InMemoryPathTrackingDataStore
     @Override
     public void store( PathTrackingEntry pathTrackingEntry )
     {
-        Set<PathTrackingEntry> pathTrackingEntries = this.pathTrackingEntries.get( pathTrackingEntry.getTrackingId() );
+        store( Collections.singletonList( pathTrackingEntry ) );
+    }
 
-        if ( pathTrackingEntries == null )
+    @Override
+    public void store( Collection<PathTrackingEntry> pathTrackingEntries )
+    {
+        // possible different trackingId so get that
+        Map<String, Set<PathTrackingEntry>> entries = new HashMap<String, Set<PathTrackingEntry>>();
+
+        for ( PathTrackingEntry pathTrackingEntry : pathTrackingEntries )
         {
-            pathTrackingEntries = new TreeSet<PathTrackingEntry>( PathTrackingEntryComparator.INSTANCE );
+
+            Set<PathTrackingEntry> entriesList = entries.get( pathTrackingEntry.getTrackingId() );
+
+            if ( pathTrackingEntries == null )
+            {
+                pathTrackingEntries = new TreeSet<PathTrackingEntry>( PathTrackingEntryComparator.INSTANCE );
+            }
+            entriesList.add( pathTrackingEntry );
+            entries.put( pathTrackingEntry.getTrackingId(), entriesList );
         }
-        pathTrackingEntries.add( pathTrackingEntry );
-        this.pathTrackingEntries.put( pathTrackingEntry.getTrackingId(), pathTrackingEntries );
+
+        for ( Map.Entry<String, Set<PathTrackingEntry>> entry : entries.entrySet() )
+        {
+            Set<PathTrackingEntry> entriesList = this.pathTrackingEntries.get( entry.getKey() );
+            if ( entriesList == null )
+            {
+                entriesList = new TreeSet<PathTrackingEntry>( PathTrackingEntryComparator.INSTANCE );
+            }
+            entriesList.addAll( entry.getValue() );
+            entries.put( entry.getKey(), entriesList );
+        }
+
     }
 
     @Override

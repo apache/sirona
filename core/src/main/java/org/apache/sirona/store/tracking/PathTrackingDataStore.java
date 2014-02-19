@@ -29,6 +29,8 @@ public interface PathTrackingDataStore
 {
     void store( PathTrackingEntry pathTrackingEntry );
 
+    void store( Collection<PathTrackingEntry> pathTrackingEntries );
+
     /**
      * the result will be orderer by startTime
      *
