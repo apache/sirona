@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * @author Olivier Lamy
+ *
  */
 public class ExtendedInMemoryPathTrackingDataStore
     extends InMemoryPathTrackingDataStore

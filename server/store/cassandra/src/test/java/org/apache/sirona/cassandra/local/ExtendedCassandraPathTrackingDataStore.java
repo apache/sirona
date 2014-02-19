@@ -33,7 +33,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 /**
- * @author Olivier Lamy
+ *
  */
 public class ExtendedCassandraPathTrackingDataStore
     extends CassandraPathTrackingDataStore

@@ -23,7 +23,7 @@ import org.apache.sirona.store.gauge.InMemoryGaugeDataStore;
 import org.apache.sirona.store.status.PeriodicNodeStatusDataStore;
 
 /**
- * @author Olivier Lamy
+ *
  */
 public class ExtDataStoreFactory extends DelegateDataStoreFactory
 {
