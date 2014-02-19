@@ -19,6 +19,7 @@ package org.apache.sirona.pathtracking;
 import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.javaagent.AgentArgs;
 import org.apache.sirona.javaagent.JavaAgentRunner;
+import org.apache.sirona.pathtracking.test.ExtendedInMemoryPathTrackingDataStore;
 import org.apache.sirona.store.DataStoreFactory;
 import org.apache.sirona.store.tracking.InMemoryPathTrackingDataStore;
 import org.apache.sirona.tracking.PathTrackingEntry;
@@ -50,12 +51,15 @@ public class PathTrackingInvocationListenerTest
 
         DataStoreFactory dataStoreFactory = IoCs.findOrCreateInstance( DataStoreFactory.class );
 
-        InMemoryPathTrackingDataStore ptds =
-            InMemoryPathTrackingDataStore.class.cast( dataStoreFactory.getPathTrackingDataStore() );
+        ExtendedInMemoryPathTrackingDataStore ptds =
+            ExtendedInMemoryPathTrackingDataStore.class.cast( dataStoreFactory.getPathTrackingDataStore() );
 
         Map<String, Set<PathTrackingEntry>> all = ptds.retrieveAll();
 
         Assert.assertTrue( !all.isEmpty() );
+
+        // test only one Thread
+        Assert.assertEquals( 1, all.size() );
 
         List<PathTrackingEntry> entries = new ArrayList<PathTrackingEntry>( all.values().iterator().next() );
 

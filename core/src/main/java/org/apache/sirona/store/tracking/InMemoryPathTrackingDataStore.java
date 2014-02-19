@@ -85,14 +85,8 @@ public class InMemoryPathTrackingDataStore
         return trackingIds;
     }
 
-    /**
-     * <b>use with CAUTION as can return a lot of data</b>
-     * <p>This method is use for testing purpose</p>
-     *
-     * @return {@link List} containing all {@link PathTrackingEntry}
-     */
-    public Map<String, Set<PathTrackingEntry>> retrieveAll()
+    protected ConcurrentMap<String, Set<PathTrackingEntry>> getPathTrackingEntries()
     {
-        return this.pathTrackingEntries;
+        return pathTrackingEntries;
     }
 }
