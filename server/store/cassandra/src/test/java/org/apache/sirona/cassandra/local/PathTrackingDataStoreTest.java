@@ -19,13 +19,12 @@ package org.apache.sirona.cassandra.local;
 import org.apache.sirona.cassandra.framework.CassandraRunner;
 import org.apache.sirona.cassandra.pathtracking.CassandraPathTrackingDataStore;
 import org.apache.sirona.configuration.ioc.IoCs;
-import org.apache.sirona.tracking.PathTracker;
 import org.apache.sirona.tracking.PathTrackingEntry;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.Date;
+import java.util.UUID;
 
 /**
  *
@@ -42,12 +41,12 @@ public class PathTrackingDataStoreTest
         CassandraPathTrackingDataStore store = IoCs.processInstance( new CassandraPathTrackingDataStore() );
 
         PathTrackingEntry entry =
-            new PathTrackingEntry( PathTracker.get(), "nodeId", "org.au.beer.TheBest", "littlecreatures",
+            new PathTrackingEntry(UUID.randomUUID().toString(), "nodeId", "org.au.beer.TheBest", "littlecreatures",
                                    new Date().getTime(), 12, 1 );
 
         store.store( entry );
 
-        //Assert.assertFalse( store.retrieveAll().isEmpty() );
+        // Assert.assertFalse( store.retrieveAll().isEmpty() );
 
     }
 }

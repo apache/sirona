@@ -135,18 +135,6 @@ public class PathTracker
     }
 
 
-    // Returns the current thread's unique ID, assigning it if necessary
-    public static String get()
-    {
-        return THREAD_LOCAL.get().uuid;
-    }
-
-    public static void set( final String uuid )
-    {
-        THREAD_LOCAL.get().uuid = uuid;
-    }
-
-
     // An other solution could be using Thread.currentThread().getStackTrace() <- very slow
 
     public static PathTracker start( PathTrackingInformation pathTrackingInformation )
@@ -187,7 +175,7 @@ public class PathTracker
         final long start = pathTrackingInformation.getStart();
         final Context context = THREAD_LOCAL.get();
 
-        final String uuid = PathTracker.get();
+        final String uuid = context.uuid;
 
         final PathTrackingInformation current = context.trackingInformation;
         // same invocation so no inc, class can do recursion so don't use classname/methodname
