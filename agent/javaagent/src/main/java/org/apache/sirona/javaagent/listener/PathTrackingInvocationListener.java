@@ -52,12 +52,8 @@ public class PathTrackingInvocationListener extends ConfigurableListener {
                 "PathTrackingInvocationListener#accept, TRACKING_ACTIVATED:" + TRACKING_ACTIVATED + ", key: " + key );
         }
 
-        if ( !TRACKING_ACTIVATED )
-        {
-            return false;
-        }
+        return TRACKING_ACTIVATED;
 
-        return true;
     }
 
     /**

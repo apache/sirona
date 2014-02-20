@@ -16,6 +16,7 @@
 */
 package org.apache.sirona.tracking;
 
+import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.store.DataStoreFactory;
 import org.apache.sirona.store.tracking.PathTrackingDataStore;
@@ -30,63 +31,35 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class PathTracker
 {
+    private static final String NODE =
+            Configuration.getProperty(Configuration.CONFIG_PROPERTY_PREFIX + "javaagent.path.tracking.marker",
+                    Configuration.getProperty("org.apache.sirona.cube.CubeBuilder.marker", "node"));
+
     private static final PathTrackingDataStore PATH_TRACKING_DATA_STORE =
             IoCs.findOrCreateInstance(DataStoreFactory.class).getPathTrackingDataStore();
 
-    // FIXME olamy: so not using InheritableThreadLocal will create a new uuid in case of thread creation
-    // whereas it's technically the same "transaction" (ie jvm call path)
-    //private static final InheritableThreadLocal<String> THREAD_LOCAL_TX = new InheritableThreadLocal<String>()
-
-    /**
-     * Thread local to store a "transaction id" (i.e a java call)
-     */
-    private static final ThreadLocal<String> THREAD_LOCAL_TX = new ThreadLocal<String>()
-    {
+    private static final ThreadLocal<Context> THREAD_LOCAL = new ThreadLocal<Context>() {
         @Override
-        protected String initialValue()
-        {
-            return "Sirona-" + UUID.randomUUID().toString();// + System.nanoTime();//
-        }
-
-        /*
-        @Override
-        protected String childValue( String s )
-        {
-            return this.get();
-        }
-        */
-
-    };
-
-    // FIXME olamy: AtomicInteger because of starting multiple level but that's not supported with the THREAD_LOCAL_TX
-    // because it doesn't use an InheritableThreadLocal so really sure :-)
-
-    /**
-     * Thread Local to store current call tree level
-     */
-    private static final ThreadLocal<AtomicInteger> THREAD_LOCAL_LEVEL = new ThreadLocal<AtomicInteger>()
-    {
-        @Override
-        protected AtomicInteger initialValue()
-        {
-            return new AtomicInteger( 0 );
+        protected Context initialValue() {
+            return new Context();
         }
     };
 
-    private static final ThreadLocal<List<PathTrackingEntry>> THREAD_LOCAL_ENTRIES = new ThreadLocal<List<PathTrackingEntry>>(){
-        @Override
-        protected List<PathTrackingEntry> initialValue()
-        {
-            return new ArrayList<PathTrackingEntry>(  );
-        }
-    };
+    private static class Context {
+        private String uuid;
+        private AtomicInteger level;
+        private List<PathTrackingEntry> entries;
+        private PathTrackingInformation trackingInformation;
 
-    // TODO: we should use a single threadlocal  (PatTracker itself?, other info are in it normally) and not 3
+        private Context() {
+            this.uuid = "Sirona-" + UUID.randomUUID().toString();
+            this.level = new AtomicInteger(0);
+            this.entries = new ArrayList<PathTrackingEntry>();
+        }
+    }
+
     private static void cleanUp() {
-        THREAD_LOCAL_TX.remove();
-        THREAD_LOCAL_LEVEL_INFO.remove();
-        THREAD_LOCAL_LEVEL.remove();
-        THREAD_LOCAL_ENTRIES.remove();
+        THREAD_LOCAL.remove();
     }
 
     public static class PathTrackingInformation
@@ -161,23 +134,16 @@ public class PathTracker
         }
     }
 
-    /**
-     * Thread local to store the current Class#Method used
-     * prevent to inc level in same class used
-     */
-    private static final ThreadLocal<PathTrackingInformation> THREAD_LOCAL_LEVEL_INFO =
-        new ThreadLocal<PathTrackingInformation>();
-
 
     // Returns the current thread's unique ID, assigning it if necessary
     public static String get()
     {
-        return THREAD_LOCAL_TX.get();
+        return THREAD_LOCAL.get().uuid;
     }
 
-    public static void set( String uuid )
+    public static void set( final String uuid )
     {
-        THREAD_LOCAL_TX.set( uuid );
+        THREAD_LOCAL.get().uuid = uuid;
     }
 
 
@@ -185,11 +151,13 @@ public class PathTracker
 
     public static PathTracker start( PathTrackingInformation pathTrackingInformation )
     {
+        final Context context = THREAD_LOCAL.get();
+
         final int level;
-        PathTrackingInformation current = THREAD_LOCAL_LEVEL_INFO.get();
+        final PathTrackingInformation current = context.trackingInformation;
         if ( current  == null )
         {
-            level = THREAD_LOCAL_LEVEL.get().incrementAndGet();
+            level = context.level.incrementAndGet();
             pathTrackingInformation.setLevel(level);
         }
         else
@@ -197,7 +165,7 @@ public class PathTracker
             // same class so no inc
             if ( current != pathTrackingInformation )
             {
-                level = THREAD_LOCAL_LEVEL.get().incrementAndGet();
+                level = context.level.incrementAndGet();
                 pathTrackingInformation.setLevel(level);
                 pathTrackingInformation.setParent( current );
             }
@@ -206,7 +174,7 @@ public class PathTracker
         }
         pathTrackingInformation.setStart(System.nanoTime());
 
-        THREAD_LOCAL_LEVEL_INFO.set( pathTrackingInformation );
+        context.trackingInformation = pathTrackingInformation;
 
         //System.out.println("start level: " + level + " for key " + key);
 
@@ -217,27 +185,26 @@ public class PathTracker
     {
         final long end = System.nanoTime();
         final long start = pathTrackingInformation.getStart();
+        final Context context = THREAD_LOCAL.get();
 
         final String uuid = PathTracker.get();
 
-        final PathTrackingInformation current = THREAD_LOCAL_LEVEL_INFO.get();
+        final PathTrackingInformation current = context.trackingInformation;
         // same invocation so no inc, class can do recursion so don't use classname/methodname
         if ( pathTrackingInformation != current )
         {
-            THREAD_LOCAL_LEVEL.get().decrementAndGet();
-            THREAD_LOCAL_LEVEL_INFO.set( pathTrackingInformation.getParent() );
+            context.level.decrementAndGet();
+            context.trackingInformation = pathTrackingInformation.getParent();
         }
 
-        // FIXME get node from configuration!
         final PathTrackingEntry pathTrackingEntry =
-            new PathTrackingEntry( uuid, "node", pathTrackingInformation.getClassName(), pathTrackingInformation.getMethodName(),
+            new PathTrackingEntry( uuid, NODE, pathTrackingInformation.getClassName(), pathTrackingInformation.getMethodName(),
                                    start, ( end - start ), pathTrackingInformation.getLevel());
 
-        THREAD_LOCAL_ENTRIES.get().add( pathTrackingEntry );
+        context.entries.add(pathTrackingEntry);
 
         if (pathTrackingInformation.getLevel() == 1 && pathTrackingInformation.getParent() == null) { // 0 is never reached so 1 is first
-            List<PathTrackingEntry> pathTrackingEntries = THREAD_LOCAL_ENTRIES.get();
-            PATH_TRACKING_DATA_STORE.store( pathTrackingEntries );
+            PATH_TRACKING_DATA_STORE.store( context.entries );
             PathTracker.cleanUp();
         }
     }
