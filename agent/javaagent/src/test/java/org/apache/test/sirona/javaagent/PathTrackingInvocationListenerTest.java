@@ -87,6 +87,9 @@ public class PathTrackingInvocationListenerTest
 
         Assert.assertEquals( 2, entry.getLevel() );
 
+        // there is Thread.sleep( 500 ) so we can be sure a minimum for that
+
+        Assert.assertTrue( entry.getExecutionTime() >= 500 * 1000000 );
 
         entry = entries.get( 2 );
 
@@ -96,6 +99,7 @@ public class PathTrackingInvocationListenerTest
 
         Assert.assertEquals( 3, entry.getLevel() );
 
+        Assert.assertTrue( entry.getExecutionTime() >= 100 * 1000000 );
 
         entry = entries.get( 3 );
 
@@ -105,7 +109,7 @@ public class PathTrackingInvocationListenerTest
 
         Assert.assertEquals( 4, entry.getLevel() );
 
-
+        Assert.assertTrue( entry.getExecutionTime() >= 300 * 1000000 );
 
     }
 
