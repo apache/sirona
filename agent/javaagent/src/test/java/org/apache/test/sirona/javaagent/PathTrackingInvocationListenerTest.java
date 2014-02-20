@@ -57,16 +57,12 @@ public class PathTrackingInvocationListenerTest
 
         Assert.assertTrue( !all.isEmpty() );
 
-        // so we have 4 entries constructor is ignored!
-
-
-
-
-
         // test only one Thread so only one trackingId
         Assert.assertEquals( 1, all.size() );
 
         List<PathTrackingEntry> entries = new ArrayList<PathTrackingEntry>( all.values().iterator().next() );
+
+        // so we have 4 entries constructor is ignored!
 
         Assert.assertEquals( 4, entries.size() );
 
@@ -74,36 +70,11 @@ public class PathTrackingInvocationListenerTest
         {
             System.out.println( "entry:" + entry );
         }
-    }
 
 
-    public static class App
-    {
-        public void foo()
-            throws Exception
-        {
-            Thread.sleep( 500 );
-        }
+        PathTrackingEntry first  = entries.get( 0 );
 
-        public void beer()
-            throws Exception
-        {
-            this.foo();
-            this.pub();
-        }
-
-        public void pub()
-            throws Exception
-        {
-            Thread.sleep( 100 );
-            this.bar();
-        }
-
-        public void bar()
-            throws Exception
-        {
-            Thread.sleep( 300 );
-        }
+        Assert.assertEquals( "beer", first.getMethodName() );
     }
 
 }
