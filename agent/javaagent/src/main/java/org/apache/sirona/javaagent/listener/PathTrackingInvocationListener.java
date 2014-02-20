@@ -33,10 +33,6 @@ public class PathTrackingInvocationListener extends ConfigurableListener {
     private static final boolean TRACKING_ACTIVATED =
         Configuration.is( Configuration.CONFIG_PROPERTY_PREFIX + "javaagent.path.tracking.activate", false );
 
-
-    private String className;
-    private String methodName;
-
     @Override
     public boolean accept( String key )
     {
@@ -58,11 +54,6 @@ public class PathTrackingInvocationListener extends ConfigurableListener {
             return false;
         }
 
-        int lastDot = key.lastIndexOf( "." );
-
-        className = key.substring( 0, lastDot );
-        methodName = key.substring(lastDot + 1, key.length());
-
         return true;
     }
 
@@ -73,6 +64,14 @@ public class PathTrackingInvocationListener extends ConfigurableListener {
         {
             System.out.println( "PathTrackingInvocationListener#before:" + context.getKey() );
         }
+
+        String key = context.getKey();
+
+        int lastDot = key.lastIndexOf( "." );
+
+        String className = key.substring( 0, lastDot );
+        String methodName = key.substring(lastDot + 1, key.length());
+
         final PathTracker.PathTrackingInformation pathTrackingInformation = new PathTracker.PathTrackingInformation(className, methodName);
         context.put(PATH_TRACKING_INFO_LEVEL_KEY, pathTrackingInformation);
         context.put(PATH_TRACKER_KEY, PathTracker.start(pathTrackingInformation));
