@@ -26,7 +26,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- *
+ * Contains logic to track class#method invocation path
  */
 public class PathTracker
 {
@@ -229,14 +229,12 @@ public class PathTracker
         }
 
         // FIXME get node from configuration!
-        // FIXME correctly configure the level!
         final PathTrackingEntry pathTrackingEntry =
             new PathTrackingEntry( uuid, "node", pathTrackingInformation.getClassName(), pathTrackingInformation.getMethodName(),
                                    start, ( end - start ), pathTrackingInformation.getLevel());
 
         THREAD_LOCAL_ENTRIES.get().add( pathTrackingEntry );
 
-        // FIXME: same all duration/level browsing the tree, do we need TrackingEntry or should information just be used?
         if (pathTrackingInformation.getLevel() == 1 && pathTrackingInformation.getParent() == null) { // 0 is never reached so 1 is first
             List<PathTrackingEntry> pathTrackingEntries = THREAD_LOCAL_ENTRIES.get();
             PATH_TRACKING_DATA_STORE.store( pathTrackingEntries );

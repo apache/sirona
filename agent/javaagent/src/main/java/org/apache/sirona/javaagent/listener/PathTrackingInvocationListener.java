@@ -25,6 +25,9 @@ import org.apache.sirona.tracking.PathTracker;
 
 @Order(1)
 @AutoSet
+/**
+ * This listener is responsible to track/record class#method path using {@link org.apache.sirona.tracking.PathTracker}
+ */
 public class PathTrackingInvocationListener extends ConfigurableListener {
 
     private static final Integer PATH_TRACKER_KEY = "Sirona-path-tracker-key".hashCode();
@@ -57,6 +60,12 @@ public class PathTrackingInvocationListener extends ConfigurableListener {
         return true;
     }
 
+    /**
+     * executed before method called to configure the start {@link org.apache.sirona.tracking.PathTracker.PathTrackingInformation}
+     * and set various thread local variable as invocation level
+     * will call {@link org.apache.sirona.tracking.PathTracker#start(org.apache.sirona.tracking.PathTracker.PathTrackingInformation)}
+     * @param context
+     */
     @Override
     public void before( AgentContext context )
     {
@@ -77,6 +86,13 @@ public class PathTrackingInvocationListener extends ConfigurableListener {
         context.put(PATH_TRACKER_KEY, PathTracker.start(pathTrackingInformation));
     }
 
+    /**
+     *
+     * will call {@link org.apache.sirona.tracking.PathTracker#stop(org.apache.sirona.tracking.PathTracker.PathTrackingInformation)}
+     * @param context
+     * @param result
+     * @param error
+     */
     @Override
     public void after( AgentContext context, Object result, Throwable error )
     {
