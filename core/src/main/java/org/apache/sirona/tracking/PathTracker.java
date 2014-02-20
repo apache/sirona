@@ -220,12 +220,6 @@ public class PathTracker
 
         final String uuid = PathTracker.get();
 
-        // FIXME get node from configuration!
-        // FIXME correctly configure the level!
-        final PathTrackingEntry pathTrackingEntry =
-                new PathTrackingEntry( uuid, "node", pathTrackingInformation.getClassName(), pathTrackingInformation.getMethodName(),
-                        start, ( end - start ), THREAD_LOCAL_LEVEL.get().get());
-
         final PathTrackingInformation current = THREAD_LOCAL_LEVEL_INFO.get();
         // same invocation so no inc, class can do recursion so don't use classname/methodname
         if ( pathTrackingInformation != current )
@@ -234,7 +228,11 @@ public class PathTracker
             THREAD_LOCAL_LEVEL_INFO.set( pathTrackingInformation.getParent() );
         }
 
-        //THREAD_LOCAL_LEVEL_INFO.set( pathTrackingInformation );
+        // FIXME get node from configuration!
+        // FIXME correctly configure the level!
+        final PathTrackingEntry pathTrackingEntry =
+            new PathTrackingEntry( uuid, "node", pathTrackingInformation.getClassName(), pathTrackingInformation.getMethodName(),
+                                   start, ( end - start ), pathTrackingInformation.getLevel());
 
         THREAD_LOCAL_ENTRIES.get().add( pathTrackingEntry );
 
