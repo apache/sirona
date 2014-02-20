@@ -31,7 +31,6 @@ import org.apache.sirona.tracking.PathTracker;
 public class PathTrackingInvocationListener extends ConfigurableListener {
 
     private static final Integer PATH_TRACKER_KEY = "Sirona-path-tracker-key".hashCode();
-    private static final Integer PATH_TRACKING_INFO_LEVEL_KEY = "Sirona-path-tracking-info-key".hashCode();
 
     private static final boolean TRACKING_ACTIVATED =
         Configuration.is( Configuration.CONFIG_PROPERTY_PREFIX + "javaagent.path.tracking.activate", false );
@@ -78,13 +77,12 @@ public class PathTrackingInvocationListener extends ConfigurableListener {
         String methodName = key.substring(lastDot + 1, key.length());
 
         final PathTracker.PathTrackingInformation pathTrackingInformation = new PathTracker.PathTrackingInformation(className, methodName);
-        context.put(PATH_TRACKING_INFO_LEVEL_KEY, pathTrackingInformation);
         context.put(PATH_TRACKER_KEY, PathTracker.start(pathTrackingInformation));
     }
 
     /**
      *
-     * will call {@link org.apache.sirona.tracking.PathTracker#stop(org.apache.sirona.tracking.PathTracker.PathTrackingInformation)}
+     * will call {@link org.apache.sirona.tracking.PathTracker#stop()}
      * @param context
      * @param result
      * @param error
@@ -98,7 +96,6 @@ public class PathTrackingInvocationListener extends ConfigurableListener {
             System.out.println( "PathTrackingInvocationListener#after: " + context.getKey() );
         }
 
-        context.get(PATH_TRACKER_KEY, PathTracker.class)
-                .stop(context.get(PATH_TRACKING_INFO_LEVEL_KEY, PathTracker.PathTrackingInformation.class));
+        context.get(PATH_TRACKER_KEY, PathTracker.class).stop();
     }
 }

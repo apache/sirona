@@ -45,6 +45,12 @@ public class PathTracker
         }
     };
 
+    private final PathTrackingInformation pathTrackingInformation;
+
+    public PathTracker(final PathTrackingInformation pathTrackingInformation) {
+        this.pathTrackingInformation = pathTrackingInformation;
+    }
+
     private static class Context {
         private String uuid;
         private AtomicInteger level;
@@ -166,10 +172,10 @@ public class PathTracker
 
         //System.out.println("start level: " + level + " for key " + key);
 
-        return new PathTracker(); // TODO: see if this shouldn't be it which should be in *the* ThreadLocal
+        return new PathTracker(pathTrackingInformation);
     }
 
-    public void stop( PathTrackingInformation pathTrackingInformation )
+    public void stop()
     {
         final long end = System.nanoTime();
         final long start = pathTrackingInformation.getStart();
@@ -196,6 +202,5 @@ public class PathTracker
             PathTracker.cleanUp();
         }
     }
-
 
 }
