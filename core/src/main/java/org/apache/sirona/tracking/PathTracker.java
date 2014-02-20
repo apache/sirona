@@ -236,12 +236,13 @@ public class PathTracker
 
         //THREAD_LOCAL_LEVEL_INFO.set( pathTrackingInformation );
 
+        THREAD_LOCAL_ENTRIES.get().add( pathTrackingEntry );
+
         // FIXME: same all duration/level browsing the tree, do we need TrackingEntry or should information just be used?
         if (pathTrackingInformation.getLevel() == 1 && pathTrackingInformation.getParent() == null) { // 0 is never reached so 1 is first
-            PATH_TRACKING_DATA_STORE.store(THREAD_LOCAL_ENTRIES.get());
+            List<PathTrackingEntry> pathTrackingEntries = THREAD_LOCAL_ENTRIES.get();
+            PATH_TRACKING_DATA_STORE.store( pathTrackingEntries );
             PathTracker.cleanUp();
-        } else {
-            THREAD_LOCAL_ENTRIES.get().add( pathTrackingEntry );
         }
     }
 

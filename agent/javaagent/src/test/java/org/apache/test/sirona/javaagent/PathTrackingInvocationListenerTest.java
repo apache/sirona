@@ -21,15 +21,12 @@ import org.apache.sirona.javaagent.AgentArgs;
 import org.apache.sirona.javaagent.JavaAgentRunner;
 import org.apache.sirona.pathtracking.test.ExtendedInMemoryPathTrackingDataStore;
 import org.apache.sirona.store.DataStoreFactory;
-import org.apache.sirona.store.tracking.InMemoryPathTrackingDataStore;
 import org.apache.sirona.tracking.PathTrackingEntry;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -58,33 +55,25 @@ public class PathTrackingInvocationListenerTest
 
         Map<String, Set<PathTrackingEntry>> all = ptds.retrieveAll();
 
-        //Assert.assertTrue( !all.isEmpty() );
+        Assert.assertTrue( !all.isEmpty() );
 
-/* FIXME: fix stop() to get consistent storage
+        // so we have 4 entries constructor is ignored!
+
+
+
+
 
         // test only one Thread so only one trackingId
-/*
         Assert.assertEquals( 1, all.size() );
 
         List<PathTrackingEntry> entries = new ArrayList<PathTrackingEntry>( all.values().iterator().next() );
 
-        PathTrackingEntry first = entries.get( 0 );
-
-        System.out.println( "first entry: " + first );
-
-        PathTrackingEntry second = entries.get( 1 );
-
-        System.out.println( "second entry: " + second );
-
-        PathTrackingEntry last = entries.get( entries.size() - 1 );
-
-        System.out.println( "last entry: " + last );
+        Assert.assertEquals( 4, entries.size() );
 
         for ( PathTrackingEntry entry : entries )
         {
             System.out.println( "entry:" + entry );
         }
-*/
     }
 
 
@@ -93,13 +82,27 @@ public class PathTrackingInvocationListenerTest
         public void foo()
             throws Exception
         {
-            Thread.sleep( 1000 );
+            Thread.sleep( 500 );
         }
 
         public void beer()
             throws Exception
         {
             this.foo();
+            this.pub();
+        }
+
+        public void pub()
+            throws Exception
+        {
+            Thread.sleep( 100 );
+            this.bar();
+        }
+
+        public void bar()
+            throws Exception
+        {
+            Thread.sleep( 300 );
         }
     }
 

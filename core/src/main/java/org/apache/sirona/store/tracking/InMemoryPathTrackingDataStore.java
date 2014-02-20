@@ -80,7 +80,7 @@ public class InMemoryPathTrackingDataStore
                 entriesList = new TreeSet<PathTrackingEntry>( PathTrackingEntryComparator.INSTANCE );
             }
             entriesList.addAll( entry.getValue() );
-            entries.put( entry.getKey(), entriesList );
+            this.pathTrackingEntries.put( entry.getKey(), entriesList );
         }
 
     }
