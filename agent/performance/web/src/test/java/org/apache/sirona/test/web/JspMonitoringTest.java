@@ -46,6 +46,7 @@ import java.net.URL;
 import static org.apache.sirona.test.web.Clients.newClient;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(Arquillian.class)
 public class JspMonitoringTest {
@@ -115,10 +116,18 @@ public class JspMonitoringTest {
         assertEquals("Hello", newClient().getPage(testUrl + "?ignoredQuery=yes&ofcourse=itis").getWebResponse().getContentAsString());
 
         assertFalse(Repository.INSTANCE.counters().isEmpty());
-        final Counter counter = Repository.INSTANCE.counters().iterator().next();
-        assertEquals(Role.JSP, counter.getKey().getRole());
-        assertEquals(url.getPath() + "test.jsp", counter.getKey().getName());
-        assertEquals(3, counter.getHits());
+
+        boolean jspCounterFound = false;
+
+        for (Counter counter : Repository.INSTANCE.counters()) {
+            if (counter.getKey().getRole().equals( Role.JSP )){
+                assertEquals(url.getPath() + "test.jsp", counter.getKey().getName());
+                assertEquals(3, counter.getHits());
+                jspCounterFound = true;
+            }
+        }
+        assertTrue("Jsp counter not found", jspCounterFound );
+
     }
 
     public static class RedirectServlet extends HttpServlet {
