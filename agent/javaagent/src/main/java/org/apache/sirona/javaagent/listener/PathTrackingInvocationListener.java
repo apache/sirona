@@ -40,7 +40,6 @@ public class PathTrackingInvocationListener
     @Override
     public boolean accept( String key )
     {
-
         boolean include = super.accept( key );
         if ( !include )
         {
@@ -48,10 +47,9 @@ public class PathTrackingInvocationListener
         }
 
         SironaAgentLogging.debug(
-            "PathTrackingInvocationListener#accept, TRACKING_ACTIVATED:" + TRACKING_ACTIVATED + ", key: " + key );
+            "PathTrackingInvocationListener#accept, TRACKING_ACTIVATED: {0}, key: {1}", TRACKING_ACTIVATED, key );
 
         return TRACKING_ACTIVATED;
-
     }
 
     /**
@@ -65,7 +63,7 @@ public class PathTrackingInvocationListener
     public void before( AgentContext context )
     {
 
-        SironaAgentLogging.debug( "PathTrackingInvocationListener#before:" + context.getKey() );
+        SironaAgentLogging.debug( "PathTrackingInvocationListener#before: {0}", context.getKey() );
 
         String key = context.getKey();
 
@@ -76,6 +74,9 @@ public class PathTrackingInvocationListener
 
         final PathTracker.PathTrackingInformation pathTrackingInformation =
             new PathTracker.PathTrackingInformation( className, methodName );
+
+        SironaAgentLogging.debug( "call PathTracker#start with {0}", pathTrackingInformation );
+
         context.put( PATH_TRACKER_KEY, PathTracker.start( pathTrackingInformation ) );
     }
 
@@ -90,7 +91,7 @@ public class PathTrackingInvocationListener
     public void after( AgentContext context, Object result, Throwable error )
     {
 
-        SironaAgentLogging.debug( "PathTrackingInvocationListener#after: " + context.getKey() );
+        SironaAgentLogging.debug( "PathTrackingInvocationListener#after: {0}", context.getKey() );
 
         context.get( PATH_TRACKER_KEY, PathTracker.class ).stop();
     }

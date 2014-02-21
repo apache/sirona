@@ -50,7 +50,7 @@ public class SironaTransformer implements ClassFileTransformer {
             return classfileBuffer;
         } catch (final Exception e) {
             if ( SironaAgentLogging.AGENT_DEBUG) {
-                SironaAgentLogging.debug( "fail transforming class " + className + ": " + e.getMessage() );
+                SironaAgentLogging.debug( "fail transforming class {0} : {1}", className, e.getMessage() );
                 e.printStackTrace();
             }
             throw new RuntimeException( e.getMessage(), e );

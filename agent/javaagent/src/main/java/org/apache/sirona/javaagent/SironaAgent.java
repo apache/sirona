@@ -111,7 +111,7 @@ public class SironaAgent {
                             && instrumentation.isModifiableClass(clazz)) {
                         try {
 
-                            SironaAgentLogging.debug( "reload clazz:" + clazz.getName() );
+                            SironaAgentLogging.debug( "reload clazz: {0}", clazz.getName() );
 
                             instrumentation.retransformClasses(clazz);
                         } catch (final Exception e) {

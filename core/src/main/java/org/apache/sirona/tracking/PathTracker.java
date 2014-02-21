@@ -145,6 +145,7 @@ public class PathTracker
 
     public static PathTracker start( PathTrackingInformation pathTrackingInformation )
     {
+
         final Context context = THREAD_LOCAL.get();
 
         final int level;
