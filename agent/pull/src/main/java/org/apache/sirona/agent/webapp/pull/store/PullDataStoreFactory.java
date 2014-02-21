@@ -22,9 +22,14 @@ import org.apache.sirona.store.gauge.InMemoryGaugeDataStore;
 import org.apache.sirona.store.status.EmptyStatuses;
 import org.apache.sirona.store.tracking.InMemoryPathTrackingDataStore;
 
-public class PullDataStoreFactory extends DelegateDataStoreFactory {
-    public PullDataStoreFactory() {
-        super(new InMemoryCounterDataStore(), new InMemoryGaugeDataStore(),
-              new EmptyStatuses(), new InMemoryPathTrackingDataStore());
+public class PullDataStoreFactory
+    extends DelegateDataStoreFactory
+{
+    public PullDataStoreFactory()
+    {
+        super( new InMemoryCounterDataStore(), //
+               new InMemoryGaugeDataStore(), //
+               new EmptyStatuses(), //
+               new InMemoryPathTrackingDataStore() );
     }
 }
