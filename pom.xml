@@ -50,7 +50,7 @@
     <maven.compiler.target>1.6</maven.compiler.target>
 
     <tomcat.version>7.0.50</tomcat.version>
-    <arquillian.version>1.0.3.Final</arquillian.version> <!-- for tomcat adapter -->
+    <arquillian.version>1.1.3.Final</arquillian.version> <!-- for tomcat adapter -->
     <openejb.version>4.5.2</openejb.version>
     <slf4j.version>1.7.5</slf4j.version>
   </properties>
@@ -422,7 +422,7 @@
       <dependency>
         <groupId>org.jboss.arquillian.container</groupId>
         <artifactId>arquillian-tomcat-embedded-7</artifactId>
-        <version>1.0.0.CR5</version>
+        <version>1.0.0.CR6</version>
         <scope>test</scope>
       </dependency>
       <dependency>
