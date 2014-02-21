@@ -119,6 +119,12 @@
                   <pattern>org.objectweb.asm</pattern>
                   <shadedPattern>org.apache.sirona.asm4</shadedPattern>
                 </relocation>
+                <!--
+                <relocation>
+                  <pattern>org.apache.sirona</pattern>
+                  <shadedPattern>org.apache.sirona.sirona</shadedPattern>
+                </relocation>
+                -->
               </relocations>
             </configuration>
           </execution>

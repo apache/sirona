@@ -16,6 +16,7 @@
  */
 package org.apache.sirona.javaagent;
 
+import org.apache.sirona.javaagent.logging.SironaAgentLogging;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 
@@ -47,11 +48,12 @@ public class SironaTransformer implements ClassFileTransformer {
                 return writer.toByteArray();
             }
             return classfileBuffer;
-        } catch (final RuntimeException re) {
-            if (SironaAgent.AGENT_DEBUG) {
-                re.printStackTrace();
+        } catch (final Exception e) {
+            if ( SironaAgentLogging.AGENT_DEBUG) {
+                SironaAgentLogging.debug( "fail transforming class " + className + ": " + e.getMessage() );
+                e.printStackTrace();
             }
-            throw re;
+            throw new RuntimeException( e.getMessage(), e );
         }
     }
 

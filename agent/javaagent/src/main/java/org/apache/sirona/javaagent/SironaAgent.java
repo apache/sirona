@@ -16,6 +16,8 @@
  */
 package org.apache.sirona.javaagent;
 
+import org.apache.sirona.javaagent.logging.SironaAgentLogging;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -29,8 +31,6 @@ import java.util.Map;
 import java.util.jar.JarFile;
 
 public class SironaAgent {
-
-    public static boolean AGENT_DEBUG = Boolean.getBoolean( "sirona.agent.debug" );
 
     private static final boolean FORCE_RELOAD = Boolean.getBoolean("sirona.javaagent.force.reload");
 
@@ -110,21 +110,25 @@ public class SironaAgent {
                             && clazz.getAnnotation(instrumentedMarker) == null
                             && instrumentation.isModifiableClass(clazz)) {
                         try {
-                            if (AGENT_DEBUG) {
-                                System.out.println( "reload clazz:" + clazz.getName() );
-                            }
+
+                            SironaAgentLogging.debug( "reload clazz:" + clazz.getName() );
+
                             instrumentation.retransformClasses(clazz);
                         } catch (final Exception e) {
                             System.err.println("Can't instrument: " + clazz.getName() + "[" + e.getMessage() + "]");
-                            if (AGENT_DEBUG) {
+                            if (SironaAgentLogging.AGENT_DEBUG) {
                                 e.printStackTrace();
                             }
                         }
                     }
                 }
+            } else {
+                if (SironaAgentLogging.AGENT_DEBUG){
+                    System.out.println("do not reload classes");
+                }
             }
         } catch (final Exception e) {
-            if (AGENT_DEBUG) {
+            if (SironaAgentLogging.AGENT_DEBUG) {
                 System.out.println( "finished instrumentation setup with exception:" + e.getMessage() );
             }
             e.printStackTrace();
