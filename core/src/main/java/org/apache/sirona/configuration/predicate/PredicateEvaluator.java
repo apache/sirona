@@ -128,9 +128,7 @@ public final class PredicateEvaluator {
                                     || apache.startsWith("activemq") || apache.startsWith("commons")) {
                                 return true;
                             }
-                        } else if (org.startsWith("slf4j.") || org.startsWith("metatype") || org.startsWith("hsqldb")) {
-                            return true;
-                        } else if (value.startsWith("eclipse.jdt")) {
+                        } else if (org.startsWith("slf4j.") || org.startsWith("metatype") || org.startsWith("hsqldb") || org.startsWith("eclipse.jdt")) {
                             return true;
                         }
                     } else if (value.startsWith("serp")) {
@@ -144,7 +142,7 @@ public final class PredicateEvaluator {
                             if (isTomcat(sub)) {
                                 return true;
                             }
-                        } else if (value.startsWith("eclipse.jdt")) {
+                        } else if (org.startsWith("eclipse.jdt")) {
                             return true;
                         }
                     }

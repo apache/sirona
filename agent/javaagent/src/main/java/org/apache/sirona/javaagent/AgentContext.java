@@ -44,10 +44,10 @@ public class AgentContext {
     private static final ConcurrentMap<String, Counter.Key> KEYS_CACHE = new ConcurrentHashMap<String, Counter.Key>();
 	private static final AgentContext FAKE_CONTEXT = new AgentContext("init", null, new InvocationListener[0]);
 
-	private static Map<String, String> agentParameters = new HashMap<String, String>( );
+	private static final Map<String, String> AGENT_PARAMETERS = new ConcurrentHashMap<String, String>();
 
     public static void addAgentParameter( String key, String value){
-        agentParameters.put( key, value );
+        AGENT_PARAMETERS.put(key, value);
     }
 
     /**
@@ -55,7 +55,7 @@ public class AgentContext {
      * @return a copy of the Agent parameters
      */
     public static Map<String,String> getAgentParameters(){
-        return new HashMap<String, String>( agentParameters );
+        return AGENT_PARAMETERS;
     }
 
     // called by agent
