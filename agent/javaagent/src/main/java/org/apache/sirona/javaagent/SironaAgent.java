@@ -98,12 +98,13 @@ public class SironaAgent {
 
 
         try {
-            final SironaTransformer transformer = SironaTransformer.class.cast(loader.loadClass("org.apache.sirona.javaagent.SironaTransformer").newInstance());
-            instrumentation.addTransformer(transformer, instrumentation.isRetransformClassesSupported());
+            final SironaTransformer transformer = new SironaTransformer("true".equals(extractConfig(agentArgs, "debug=")));
+            final boolean reloadable = instrumentation.isRetransformClassesSupported() && FORCE_RELOAD;
+            instrumentation.addTransformer(transformer, reloadable);
 
             final Class<? extends Annotation> instrumentedMarker = (Class<? extends Annotation>) loader.loadClass("org.apache.sirona.javaagent.Instrumented");
             final Class<?> listener = loader.loadClass("org.apache.sirona.javaagent.spi.InvocationListener");
-            if (instrumentation.isRetransformClassesSupported() && FORCE_RELOAD) {
+            if (reloadable) {
                 for (final Class<?> clazz : instrumentation.getAllLoadedClasses()) {
                     if (!clazz.isArray()
                             && !listener.isAssignableFrom(clazz)

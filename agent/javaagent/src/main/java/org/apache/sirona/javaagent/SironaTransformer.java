@@ -20,12 +20,20 @@ import org.apache.sirona.javaagent.logging.SironaAgentLogging;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
 
 public class SironaTransformer implements ClassFileTransformer {
     private static final String DELEGATING_CLASS_LOADER = "sun.reflect.DelegatingClassLoader";
+
+    private final boolean debug;
+
+    public SironaTransformer(final boolean debug) {
+        this.debug = debug;
+    }
 
     @Override
     public byte[] transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined,
@@ -45,7 +53,23 @@ public class SironaTransformer implements ClassFileTransformer {
                 final ClassWriter writer = new ClassWriter(reader, ClassWriter.COMPUTE_MAXS);
                 final SironaClassVisitor advisor = new SironaClassVisitor(writer, className, keyVisitor.getKeys());
                 reader.accept(advisor, ClassReader.SKIP_DEBUG);
-                return writer.toByteArray();
+
+                final byte[] bytes = writer.toByteArray();
+                if (debug) {
+                    final File dump = new File(System.getProperty("java.io.tmpdir"), "sirona-dump/" + className + ".class");
+                    dump.getParentFile().mkdirs();
+                    FileOutputStream w = null;
+                    try {
+                        w = new FileOutputStream(dump);
+                        w.write(bytes);
+                    } finally {
+                        if (w != null) {
+                            w.close();
+                        }
+                    }
+                }
+
+                return bytes;
             }
             return classfileBuffer;
         } catch (final Exception e) {
