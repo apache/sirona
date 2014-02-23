@@ -23,18 +23,20 @@ import org.apache.sirona.javaagent.spi.InvocationListener;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class ConfigurableListener<I, R> implements InvocationListener {
-	private static final AtomicInteger ID_GENERATOR = new AtomicInteger(1); // 0 is reserved for CounterListener
+    private static final AtomicInteger ID_GENERATOR = new AtomicInteger(1); // 0 is reserved for CounterListener
 
-	public static final PredicateEvaluator DEFAULT_EXCLUDES = new PredicateEvaluator(
+    public static final PredicateEvaluator DEFAULT_EXCLUDES = new PredicateEvaluator(
             // sirona itself
-			"prefix:org.apache.sirona," +
+            "prefix:org.apache.sirona," +
+            // io often generates exceptions
+            "prefix:org.apache.velocity," +
             // the JVM
-			"container:jvm," +
+            "container:jvm," +
             // Apache Tomcat and TomEE
             "container:tomee", ",");
-	public static final PredicateEvaluator DEFAULT_INCLUDES = new PredicateEvaluator("true:true", ",");
+    public static final PredicateEvaluator DEFAULT_INCLUDES = new PredicateEvaluator("true:true", ",");
 
-	private int id = ID_GENERATOR.incrementAndGet();
+    private int id = ID_GENERATOR.incrementAndGet();
 
     private PredicateEvaluator includes = DEFAULT_INCLUDES;
     private PredicateEvaluator excludes = DEFAULT_EXCLUDES;
