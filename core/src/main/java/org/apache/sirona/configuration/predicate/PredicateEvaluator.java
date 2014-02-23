@@ -133,6 +133,8 @@ public final class PredicateEvaluator {
                         }
                     } else if (value.startsWith("serp")) {
                         return true;
+                    } else if (value.startsWith("org.eclipse.jdt")) {
+                        return true;
                     }
                 } else if ("tomcat".equalsIgnoreCase(container)) {
                     if (value.startsWith("org.apache.")) {
