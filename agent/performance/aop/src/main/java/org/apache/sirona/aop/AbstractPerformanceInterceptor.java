@@ -186,6 +186,8 @@ public abstract class AbstractPerformanceInterceptor<T> implements Serializable 
      * The handler for cases where interception is not possible and you need to pass the "before"object to be able to monitor.
      */
     public static class Context {
+        private static final int MAX_LENGTH = Configuration.getInteger(Configuration.CONFIG_PROPERTY_PREFIX + "performance.exception.max-length", 100);
+
         protected final ActivationContext activationContext;
         protected final StopWatch stopWatch;
 
@@ -210,7 +212,8 @@ public abstract class AbstractPerformanceInterceptor<T> implements Serializable 
                 if (error != null) {
                     final ByteArrayOutputStream writer = new ByteArrayOutputStream();
                     error.printStackTrace(new PrintStream(writer));
-                    Repository.INSTANCE.getCounter(new Counter.Key(Role.FAILURES, writer.toString())).add(elapsedTime);
+                    final String toString = writer.toString();
+                    Repository.INSTANCE.getCounter(new Counter.Key(Role.FAILURES, toString.substring(0, Math.min(MAX_LENGTH, toString.length())))).add(elapsedTime);
                 }
 
                 activationContext.elapsedTime(elapsedTime);
