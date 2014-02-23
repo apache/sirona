@@ -142,6 +142,8 @@ public final class PredicateEvaluator {
                         if (isTomcat(sub)) {
                             return true;
                         }
+                    } else if (value.startsWith("org.eclipse.jdt")) {
+                        return true;
                     }
                 } else if ("jvm".equalsIgnoreCase(container)) {
                     if (value.startsWith("java") || value.startsWith("sun") || value.startsWith("com.sun")) {
