@@ -228,12 +228,6 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
             returnValue();
         }
 
-        @Override
-        public void visitEnd() {
-            visitMaxs(0, 0);
-            super.visitEnd();
-        }
-
         private static class Primitive {
             private Type wrapper;
             private Method method;

@@ -50,7 +50,7 @@ public class SironaTransformer implements ClassFileTransformer {
             new ClassReader(classfileBuffer).accept(keyVisitor, ClassReader.SKIP_DEBUG);
             if (keyVisitor.hasAdviced()) {
                 final ClassReader reader = new ClassReader(classfileBuffer);
-                final ClassWriter writer = new ClassWriter(reader, ClassWriter.COMPUTE_MAXS);
+                final ClassWriter writer = new ClassWriter(reader, ClassWriter.COMPUTE_FRAMES);
                 final SironaClassVisitor advisor = new SironaClassVisitor(writer, className, keyVisitor.getKeys());
                 reader.accept(advisor, ClassReader.SKIP_DEBUG);
 
