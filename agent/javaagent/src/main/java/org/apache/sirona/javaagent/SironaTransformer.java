@@ -52,7 +52,7 @@ public class SironaTransformer implements ClassFileTransformer {
                 final ClassReader reader = new ClassReader(classfileBuffer);
                 final ClassWriter writer = new ClassWriter(reader, ClassWriter.COMPUTE_FRAMES);
                 final SironaClassVisitor advisor = new SironaClassVisitor(writer, className, keyVisitor.getKeys());
-                reader.accept(advisor, ClassReader.SKIP_DEBUG);
+                reader.accept(advisor, 0);
 
                 final byte[] bytes = writer.toByteArray();
                 if (debug) {
