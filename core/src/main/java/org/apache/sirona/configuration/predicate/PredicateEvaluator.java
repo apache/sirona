@@ -130,20 +130,23 @@ public final class PredicateEvaluator {
                             }
                         } else if (org.startsWith("slf4j.") || org.startsWith("metatype") || org.startsWith("hsqldb")) {
                             return true;
+                        } else if (value.startsWith("eclipse.jdt")) {
+                            return true;
                         }
                     } else if (value.startsWith("serp")) {
                         return true;
-                    } else if (value.startsWith("org.eclipse.jdt")) {
-                        return true;
                     }
                 } else if ("tomcat".equalsIgnoreCase(container)) {
-                    if (value.startsWith("org.apache.")) {
-                        final String sub = value.substring("org.apache.".length());
-                        if (isTomcat(sub)) {
+                    if (value.startsWith("org.")) {
+                        final String org = value.substring("org.".length());
+                        if (org.startsWith("apache.")) {
+                            final String sub = value.substring("org.apache.".length());
+                            if (isTomcat(sub)) {
+                                return true;
+                            }
+                        } else if (value.startsWith("eclipse.jdt")) {
                             return true;
                         }
-                    } else if (value.startsWith("org.eclipse.jdt")) {
-                        return true;
                     }
                 } else if ("jvm".equalsIgnoreCase(container)) {
                     if (value.startsWith("java") || value.startsWith("sun") || value.startsWith("com.sun")) {
