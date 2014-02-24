@@ -35,10 +35,14 @@ public class CounterListener extends AbstractPerformanceInterceptor<String> impl
     private PredicateEvaluator includes = ConfigurableListener.DEFAULT_INCLUDES;
     private PredicateEvaluator excludes = ConfigurableListener.DEFAULT_EXCLUDES;
 
+    private boolean disabled;
+
     @Override
     public boolean accept(final String key) {
         return !AgentContext.getAgentParameters().containsKey( DISABLE_PARAMETER_KEY ) //
-                && includes.matches(key) && !excludes.matches(key);
+                && includes.matches(key) //
+                && !excludes.matches(key) //
+                && !disabled;
     }
 
     // @AutoSet
@@ -98,5 +102,10 @@ public class CounterListener extends AbstractPerformanceInterceptor<String> impl
 
     private static <T> T unsupportedOperation() {
         throw new UnsupportedOperationException("shouldn't be called directly");
+    }
+
+    public void setDisabled( boolean disabled )
+    {
+        this.disabled = disabled;
     }
 }
