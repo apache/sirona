@@ -77,7 +77,7 @@ public class PathTrackingInvocationListener
 
         SironaAgentLogging.debug( "call PathTracker#start with {0}", pathTrackingInformation );
 
-        context.put( PATH_TRACKER_KEY, PathTracker.start( pathTrackingInformation ) );
+        context.put( PATH_TRACKER_KEY, org.apache.sirona.tracking.PathTracker.start( pathTrackingInformation ) );
     }
 
     /**

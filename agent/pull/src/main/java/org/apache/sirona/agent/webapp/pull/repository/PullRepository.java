@@ -29,6 +29,7 @@ import org.apache.sirona.status.NodeStatus;
 import org.apache.sirona.status.NodeStatusReporter;
 import org.apache.sirona.store.counter.InMemoryCounterDataStore;
 import org.apache.sirona.store.status.EmptyStatuses;
+import org.apache.sirona.store.tracking.InMemoryPathTrackingDataStore;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -40,7 +41,7 @@ public class PullRepository extends DefaultRepository {
     private final boolean clearAfterCollect;
 
     public PullRepository() {
-        super(new InMemoryCounterDataStore(), new GaugeDataStoreAdapter(), new EmptyStatuses());
+        super(new InMemoryCounterDataStore(), new GaugeDataStoreAdapter(), new EmptyStatuses(), new InMemoryPathTrackingDataStore());
         cube = IoCs.findOrCreateInstance(CubeBuilder.class).build();
         clearAfterCollect = Configuration.is(Configuration.CONFIG_PROPERTY_PREFIX + "pull.counter.clearOnCollect", false);
     }

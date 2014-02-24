@@ -97,15 +97,45 @@ public abstract class AbstractPerformanceInterceptor<T> implements Serializable 
     protected Context before(final T invocation, final String name) {
         final ActivationContext context = doFindContext(invocation);
 
-        final StopWatch stopwatch;
-        if (context.shouldExecute()) {
-            final Counter monitor = Repository.INSTANCE.getCounter(getKey(invocation, name));
-            stopwatch = Repository.INSTANCE.start(monitor);
-        } else {
-            stopwatch = null;
-        }
+        try
+        {
+            final StopWatch stopwatch;
+            if (context.shouldExecute()) {
+                Repository repository =  Repository.INSTANCE;
+                if (repository==null){
+                    System.out.println("repository is null");
+                }
+                final Counter monitor = repository.getCounter(getKey(invocation, name));
+                if ( monitor == null){
+                    System.out.println("monitor is null");
+                }
+                stopwatch = Repository.INSTANCE.start(monitor);
+            } else {
+                stopwatch = null;
+            }
 
-        return newContext(invocation, context, stopwatch);
+            return newContext(invocation, context, stopwatch);
+        }
+        catch ( Exception e )
+        {
+            //e.printStackTrace();
+            // ignore and return a fake context can happen on start when intercepting some classes
+            // and all agent classes not really loaded
+            return newContext( invocation, context, new StopWatch()
+            {
+                @Override
+                public long getElapsedTime()
+                {
+                    return 0;
+                }
+
+                @Override
+                public StopWatch stop()
+                {
+                    return this;
+                }
+            }  );
+        }
     }
 
     protected Context newContext(final T invocation, final ActivationContext context, final StopWatch stopwatch) {

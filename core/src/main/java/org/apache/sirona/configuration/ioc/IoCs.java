@@ -65,6 +65,7 @@ public final class IoCs {
     }
 
     public static synchronized <T> T newInstance(final Class<T> clazz) {
+
         try {
             String config = Configuration.getProperty(clazz.getName(), null);
             if (config == null) {
@@ -74,7 +75,6 @@ public final class IoCs {
                     config = clazz.getName();
                 }
             }
-
             final T t = newInstance(clazz, config);
             SINGLETONS.put(clazz, t);
             return t;

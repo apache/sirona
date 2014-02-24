@@ -16,6 +16,7 @@
 */
 package org.apache.sirona.tracking;
 
+
 import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.store.DataStoreFactory;
@@ -31,40 +32,49 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class PathTracker
 {
-    private static final String NODE =
-            Configuration.getProperty(Configuration.CONFIG_PROPERTY_PREFIX + "javaagent.path.tracking.marker",
-                    Configuration.getProperty("org.apache.sirona.cube.CubeBuilder.marker", "node"));
+    private static final String NODE = Configuration.getProperty(
+        Configuration.CONFIG_PROPERTY_PREFIX + "javaagent.path.tracking.marker", //
+        Configuration.getProperty( "org.apache.sirona.cube.CubeBuilder.marker", "node" ));
 
     private static final PathTrackingDataStore PATH_TRACKING_DATA_STORE =
-            IoCs.findOrCreateInstance(DataStoreFactory.class).getPathTrackingDataStore();
+        IoCs.findOrCreateInstance( DataStoreFactory.class ).getPathTrackingDataStore();
 
-    private static final ThreadLocal<Context> THREAD_LOCAL = new ThreadLocal<Context>() {
+    private static final ThreadLocal<Context> THREAD_LOCAL = new ThreadLocal<Context>()
+    {
         @Override
-        protected Context initialValue() {
+        protected Context initialValue()
+        {
             return new Context();
         }
     };
 
     private final PathTrackingInformation pathTrackingInformation;
 
-    public PathTracker(final PathTrackingInformation pathTrackingInformation) {
+    public PathTracker( final PathTrackingInformation pathTrackingInformation )
+    {
         this.pathTrackingInformation = pathTrackingInformation;
     }
 
-    private static class Context {
+    private static class Context
+    {
         private String uuid;
+
         private AtomicInteger level;
+
         private List<PathTrackingEntry> entries;
+
         private PathTrackingInformation trackingInformation;
 
-        private Context() {
+        private Context()
+        {
             this.uuid = "Sirona-" + UUID.randomUUID().toString();
-            this.level = new AtomicInteger(0);
+            this.level = new java.util.concurrent.atomic.AtomicInteger( 0 );
             this.entries = new ArrayList<PathTrackingEntry>();
         }
     }
 
-    private static void cleanUp() {
+    private static void cleanUp()
+    {
         THREAD_LOCAL.remove();
     }
 
@@ -77,6 +87,7 @@ public class PathTracker
         private PathTrackingInformation parent;
 
         private long start;
+
         private long end;
 
         private int level;
@@ -107,39 +118,43 @@ public class PathTracker
             this.parent = parent;
         }
 
-        public void setStart(final long start) {
+        public void setStart( final long start )
+        {
             this.start = start;
         }
 
-        public long getStart() {
+        public long getStart()
+        {
             return start;
         }
 
-        public long getEnd() {
+        public long getEnd()
+        {
             return end;
         }
 
-        public void setEnd(final long end) {
+        public void setEnd( final long end )
+        {
             this.end = end;
         }
 
-        public int getLevel() {
+        public int getLevel()
+        {
             return level;
         }
 
-        public void setLevel(final int level) {
+        public void setLevel( final int level )
+        {
             this.level = level;
         }
 
         @Override
         public String toString()
         {
-            return "PathTrackingInformation{className='" + className
-                    + "', methodName='" + methodName
-                    + "\', parent=" + parent + '}';
+            return "PathTrackingInformation{className='" + className + "', methodName='" + methodName + "\', parent="
+                + parent + '}';
         }
     }
-
 
     // An other solution could be using Thread.currentThread().getStackTrace() <- very slow
 
@@ -150,10 +165,10 @@ public class PathTracker
 
         final int level;
         final PathTrackingInformation current = context.trackingInformation;
-        if ( current  == null )
+        if ( current == null )
         {
             level = context.level.incrementAndGet();
-            pathTrackingInformation.setLevel(level);
+            pathTrackingInformation.setLevel( level );
         }
         else
         {
@@ -161,19 +176,19 @@ public class PathTracker
             if ( current != pathTrackingInformation )
             {
                 level = context.level.incrementAndGet();
-                pathTrackingInformation.setLevel(level);
+                pathTrackingInformation.setLevel( level );
                 pathTrackingInformation.setParent( current );
             }
 
 
         }
-        pathTrackingInformation.setStart(System.nanoTime());
+        pathTrackingInformation.setStart( System.nanoTime() );
 
         context.trackingInformation = pathTrackingInformation;
 
         //System.out.println("start level: " + level + " for key " + key);
 
-        return new PathTracker(pathTrackingInformation);
+        return new PathTracker( pathTrackingInformation );
     }
 
     public void stop()
@@ -193,12 +208,14 @@ public class PathTracker
         }
 
         final PathTrackingEntry pathTrackingEntry =
-            new PathTrackingEntry( uuid, NODE, pathTrackingInformation.getClassName(), pathTrackingInformation.getMethodName(),
-                                   start, ( end - start ), pathTrackingInformation.getLevel());
+            new PathTrackingEntry( uuid, NODE, pathTrackingInformation.getClassName(),
+                                   pathTrackingInformation.getMethodName(), start, ( end - start ),
+                                   pathTrackingInformation.getLevel() );
 
-        context.entries.add(pathTrackingEntry);
+        context.entries.add( pathTrackingEntry );
 
-        if (pathTrackingInformation.getLevel() == 1 && pathTrackingInformation.getParent() == null) { // 0 is never reached so 1 is first
+        if ( pathTrackingInformation.getLevel() == 1 && pathTrackingInformation.getParent() == null )
+        { // 0 is never reached so 1 is first
             PATH_TRACKING_DATA_STORE.store( context.entries );
             PathTracker.cleanUp();
         }

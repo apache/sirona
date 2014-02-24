@@ -39,6 +39,7 @@ import org.apache.sirona.store.gauge.GaugeDataStore;
 import org.apache.sirona.store.gauge.GaugeValuesRequest;
 import org.apache.sirona.store.status.CollectorNodeStatusDataStore;
 import org.apache.sirona.store.status.NodeStatusDataStore;
+import org.apache.sirona.store.tracking.PathTrackingDataStore;
 
 import java.util.Collection;
 import java.util.Map;
@@ -48,15 +49,18 @@ public class DefaultRepository implements Repository {
     protected final CounterDataStore counterDataStore;
     protected final NodeStatusDataStore nodeStatusDataStore;
     protected final CommonGaugeDataStore gaugeDataStore;
+    protected final PathTrackingDataStore pathTrackingDataStore;
 
     public DefaultRepository() {
-        this(findCounterDataStore(), findGaugeDataStore(), findStatusDataStore());
+        this(findCounterDataStore(), findGaugeDataStore(), findStatusDataStore(), findPathTrackingDataStore());
     }
 
-    protected DefaultRepository(final CounterDataStore counter, final CommonGaugeDataStore gauge, final NodeStatusDataStore status) {
+    protected DefaultRepository(final CounterDataStore counter, final CommonGaugeDataStore gauge, final NodeStatusDataStore status,
+                                final PathTrackingDataStore pathTrackingDataStore) {
         this.counterDataStore = counter;
         this.gaugeDataStore = gauge;
         this.nodeStatusDataStore = status;
+        this.pathTrackingDataStore = pathTrackingDataStore;
 
         if (CollectorCounterStore.class.isInstance(counter)) {
             IoCs.setSingletonInstance(CollectorCounterStore.class, counter);
@@ -113,6 +117,29 @@ public class DefaultRepository implements Repository {
             gauge = IoCs.findOrCreateInstance(DataStoreFactory.class).getGaugeDataStore();
         }
         return gauge;
+    }
+
+    private static PathTrackingDataStore findPathTrackingDataStore() {
+        PathTrackingDataStore pathTrackingDataStore = null;
+        try {
+            pathTrackingDataStore = IoCs.findOrCreateInstance(PathTrackingDataStore.class);
+        } catch (final SironaException e) {
+            // no-op
+        }
+        /**
+        FIXME define/implement CollectorPathTrackingDataStore
+        if (pathTrackingDataStore == null) {
+            try {
+                pathTrackingDataStore = IoCs.findOrCreateInstance(CollectorPathTrackingDataStore.class);
+            } catch (final SironaException e) {
+                // no-op
+            }
+        }
+         */
+        if (pathTrackingDataStore == null) {
+            pathTrackingDataStore = IoCs.findOrCreateInstance(DataStoreFactory.class).getPathTrackingDataStore();
+        }
+        return pathTrackingDataStore;
     }
 
     private static CounterDataStore findCounterDataStore() {
