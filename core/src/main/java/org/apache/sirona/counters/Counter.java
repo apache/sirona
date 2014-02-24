@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * A <code>Metric</code> is a numerical indicator of some monitored application state with support for simple
  * statistics.
  *
- * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
+ *
  */
 public interface Counter {
     Key getKey();

@@ -26,7 +26,7 @@ import java.lang.reflect.Method;
 import java.sql.PreparedStatement;
 
 /**
- * @author ndeloof
+ *
  */
 public class MonitoredPreparedStatement extends MonitoredStatement {
     private final PreparedStatement statement;

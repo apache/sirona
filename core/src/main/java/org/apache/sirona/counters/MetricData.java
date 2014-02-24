@@ -29,7 +29,7 @@ package org.apache.sirona.counters;
  * Double data = MetricData.valueOf( property ).value( metric );
  * </pre>
  *
- * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
+ *
  */
 public enum MetricData {
     Hits {

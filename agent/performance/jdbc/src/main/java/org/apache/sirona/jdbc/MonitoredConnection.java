@@ -32,7 +32,7 @@ import java.sql.PreparedStatement;
 import java.sql.Statement;
 
 /**
- * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
+ *
  */
 public class MonitoredConnection implements InvocationHandler {
     private Connection connection;

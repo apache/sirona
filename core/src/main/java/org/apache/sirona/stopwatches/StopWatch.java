@@ -23,7 +23,7 @@ package org.apache.sirona.stopwatches;
  * StopWatch implementation is supposed not to be thread-safe and to be a one-shot tool. Don't
  * share it beetween threads, don't try to reuse it.
  *
- * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
+ *
  */
 public interface StopWatch {
     long getElapsedTime();

@@ -32,7 +32,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * used to retrieve the complete list, and {@see Unit#getDerived(String)} to retrieve a
  * derived unit by it's name.
  *
- * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
+ *
  */
 public class Unit implements Comparable<Unit>, Serializable {
     private static final Map<String, Unit> UNITS = new ConcurrentHashMap<String, Unit>();

@@ -27,7 +27,7 @@ import static org.apache.sirona.counters.Unit.Time.NANOSECOND;
  * As a monitored resource may have multipe Metrics, each one has a dedicated 'role' that
  * defines the type of data or the monitored aspect it handles.
  *
- * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
+ *
  */
 public class Role implements Comparable<Role>, Serializable {
     public static final Role WEB = new Role("web", NANOSECOND);

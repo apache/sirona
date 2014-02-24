@@ -26,7 +26,7 @@ import static org.apache.sirona.counters.Unit.Time.SECOND;
 import static org.junit.Assert.assertEquals;
 
 /**
- * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
+ *
  */
 public class UnitTest {
     @Test

@@ -20,7 +20,7 @@ package org.apache.sirona.aop;
 import java.lang.reflect.Method;
 
 /**
- * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
+ *
  */
 public class DefaultMonitorNameExtractor implements MonitorNameExtractor {
     // singleton to avoid to need too much memory for nothing

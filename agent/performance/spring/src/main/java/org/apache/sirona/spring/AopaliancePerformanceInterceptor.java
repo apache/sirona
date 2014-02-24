@@ -24,7 +24,7 @@ import org.apache.sirona.aop.AbstractPerformanceInterceptor;
 /**
  * Spring-aop implementation of PerformanceInterceptor.
  *
- * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
+ *
  */
 public class AopaliancePerformanceInterceptor extends AbstractPerformanceInterceptor<MethodInvocation> implements MethodInterceptor {
     @Override

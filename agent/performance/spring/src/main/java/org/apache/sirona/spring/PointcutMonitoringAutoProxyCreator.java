@@ -32,7 +32,7 @@ import java.util.List;
 /**
  * Creates monitored proxies for beans that match a pointcut.
  *
- * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
+ *
  */
 public class PointcutMonitoringAutoProxyCreator extends AbstractAdvisorAutoProxyCreator {
     private MonitorNameExtractor monitorNameExtractor = DefaultMonitorNameExtractor.INSTANCE;

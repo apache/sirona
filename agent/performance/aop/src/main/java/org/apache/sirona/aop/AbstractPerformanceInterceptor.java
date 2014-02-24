@@ -40,7 +40,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Concrete implementation will adapt the method interception API to
  * this class requirement.
  *
- * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public abstract class AbstractPerformanceInterceptor<T> implements Serializable {
     // static for performances reasons, all these values are read through getXXX so it is overridable

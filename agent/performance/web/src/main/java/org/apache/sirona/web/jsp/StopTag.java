@@ -27,7 +27,7 @@ import static org.apache.sirona.web.jsp.TagUtils.getScope;
 /**
  * A JSP tag to counter JSP rendering performances
  *
- * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
+ *
  */
 public class StopTag extends TagSupport {
     private String id;

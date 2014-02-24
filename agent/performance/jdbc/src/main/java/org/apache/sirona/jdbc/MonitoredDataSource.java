@@ -31,7 +31,7 @@ import java.util.logging.Logger;
 
 
 /**
- * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
+ *
  */
 public class MonitoredDataSource implements DataSource {
     /**
