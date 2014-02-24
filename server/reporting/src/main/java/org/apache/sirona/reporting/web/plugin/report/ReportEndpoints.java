@@ -100,6 +100,11 @@ public class ReportEndpoints {
 
     private Template renderFormat(final HttpServletRequest request, final HttpServletResponse response, final Format format) {
         response.setContentType(format.type());
+        try {
+            request.setCharacterEncoding("UTF-8");
+        } catch (final UnsupportedEncodingException e) {
+            // no-op
+        }
         return format.render(request.getParameterMap());
     }
 
