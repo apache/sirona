@@ -92,7 +92,7 @@ public class InMemoryPathTrackingDataStore
     }
 
     @Override
-    public List<String> retrieveTrackingIds( Date startTime, Date endTime )
+    public Collection<String> retrieveTrackingIds( Date startTime, Date endTime )
     {
         List<String> trackingIds = new ArrayList<String>();
         for ( Set<PathTrackingEntry> pathTrackingEntries : this.pathTrackingEntries.values() )
@@ -111,6 +111,13 @@ public class InMemoryPathTrackingDataStore
             }
         }
         return trackingIds;
+    }
+
+    @Override
+    public void clearEntries()
+    {
+        pathTrackingEntries =
+            new ConcurrentHashMap<String, Set<PathTrackingEntry>>( 50 );
     }
 
     protected ConcurrentMap<String, Set<PathTrackingEntry>> getPathTrackingEntries()

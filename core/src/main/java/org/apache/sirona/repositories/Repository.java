@@ -52,4 +52,5 @@ public interface Repository {
     Role findGaugeRole(String name);
 
     Map<String, NodeStatus> statuses();
+
 }

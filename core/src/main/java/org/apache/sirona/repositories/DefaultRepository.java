@@ -227,4 +227,5 @@ public class DefaultRepository implements Repository {
     public Map<String, NodeStatus> statuses() {
         return nodeStatusDataStore.statuses();
     }
+
 }

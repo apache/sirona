@@ -14,18 +14,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.sirona.cube;
 
 import org.apache.sirona.configuration.ioc.IoCs;
-import org.apache.sirona.store.DelegateDataStoreFactory;
-import org.apache.sirona.store.tracking.InMemoryPathTrackingDataStore;
+import org.apache.sirona.store.tracking.BatchPathTrackingDataStore;
+import org.apache.sirona.tracking.PathTrackingEntry;
 
-public class CubeDataStoreFactory extends DelegateDataStoreFactory {
-    public CubeDataStoreFactory() {
-        super(
-            IoCs.processInstance(new CubeCounterDataStore()),
-            IoCs.processInstance(new CubeGaugeDataStore()),
-            IoCs.processInstance(new CubeNodeStatusDataStore()),
-            IoCs.processInstance(new CubePathTrackingDataStore()));
+import java.util.Set;
+import java.util.concurrent.ConcurrentMap;
+
+/**
+ *
+ */
+public class CubePathTrackingDataStore
+    extends BatchPathTrackingDataStore
+{
+    private final Cube cube = IoCs.findOrCreateInstance( CubeBuilder.class ).build();
+
+    @Override
+    protected void pushEntriesByBatch( ConcurrentMap<String, Set<PathTrackingEntry>> pathTrackingEntries )
+    {
+        cube.post( cube.pathTrackingSnapshot( pathTrackingEntries ) );
     }
+
+
 }

@@ -20,6 +20,7 @@ import org.apache.sirona.Role;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.status.NodeStatus;
 import org.apache.sirona.status.ValidationResult;
+import org.apache.sirona.tracking.PathTrackingEntry;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSocketFactory;
@@ -34,9 +35,11 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -47,6 +50,7 @@ public class Cube {
     private static final String GAUGE_TYPE = "gauge";
     private static final String VALIDATION_TYPE = "validation";
     private static final String STATUS_TYPE = "status";
+    private static final String PATHTRACKING_TYPE = "pathtracking";
 
     private static final String NAME = "name";
     private static final String ROLE = "role";
@@ -59,6 +63,20 @@ public class Cube {
     private static final String MIN = "min";
     private static final String SUM = "sum";
     private static final String M_2 = "m2";
+
+    private static final String TRACKING_D = "trackingId";
+
+    private static final String NODE_ID = "nodeId";
+
+    private static final String CLASSNAME = "className";
+
+    private static final String METHOD_NAME = "methodName";
+
+    private static final String START_TIME = "startTime";
+
+    private static final String EXEC_TIME = "executionTime";
+
+    private static final String LEVEL = "level";
 
     private static final String JSON_BASE = "{" +
         "\"type\": \"%s\"," +
@@ -230,6 +248,32 @@ public class Cube {
         return events;
     }
 
+    public StringBuilder pathTrackingSnapshot( final ConcurrentMap<String, Set<PathTrackingEntry>> pathTrackingEntries ) {
+        final StringBuilder events = newEventStream();
+        final long ts = System.currentTimeMillis();
+        for (final Map.Entry<String, Set<PathTrackingEntry>> entry : pathTrackingEntries.entrySet() ) {
+
+            for (PathTrackingEntry pathTrackingEntry : entry.getValue()){
+
+                buildEvent( events, PATHTRACKING_TYPE, ts, new MapBuilder()
+                        .add( TRACKING_D, pathTrackingEntry.getTrackingId() )
+                        .add( NODE_ID, pathTrackingEntry.getNodeId() )
+                        .add( CLASSNAME, pathTrackingEntry.getClassName())
+                        .add( METHOD_NAME, pathTrackingEntry.getMethodName())
+                        .add( START_TIME, pathTrackingEntry.getStartTime())
+                        .add( EXEC_TIME, pathTrackingEntry.getExecutionTime())
+                        .add( LEVEL, pathTrackingEntry.getLevel())
+                        .map()
+                );
+
+            }
+
+        }
+
+
+        return events;
+    }
+
     public StringBuilder gaugeSnapshot(final StringBuilder base, final long time, final Role role, final double value) {
         return buildEvent(base, GAUGE_TYPE, time,
             new MapBuilder()
@@ -255,4 +299,6 @@ public class Cube {
         }
         return events;
     }
+
+
 }

@@ -30,16 +30,20 @@ import me.prettyprint.hector.api.query.QueryResult;
 import org.apache.sirona.cassandra.DynamicDelegatedSerializer;
 import org.apache.sirona.cassandra.collector.CassandraSirona;
 import org.apache.sirona.configuration.ioc.IoCs;
+import org.apache.sirona.store.tracking.BatchPathTrackingDataStore;
 import org.apache.sirona.store.tracking.PathTrackingDataStore;
 import org.apache.sirona.tracking.PathTrackingEntry;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentMap;
 
 import static org.apache.sirona.cassandra.collector.CassandraSirona.*;
 
@@ -47,6 +51,7 @@ import static org.apache.sirona.cassandra.collector.CassandraSirona.*;
  *
  */
 public class CassandraPathTrackingDataStore
+    extends BatchPathTrackingDataStore
     implements PathTrackingDataStore
 {
 
@@ -77,7 +82,7 @@ public class CassandraPathTrackingDataStore
     public void store( Collection<PathTrackingEntry> pathTrackingEntries )
     {
 
-        final Mutator<String> mutator = HFactory.createMutator( keyspace, StringSerializer.get() );
+        // FIXME find a more efficient way to store such batch of datas
 
         for ( PathTrackingEntry pathTrackingEntry : pathTrackingEntries )
 
@@ -181,6 +186,19 @@ public class CassandraPathTrackingDataStore
         }
 
         return entries;
+    }
+
+    @Override
+    protected void pushEntriesByBatch( ConcurrentMap<String, Set<PathTrackingEntry>> pathTrackingEntries )
+    {
+        List<PathTrackingEntry> entries = new ArrayList<PathTrackingEntry>(  );
+
+        for ( Map.Entry<String, Set<PathTrackingEntry>> entry : pathTrackingEntries.entrySet()) {
+            entries.addAll( entry.getValue() );
+        }
+
+
+        store( entries );
     }
 
     protected Keyspace getKeyspace()
