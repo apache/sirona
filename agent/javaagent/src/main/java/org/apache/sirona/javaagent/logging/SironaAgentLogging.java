@@ -28,17 +28,41 @@ public class SironaAgentLogging
     public static boolean AGENT_DEBUG = Boolean.getBoolean( "sirona.agent.debug" );
 
     /**
-     *
      * @param message very simple usage so we {@link java.text.MessageFormat}
      * @param objects
      */
-    public static void debug(String message, Object... objects){
-        if (AGENT_DEBUG){
-            if (objects != null)
+    public static void debug( String message, Object... objects )
+    {
+        if ( AGENT_DEBUG )
+        {
+
+            // to prevent StackOverflowError we need to detect if this debug call is already in the call stack
+            // typical case is Tomcat redirecting System.out/err to his own log handler
+            // so as we instrument Tomcat this goes to a StackOverflowError
+            StackTraceElement[] elements = Thread.currentThread().getStackTrace();
+            int foundCall = 0;
+            for ( StackTraceElement stackTraceElement : elements )
             {
-                System.out.println( MessageFormat.format( message, objects ));
-            } else {
-                System.out.println(message);
+                if ( SironaAgentLogging.class.getName().equals( stackTraceElement.getClassName() ) //
+                    && "debug".equals( stackTraceElement.getMethodName() ) )
+                {
+                    foundCall++;
+                }
+            }
+
+            // skip this call as we are probably in a recursive without any end
+            if ( foundCall >= 2 )
+            {
+                return;
+            }
+
+            if ( objects != null )
+            {
+                System.out.println( MessageFormat.format( message, objects ) );
+            }
+            else
+            {
+                System.out.println( message );
             }
         }
     }
