@@ -39,6 +39,9 @@ public class SironaAgentLogging
             // to prevent StackOverflowError we need to detect if this debug call is already in the call stack
             // typical case is Tomcat redirecting System.out/err to his own log handler
             // so as we instrument Tomcat this goes to a StackOverflowError
+
+
+
             StackTraceElement[] elements = Thread.currentThread().getStackTrace();
             int foundCall = 0;
             for ( StackTraceElement stackTraceElement : elements )

@@ -18,6 +18,10 @@
 package org.apache.test.sirona.javaagent;
 
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
+
 public class App
 {
 
@@ -45,6 +49,38 @@ public class App
         throws Exception
     {
         Thread.sleep( 300 );
+    }
+
+
+    public App redirectStreamout()
+    {
+        System.setOut( new LogHandler( System.out ) );
+        return this;
+    }
+
+    private static class LogHandler
+        extends PrintStream
+    {
+        OutputStream outputStream;
+
+        public LogHandler( OutputStream outputStream )
+        {
+            super( outputStream );
+            this.outputStream = outputStream;
+        }
+
+        @Override
+        public void println( String s )
+        {
+            try
+            {
+                super.write( s.getBytes() );
+            }
+            catch ( IOException e )
+            {
+                e.printStackTrace();
+            }
+        }
     }
 
 }
