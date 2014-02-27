@@ -64,6 +64,8 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
         SironaStaticInitMerger.class.cast(cv).initSironaFields(classType);
     }
 
+
+
     @Override
     public void visitSource(final String source, final String debug) {
         super.visitSource(source, debug);

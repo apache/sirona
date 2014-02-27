@@ -63,9 +63,17 @@ public class PathTrackingInvocationListener
     public void before( AgentContext context )
     {
 
-        SironaAgentLogging.debug( "PathTrackingInvocationListener#before: {0}", context.getKey() );
-
         String key = context.getKey();
+        // FIXME olamy: yup I know very hackishhhh but generate a StackOverflow as the System.out is redirected
+        // to Tomcat SystemLogHandler
+        // FIXME maybe using Thread.currentThread().getStackTrace() in the logger?
+        if (!"org.apache.tomcat.util.log.SystemLogHandler.println".equals( key ))
+        {
+            SironaAgentLogging.debug( "PathTrackingInvocationListener#before: {0}", key );
+        } else {
+            // no log for this case
+            int i=1;
+        }
 
         int lastDot = key.lastIndexOf( "." );
 
@@ -75,8 +83,10 @@ public class PathTrackingInvocationListener
         final PathTracker.PathTrackingInformation pathTrackingInformation =
             new PathTracker.PathTrackingInformation( className, methodName );
 
-        SironaAgentLogging.debug( "call PathTracker#start with {0}", pathTrackingInformation );
-
+        if (!"org.apache.tomcat.util.log.SystemLogHandler.println".equals( key ))
+        {
+            SironaAgentLogging.debug( "call PathTracker#start with {0}", pathTrackingInformation );
+        }
         context.put( PATH_TRACKER_KEY, org.apache.sirona.tracking.PathTracker.start( pathTrackingInformation ) );
     }
 

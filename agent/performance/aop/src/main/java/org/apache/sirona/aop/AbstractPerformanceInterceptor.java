@@ -281,7 +281,7 @@ public abstract class AbstractPerformanceInterceptor<T> implements Serializable 
                         declaring = declaring.getSuperclass();
                     }
                 } catch (final ClassNotFoundException e) {
-                    throw new SironaException(e);
+                    throw new SironaException(e.getMessage(),e);
                 }
             }
             return realMethod;

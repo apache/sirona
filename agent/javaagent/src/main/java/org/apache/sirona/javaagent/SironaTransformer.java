@@ -50,7 +50,7 @@ public class SironaTransformer implements ClassFileTransformer {
             new ClassReader(classfileBuffer).accept(keyVisitor, ClassReader.SKIP_DEBUG);
             if (keyVisitor.hasAdviced()) {
                 final ClassReader reader = new ClassReader(classfileBuffer);
-                final ClassWriter writer = new ClassWriter(reader, ClassWriter.COMPUTE_FRAMES);
+                final ClassWriter writer = new SironaClassWriter(reader, ClassWriter.COMPUTE_FRAMES);
                 final SironaClassVisitor advisor = new SironaClassVisitor(writer, className, keyVisitor.getKeys());
                 reader.accept(advisor, 0);
 
@@ -77,9 +77,84 @@ public class SironaTransformer implements ClassFileTransformer {
                 SironaAgentLogging.debug( "fail transforming class {0} : {1}", className, e.getMessage() );
                 e.printStackTrace();
             }
-            throw new RuntimeException( e.getMessage(), e );
+            //throw new RuntimeException( e.getMessage(), e );
+            e.printStackTrace();
+            return classfileBuffer;
+        } catch ( StackOverflowError e ) {
+            if ( SironaAgentLogging.AGENT_DEBUG) {
+                SironaAgentLogging.debug( "fail transforming class {0} : {1}", className, e.getMessage() );
+                e.printStackTrace();
+            }
+            //throw new RuntimeException( e.getMessage(), e );
+            e.printStackTrace();
+            return classfileBuffer;
         }
     }
+
+    private static class SironaClassWriter extends ClassWriter
+    {
+        private SironaClassWriter( int flags )
+        {
+            super( flags );
+        }
+
+        private SironaClassWriter( ClassReader classReader, int flags )
+        {
+            super( classReader, flags );
+        }
+
+        /**
+         * copy paste code from asm as we need a different way to load classes
+         * @param type1
+         * @param type2
+         * @return
+         */
+        @Override
+        protected String getCommonSuperClass(final String type1, final String type2) {
+            Class<?> c, d;
+            try {
+                c = findClass(type1.replace('/', '.'));
+                d = findClass(type2.replace('/', '.'));
+            } catch (Exception e) {
+                throw new RuntimeException(e.toString());
+            }
+            if (c.isAssignableFrom(d)) {
+                return type1;
+            }
+            if (d.isAssignableFrom(c)) {
+                return type2;
+            }
+            if (c.isInterface() || d.isInterface()) {
+                return "java/lang/Object";
+            } else {
+                do {
+                    c = c.getSuperclass();
+                } while (!c.isAssignableFrom(d));
+                return c.getName().replace('.', '/');
+            }
+        }
+
+        protected Class<?> findClass( String className )
+            throws ClassNotFoundException
+        {
+            ClassLoader classLoader = getClass().getClassLoader();
+
+            try
+            {
+                return Class.forName( className, false, classLoader );
+            }
+            catch ( ClassNotFoundException e )
+            {
+                ClassLoader tccl = Thread.currentThread().getContextClassLoader();
+                return Class.forName( className, false, tccl );
+            }
+
+        }
+
+    }
+
+
+
 
     protected boolean shouldTransform(final String className, final ClassLoader loader) {
         return !(className == null // framework with bug

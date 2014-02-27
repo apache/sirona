@@ -16,8 +16,6 @@
  */
 package org.apache.sirona.javaagent;
 
-import org.apache.sirona.javaagent.logging.SironaAgentLogging;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -40,6 +38,18 @@ public class SironaAgent {
 
     // all is done by reflection cause we change classloader to be able to enhance JVM too
     public static void agentmain(final String agentArgs, final Instrumentation instrumentation) {
+
+        // just to get information on weird issues :-)
+        Thread.currentThread().setUncaughtExceptionHandler( new Thread.UncaughtExceptionHandler(){
+            @Override
+            public void uncaughtException( Thread thread, Throwable throwable )
+            {
+                System.out.println("uncaughtException for thread: " + thread.getName() + ", message:" + throwable.getMessage());
+                throwable.printStackTrace();
+
+            }
+        });
+
         final ClassLoader loader = Thread.currentThread().getContextClassLoader();
         try {
             final String resource = SironaAgent.class.getName().replace('.', '/') + ".class";
@@ -112,28 +122,57 @@ public class SironaAgent {
                             && instrumentation.isModifiableClass(clazz)) {
                         try {
 
-                            SironaAgentLogging.debug( "reload clazz: {0}", clazz.getName() );
+                            debug( loader, "reload clazz: {0}", clazz.getName() );
 
                             instrumentation.retransformClasses(clazz);
                         } catch (final Exception e) {
                             System.err.println("Can't instrument: " + clazz.getName() + "[" + e.getMessage() + "]");
-                            if (SironaAgentLogging.AGENT_DEBUG) {
+                            if (isDebug(loader)) {
                                 e.printStackTrace();
                             }
                         }
                     }
                 }
             } else {
-                if (SironaAgentLogging.AGENT_DEBUG){
+                if (isDebug(loader)){
                     System.out.println("do not reload classes");
                 }
             }
         } catch (final Exception e) {
-            if (SironaAgentLogging.AGENT_DEBUG) {
+            if (isDebug(loader)) {
                 System.out.println( "finished instrumentation setup with exception:" + e.getMessage() );
             }
             e.printStackTrace();
         }
+    }
+
+    private static void debug(ClassLoader loader, String msg, Object... objects) {
+        try
+        {
+            Method method =loader.loadClass( "org.apache.sirona.javaagent.logging.SironaAgentLogging")
+                    .getMethod( "debug", String.class, Object.class );
+
+            method.invoke( null, msg, objects );
+        }
+        catch ( Exception e )
+        {
+            e.printStackTrace();
+        }
+    }
+
+    private static boolean isDebug( ClassLoader loader ) {
+        try
+        {
+            return Boolean.class.cast(
+                loader.loadClass( "org.apache.sirona.javaagent.logging.SironaAgentLogging")
+                    .getField( "AGENT_DEBUG" )
+                    .get( null ) );
+        }
+        catch ( Exception e )
+        {
+            e.printStackTrace();
+        }
+        return false;
     }
 
 

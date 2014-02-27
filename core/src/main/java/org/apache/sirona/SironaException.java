@@ -24,4 +24,8 @@ public class SironaException extends RuntimeException {
     public SironaException(final String s) {
         super(s);
     }
+
+    public SironaException( String s, Throwable throwable ) {
+        super( s, throwable );
+    }
 }
