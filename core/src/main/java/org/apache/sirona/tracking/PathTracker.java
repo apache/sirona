@@ -186,8 +186,6 @@ public class PathTracker
 
         context.trackingInformation = pathTrackingInformation;
 
-        //System.out.println("start level: " + level + " for key " + key);
-
         return new PathTracker( pathTrackingInformation );
     }
 
