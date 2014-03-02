@@ -48,6 +48,7 @@ public class CubeBuilder {
     private String sslKeyStorePassword;
     private String sslKeyStoreProvider;
     private String basicHeader; // user:pwd
+    private boolean useCompression = false;
 
     public synchronized Cube build() {
         if (marker == null) {
@@ -97,6 +98,16 @@ public class CubeBuilder {
 
     public String getBasicHeader() {
         return basicHeader;
+    }
+
+    public boolean isUseCompression()
+    {
+        return useCompression;
+    }
+
+    public void setUseCompression( boolean useCompression )
+    {
+        this.useCompression = useCompression;
     }
 
     private TrustManager[] createTrustManager() {

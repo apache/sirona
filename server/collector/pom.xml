@@ -74,6 +74,12 @@
       <groupId>com.jcraft</groupId>
       <artifactId>jzlib</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.apache.sirona</groupId>
+      <artifactId>sirona-cassandra</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
@@ -102,22 +108,11 @@
         <configuration>
           <port>${tomcatRunPort}</port>
           <path>${tomcatRunPath}</path>
+          <useTestClasspath>true</useTestClasspath>
           <systemProperties>
             <org.apache.sirona.configuration.sirona.properties>${basedir}/src/test/sirona.properties</org.apache.sirona.configuration.sirona.properties>
           </systemProperties>
         </configuration>
-        <dependencies>
-          <dependency>
-            <groupId>org.apache.sirona</groupId>
-            <artifactId>sirona-core</artifactId>
-            <version>${project.version}</version>
-          </dependency>
-          <dependency>
-            <groupId>org.apache.sirona</groupId>
-            <artifactId>sirona-cassandra</artifactId>
-            <version>${project.version}</version>
-          </dependency>
-        </dependencies>
       </plugin>
     </plugins>
     <pluginManagement>

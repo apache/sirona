@@ -25,7 +25,6 @@ import me.prettyprint.hector.api.beans.ColumnSlice;
 import me.prettyprint.hector.api.beans.OrderedRows;
 import me.prettyprint.hector.api.beans.Row;
 import me.prettyprint.hector.api.factory.HFactory;
-import me.prettyprint.hector.api.mutation.Mutator;
 import me.prettyprint.hector.api.query.QueryResult;
 import org.apache.sirona.cassandra.DynamicDelegatedSerializer;
 import org.apache.sirona.cassandra.collector.CassandraSirona;

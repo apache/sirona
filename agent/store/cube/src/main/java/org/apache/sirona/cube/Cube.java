@@ -146,11 +146,16 @@ public class Cube {
                 connection.setRequestProperty("Authorization", auth);
             }
 
-            byte[] bytes = gzipCompression( payload.getBytes() );
+
+            boolean useCompression = config.isUseCompression();
+
+            byte[] bytes = useCompression ? gzipCompression( payload.getBytes() ) : payload.getBytes();
 
             connection.setRequestMethod(POST);
             connection.setRequestProperty(CONTENT_TYPE, APPLICATION_JSON);
-            connection.setRequestProperty( CONTENT_ENCODING, GZIP_CONTENT_ENCODING );
+            if (useCompression) {
+                connection.setRequestProperty( CONTENT_ENCODING, GZIP_CONTENT_ENCODING );
+            }
             connection.setRequestProperty(CONTENT_LENGTH, Long.toString(bytes.length));
             connection.setUseCaches(false);
             connection.setDoInput(true);
