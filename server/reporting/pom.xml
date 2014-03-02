@@ -31,6 +31,7 @@
   <properties>
     <tomcatRunPort>8080</tomcatRunPort>
     <tomcatRunPath>/sirona</tomcatRunPath>
+    <sirona.reporting.tomcat.skip>false</sirona.reporting.tomcat.skip>
   </properties>
 
   <dependencies>
@@ -61,7 +62,6 @@
     <dependency>
       <groupId>commons-codec</groupId>
       <artifactId>commons-codec</artifactId>
-      <version>1.8</version>
     </dependency>
     <dependency>
       <groupId>org.apache.velocity</groupId>
@@ -126,10 +126,10 @@
       <plugin>
         <groupId>org.apache.tomcat.maven</groupId>
         <artifactId>tomcat7-maven-plugin</artifactId>
-        <version>2.2</version>
         <configuration>
           <port>${tomcatRunPort}</port>
           <path>${tomcatRunPath}</path>
+          <skip>${sirona.reporting.tomcat.skip}</skip>
         </configuration>
         <dependencies>
           <dependency>

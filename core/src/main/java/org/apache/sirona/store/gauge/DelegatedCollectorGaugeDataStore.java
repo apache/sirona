@@ -41,7 +41,7 @@ public class DelegatedCollectorGaugeDataStore implements CollectorGaugeDataStore
                 DelegatedCollectorGaugeDataStore.class.getClassLoader().loadClass( // use this classloader and not TCCL to avoid issues
                     Configuration.getProperty(Configuration.CONFIG_PROPERTY_PREFIX + "collector.gauge.store-class", InMemoryGaugeDataStore.class.getName())));
         } catch (final ClassNotFoundException e) {
-            throw new SironaException(e);
+            throw new SironaException(e.getMessage(),e);
         }
     }
 

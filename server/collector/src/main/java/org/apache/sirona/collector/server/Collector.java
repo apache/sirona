@@ -134,7 +134,8 @@ public class Collector extends HttpServlet {
             // TODO validation
         }
 
-        this.mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).configure(JsonParser.Feature.ALLOW_NON_NUMERIC_NUMBERS, true);
+        this.mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false) //
+                                        .configure(JsonParser.Feature.ALLOW_NON_NUMERIC_NUMBERS, true);
 
         { // pulling
             {
@@ -187,7 +188,9 @@ public class Collector extends HttpServlet {
     }
 
     @Override
-    protected void doPost(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(final HttpServletRequest req, final HttpServletResponse resp)
+        throws ServletException, IOException {
+
         final ServletInputStream inputStream = req.getInputStream();
         try {
             slurpEvents(inputStream);
@@ -265,8 +268,12 @@ public class Collector extends HttpServlet {
             if (collectionFuture == null) {
                 synchronized (this) {
                     if (collectionFuture == null) {
-                        final ScheduledExecutorService ses = Executors.newSingleThreadScheduledExecutor(new DaemonThreadFactory("collector-pull-schedule"));
-                        final ScheduledFuture<?> future = ses.scheduleAtFixedRate(new CollectTask(), collectionPeriod, collectionPeriod, TimeUnit.MILLISECONDS);
+                        final ScheduledExecutorService ses =
+                            Executors.newSingleThreadScheduledExecutor(new DaemonThreadFactory("collector-pull-schedule"));
+                        final ScheduledFuture<?> future = ses.scheduleAtFixedRate(new CollectTask(), //
+                                                                                  collectionPeriod, //
+                                                                                  collectionPeriod, //
+                                                                                  TimeUnit.MILLISECONDS);
                         collectionFuture = new BatchFuture(ses, future);
                     }
                 }

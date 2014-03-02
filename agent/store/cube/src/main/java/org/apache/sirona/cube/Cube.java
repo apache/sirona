@@ -242,27 +242,26 @@ public class Cube {
         return events;
     }
 
-    public StringBuilder pathTrackingSnapshot( final ConcurrentMap<String, Set<PathTrackingEntry>> pathTrackingEntries ) {
+    public StringBuilder pathTrackingSnapshot( Collection<PathTrackingEntry> pathTrackingEntries ) {
         final StringBuilder events = newEventStream();
         final long ts = System.currentTimeMillis();
-        for (final Map.Entry<String, Set<PathTrackingEntry>> entry : pathTrackingEntries.entrySet() ) {
 
-            for (PathTrackingEntry pathTrackingEntry : entry.getValue()){
+        for (PathTrackingEntry pathTrackingEntry : pathTrackingEntries){
 
-                buildEvent( events, PATHTRACKING_TYPE, ts, new MapBuilder()
-                        .add( TRACKING_D, pathTrackingEntry.getTrackingId() )
-                        .add( NODE_ID, pathTrackingEntry.getNodeId() )
-                        .add( CLASSNAME, pathTrackingEntry.getClassName())
-                        .add( METHOD_NAME, pathTrackingEntry.getMethodName())
-                        .add( START_TIME, pathTrackingEntry.getStartTime())
-                        .add( EXEC_TIME, pathTrackingEntry.getExecutionTime())
-                        .add( LEVEL, pathTrackingEntry.getLevel())
-                        .map()
-                );
-
-            }
+            buildEvent( events, PATHTRACKING_TYPE, ts, new MapBuilder()
+                    .add( TRACKING_D, pathTrackingEntry.getTrackingId() )
+                    .add( NODE_ID, pathTrackingEntry.getNodeId() )
+                    .add( CLASSNAME, pathTrackingEntry.getClassName())
+                    .add( METHOD_NAME, pathTrackingEntry.getMethodName())
+                    .add( START_TIME, pathTrackingEntry.getStartTime())
+                    .add( EXEC_TIME, pathTrackingEntry.getExecutionTime())
+                    .add( LEVEL, pathTrackingEntry.getLevel())
+                    .map()
+            );
 
         }
+
+
 
 
         return events;

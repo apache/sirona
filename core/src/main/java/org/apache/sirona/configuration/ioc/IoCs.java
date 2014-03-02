@@ -79,7 +79,7 @@ public final class IoCs {
             SINGLETONS.put(clazz, t);
             return t;
         } catch (final Exception e) {
-            throw new SironaException(e.getMessage(),e);
+            throw new SironaException("Cannot find instance for class " + clazz.getName() + " : " + e.getMessage(),e);
         }
     }
 

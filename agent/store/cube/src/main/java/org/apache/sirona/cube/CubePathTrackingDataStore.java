@@ -22,6 +22,7 @@ import org.apache.sirona.store.tracking.BatchPathTrackingDataStore;
 import org.apache.sirona.store.tracking.CollectorPathTrackingDataStore;
 import org.apache.sirona.tracking.PathTrackingEntry;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 
@@ -36,7 +37,10 @@ public class CubePathTrackingDataStore
 
     @Override
     protected void pushEntriesByBatch( ConcurrentMap<String, Set<PathTrackingEntry>> pathTrackingEntries ) {
-        cube.post( cube.pathTrackingSnapshot( pathTrackingEntries ) );
+        for ( Map.Entry<String, Set<PathTrackingEntry>> entry : pathTrackingEntries.entrySet())
+        {
+            cube.post( cube.pathTrackingSnapshot( entry.getValue() ) );
+        }
     }
 
 
