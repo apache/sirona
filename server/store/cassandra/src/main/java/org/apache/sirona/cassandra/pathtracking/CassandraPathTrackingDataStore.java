@@ -31,6 +31,7 @@ import org.apache.sirona.cassandra.DynamicDelegatedSerializer;
 import org.apache.sirona.cassandra.collector.CassandraSirona;
 import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.store.tracking.BatchPathTrackingDataStore;
+import org.apache.sirona.store.tracking.CollectorPathTrackingDataStore;
 import org.apache.sirona.store.tracking.PathTrackingDataStore;
 import org.apache.sirona.tracking.PathTrackingEntry;
 
@@ -52,7 +53,7 @@ import static org.apache.sirona.cassandra.collector.CassandraSirona.*;
  */
 public class CassandraPathTrackingDataStore
     extends BatchPathTrackingDataStore
-    implements PathTrackingDataStore
+    implements PathTrackingDataStore, CollectorPathTrackingDataStore
 {
 
     private final CassandraSirona cassandra;

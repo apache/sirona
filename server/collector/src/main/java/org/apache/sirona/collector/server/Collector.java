@@ -37,6 +37,8 @@ import org.apache.sirona.store.counter.CollectorCounterStore;
 import org.apache.sirona.store.gauge.CollectorGaugeDataStore;
 import org.apache.sirona.store.status.CollectorNodeStatusDataStore;
 import org.apache.sirona.store.status.NodeStatusDataStore;
+import org.apache.sirona.store.tracking.CollectorPathTrackingDataStore;
+import org.apache.sirona.tracking.PathTrackingEntry;
 import org.apache.sirona.util.DaemonThreadFactory;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -78,6 +80,7 @@ public class Collector extends HttpServlet {
     private static final String VALIDATION = "validation";
     private static final String STATUS = "status";
     private static final String REGISTRATION = "registration";
+    private static final String PATH_TRACKING = "pathtracking";
 
     private static final String GET = "GET";
 
@@ -86,6 +89,7 @@ public class Collector extends HttpServlet {
     private CollectorCounterStore counterDataStore = null;
     private CollectorGaugeDataStore gaugeDataStore = null;
     private CollectorNodeStatusDataStore statusDataStore;
+    private CollectorPathTrackingDataStore pathTrackingDataStore;
     private ObjectMapper mapper;
 
     private final Collection<AgentNode> agents = new CopyOnWriteArraySet<AgentNode>();
@@ -123,6 +127,11 @@ public class Collector extends HttpServlet {
                 throw new IllegalStateException("Collector only works with " + CollectorNodeStatusDataStore.class.getName());
             }
             this.statusDataStore = CollectorNodeStatusDataStore.class.cast(nds);
+        }
+
+        {
+            this.pathTrackingDataStore = IoCs.findOrCreateInstance( CollectorPathTrackingDataStore.class );
+            // TODO validation
         }
 
         this.mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).configure(JsonParser.Feature.ALLOW_NON_NUMERIC_NUMBERS, true);
@@ -209,7 +218,9 @@ public class Collector extends HttpServlet {
                     } else if (GAUGE.equals(type)) {
                         updateGauge(event);
                     } else if (REGISTRATION.equals(type)) {
-                        registerNode(event);
+                        registerNode( event );
+                    } else if (PATH_TRACKING.equals(type)) {
+                        updatePathTracking(event);
                     } else {
                         LOGGER.info("Unexpected type '" + type + "', skipping");
                     }
@@ -272,18 +283,31 @@ public class Collector extends HttpServlet {
         gaugeDataStore.addToGauge(role(data), time, value, String.class.cast(data.get("marker")));
     }
 
+    private void updatePathTracking(final Event event) {
+        final Map<String, Object> data = event.getData();
+
+        pathTrackingDataStore.store(
+            new PathTrackingEntry(  String.class.cast(data.get("trackingId")),//
+                                    String.class.cast(data.get("nodeId")), //
+                                    String.class.cast(data.get("className")), //
+                                    String.class.cast(data.get("methodName")), //
+                                    Number.class.cast(data.get("startTime")).longValue(), //
+                                    Number.class.cast(data.get("executionTime")).longValue(), //
+                                    Number.class.cast(data.get("level") ).intValue() ));
+    }
+
+
+
     private void updateCounter(final Event event) {
         final Map<String, Object> data = event.getData();
 
-        counterDataStore.update(
-            new Counter.Key(role(data), String.class.cast(data.get("name"))),
-            String.class.cast(data.get("marker")),
-            new M2AwareStatisticalSummary(data),
-            Number.class.cast(data.get("concurrency")).intValue());
+        counterDataStore.update( new Counter.Key( role( data ), String.class.cast( data.get( "name" ) ) ),
+                                 String.class.cast( data.get( "marker" ) ), new M2AwareStatisticalSummary( data ),
+                                 Number.class.cast( data.get( "concurrency" ) ).intValue() );
     }
 
     private Role role(final Map<String, Object> data) {
-        final String name = String.class.cast(data.get("role"));
+        final String name = String.class.cast( data.get( "role" ) );
         final Role existing = roles.get(name);
         if (existing != null) {
             return existing;

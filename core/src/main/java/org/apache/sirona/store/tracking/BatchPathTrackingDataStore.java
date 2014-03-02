@@ -56,20 +56,22 @@ public abstract class BatchPathTrackingDataStore
             Executors.newSingleThreadScheduledExecutor( new DaemonThreadFactory( name + "-pathtracking-schedule-" ) );
 
         final ScheduledFuture<?> future =
-            ses.scheduleAtFixedRate( new PushGaugesTask(), period, period, TimeUnit.MILLISECONDS );
+            ses.scheduleAtFixedRate( new PushPathTrackingTask(), period, period, TimeUnit.MILLISECONDS );
 
         scheduledTask = new BatchFuture( ses, future );
     }
 
     protected int getPeriod( final String name )
     {
-        return Configuration.getInteger( Configuration.CONFIG_PROPERTY_PREFIX + name + ".pathtracking.period", //
+        int period = Configuration.getInteger( Configuration.CONFIG_PROPERTY_PREFIX + name + ".pathtracking.period", //
                                          Configuration.getInteger(
                                              Configuration.CONFIG_PROPERTY_PREFIX + name + ".period", 60000 ) );
+
+        return period;
     }
 
 
-    private class PushGaugesTask
+    private class PushPathTrackingTask
         implements Runnable
     {
         @Override

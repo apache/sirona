@@ -34,6 +34,9 @@ import org.apache.sirona.store.tracking.InMemoryPathTrackingDataStore;
 import java.util.Collection;
 import java.util.Collections;
 
+/**
+ * FIXME we do not send path tracking entries here!
+ */
 public class PullRepository extends DefaultRepository {
     private static final String REGISTRATION_TYPE = "registration";
 

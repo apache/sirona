@@ -37,7 +37,7 @@ import java.util.concurrent.ConcurrentMap;
  * <b>MUST NOT be used in production</b>
  */
 public class InMemoryPathTrackingDataStore
-    implements PathTrackingDataStore
+    implements PathTrackingDataStore, CollectorPathTrackingDataStore
 {
     /**
      * store path track tracking entries list per path tracking id

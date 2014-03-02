@@ -65,17 +65,11 @@ public class Cube {
     private static final String M_2 = "m2";
 
     private static final String TRACKING_D = "trackingId";
-
     private static final String NODE_ID = "nodeId";
-
     private static final String CLASSNAME = "className";
-
     private static final String METHOD_NAME = "methodName";
-
     private static final String START_TIME = "startTime";
-
     private static final String EXEC_TIME = "executionTime";
-
     private static final String LEVEL = "level";
 
     private static final String JSON_BASE = "{" +

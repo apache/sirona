@@ -15,29 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.sirona.cube;
-
-import org.apache.sirona.configuration.ioc.IoCs;
-import org.apache.sirona.store.tracking.BatchPathTrackingDataStore;
-import org.apache.sirona.store.tracking.CollectorPathTrackingDataStore;
-import org.apache.sirona.tracking.PathTrackingEntry;
-
-import java.util.Set;
-import java.util.concurrent.ConcurrentMap;
+package org.apache.sirona.store.tracking;
 
 /**
  *
  */
-public class CubePathTrackingDataStore
-    extends BatchPathTrackingDataStore
-    implements CollectorPathTrackingDataStore
+public interface CollectorPathTrackingDataStore
+    extends PathTrackingDataStore
 {
-    private final Cube cube = IoCs.findOrCreateInstance( CubeBuilder.class ).build();
-
-    @Override
-    protected void pushEntriesByBatch( ConcurrentMap<String, Set<PathTrackingEntry>> pathTrackingEntries ) {
-        cube.post( cube.pathTrackingSnapshot( pathTrackingEntries ) );
-    }
-
-
 }
