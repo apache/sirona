@@ -68,6 +68,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.zip.GZIPInputStream;
 
 // should work with cube clients, see cube module for details
 // Note: for this simple need we don't need JAXRS
@@ -81,6 +82,8 @@ public class Collector extends HttpServlet {
     private static final String STATUS = "status";
     private static final String REGISTRATION = "registration";
     private static final String PATH_TRACKING = "pathtracking";
+
+    private static final String CONTENT_ENCODING = "Content-Encoding";
 
     private static final String GET = "GET";
 
@@ -193,7 +196,12 @@ public class Collector extends HttpServlet {
 
         final ServletInputStream inputStream = req.getInputStream();
         try {
-            slurpEvents(inputStream);
+            if ("gzip".equals( req.getHeader( CONTENT_ENCODING ) ))
+            {
+                slurpEvents(new GZIPInputStream( inputStream ));
+            } else {
+                slurpEvents(inputStream);
+            }
         } catch (final SironaException me) {
             resp.setStatus(HttpURLConnection.HTTP_BAD_REQUEST);
             resp.getWriter().write("{\"error\":\"" + me.getCause().getMessage().replace('\"', ' ') + "\"}");

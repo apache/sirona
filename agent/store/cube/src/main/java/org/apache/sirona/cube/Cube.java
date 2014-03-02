@@ -24,6 +24,10 @@ import org.apache.sirona.tracking.PathTrackingEntry;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSocketFactory;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
@@ -35,13 +39,12 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.zip.GZIPOutputStream;
 
 public class Cube {
     private static final Logger LOGGER = Logger.getLogger(Cube.class.getName());
@@ -82,6 +85,8 @@ public class Cube {
     private static final String CONTENT_TYPE = "Content-Type";
     private static final String APPLICATION_JSON = "application/json";
     private static final String CONTENT_LENGTH = "Content-Length";
+    private static final String GZIP_CONTENT_ENCODING = "gzip";
+    private static final String CONTENT_ENCODING = "Content-Encoding";
 
     private static final String JS_ISO_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
     private static final String UTC = "UTC";
@@ -90,6 +95,8 @@ public class Cube {
     private final Proxy proxy;
 
     private final BlockingQueue<DateFormat> isoDateFormatters;
+
+
 
     public Cube(final CubeBuilder cubeBuilder) {
         config = cubeBuilder;
@@ -139,9 +146,12 @@ public class Cube {
                 connection.setRequestProperty("Authorization", auth);
             }
 
+            byte[] bytes = gzipCompression( payload.getBytes() );
+
             connection.setRequestMethod(POST);
             connection.setRequestProperty(CONTENT_TYPE, APPLICATION_JSON);
-            connection.setRequestProperty(CONTENT_LENGTH, Long.toString(payload.length()));
+            connection.setRequestProperty( CONTENT_ENCODING, GZIP_CONTENT_ENCODING );
+            connection.setRequestProperty(CONTENT_LENGTH, Long.toString(bytes.length));
             connection.setUseCaches(false);
             connection.setDoInput(true);
             connection.setDoOutput(true);
@@ -149,7 +159,8 @@ public class Cube {
             try {
                 final OutputStream output = connection.getOutputStream();
                 try {
-                    output.write(payload.getBytes());
+                    // FIXME find a more efficient way to prevent to have all of this in memory
+                    output.write( bytes );
                     output.flush();
 
                     final int status = connection.getResponseCode();
@@ -169,6 +180,33 @@ public class Cube {
         } catch (final Exception e) {
             LOGGER.log(Level.WARNING, "Can't post data to collector", e);
         }
+    }
+
+    private static byte[] gzipCompression( byte[] unCompress )
+        throws IOException
+    {
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        GZIPOutputStream out = new GZIPOutputStream( buffer );
+        out.write( unCompress );
+        out.finish();
+        ByteArrayInputStream bais = new ByteArrayInputStream( buffer.toByteArray() );
+        byte[] res = toByteArray( bais );
+        return res;
+   }
+
+    public static byte[] toByteArray( InputStream input )
+        throws IOException
+    {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        byte[] buffer =  new byte[4096];
+
+        int n = 0;
+        while ( -1 != ( n = input.read( buffer ) ) )
+        {
+            output.write( buffer, 0, n );
+        }
+
+        return output.toByteArray();
     }
 
     public static String finalPayload(final String events) {

@@ -27,8 +27,10 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.compression.JdkZlibDecoder;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.HttpContentDecompressor;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpRequestDecoder;
@@ -143,10 +145,11 @@ public class CubeServer {
 
             pipeline
                 .addLast("decoder", new HttpRequestDecoder())
+                .addLast("inflater", new HttpContentDecompressor())
                 .addLast("aggregator", new HttpObjectAggregator(Integer.MAX_VALUE))
                 .addLast("encoder", new HttpResponseEncoder())
                 .addLast("chunked-writer", new ChunkedWriteHandler())
-                .addLast("featured-mock-server", new RequestHandler(messages));
+                .addLast( "featured-mock-server", new RequestHandler( messages ) );
         }
     }
 
@@ -161,8 +164,9 @@ public class CubeServer {
         protected void channelRead0(final ChannelHandlerContext ctx, final FullHttpRequest fullHttpRequest) throws Exception {
             final ChannelFuture future;
             if (HttpMethod.POST.equals(fullHttpRequest.getMethod())) {
+                String message = fullHttpRequest.content().toString(Charset.defaultCharset());
                 synchronized (messages) {
-                    messages.add(fullHttpRequest.content().toString(Charset.defaultCharset()));
+                    messages.add(message);
                 }
                 final HttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
                 future = ctx.writeAndFlush(response);
@@ -170,7 +174,11 @@ public class CubeServer {
                 LOGGER.warning("Received " + fullHttpRequest.getMethod());
                 future = ctx.writeAndFlush(new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.INTERNAL_SERVER_ERROR));
             }
+
             future.addListener(ChannelFutureListener.CLOSE);
         }
     }
+
+
+
 }

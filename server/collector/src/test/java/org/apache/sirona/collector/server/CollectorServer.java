@@ -29,6 +29,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.HttpContentDecompressor;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpRequestDecoder;
@@ -53,9 +54,11 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.ServerSocket;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.zip.GZIPOutputStream;
 
 public class CollectorServer {
     private static final Logger LOGGER = Logger.getLogger(CollectorServer.class.getName());
@@ -139,7 +142,8 @@ public class CollectorServer {
 
             pipeline
                 .addLast("decoder", new HttpRequestDecoder())
-                .addLast("aggregator", new HttpObjectAggregator(Integer.MAX_VALUE))
+                .addLast("inflater", new HttpContentDecompressor())
+                .addLast("aggregator", new HttpObjectAggregator( Integer.MAX_VALUE ) )
                 .addLast("encoder", new HttpResponseEncoder())
                 .addLast("chunked-writer", new ChunkedWriteHandler())
                 .addLast("featured-mock-server", new RequestHandler());
@@ -178,11 +182,40 @@ public class CollectorServer {
             }
         }
 
+
+        protected static byte[] gzipCompression( byte[] unCompress )
+            throws IOException
+        {
+            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+            GZIPOutputStream out = new GZIPOutputStream( buffer );
+            out.write( unCompress );
+            out.finish();
+            ByteArrayInputStream bais = new ByteArrayInputStream( buffer.toByteArray() );
+            byte[] res = toByteArray( bais );
+            return res;
+        }
+
+        public static byte[] toByteArray( InputStream input )
+            throws IOException
+        {
+            ByteArrayOutputStream output = new ByteArrayOutputStream();
+            byte[] buffer =  new byte[4096];
+
+            int n = 0;
+            while ( -1 != ( n = input.read( buffer ) ) )
+            {
+                output.write( buffer, 0, n );
+            }
+
+            return output.toByteArray();
+        }
+
         @Override
         protected void channelRead0(final ChannelHandlerContext ctx, final FullHttpRequest fullHttpRequest) throws Exception {
             final ChannelFuture future;
             if (HttpMethod.POST.equals(fullHttpRequest.getMethod())) {
-                final InputStream is = new ByteArrayInputStream(fullHttpRequest.content().toString(Charset.defaultCharset()).getBytes());
+                final InputStream is =
+                    new ByteArrayInputStream(gzipCompression(fullHttpRequest.content().toString(Charset.defaultCharset()).getBytes()));
 
                 final DefaultFullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
                 final ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -204,7 +237,11 @@ public class CollectorServer {
                             };
                         }
 
-                        throw new UnsupportedOperationException("not implemented");
+                        if ("getHeader".equals( method.getName()) && args[0].equals( "Content-Encoding" )) {
+                            return "gzip";
+                        }
+
+                        throw new UnsupportedOperationException("not implemented: " + method.getName() + " for args: " + Arrays.asList(args));
                     }
                 })),
                 HttpServletResponse.class.cast(Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), new Class<?>[] { HttpServletResponse.class}, new InvocationHandler() {
