@@ -32,6 +32,7 @@
     <tomcatRunPort>8080</tomcatRunPort>
     <tomcatRunPath>/sirona</tomcatRunPath>
     <sirona.reporting.tomcat.skip>false</sirona.reporting.tomcat.skip>
+    <sirona.properties.path>${basedir}/src/test/sirona.properties</sirona.properties.path>
   </properties>
 
   <dependencies>
@@ -131,7 +132,7 @@
           <path>${tomcatRunPath}</path>
           <skip>${sirona.reporting.tomcat.skip}</skip>
           <systemProperties>
-            <org.apache.sirona.configuration.sirona.properties>${basedir}/src/test/sirona.properties</org.apache.sirona.configuration.sirona.properties>
+            <org.apache.sirona.configuration.sirona.properties>${sirona.properties.path}</org.apache.sirona.configuration.sirona.properties>
           </systemProperties>
         </configuration>
         <dependencies>
