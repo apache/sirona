@@ -5,3 +5,8 @@ target
 out/
 agent/javaagent/dependency-reduced-pom.xml
 .java-version
+
+## local testing files 
+agentToTomcat.sh
+server/reporting/src/test/sirona.properties
+startCollector.sh

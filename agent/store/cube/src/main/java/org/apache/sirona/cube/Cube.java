@@ -303,11 +303,26 @@ public class Cube {
             );
 
         }
-
-
-
-
         return events;
+    }
+
+    public StringBuilder pathTrackingSnapshot( PathTrackingEntry pathTrackingEntry ) {
+        final StringBuilder event = newEventStream();
+        final long ts = System.currentTimeMillis();
+
+        buildEvent( event, PATHTRACKING_TYPE, ts, new MapBuilder()
+                        .add( TRACKING_D, pathTrackingEntry.getTrackingId() )
+                        .add( NODE_ID, pathTrackingEntry.getNodeId() )
+                        .add( CLASSNAME, pathTrackingEntry.getClassName() )
+                        .add( METHOD_NAME, pathTrackingEntry.getMethodName() )
+                        .add( START_TIME, pathTrackingEntry.getStartTime() )
+                        .add( EXEC_TIME, pathTrackingEntry.getExecutionTime() )
+                        .add( LEVEL, pathTrackingEntry.getLevel() )
+                        .map()
+        );
+
+
+        return event;
     }
 
     public StringBuilder gaugeSnapshot(final StringBuilder base, final long time, final Role role, final double value) {
