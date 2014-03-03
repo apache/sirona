@@ -39,7 +39,10 @@ public class CubePathTrackingDataStore
     protected void pushEntriesByBatch( ConcurrentMap<String, Set<PathTrackingEntry>> pathTrackingEntries ) {
         for ( Map.Entry<String, Set<PathTrackingEntry>> entry : pathTrackingEntries.entrySet())
         {
-            cube.post( cube.pathTrackingSnapshot( entry.getValue() ) );
+            for (PathTrackingEntry pathTrackingEntry : entry.getValue())
+            {
+                cube.post( cube.pathTrackingSnapshot( pathTrackingEntry ) );
+            }
         }
     }
 
