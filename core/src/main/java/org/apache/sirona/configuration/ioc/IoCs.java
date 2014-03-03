@@ -66,8 +66,8 @@ public final class IoCs {
 
     public static synchronized <T> T newInstance(final Class<T> clazz) {
 
+        String config = Configuration.getProperty(clazz.getName(), null);
         try {
-            String config = Configuration.getProperty(clazz.getName(), null);
             if (config == null) {
                 if (clazz.isInterface()) {
                     config = clazz.getPackage().getName() + ".Default" + clazz.getSimpleName();
@@ -79,7 +79,8 @@ public final class IoCs {
             SINGLETONS.put(clazz, t);
             return t;
         } catch (final Exception e) {
-            throw new SironaException("Cannot find instance for class " + clazz.getName() + " : " + e.getMessage(),e);
+            throw new SironaException("Cannot find instance for class " + clazz.getName() + " with config : " //
+                                          + config + " : " + e.getMessage(),e);
         }
     }
 
