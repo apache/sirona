@@ -18,7 +18,16 @@ package org.apache.sirona.store.tracking;
 
 import org.apache.sirona.tracking.PathTrackingEntry;
 import org.apache.sirona.tracking.PathTrackingEntryComparator;
+import sun.misc.Unsafe;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.ObjectStreamClass;
+import java.lang.reflect.Field;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -42,8 +51,8 @@ public class InMemoryPathTrackingDataStore
     /**
      * store path track tracking entries list per path tracking id
      */
-    private ConcurrentMap<String, Set<PathTrackingEntry>> pathTrackingEntries =
-        new ConcurrentHashMap<String, Set<PathTrackingEntry>>( 50 );
+    private ConcurrentMap<String, List<ByteBuffer>> pathTrackingEntries =
+        new ConcurrentHashMap<String, List<ByteBuffer>>( 50 );
 
     @Override
     public void store( PathTrackingEntry pathTrackingEntry )
@@ -65,7 +74,8 @@ public class InMemoryPathTrackingDataStore
         for ( PathTrackingEntry pathTrackingEntry : pathTrackingEntries )
         {
             Set<PathTrackingEntry> entriesList = entries.get( pathTrackingEntry.getTrackingId() );
-            if (entriesList == null) {
+            if ( entriesList == null )
+            {
                 entriesList = new HashSet<PathTrackingEntry>();
             }
             entriesList.add( pathTrackingEntry );
@@ -74,12 +84,13 @@ public class InMemoryPathTrackingDataStore
 
         for ( Map.Entry<String, Set<PathTrackingEntry>> entry : entries.entrySet() )
         {
-            Set<PathTrackingEntry> entriesList = this.pathTrackingEntries.get( entry.getKey() );
+            List<ByteBuffer> entriesList = this.pathTrackingEntries.get( entry.getKey() );
+
             if ( entriesList == null )
             {
-                entriesList = new TreeSet<PathTrackingEntry>( PathTrackingEntryComparator.INSTANCE );
+                entriesList = new ArrayList<ByteBuffer>();
             }
-            entriesList.addAll( entry.getValue() );
+            entriesList.addAll( serialize( entry.getValue() ) );
             this.pathTrackingEntries.put( entry.getKey(), entriesList );
         }
 
@@ -88,21 +99,23 @@ public class InMemoryPathTrackingDataStore
     @Override
     public Collection<PathTrackingEntry> retrieve( String trackingId )
     {
-        return this.pathTrackingEntries.get( trackingId );
+        List<ByteBuffer> buffers = this.pathTrackingEntries.get( trackingId );
+
+        return deserialize( buffers );
     }
 
     @Override
     public Collection<String> retrieveTrackingIds( Date startTime, Date endTime )
     {
         List<String> trackingIds = new ArrayList<String>();
-        for ( Set<PathTrackingEntry> pathTrackingEntries : this.pathTrackingEntries.values() )
+        for ( List<ByteBuffer> buffers : this.pathTrackingEntries.values() )
         {
             if ( pathTrackingEntries.isEmpty() )
             {
                 continue;
             }
 
-            PathTrackingEntry first = pathTrackingEntries.iterator().next();
+            PathTrackingEntry first = deserialize( buffers.iterator().next().array() );
 
             if ( first.getStartTime() / 1000000 > startTime.getTime() //
                 && first.getStartTime() / 1000000 < endTime.getTime() )
@@ -113,15 +126,132 @@ public class InMemoryPathTrackingDataStore
         return trackingIds;
     }
 
+    private Collection<PathTrackingEntry> deserialize( List<ByteBuffer> buffers )
+    {
+        List<PathTrackingEntry> entries = new ArrayList<PathTrackingEntry>( buffers.size() );
+
+        for ( ByteBuffer byteBuffer : buffers )
+        {
+            byteBuffer.rewind();
+            int size = byteBuffer.remaining();
+            byte[] bytes = new byte[size];
+            byteBuffer.get( bytes, 0, size );
+
+            PathTrackingEntry entry = deserialize( bytes );
+            if ( entry != null )
+            {
+                entries.add( entry );
+            }
+        }
+
+        return entries;
+    }
+
+    private List<ByteBuffer> serialize( Collection<PathTrackingEntry> entries )
+    {
+        List<ByteBuffer> buffers = new ArrayList<ByteBuffer>( entries.size() );
+
+        for ( PathTrackingEntry entry : entries )
+        {
+            byte[] bytes = serialize( entry );
+            if ( bytes != null )
+            {
+                ByteBuffer buffer = ByteBuffer.allocateDirect( bytes.length );
+                buffer.put( bytes );
+                buffers.add( buffer );
+            }
+        }
+
+        return buffers;
+    }
+
     @Override
     public void clearEntries()
     {
-        pathTrackingEntries =
-            new ConcurrentHashMap<String, Set<PathTrackingEntry>>( 50 );
+        pathTrackingEntries = new ConcurrentHashMap<String, List<ByteBuffer>>( 50 );
     }
 
-    protected ConcurrentMap<String, Set<PathTrackingEntry>> getPathTrackingEntries()
+    protected Map<String, Set<PathTrackingEntry>> getPathTrackingEntries()
     {
-        return pathTrackingEntries;
+
+        Map<String, Set<PathTrackingEntry>> entries =
+            new HashMap<String, Set<PathTrackingEntry>>( this.pathTrackingEntries.size() );
+
+        for ( Map.Entry<String, List<ByteBuffer>> entry : this.pathTrackingEntries.entrySet() )
+        {
+            Set<PathTrackingEntry> pathTrackingEntries =
+                new TreeSet<PathTrackingEntry>( PathTrackingEntryComparator.INSTANCE );
+            pathTrackingEntries.addAll( deserialize( entry.getValue() ) );
+            entries.put( entry.getKey(), pathTrackingEntries );
+        }
+
+        return entries;
     }
+
+
+    private byte[] serialize( PathTrackingEntry pathTrackingEntry )
+    {
+        try
+        {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream( baos );
+            oos.writeObject( pathTrackingEntry );
+            oos.flush();
+            oos.close();
+            return baos.toByteArray();
+        }
+        catch ( IOException e )
+        {
+            // ignore as should not happen anyway log the stack trace
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public PathTrackingEntry deserialize( byte[] source )
+    {
+        try
+        {
+            ByteArrayInputStream bis = new ByteArrayInputStream( source );
+            ObjectInputStream ois = new ObjectInputStream( bis )
+            {
+
+                @Override
+                protected Class<?> resolveClass( ObjectStreamClass objectStreamClass )
+                    throws IOException, ClassNotFoundException
+                {
+                    return PathTrackingEntry.class;
+                }
+
+            };
+            PathTrackingEntry obj = PathTrackingEntry.class.cast( ois.readObject() );
+            ois.close();
+            return obj;
+        }
+        catch ( Exception e )
+        {
+            // ignore as should not happen anyway log the stack trace
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+    //if bytebuffer is not efficient enough use unsafe directly
+    private static Unsafe getUnsafe()
+    {
+        try
+        {
+            Field f = Unsafe.class.getDeclaredField( "theUnsafe" );
+            f.setAccessible( true );
+            return (Unsafe) f.get( null );
+        }
+        catch ( Exception e )
+        {
+
+        }
+
+        return null;
+    }
+
 }
