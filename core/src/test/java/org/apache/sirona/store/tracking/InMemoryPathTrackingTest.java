@@ -52,5 +52,12 @@ public class InMemoryPathTrackingTest
 
         Assert.assertEquals( "nodeId", entry.getNodeId() );
 
+        store.clearEntries();
+
+        all = store.getPathTrackingEntries();
+
+        Assert.assertNotNull( all );
+        Assert.assertEquals( 0, all.size() );
+
     }
 }

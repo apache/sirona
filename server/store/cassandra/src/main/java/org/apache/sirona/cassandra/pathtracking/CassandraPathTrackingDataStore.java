@@ -203,7 +203,7 @@ public class CassandraPathTrackingDataStore
     }
 
     @Override
-    protected void pushEntriesByBatch( ConcurrentMap<String, Set<PathTrackingEntry>> pathTrackingEntries )
+    protected void pushEntriesByBatch( Map<String, Set<PathTrackingEntry>> pathTrackingEntries )
     {
         List<PathTrackingEntry> entries = new ArrayList<PathTrackingEntry>(  );
 

@@ -168,6 +168,14 @@ public class InMemoryPathTrackingDataStore
     @Override
     public void clearEntries()
     {
+        for ( Map.Entry<String, List<ByteBuffer>> entry : pathTrackingEntries.entrySet() )
+        {
+            // clear entries to not wait gc
+            for ( ByteBuffer byteBuffer : entry.getValue() )
+            {
+                byteBuffer.clear();
+            }
+        }
         pathTrackingEntries = new ConcurrentHashMap<String, List<ByteBuffer>>( 50 );
     }
 

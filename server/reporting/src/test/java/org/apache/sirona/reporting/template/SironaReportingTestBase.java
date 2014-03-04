@@ -61,7 +61,7 @@ public abstract class SironaReportingTestBase {
     protected URL base;
 
     protected <P extends Page> P page(final String path) throws IOException {
-        return newClient().getPage(base.toExternalForm() + "sirona/" + path);
+        return newClient().getPage(base.toExternalForm() + "/sirona/" + path);
     }
 
     protected static WebClient newClient() {
