@@ -161,8 +161,10 @@ public class Cube {
             connection.setDoInput(true);
             connection.setDoOutput(true);
 
+            OutputStream output = null;
+
             try {
-                final OutputStream output = connection.getOutputStream();
+                output = connection.getOutputStream();
                 try {
                     // FIXME find a more efficient way to prevent to have all of this in memory
                     output.write( bytes );
@@ -178,8 +180,8 @@ public class Cube {
                     }
                 }
             } finally {
-                if (connection != null) {
-                    connection.disconnect();
+                if (output != null) {
+                    output.close();
                 }
             }
         } catch (final Exception e) {

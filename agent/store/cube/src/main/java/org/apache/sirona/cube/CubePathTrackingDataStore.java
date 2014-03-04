@@ -22,6 +22,7 @@ import org.apache.sirona.store.tracking.BatchPathTrackingDataStore;
 import org.apache.sirona.store.tracking.CollectorPathTrackingDataStore;
 import org.apache.sirona.tracking.PathTrackingEntry;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
@@ -33,6 +34,16 @@ public class CubePathTrackingDataStore
     implements CollectorPathTrackingDataStore
 {
     private final Cube cube = IoCs.findOrCreateInstance( CubeBuilder.class ).build();
+
+
+    @Override
+    public void store( Collection<PathTrackingEntry> pathTrackingEntries )
+    {
+        for (PathTrackingEntry pathTrackingEntry : pathTrackingEntries)
+        {
+            cube.post( cube.pathTrackingSnapshot( pathTrackingEntry ) );
+        }
+    }
 
     @Override
     protected void pushEntriesByBatch( Map<String, Set<PathTrackingEntry>> pathTrackingEntries ) {
