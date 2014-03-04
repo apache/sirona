@@ -37,7 +37,9 @@ import org.apache.sirona.tracking.PathTrackingEntry;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -62,6 +64,16 @@ public class CassandraPathTrackingDataStore
     private final String family;
 
     private final String markerFamilly;
+
+    private static final Comparator<PathTrackingEntry> START_TIME_COMPARATOR = new Comparator<PathTrackingEntry>()
+    {
+        @Override
+        public int compare( PathTrackingEntry pathTrackingEntry, PathTrackingEntry pathTrackingEntry2 )
+        {
+            return new Date( pathTrackingEntry.getStartTime() ) //
+                .compareTo( new Date( pathTrackingEntry2.getStartTime() ) );
+        }
+    };
 
 
     public CassandraPathTrackingDataStore()
@@ -121,8 +133,10 @@ public class CassandraPathTrackingDataStore
     @Override
     public Collection<String> retrieveTrackingIds( Date startTime, Date endTime )
     {
-        return null;
+        return retrieveAll().keySet();
     }
+
+
 
     /**
      * <b>use with CAUTION as can return a lot of data</b>
@@ -153,9 +167,9 @@ public class CassandraPathTrackingDataStore
             String className = columnSlice.getColumnByName( "className" ).getValue();
             String methodName = columnSlice.getColumnByName( "methodName" ).getValue();
 
-            Serializer<String> stringSerializer = columnSlice.getColumnByName( "startTime" ).getValueSerializer();
+            //Serializer<String> stringSerializer = columnSlice.getColumnByName( "startTime" ).getValueSerializer();
 
-            String foo = columnSlice.getColumnByName( "startTime" ).getValue();
+            //String foo = columnSlice.getColumnByName( "startTime" ).getValue();
             long startTime = getOrDefault( serializer, //
                                            columnSlice.getColumnByName( "startTime" ), //
                                            LongSerializer.get() ).longValue();

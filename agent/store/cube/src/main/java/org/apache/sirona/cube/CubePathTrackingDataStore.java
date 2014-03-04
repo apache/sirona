@@ -24,7 +24,6 @@ import org.apache.sirona.tracking.PathTrackingEntry;
 
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentMap;
 
 /**
  *
@@ -36,7 +35,7 @@ public class CubePathTrackingDataStore
     private final Cube cube = IoCs.findOrCreateInstance( CubeBuilder.class ).build();
 
     @Override
-    protected void pushEntriesByBatch( ConcurrentMap<String, Set<PathTrackingEntry>> pathTrackingEntries ) {
+    protected void pushEntriesByBatch( Map<String, Set<PathTrackingEntry>> pathTrackingEntries ) {
         for ( Map.Entry<String, Set<PathTrackingEntry>> entry : pathTrackingEntries.entrySet())
         {
             for (PathTrackingEntry pathTrackingEntry : entry.getValue())

@@ -24,8 +24,8 @@ import org.apache.sirona.tracking.PathTrackingEntry;
 import org.apache.sirona.util.DaemonThreadFactory;
 
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -89,6 +89,6 @@ public abstract class BatchPathTrackingDataStore
         }
     }
 
-    protected abstract void pushEntriesByBatch( final ConcurrentMap<String, Set<PathTrackingEntry>> pathTrackingEntries );
+    protected abstract void pushEntriesByBatch( final Map<String, Set<PathTrackingEntry>> pathTrackingEntries );
 
 }

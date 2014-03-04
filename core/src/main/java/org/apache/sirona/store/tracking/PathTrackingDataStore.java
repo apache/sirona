@@ -34,7 +34,7 @@ public interface PathTrackingDataStore
     void clearEntries();
 
     /**
-     * the result will be orderer by startTime
+     * <b>the result will be orderer by startTime</b>
      *
      * @param trackingId
      * @return {@link List} of {@link org.apache.sirona.tracking.PathTrackingEntry} related to a tracking id

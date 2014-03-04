@@ -6,3 +6,4 @@ org.apache.sirona.reporting.web.plugin.jvm.JVMPlugin
 org.apache.sirona.reporting.web.plugin.jta.JTAPlugin
 org.apache.sirona.reporting.web.plugin.thread.ThreadPlugin
 org.apache.sirona.reporting.web.plugin.web.WebPlugin
+org.apache.sirona.reporting.web.plugin.pathtracking.PathTrackingPlugin

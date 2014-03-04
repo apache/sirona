@@ -25,6 +25,9 @@ public class PathTrackingEntry
     implements Serializable
 {
 
+    // use a default value here
+    private static final long serialVersionUID = 4L;
+
     /**
      * a generated id to follow up the path call
      */
