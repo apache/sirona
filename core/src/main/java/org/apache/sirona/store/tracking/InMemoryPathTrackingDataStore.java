@@ -47,6 +47,24 @@ import java.util.concurrent.ConcurrentMap;
 public class InMemoryPathTrackingDataStore
     implements PathTrackingDataStore, CollectorPathTrackingDataStore
 {
+
+    private static Unsafe UNSAFE;
+
+
+    static
+    {
+        try
+        {
+            Field f = Unsafe.class.getDeclaredField( "theUnsafe" );
+            f.setAccessible( true );
+            UNSAFE = (Unsafe) f.get( null );
+        }
+        catch ( Exception e )
+        {
+            throw new RuntimeException( e.getMessage(), e );
+        }
+    }
+
     /**
      * store path track tracking entries list per path tracking id
      * the value is the memory address
@@ -151,7 +169,7 @@ public class InMemoryPathTrackingDataStore
         long offset = pointer.offheapPointer;
         for ( int pos = 0; pos < length; pos++ )
         {
-            bytes[pos] = getUnsafe().getByte( pos + offset );
+            bytes[pos] = UNSAFE.getByte( pos + offset );
         }
         return bytes;
     }
@@ -172,13 +190,13 @@ public class InMemoryPathTrackingDataStore
             byte[] bytes = serialize( entry );
             if ( bytes != null )
             {
-                long offheapPointer = getUnsafe().allocateMemory( bytes.length );
+                long offheapPointer = UNSAFE.allocateMemory( bytes.length );
                 Pointer pointer = new Pointer();
                 pointer.offheapPointer = offheapPointer;
                 pointer.size = bytes.length;
                 for ( int i = 0, size = bytes.length; i < size; i++ )
                 {
-                    getUnsafe().putByte( offheapPointer + i, bytes[i] );
+                    UNSAFE.putByte( offheapPointer + i, bytes[i] );
                 }
                 buffers.add( pointer );
 
@@ -196,7 +214,7 @@ public class InMemoryPathTrackingDataStore
             // clear entries to not wait gc
             for ( Pointer pointer : entry.getValue() )
             {
-                getUnsafe().freeMemory( pointer.offheapPointer );
+                UNSAFE.freeMemory( pointer.offheapPointer );
             }
         }
         pathTrackingEntries = new ConcurrentHashMap<String, List<Pointer>>( 50 );
@@ -268,22 +286,5 @@ public class InMemoryPathTrackingDataStore
         return null;
     }
 
-
-    //if bytebuffer is not efficient enough use unsafe directly
-    private static Unsafe getUnsafe()
-    {
-        try
-        {
-            Field f = Unsafe.class.getDeclaredField( "theUnsafe" );
-            f.setAccessible( true );
-            return (Unsafe) f.get( null );
-        }
-        catch ( Exception e )
-        {
-
-        }
-
-        return null;
-    }
 
 }
