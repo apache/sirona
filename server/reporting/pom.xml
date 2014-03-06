@@ -170,6 +170,7 @@
           <configuration>
             <systemPropertyVariables>
               <arquillian.launch>tomcat7</arquillian.launch>
+              <tomcat.http>${tomcat.http}</tomcat.http>
             </systemPropertyVariables>
           </configuration>
         </plugin>
