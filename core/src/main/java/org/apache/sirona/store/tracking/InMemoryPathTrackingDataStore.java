@@ -43,7 +43,6 @@ public class InMemoryPathTrackingDataStore
 {
 
 
-
     /**
      * store path track tracking entries list per path tracking id
      * the value is the memory address
@@ -160,6 +159,8 @@ public class InMemoryPathTrackingDataStore
 
         long offheapPointer;
 
+        boolean free;
+
         public int getSize()
         {
             return size;
@@ -168,6 +169,20 @@ public class InMemoryPathTrackingDataStore
         public long getOffheapPointer()
         {
             return offheapPointer;
+        }
+
+        public void freeMemory()
+        {
+            if ( !free )
+            {
+                UnsafeUtils.getUnsafe().freeMemory( offheapPointer );
+                free = true;
+            }
+        }
+
+        public boolean isFree()
+        {
+            return free;
         }
     }
 
@@ -204,7 +219,8 @@ public class InMemoryPathTrackingDataStore
             // clear entries to not wait gc
             for ( Pointer pointer : entry.getValue() )
             {
-                UnsafeUtils.getUnsafe().freeMemory( pointer.offheapPointer );
+                //UnsafeUtils.getUnsafe().freeMemory( pointer.offheapPointer );
+                pointer.freeMemory();
             }
         }
         pathTrackingEntries = new ConcurrentHashMap<String, List<Pointer>>( 50 );

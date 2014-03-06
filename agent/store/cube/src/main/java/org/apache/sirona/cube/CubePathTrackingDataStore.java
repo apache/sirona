@@ -24,7 +24,6 @@ import org.apache.sirona.store.tracking.BatchPathTrackingDataStore;
 import org.apache.sirona.store.tracking.CollectorPathTrackingDataStore;
 import org.apache.sirona.tracking.PathTrackingEntry;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -65,7 +64,11 @@ public class CubePathTrackingDataStore
         {
             for ( Pointer pointer : entry.getValue() )
             {
-                cube.postBytes( readBytes( pointer ), PathTrackingEntry.class.getName() );
+                if ( !pointer.isFree() )
+                {
+                    cube.postBytes( readBytes( pointer ), PathTrackingEntry.class.getName() );
+                    pointer.freeMemory();
+                }
             }
         }
     }
