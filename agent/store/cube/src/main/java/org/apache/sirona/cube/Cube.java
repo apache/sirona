@@ -87,6 +87,8 @@ public class Cube {
     private static final String CONTENT_LENGTH = "Content-Length";
     private static final String GZIP_CONTENT_ENCODING = "gzip";
     private static final String CONTENT_ENCODING = "Content-Encoding";
+    private static final String APPLICATION_JAVA_OBJECT = "application/x-java-serialized-object";
+    private static final String X_SIRONA_CLASSNAME = "X-Sirona-ClassName";
 
     private static final String JS_ISO_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
     private static final String UTC = "UTC";
@@ -127,6 +129,58 @@ public class Cube {
     public void post(final StringBuilder payload) {
         if (payload.length() > 0) {
             doPost(globalPayload(payload));
+        }
+    }
+
+    public void postBytes(byte[] bytes, String className)
+    {
+        try {
+            final URL url = new URL(config.getCollector());
+
+            final HttpURLConnection connection = HttpURLConnection.class.cast(url.openConnection(proxy));
+
+            final SSLSocketFactory socketFactory = config.getSocketFactory();
+            if (socketFactory != null && "https".equals(url.getProtocol())) {
+                HttpsURLConnection.class.cast(connection).setSSLSocketFactory(socketFactory);
+            }
+
+            final String auth = config.getBasicHeader();
+            if (auth != null) {
+                connection.setRequestProperty("Authorization", auth);
+            }
+
+
+            boolean useCompression = config.isUseCompression();
+
+            connection.setRequestMethod(POST);
+            connection.setRequestProperty(CONTENT_TYPE, APPLICATION_JAVA_OBJECT);
+            connection.setRequestProperty( X_SIRONA_CLASSNAME, className );
+            connection.setRequestProperty(CONTENT_LENGTH, Long.toString(bytes.length));
+            connection.setUseCaches(false);
+            connection.setDoInput(true);
+            connection.setDoOutput(true);
+            connection.setReadTimeout( config.getPostTimeout() );
+            OutputStream output = null;
+
+
+            output = connection.getOutputStream();
+            try {
+                // FIXME find a more efficient way to prevent to have all of this in memory
+                output.write( bytes );
+                output.flush();
+
+                final int status = connection.getResponseCode();
+                if (status / 100 != 2) {
+                    LOGGER.warning("Pushed data but response code is: " + status);
+                }
+            } finally {
+                if (output != null) {
+                    output.close();
+                }
+            }
+
+        } catch (final Exception e) {
+            LOGGER.log(Level.WARNING, "Can't post data to collector", e);
         }
     }
 

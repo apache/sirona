@@ -202,9 +202,11 @@ public class CassandraPathTrackingDataStore
         return entries;
     }
 
-    @Override
-    protected void pushEntriesByBatch( Map<String, Set<PathTrackingEntry>> pathTrackingEntries )
+
+    protected void pushEntriesByBatch( Map<String, List<Pointer>> pathTrackingEntries )
     {
+        // TODO even if not really used
+        /*
         List<PathTrackingEntry> entries = new ArrayList<PathTrackingEntry>(  );
 
         for ( Map.Entry<String, Set<PathTrackingEntry>> entry : pathTrackingEntries.entrySet()) {
@@ -213,6 +215,7 @@ public class CassandraPathTrackingDataStore
 
 
         store( entries );
+        */
     }
 
     protected Keyspace getKeyspace()

@@ -18,15 +18,9 @@ package org.apache.sirona.store.tracking;
 
 import org.apache.sirona.tracking.PathTrackingEntry;
 import org.apache.sirona.tracking.PathTrackingEntryComparator;
-import sun.misc.Unsafe;
+import org.apache.sirona.util.SerializeUtils;
+import org.apache.sirona.util.UnsafeUtils;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.ObjectStreamClass;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -48,22 +42,7 @@ public class InMemoryPathTrackingDataStore
     implements PathTrackingDataStore, CollectorPathTrackingDataStore
 {
 
-    private static Unsafe UNSAFE;
 
-
-    static
-    {
-        try
-        {
-            Field f = Unsafe.class.getDeclaredField( "theUnsafe" );
-            f.setAccessible( true );
-            UNSAFE = (Unsafe) f.get( null );
-        }
-        catch ( Exception e )
-        {
-            throw new RuntimeException( e.getMessage(), e );
-        }
-    }
 
     /**
      * store path track tracking entries list per path tracking id
@@ -133,7 +112,8 @@ public class InMemoryPathTrackingDataStore
                 continue;
             }
 
-            PathTrackingEntry first = deserialize( readBytes( buffers.iterator().next() ) );
+            PathTrackingEntry first =
+                SerializeUtils.deserialize( readBytes( buffers.iterator().next() ), PathTrackingEntry.class );
 
             if ( first.getStartTime() / 1000000 > startTime.getTime() //
                 && first.getStartTime() / 1000000 < endTime.getTime() )
@@ -152,7 +132,7 @@ public class InMemoryPathTrackingDataStore
         {
             byte[] bytes = readBytes( pointer );
 
-            PathTrackingEntry entry = deserialize( bytes );
+            PathTrackingEntry entry = SerializeUtils.deserialize( bytes, PathTrackingEntry.class );
             if ( entry != null )
             {
                 entries.add( entry );
@@ -162,23 +142,33 @@ public class InMemoryPathTrackingDataStore
         return entries;
     }
 
-    private byte[] readBytes( Pointer pointer )
+    public byte[] readBytes( Pointer pointer )
     {
         byte[] bytes = new byte[pointer.size];
         int length = pointer.size;
         long offset = pointer.offheapPointer;
         for ( int pos = 0; pos < length; pos++ )
         {
-            bytes[pos] = UNSAFE.getByte( pos + offset );
+            bytes[pos] = UnsafeUtils.getUnsafe().getByte( pos + offset );
         }
         return bytes;
     }
 
-    private static class Pointer
+    public static class Pointer
     {
         int size;
 
         long offheapPointer;
+
+        public int getSize()
+        {
+            return size;
+        }
+
+        public long getOffheapPointer()
+        {
+            return offheapPointer;
+        }
     }
 
     private List<Pointer> serialize( Collection<PathTrackingEntry> entries )
@@ -187,16 +177,16 @@ public class InMemoryPathTrackingDataStore
 
         for ( PathTrackingEntry entry : entries )
         {
-            byte[] bytes = serialize( entry );
+            byte[] bytes = SerializeUtils.serialize( entry );
             if ( bytes != null )
             {
-                long offheapPointer = UNSAFE.allocateMemory( bytes.length );
+                long offheapPointer = UnsafeUtils.getUnsafe().allocateMemory( bytes.length );
                 Pointer pointer = new Pointer();
                 pointer.offheapPointer = offheapPointer;
                 pointer.size = bytes.length;
                 for ( int i = 0, size = bytes.length; i < size; i++ )
                 {
-                    UNSAFE.putByte( offheapPointer + i, bytes[i] );
+                    UnsafeUtils.getUnsafe().putByte( offheapPointer + i, bytes[i] );
                 }
                 buffers.add( pointer );
 
@@ -214,7 +204,7 @@ public class InMemoryPathTrackingDataStore
             // clear entries to not wait gc
             for ( Pointer pointer : entry.getValue() )
             {
-                UNSAFE.freeMemory( pointer.offheapPointer );
+                UnsafeUtils.getUnsafe().freeMemory( pointer.offheapPointer );
             }
         }
         pathTrackingEntries = new ConcurrentHashMap<String, List<Pointer>>( 50 );
@@ -237,53 +227,14 @@ public class InMemoryPathTrackingDataStore
         return entries;
     }
 
-
-    private byte[] serialize( PathTrackingEntry pathTrackingEntry )
+    /**
+     * direct access to datas not a copy
+     *
+     * @return
+     */
+    protected Map<String, List<Pointer>> getPointers()
     {
-        try
-        {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ObjectOutputStream oos = new ObjectOutputStream( baos );
-            oos.writeObject( pathTrackingEntry );
-            oos.flush();
-            oos.close();
-            return baos.toByteArray();
-        }
-        catch ( IOException e )
-        {
-            // ignore as should not happen anyway log the stack trace
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public PathTrackingEntry deserialize( byte[] source )
-    {
-        try
-        {
-            ByteArrayInputStream bis = new ByteArrayInputStream( source );
-            ObjectInputStream ois = new ObjectInputStream( bis )
-            {
-
-                @Override
-                protected Class<?> resolveClass( ObjectStreamClass objectStreamClass )
-                    throws IOException, ClassNotFoundException
-                {
-                    return PathTrackingEntry.class;
-                }
-
-            };
-            PathTrackingEntry obj = PathTrackingEntry.class.cast( ois.readObject() );
-            ois.close();
-            return obj;
-        }
-        catch ( Exception e )
-        {
-            // ignore as should not happen anyway log the stack trace
-            e.printStackTrace();
-        }
-
-        return null;
+        return this.pathTrackingEntries;
     }
 
 

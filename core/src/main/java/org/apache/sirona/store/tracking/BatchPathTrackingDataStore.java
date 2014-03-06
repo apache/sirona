@@ -23,6 +23,7 @@ import org.apache.sirona.store.BatchFuture;
 import org.apache.sirona.tracking.PathTrackingEntry;
 import org.apache.sirona.util.DaemonThreadFactory;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -79,7 +80,7 @@ public abstract class BatchPathTrackingDataStore
         {
             try
             {
-                pushEntriesByBatch( getPathTrackingEntries() );
+                pushEntriesByBatch( getPointers() );
                 clearEntries();
             }
             catch ( final Exception e )
@@ -89,6 +90,6 @@ public abstract class BatchPathTrackingDataStore
         }
     }
 
-    protected abstract void pushEntriesByBatch( final Map<String, Set<PathTrackingEntry>> pathTrackingEntries );
+    protected abstract void pushEntriesByBatch( final Map<String, List<Pointer>> pathTrackingEntries );
 
 }

@@ -25,8 +25,8 @@ import org.apache.sirona.store.tracking.CollectorPathTrackingDataStore;
 import org.apache.sirona.tracking.PathTrackingEntry;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -59,39 +59,13 @@ public class CubePathTrackingDataStore
     }
 
     @Override
-    public void store( Collection<PathTrackingEntry> pathTrackingEntries )
+    protected void pushEntriesByBatch( Map<String, List<Pointer>> pathTrackingEntries )
     {
-
-        for ( final PathTrackingEntry pathTrackingEntry : pathTrackingEntries )
+        for ( Map.Entry<String, List<Pointer>> entry : pathTrackingEntries.entrySet() )
         {
-            Runnable runnable = new Runnable()
+            for ( Pointer pointer : entry.getValue() )
             {
-                @Override
-                public void run()
-                {
-                    cube.post( cube.pathTrackingSnapshot( pathTrackingEntry ) );
-                }
-            };
-            if ( useExecutors )
-            {
-                executorService.submit( runnable );
-            }
-            else
-            {
-                runnable.run();
-            }
-
-        }
-    }
-
-    @Override
-    protected void pushEntriesByBatch( Map<String, Set<PathTrackingEntry>> pathTrackingEntries )
-    {
-        for ( Map.Entry<String, Set<PathTrackingEntry>> entry : pathTrackingEntries.entrySet() )
-        {
-            for ( PathTrackingEntry pathTrackingEntry : entry.getValue() )
-            {
-                cube.post( cube.pathTrackingSnapshot( pathTrackingEntry ) );
+                cube.postBytes( readBytes( pointer ), PathTrackingEntry.class.getName() );
             }
         }
     }

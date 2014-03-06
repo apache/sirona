@@ -241,6 +241,10 @@ public class CollectorServer {
                             return "gzip";
                         }
 
+                        if ("getHeader".equals( method.getName()) && args[0].equals( "Content-Type" )) {
+                            return "foo";
+                        }
+
                         throw new UnsupportedOperationException("not implemented: " + method.getName() + " for args: " + Arrays.asList(args));
                     }
                 })),

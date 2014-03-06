@@ -40,6 +40,7 @@ import org.apache.sirona.store.status.NodeStatusDataStore;
 import org.apache.sirona.store.tracking.CollectorPathTrackingDataStore;
 import org.apache.sirona.tracking.PathTrackingEntry;
 import org.apache.sirona.util.DaemonThreadFactory;
+import org.apache.sirona.util.SerializeUtils;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSocketFactory;
@@ -49,6 +50,7 @@ import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -84,6 +86,10 @@ public class Collector extends HttpServlet {
     private static final String PATH_TRACKING = "pathtracking";
 
     private static final String CONTENT_ENCODING = "Content-Encoding";
+    private static final String CONTENT_TYPE = "Content-Type";
+    private static final String APPLICATION_JAVA_OBJECT = "application/x-java-serialized-object";
+    private static final String X_SIRONA_CLASSNAME = "X-Sirona-ClassName";
+
 
     private static final String GET = "GET";
 
@@ -196,11 +202,22 @@ public class Collector extends HttpServlet {
 
         final ServletInputStream inputStream = req.getInputStream();
         try {
-            if ("gzip".equals( req.getHeader( CONTENT_ENCODING ) ))
+            if (APPLICATION_JAVA_OBJECT.equals( req.getHeader( CONTENT_TYPE ) )) {
+                if (PathTrackingEntry.class.getName().equals( req.getHeader( X_SIRONA_CLASSNAME ) )) {
+                    int length = req.getContentLength();
+                    updatePathTracking( readBytes( req.getInputStream(), length ) );
+                }
+            }
+            else
             {
-                slurpEvents(new GZIPInputStream( inputStream ));
-            } else {
-                slurpEvents(inputStream);
+                if ( "gzip".equals( req.getHeader( CONTENT_ENCODING ) ) )
+                {
+                    slurpEvents( new GZIPInputStream( inputStream ) );
+                }
+                else
+                {
+                    slurpEvents( inputStream );
+                }
             }
         } catch (final SironaException me) {
             resp.setStatus(HttpURLConnection.HTTP_BAD_REQUEST);
@@ -210,6 +227,24 @@ public class Collector extends HttpServlet {
 
         resp.setStatus(HttpURLConnection.HTTP_OK);
         resp.getWriter().write(OK);
+    }
+
+    private byte[] readBytes(ServletInputStream servletInputStream, int length)
+        throws IOException
+    {
+        byte[] bytes = new byte[length];
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream(length);
+
+        int nRead;
+
+        while ((nRead = servletInputStream.read(bytes, 0, bytes.length)) != -1) {
+            buffer.write(bytes, 0, nRead);
+        }
+
+        buffer.flush();
+
+        return buffer.toByteArray();
+
     }
 
     private void slurpEvents(final InputStream inputStream) throws IOException {
@@ -309,6 +344,12 @@ public class Collector extends HttpServlet {
                                     Number.class.cast(data.get("startTime")).longValue(), //
                                     Number.class.cast(data.get("executionTime")).longValue(), //
                                     Number.class.cast(data.get("level") ).intValue() ));
+    }
+
+
+    private void updatePathTracking(final byte[] bytes) {
+
+        pathTrackingDataStore.store( SerializeUtils.deserialize( bytes, PathTrackingEntry.class ) );
     }
 
 
