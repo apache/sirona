@@ -48,7 +48,16 @@ public class CubeBuilder {
     private String sslKeyStorePassword;
     private String sslKeyStoreProvider;
     private String basicHeader; // user:pwd
+
+    /**
+     * compression off per default
+     */
     private boolean useCompression = false;
+
+    /**
+     * default timeout of 5s
+     */
+    private int postTimeout = 5000;
 
     public synchronized Cube build() {
         if (marker == null) {
@@ -108,6 +117,16 @@ public class CubeBuilder {
     public void setUseCompression( boolean useCompression )
     {
         this.useCompression = useCompression;
+    }
+
+    public int getPostTimeout()
+    {
+        return postTimeout;
+    }
+
+    public void setPostTimeout( int postTimeout )
+    {
+        this.postTimeout = postTimeout;
     }
 
     private TrustManager[] createTrustManager() {

@@ -160,30 +160,26 @@ public class Cube {
             connection.setUseCaches(false);
             connection.setDoInput(true);
             connection.setDoOutput(true);
-
+            connection.setReadTimeout( config.getPostTimeout() );
             OutputStream output = null;
 
-            try {
-                output = connection.getOutputStream();
-                try {
-                    // FIXME find a more efficient way to prevent to have all of this in memory
-                    output.write( bytes );
-                    output.flush();
 
-                    final int status = connection.getResponseCode();
-                    if (status / 100 != 2) {
-                        LOGGER.warning("Pushed data but response code is: " + status);
-                    }
-                } finally {
-                    if (output != null) {
-                        output.close();
-                    }
+            output = connection.getOutputStream();
+            try {
+                // FIXME find a more efficient way to prevent to have all of this in memory
+                output.write( bytes );
+                output.flush();
+
+                final int status = connection.getResponseCode();
+                if (status / 100 != 2) {
+                    LOGGER.warning("Pushed data but response code is: " + status);
                 }
             } finally {
                 if (output != null) {
                     output.close();
                 }
             }
+
         } catch (final Exception e) {
             LOGGER.log(Level.WARNING, "Can't post data to collector", e);
         }

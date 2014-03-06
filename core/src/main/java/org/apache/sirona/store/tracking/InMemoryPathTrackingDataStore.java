@@ -27,7 +27,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamClass;
 import java.lang.reflect.Field;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -50,9 +49,10 @@ public class InMemoryPathTrackingDataStore
 {
     /**
      * store path track tracking entries list per path tracking id
+     * the value is the memory address
      */
-    private ConcurrentMap<String, List<ByteBuffer>> pathTrackingEntries =
-        new ConcurrentHashMap<String, List<ByteBuffer>>( 50 );
+    private ConcurrentMap<String, List<Pointer>> pathTrackingEntries =
+        new ConcurrentHashMap<String, List<Pointer>>( 50 );
 
     @Override
     public void store( PathTrackingEntry pathTrackingEntry )
@@ -84,11 +84,11 @@ public class InMemoryPathTrackingDataStore
 
         for ( Map.Entry<String, Set<PathTrackingEntry>> entry : entries.entrySet() )
         {
-            List<ByteBuffer> entriesList = this.pathTrackingEntries.get( entry.getKey() );
+            List<Pointer> entriesList = this.pathTrackingEntries.get( entry.getKey() );
 
             if ( entriesList == null )
             {
-                entriesList = new ArrayList<ByteBuffer>();
+                entriesList = new ArrayList<Pointer>();
             }
             entriesList.addAll( serialize( entry.getValue() ) );
             this.pathTrackingEntries.put( entry.getKey(), entriesList );
@@ -99,7 +99,7 @@ public class InMemoryPathTrackingDataStore
     @Override
     public Collection<PathTrackingEntry> retrieve( String trackingId )
     {
-        List<ByteBuffer> buffers = this.pathTrackingEntries.get( trackingId );
+        List<Pointer> buffers = this.pathTrackingEntries.get( trackingId );
 
         return deserialize( buffers );
     }
@@ -108,14 +108,14 @@ public class InMemoryPathTrackingDataStore
     public Collection<String> retrieveTrackingIds( Date startTime, Date endTime )
     {
         List<String> trackingIds = new ArrayList<String>();
-        for ( List<ByteBuffer> buffers : this.pathTrackingEntries.values() )
+        for ( List<Pointer> buffers : this.pathTrackingEntries.values() )
         {
             if ( pathTrackingEntries.isEmpty() )
             {
                 continue;
             }
 
-            PathTrackingEntry first = deserialize( buffers.iterator().next().array() );
+            PathTrackingEntry first = deserialize( readBytes( buffers.iterator().next() ) );
 
             if ( first.getStartTime() / 1000000 > startTime.getTime() //
                 && first.getStartTime() / 1000000 < endTime.getTime() )
@@ -126,16 +126,13 @@ public class InMemoryPathTrackingDataStore
         return trackingIds;
     }
 
-    private Collection<PathTrackingEntry> deserialize( List<ByteBuffer> buffers )
+    private Collection<PathTrackingEntry> deserialize( List<Pointer> buffers )
     {
         List<PathTrackingEntry> entries = new ArrayList<PathTrackingEntry>( buffers.size() );
 
-        for ( ByteBuffer byteBuffer : buffers )
+        for ( Pointer pointer : buffers )
         {
-            byteBuffer.rewind();
-            int size = byteBuffer.remaining();
-            byte[] bytes = new byte[size];
-            byteBuffer.get( bytes, 0, size );
+            byte[] bytes = readBytes( pointer );
 
             PathTrackingEntry entry = deserialize( bytes );
             if ( entry != null )
@@ -147,18 +144,44 @@ public class InMemoryPathTrackingDataStore
         return entries;
     }
 
-    private List<ByteBuffer> serialize( Collection<PathTrackingEntry> entries )
+    private byte[] readBytes( Pointer pointer )
     {
-        List<ByteBuffer> buffers = new ArrayList<ByteBuffer>( entries.size() );
+        byte[] bytes = new byte[pointer.size];
+        int length = pointer.size;
+        long offset = pointer.offheapPointer;
+        for ( int pos = 0; pos < length; pos++ )
+        {
+            bytes[pos] = getUnsafe().getByte( pos + offset );
+        }
+        return bytes;
+    }
+
+    private static class Pointer
+    {
+        int size;
+
+        long offheapPointer;
+    }
+
+    private List<Pointer> serialize( Collection<PathTrackingEntry> entries )
+    {
+        List<Pointer> buffers = new ArrayList<Pointer>( entries.size() );
 
         for ( PathTrackingEntry entry : entries )
         {
             byte[] bytes = serialize( entry );
             if ( bytes != null )
             {
-                ByteBuffer buffer = ByteBuffer.allocateDirect( bytes.length );
-                buffer.put( bytes );
-                buffers.add( buffer );
+                long offheapPointer = getUnsafe().allocateMemory( bytes.length );
+                Pointer pointer = new Pointer();
+                pointer.offheapPointer = offheapPointer;
+                pointer.size = bytes.length;
+                for ( int i = 0, size = bytes.length; i < size; i++ )
+                {
+                    getUnsafe().putByte( offheapPointer + i, bytes[i] );
+                }
+                buffers.add( pointer );
+
             }
         }
 
@@ -168,15 +191,15 @@ public class InMemoryPathTrackingDataStore
     @Override
     public void clearEntries()
     {
-        for ( Map.Entry<String, List<ByteBuffer>> entry : pathTrackingEntries.entrySet() )
+        for ( Map.Entry<String, List<Pointer>> entry : pathTrackingEntries.entrySet() )
         {
             // clear entries to not wait gc
-            for ( ByteBuffer byteBuffer : entry.getValue() )
+            for ( Pointer pointer : entry.getValue() )
             {
-                byteBuffer.clear();
+                getUnsafe().freeMemory( pointer.offheapPointer );
             }
         }
-        pathTrackingEntries = new ConcurrentHashMap<String, List<ByteBuffer>>( 50 );
+        pathTrackingEntries = new ConcurrentHashMap<String, List<Pointer>>( 50 );
     }
 
     protected Map<String, Set<PathTrackingEntry>> getPathTrackingEntries()
@@ -185,7 +208,7 @@ public class InMemoryPathTrackingDataStore
         Map<String, Set<PathTrackingEntry>> entries =
             new HashMap<String, Set<PathTrackingEntry>>( this.pathTrackingEntries.size() );
 
-        for ( Map.Entry<String, List<ByteBuffer>> entry : this.pathTrackingEntries.entrySet() )
+        for ( Map.Entry<String, List<Pointer>> entry : this.pathTrackingEntries.entrySet() )
         {
             Set<PathTrackingEntry> pathTrackingEntries =
                 new TreeSet<PathTrackingEntry>( PathTrackingEntryComparator.INSTANCE );
@@ -241,6 +264,7 @@ public class InMemoryPathTrackingDataStore
             // ignore as should not happen anyway log the stack trace
             e.printStackTrace();
         }
+
         return null;
     }
 

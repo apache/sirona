@@ -18,6 +18,7 @@ package org.apache.sirona.tracking;
 
 
 import org.apache.sirona.configuration.Configuration;
+import org.apache.sirona.configuration.ioc.Destroying;
 import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.store.DataStoreFactory;
 import org.apache.sirona.store.tracking.PathTrackingDataStore;
@@ -25,6 +26,8 @@ import org.apache.sirona.store.tracking.PathTrackingDataStore;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -32,9 +35,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class PathTracker
 {
-    private static final String NODE = Configuration.getProperty(
-        Configuration.CONFIG_PROPERTY_PREFIX + "javaagent.path.tracking.marker", //
-        Configuration.getProperty( "org.apache.sirona.cube.CubeBuilder.marker", "node" ));
+    private static final String NODE =
+        Configuration.getProperty( Configuration.CONFIG_PROPERTY_PREFIX + "javaagent.path.tracking.marker", //
+                                   Configuration.getProperty( "org.apache.sirona.cube.CubeBuilder.marker", "node" ) );
 
     private static final PathTrackingDataStore PATH_TRACKING_DATA_STORE =
         IoCs.findOrCreateInstance( DataStoreFactory.class ).getPathTrackingDataStore();
@@ -50,7 +53,27 @@ public class PathTracker
 
     private final PathTrackingInformation pathTrackingInformation;
 
-    public PathTracker( final PathTrackingInformation pathTrackingInformation )
+    private static final boolean USE_EXECUTORS = Boolean.parseBoolean(
+        Configuration.getProperty( Configuration.CONFIG_PROPERTY_PREFIX + "pathtracking.useexecutors", "false" ) );
+
+    private static boolean USE_SINGLE_STORE = Boolean.parseBoolean(
+        Configuration.getProperty( Configuration.CONFIG_PROPERTY_PREFIX + "pathtracking.singlestore", "false" ) );
+
+
+    protected static ExecutorService executorService;
+
+    static
+    {
+
+        if ( USE_EXECUTORS )
+        {
+            int threadsNumber =
+                Configuration.getInteger( Configuration.CONFIG_PROPERTY_PREFIX + "pathtracking.executors", 5 );
+            executorService = Executors.newFixedThreadPool( threadsNumber );
+        }
+    }
+
+    private PathTracker( final PathTrackingInformation pathTrackingInformation )
     {
         this.pathTrackingInformation = pathTrackingInformation;
     }
@@ -189,6 +212,7 @@ public class PathTracker
         return new PathTracker( pathTrackingInformation );
     }
 
+
     public void stop()
     {
         final long end = System.nanoTime();
@@ -209,14 +233,50 @@ public class PathTracker
             new PathTrackingEntry( uuid, NODE, pathTrackingInformation.getClassName(),
                                    pathTrackingInformation.getMethodName(), start, ( end - start ),
                                    pathTrackingInformation.getLevel() );
-
-        context.entries.add( pathTrackingEntry );
+        if ( USE_SINGLE_STORE )
+        {
+            PATH_TRACKING_DATA_STORE.store( pathTrackingEntry );
+        }
+        else
+        {
+            context.entries.add( pathTrackingEntry );
+        }
 
         if ( pathTrackingInformation.getLevel() == 1 && pathTrackingInformation.getParent() == null )
         { // 0 is never reached so 1 is first
-            PATH_TRACKING_DATA_STORE.store( context.entries );
-            PathTracker.cleanUp();
+            if (!USE_SINGLE_STORE)
+            {
+                Runnable runnable = new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        PATH_TRACKING_DATA_STORE.store( context.entries );
+                        PathTracker.cleanUp();
+                    }
+                };
+                if ( USE_EXECUTORS )
+                {
+                    executorService.submit( runnable );
+                }
+                else
+                {
+                    runnable.run();
+                }
+            }
         }
     }
+
+    @Destroying
+    public void destroy()
+    {
+        PathTracker.shutdown();
+    }
+
+    public static void shutdown()
+    {
+        executorService.shutdownNow();
+    }
+
 
 }
