@@ -33,6 +33,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Very simple in memory storage for Path tracking feature
@@ -84,7 +85,7 @@ public class InMemoryPathTrackingDataStore
 
             if ( entriesList == null )
             {
-                entriesList = new ArrayList<Pointer>();
+                entriesList = new CopyOnWriteArrayList<Pointer>();
             }
             entriesList.addAll( serialize( entry.getValue() ) );
             this.pathTrackingEntries.put( entry.getKey(), entriesList );
@@ -214,16 +215,29 @@ public class InMemoryPathTrackingDataStore
     @Override
     public void clearEntries()
     {
+        List<String> entriesToRemove = new ArrayList<String>();
         for ( Map.Entry<String, List<Pointer>> entry : pathTrackingEntries.entrySet() )
         {
+            boolean allFree = true;
             // clear entries to not wait gc
             for ( Pointer pointer : entry.getValue() )
             {
-                //UnsafeUtils.getUnsafe().freeMemory( pointer.offheapPointer );
-                pointer.freeMemory();
+                if ( !pointer.isFree() )
+                {
+                    allFree = false;
+                }
+            }
+            if ( allFree )
+            {
+                entriesToRemove.add( entry.getKey() );
             }
         }
-        pathTrackingEntries = new ConcurrentHashMap<String, List<Pointer>>( 50 );
+
+        for (String key : entriesToRemove)
+        {
+            pathTrackingEntries.remove( key );
+        }
+
     }
 
     protected Map<String, Set<PathTrackingEntry>> getPathTrackingEntries()
@@ -243,11 +257,6 @@ public class InMemoryPathTrackingDataStore
         return entries;
     }
 
-    /**
-     * direct access to datas not a copy
-     *
-     * @return
-     */
     protected Map<String, List<Pointer>> getPointers()
     {
         return this.pathTrackingEntries;

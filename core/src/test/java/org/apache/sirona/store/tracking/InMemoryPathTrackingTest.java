@@ -52,12 +52,14 @@ public class InMemoryPathTrackingTest
 
         Assert.assertEquals( "nodeId", entry.getNodeId() );
 
+        /*
+        we do not clear anymore entries pointer are freeing once sended
         store.clearEntries();
 
         all = store.getPathTrackingEntries();
 
         Assert.assertNotNull( all );
         Assert.assertEquals( 0, all.size() );
-
+        */
     }
 }

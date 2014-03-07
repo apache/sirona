@@ -23,6 +23,7 @@ import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.store.tracking.BatchPathTrackingDataStore;
 import org.apache.sirona.store.tracking.CollectorPathTrackingDataStore;
 import org.apache.sirona.tracking.PathTrackingEntry;
+import org.apache.sirona.util.SerializeUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -39,16 +40,18 @@ public class CubePathTrackingDataStore
     private final Cube cube = IoCs.findOrCreateInstance( CubeBuilder.class ).build();
 
 
-    private static final boolean useExecutors = Boolean.parseBoolean(
+    private static final boolean USE_EXECUTORS = Boolean.parseBoolean(
         Configuration.getProperty( Configuration.CONFIG_PROPERTY_PREFIX + "pathtracking.post.useexecutors", "false" ) );
 
+    private static boolean USE_SINGLE_STORE = Boolean.parseBoolean(
+        Configuration.getProperty( Configuration.CONFIG_PROPERTY_PREFIX + "pathtracking.singlestore", "false" ) );
 
     protected static ExecutorService executorService;
 
     static
     {
 
-        if ( useExecutors )
+        if ( USE_EXECUTORS )
         {
             int threadsNumber =
                 Configuration.getInteger( Configuration.CONFIG_PROPERTY_PREFIX + "pathtracking.post.executors", 5 );
@@ -58,16 +61,26 @@ public class CubePathTrackingDataStore
     }
 
     @Override
+    public void store( PathTrackingEntry pathTrackingEntry )
+    {
+        cube.postBytes( SerializeUtils.serialize( pathTrackingEntry ), PathTrackingEntry.class.getName() );
+    }
+
+    @Override
     protected void pushEntriesByBatch( Map<String, List<Pointer>> pathTrackingEntries )
     {
-        for ( Map.Entry<String, List<Pointer>> entry : pathTrackingEntries.entrySet() )
+        if (!USE_SINGLE_STORE)
         {
-            for ( Pointer pointer : entry.getValue() )
+
+            for ( Map.Entry<String, List<Pointer>> entry : pathTrackingEntries.entrySet() )
             {
-                if ( !pointer.isFree() )
+                for ( Pointer pointer : entry.getValue() )
                 {
-                    cube.postBytes( readBytes( pointer ), PathTrackingEntry.class.getName() );
-                    pointer.freeMemory();
+                    if ( !pointer.isFree() )
+                    {
+                        cube.postBytes( readBytes( pointer ), PathTrackingEntry.class.getName() );
+                        pointer.freeMemory();
+                    }
                 }
             }
         }
