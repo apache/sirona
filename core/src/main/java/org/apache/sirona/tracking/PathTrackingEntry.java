@@ -63,6 +63,11 @@ public class PathTrackingEntry
      */
     private int level;
 
+    public PathTrackingEntry()
+    {
+        // no op
+    }
+
     public PathTrackingEntry( String trackingId, String nodeId, String className, String methodName, long startTime,
                               long executionTime, int level )
     {

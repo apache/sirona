@@ -32,6 +32,13 @@
     <dependency>
       <groupId>org.apache.sirona</groupId>
       <artifactId>sirona-core</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.lmax</groupId>
+      <artifactId>disruptor</artifactId>
+      <version>3.2.0</version>
     </dependency>
 
     <dependency>
@@ -65,6 +72,34 @@
               <portNames>
                 <portName>collector.server.port</portName>
               </portNames>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <createSourcesJar>true</createSourcesJar>
+              <shadedArtifactAttached>true</shadedArtifactAttached>
+              <shadedClassifierName>shaded</shadedClassifierName>
+              <relocations>
+                <relocation>
+                  <pattern>com.lmax</pattern>
+                  <shadedPattern>org.apache.sirona.com.lmax</shadedPattern>
+                </relocation>
+                <!--
+                <relocation>
+                  <pattern>org.apache.sirona</pattern>
+                  <shadedPattern>org.apache.sirona.sirona</shadedPattern>
+                </relocation>
+                -->
+              </relocations>
             </configuration>
           </execution>
         </executions>
