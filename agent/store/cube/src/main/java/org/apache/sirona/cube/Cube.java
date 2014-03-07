@@ -149,9 +149,6 @@ public class Cube {
                 connection.setRequestProperty("Authorization", auth);
             }
 
-
-            boolean useCompression = config.isUseCompression();
-
             connection.setRequestMethod(POST);
             connection.setRequestProperty(CONTENT_TYPE, APPLICATION_JAVA_OBJECT);
             connection.setRequestProperty( X_SIRONA_CLASSNAME, className );
@@ -160,10 +157,7 @@ public class Cube {
             connection.setDoInput(true);
             connection.setDoOutput(true);
             connection.setReadTimeout( config.getPostTimeout() );
-            OutputStream output = null;
-
-
-            output = connection.getOutputStream();
+            OutputStream output = connection.getOutputStream();
             try {
                 // FIXME find a more efficient way to prevent to have all of this in memory
                 output.write( bytes );
