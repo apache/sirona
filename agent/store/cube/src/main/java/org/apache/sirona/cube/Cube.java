@@ -174,7 +174,13 @@ public class Cube {
             }
 
         } catch (final Exception e) {
-            LOGGER.log(Level.WARNING, "Can't post data to collector", e);
+            if (LOGGER.isLoggable( Level.FINE ) )
+            {
+                LOGGER.log(Level.FINE, "Can't post data to collector:" + e.getMessage(),e);
+            } else
+            {
+                LOGGER.log( Level.WARNING, "Can't post data to collector: " + e.getMessage() );
+            }
         }
     }
 
