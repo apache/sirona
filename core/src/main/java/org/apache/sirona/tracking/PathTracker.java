@@ -77,23 +77,6 @@ public class PathTracker
         this.pathTrackingInformation = pathTrackingInformation;
     }
 
-    private static class Context
-    {
-        private String uuid;
-
-        private AtomicInteger level;
-
-        private List<PathTrackingEntry> entries;
-
-        private PathTrackingInformation trackingInformation;
-
-        private Context()
-        {
-            this.uuid = "Sirona-" + UUID.randomUUID().toString();
-            this.level = new java.util.concurrent.atomic.AtomicInteger( 0 );
-            this.entries = new ArrayList<PathTrackingEntry>();
-        }
-    }
 
     private static void cleanUp()
     {
@@ -109,10 +92,10 @@ public class PathTracker
         final Context context = THREAD_LOCAL.get();
 
         final int level;
-        final PathTrackingInformation current = context.trackingInformation;
+        final PathTrackingInformation current = context.getTrackingInformation();
         if ( current == null )
         {
-            level = context.level.incrementAndGet();
+            level = context.getLevel().incrementAndGet();
             pathTrackingInformation.setLevel( level );
         }
         else
@@ -120,7 +103,7 @@ public class PathTracker
             // same class so no inc
             if ( current != pathTrackingInformation )
             {
-                level = context.level.incrementAndGet();
+                level = context.getLevel().incrementAndGet();
                 pathTrackingInformation.setLevel( level );
                 pathTrackingInformation.setParent( current );
             }
@@ -129,7 +112,7 @@ public class PathTracker
         }
         pathTrackingInformation.setStart( System.nanoTime() );
 
-        context.trackingInformation = pathTrackingInformation;
+        context.setTrackingInformation( pathTrackingInformation );
 
         return new PathTracker( pathTrackingInformation );
     }
@@ -141,14 +124,14 @@ public class PathTracker
         final long start = pathTrackingInformation.getStart();
         final Context context = THREAD_LOCAL.get();
 
-        final String uuid = context.uuid;
+        final String uuid = context.getUuid();
 
-        final PathTrackingInformation current = context.trackingInformation;
+        final PathTrackingInformation current = context.getTrackingInformation();
         // same invocation so no inc, class can do recursion so don't use classname/methodname
         if ( pathTrackingInformation != current )
         {
-            context.level.decrementAndGet();
-            context.trackingInformation = pathTrackingInformation.getParent();
+            context.getLevel().decrementAndGet();
+            context.setTrackingInformation( pathTrackingInformation.getParent() );
         }
 
         final PathTrackingEntry pathTrackingEntry =
@@ -161,7 +144,7 @@ public class PathTracker
         }
         else
         {
-            context.entries.add( pathTrackingEntry );
+            context.getEntries().add( pathTrackingEntry );
         }
 
         if ( pathTrackingInformation.getLevel() == 1 && pathTrackingInformation.getParent() == null )
@@ -173,7 +156,7 @@ public class PathTracker
                     @Override
                     public void run()
                     {
-                        PATH_TRACKING_DATA_STORE.store( context.entries );
+                        PATH_TRACKING_DATA_STORE.store( context.getEntries() );
                         PathTracker.cleanUp();
                     }
                 };
