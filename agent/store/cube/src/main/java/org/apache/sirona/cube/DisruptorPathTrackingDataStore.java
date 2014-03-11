@@ -17,6 +17,13 @@
 
 package org.apache.sirona.cube;
 
+import com.lmax.disruptor.EventFactory;
+import com.lmax.disruptor.EventHandler;
+import com.lmax.disruptor.EventTranslator;
+import com.lmax.disruptor.RingBuffer;
+import com.lmax.disruptor.SleepingWaitStrategy;
+import com.lmax.disruptor.dsl.Disruptor;
+import com.lmax.disruptor.dsl.ProducerType;
 import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.configuration.ioc.Destroying;
 import org.apache.sirona.configuration.ioc.IoCs;
@@ -33,7 +40,7 @@ import java.util.concurrent.Executors;
 /**
  *
  */
-public class CubePathTrackingDataStore
+public class DisruptorPathTrackingDataStore
     extends BatchPathTrackingDataStore
     implements CollectorPathTrackingDataStore
 {
@@ -46,8 +53,10 @@ public class CubePathTrackingDataStore
     private static boolean USE_SINGLE_STORE = Boolean.parseBoolean(
         Configuration.getProperty( Configuration.CONFIG_PROPERTY_PREFIX + "pathtracking.singlestore", "false" ) );
 
+
     protected static ExecutorService executorService;
 
+    private static RingBuffer<PathTrackingEntry> RINGBUFFER;
 
     static
     {
@@ -60,12 +69,54 @@ public class CubePathTrackingDataStore
 
         }
 
+        ExecutorService exec = Executors.newCachedThreadPool();
+
+        // FIXME make configurable: ring buffer size and WaitStrategy
+
+        Disruptor<PathTrackingEntry> disruptor = new Disruptor<PathTrackingEntry>( new EventFactory<PathTrackingEntry>()
+        {
+            @Override
+            public PathTrackingEntry newInstance()
+            {
+                return new PathTrackingEntry();
+            }
+        }, 2048, exec, ProducerType.SINGLE, new SleepingWaitStrategy()
+        );
+
+        final EventHandler<PathTrackingEntry> handler = new EventHandler<PathTrackingEntry>()
+        {
+            // event will eventually be recycled by the Disruptor after it wraps
+            public void onEvent( final PathTrackingEntry entry, final long sequence, final boolean endOfBatch )
+                throws Exception
+            {
+                CUBE.postBytes( SerializeUtils.serialize( entry ), PathTrackingEntry.class.getName() );
+            }
+        };
+
+        disruptor.handleEventsWith( handler );
+
+        RINGBUFFER = disruptor.start();
+
     }
 
     @Override
     public void store( final PathTrackingEntry pathTrackingEntry )
     {
-        CUBE.postBytes( SerializeUtils.serialize( pathTrackingEntry ), PathTrackingEntry.class.getName() );
+
+        RINGBUFFER.publishEvent( new EventTranslator<PathTrackingEntry>()
+        {
+            @Override
+            public void translateTo( PathTrackingEntry event, long sequence )
+            {
+                event.setClassName( pathTrackingEntry.getClassName() );
+                event.setExecutionTime( pathTrackingEntry.getExecutionTime() );
+                event.setLevel( pathTrackingEntry.getLevel() );
+                event.setMethodName( pathTrackingEntry.getMethodName() );
+                event.setNodeId( pathTrackingEntry.getNodeId() );
+                event.setStartTime( pathTrackingEntry.getStartTime() );
+                event.setTrackingId( pathTrackingEntry.getTrackingId() );
+            }
+        } );
     }
 
     @Override
