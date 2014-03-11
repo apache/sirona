@@ -14,23 +14,20 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package org.apache.sirona.javaagent.listener;
-
-import org.apache.sirona.javaagent.AgentContext;
-import org.apache.sirona.tracking.PathTrackingInformation;
+package org.apache.sirona.tracking;
 
 /**
- *
+ * @since 0.2
  */
 public interface PathTrackingInvocationListener
 {
 
-    void startPath( AgentContext agentContext, PathTrackingInformation pathTrackingInformation );
+    void startPath( Context context );
 
-    void enterMethod( AgentContext agentContext, PathTrackingInformation pathTrackingInformation );
+    void enterMethod( Context context );
 
-    void exitMethod( AgentContext agentContext, PathTrackingInformation pathTrackingInformation );
+    void exitMethod( Context context );
 
-    void endPath( AgentContext agentContext, PathTrackingInformation pathTrackingInformation );
+    void endPath( Context context );
 
 }
