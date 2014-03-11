@@ -89,7 +89,7 @@ public class DisruptorPathTrackingDataStore
             public void onEvent( final PathTrackingEntry entry, final long sequence, final boolean endOfBatch )
                 throws Exception
             {
-                CUBE.postBytes( SerializeUtils.serialize( entry ), PathTrackingEntry.class.getName() );
+                CUBE.doPostBytes( SerializeUtils.serialize( entry ), PathTrackingEntry.class.getName() );
             }
         };
 
@@ -131,7 +131,7 @@ public class DisruptorPathTrackingDataStore
                 {
                     if ( !pointer.isFree() )
                     {
-                        CUBE.postBytes( readBytes( pointer ), PathTrackingEntry.class.getName() );
+                        CUBE.doPostBytes( readBytes( pointer ), PathTrackingEntry.class.getName() );
                         pointer.freeMemory();
                     }
                 }

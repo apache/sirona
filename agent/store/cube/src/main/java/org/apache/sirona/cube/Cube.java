@@ -81,14 +81,14 @@ public class Cube {
         "\"data\": %s" +
         "}";
 
-    private static final String POST = "POST";
-    private static final String CONTENT_TYPE = "Content-Type";
-    private static final String APPLICATION_JSON = "application/json";
-    private static final String CONTENT_LENGTH = "Content-Length";
-    private static final String GZIP_CONTENT_ENCODING = "gzip";
-    private static final String CONTENT_ENCODING = "Content-Encoding";
-    private static final String APPLICATION_JAVA_OBJECT = "application/x-java-serialized-object";
-    private static final String X_SIRONA_CLASSNAME = "X-Sirona-ClassName";
+    protected static final String POST = "POST";
+    protected static final String CONTENT_TYPE = "Content-Type";
+    protected static final String APPLICATION_JSON = "application/json";
+    protected static final String CONTENT_LENGTH = "Content-Length";
+    protected static final String GZIP_CONTENT_ENCODING = "gzip";
+    protected static final String CONTENT_ENCODING = "Content-Encoding";
+    protected static final String APPLICATION_JAVA_OBJECT = "application/x-java-serialized-object";
+    protected static final String X_SIRONA_CLASSNAME = "X-Sirona-ClassName";
 
     private static final String JS_ISO_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
     private static final String UTC = "UTC";
@@ -132,7 +132,7 @@ public class Cube {
         }
     }
 
-    public void postBytes(byte[] bytes, String className)
+    public void doPostBytes( byte[] bytes, String className )
     {
         try {
             final URL url = new URL(config.getCollector());
@@ -184,7 +184,7 @@ public class Cube {
         }
     }
 
-    private void doPost(final String payload) {
+    protected void doPost(final String payload) {
         try {
             final URL url = new URL(config.getCollector());
 
@@ -403,5 +403,8 @@ public class Cube {
         return events;
     }
 
-
+    protected CubeBuilder getConfig()
+    {
+        return config;
+    }
 }

@@ -65,7 +65,7 @@ public class CubePathTrackingDataStore
     @Override
     public void store( final PathTrackingEntry pathTrackingEntry )
     {
-        CUBE.postBytes( SerializeUtils.serialize( pathTrackingEntry ), PathTrackingEntry.class.getName() );
+        CUBE.doPostBytes( SerializeUtils.serialize( pathTrackingEntry ), PathTrackingEntry.class.getName() );
     }
 
     @Override
@@ -80,7 +80,7 @@ public class CubePathTrackingDataStore
                 {
                     if ( !pointer.isFree() )
                     {
-                        CUBE.postBytes( readBytes( pointer ), PathTrackingEntry.class.getName() );
+                        CUBE.doPostBytes( readBytes( pointer ), PathTrackingEntry.class.getName() );
                         pointer.freeMemory();
                     }
                 }

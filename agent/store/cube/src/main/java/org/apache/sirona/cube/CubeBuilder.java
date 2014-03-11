@@ -129,7 +129,7 @@ public class CubeBuilder {
         this.postTimeout = postTimeout;
     }
 
-    private TrustManager[] createTrustManager() {
+    protected TrustManager[] createTrustManager() {
         if (sslTrustStore == null) {
             return null;
         }
@@ -156,7 +156,7 @@ public class CubeBuilder {
         }
     }
 
-    private KeyManager[] createKeyManager() {
+    protected KeyManager[] createKeyManager() {
         if (sslKeyStore == null) {
             return null;
         }
@@ -181,6 +181,46 @@ public class CubeBuilder {
         } catch (final Exception e) {
             throw new SironaException(e);
         }
+    }
+
+    public String getSslTrustStore()
+    {
+        return sslTrustStore;
+    }
+
+    public String getSslTrustStoreType()
+    {
+        return sslTrustStoreType;
+    }
+
+    public String getSslTrustStorePassword()
+    {
+        return sslTrustStorePassword;
+    }
+
+    public String getSslTrustStoreProvider()
+    {
+        return sslTrustStoreProvider;
+    }
+
+    public String getSslKeyStore()
+    {
+        return sslKeyStore;
+    }
+
+    public String getSslKeyStoreType()
+    {
+        return sslKeyStoreType;
+    }
+
+    public String getSslKeyStorePassword()
+    {
+        return sslKeyStorePassword;
+    }
+
+    public String getSslKeyStoreProvider()
+    {
+        return sslKeyStoreProvider;
     }
 
     @Override

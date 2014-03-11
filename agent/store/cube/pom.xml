@@ -43,6 +43,13 @@
     </dependency>
 
     <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <version>4.3.3</version>
+      <optional>true</optional>
+    </dependency>
+
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
     </dependency>
@@ -93,6 +100,14 @@
                 <relocation>
                   <pattern>com.lmax</pattern>
                   <shadedPattern>org.apache.sirona.com.lmax</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>org.apache.http</pattern>
+                  <shadedPattern>org.apache.sirona.org.apache.http</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>org.apache.commons</pattern>
+                  <shadedPattern>org.apache.sirona.org.apache.commons</shadedPattern>
                 </relocation>
                 <!--
                 <relocation>
