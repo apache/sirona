@@ -20,15 +20,18 @@ package org.apache.sirona.tracking;
 import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.configuration.ioc.Destroying;
 import org.apache.sirona.configuration.ioc.IoCs;
+import org.apache.sirona.spi.Order;
+import org.apache.sirona.spi.SPI;
 import org.apache.sirona.store.DataStoreFactory;
 import org.apache.sirona.store.tracking.PathTrackingDataStore;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Contains logic to track class#method invocation path
@@ -41,6 +44,7 @@ public class PathTracker
 
     private static final PathTrackingDataStore PATH_TRACKING_DATA_STORE =
         IoCs.findOrCreateInstance( DataStoreFactory.class ).getPathTrackingDataStore();
+
 
     private static final ThreadLocal<Context> THREAD_LOCAL = new ThreadLocal<Context>()
     {
@@ -72,6 +76,44 @@ public class PathTracker
         }
     }
 
+    private static PathTrackingInvocationListener[] LISTENERS;
+
+    static
+    {
+        ClassLoader classLoader = PathTracker.class.getClassLoader();
+
+        if ( classLoader == null )
+        {
+            classLoader = Thread.currentThread().getContextClassLoader();
+        }
+
+        List<PathTrackingInvocationListener> listeners = new ArrayList<PathTrackingInvocationListener>(  );
+
+        Iterator<PathTrackingInvocationListener> iterator =
+            SPI.INSTANCE.find( PathTrackingInvocationListener.class, classLoader ).iterator();
+
+        while ( iterator.hasNext() )
+        {
+            try
+            {
+                listeners.add( IoCs.autoSet( iterator.next() ) );
+            }
+            catch ( Exception e )
+            {
+                throw new RuntimeException( e.getMessage(), e );
+            }
+        }
+
+        Collections.sort( listeners, ListenerComparator.INSTANCE );
+        LISTENERS = listeners.toArray( new PathTrackingInvocationListener[listeners.size()] );
+    }
+
+
+    public static PathTrackingInvocationListener[] getPathTrackingInvocationListeners()
+    {
+        return LISTENERS;
+    }
+
     private PathTracker( final PathTrackingInformation pathTrackingInformation )
     {
         this.pathTrackingInformation = pathTrackingInformation;
@@ -83,7 +125,6 @@ public class PathTracker
         THREAD_LOCAL.remove();
     }
 
-
     // An other solution could be using Thread.currentThread().getStackTrace() <- very slow
 
     public static PathTracker start( PathTrackingInformation pathTrackingInformation )
@@ -91,8 +132,8 @@ public class PathTracker
 
         final Context context = THREAD_LOCAL.get();
 
-        final int level;
-        final PathTrackingInformation current = context.getTrackingInformation();
+        int level = 0;
+        final PathTrackingInformation current = context.getPathTrackingInformation();
         if ( current == null )
         {
             level = context.getLevel().incrementAndGet();
@@ -112,7 +153,19 @@ public class PathTracker
         }
         pathTrackingInformation.setStart( System.nanoTime() );
 
-        context.setTrackingInformation( pathTrackingInformation );
+        context.setPathTrackingInformation( pathTrackingInformation );
+
+        for ( PathTrackingInvocationListener listener : LISTENERS )
+        {
+            if ( level == 1 )
+            {
+                listener.startPath( context );
+            }
+            else
+            {
+                listener.enterMethod( context );
+            }
+        }
 
         return new PathTracker( pathTrackingInformation );
     }
@@ -126,12 +179,21 @@ public class PathTracker
 
         final String uuid = context.getUuid();
 
-        final PathTrackingInformation current = context.getTrackingInformation();
+        final PathTrackingInformation current = context.getPathTrackingInformation();
         // same invocation so no inc, class can do recursion so don't use classname/methodname
         if ( pathTrackingInformation != current )
         {
             context.getLevel().decrementAndGet();
-            context.setTrackingInformation( pathTrackingInformation.getParent() );
+            context.setPathTrackingInformation( pathTrackingInformation.getParent() );
+        }
+
+        if (context.getPathTrackingInformation() != null)
+        {
+            for ( PathTrackingInvocationListener listener : LISTENERS )
+            {
+                listener.exitMethod( context );
+
+            }
         }
 
         final PathTrackingEntry pathTrackingEntry =
@@ -149,7 +211,7 @@ public class PathTracker
 
         if ( pathTrackingInformation.getLevel() == 1 && pathTrackingInformation.getParent() == null )
         { // 0 is never reached so 1 is first
-            if (!USE_SINGLE_STORE)
+            if ( !USE_SINGLE_STORE )
             {
                 Runnable runnable = new Runnable()
                 {
@@ -169,6 +231,12 @@ public class PathTracker
                     runnable.run();
                 }
             }
+
+            for ( PathTrackingInvocationListener listener : LISTENERS )
+            {
+                listener.endPath( context );
+            }
+
         }
     }
 
@@ -183,5 +251,32 @@ public class PathTracker
         EXECUTORSERVICE.shutdownNow();
     }
 
+
+    private static class ListenerComparator
+        implements Comparator<PathTrackingInvocationListener>
+    {
+        private static final ListenerComparator INSTANCE = new ListenerComparator();
+
+        private ListenerComparator()
+        {
+            // no-op
+        }
+
+        @Override
+        public int compare( final PathTrackingInvocationListener o1, final PathTrackingInvocationListener o2 )
+        {
+            final Order order1 = o1.getClass().getAnnotation( Order.class );
+            final Order order2 = o2.getClass().getAnnotation( Order.class );
+            if ( order2 == null )
+            {
+                return -1;
+            }
+            if ( order1 == null )
+            {
+                return 1;
+            }
+            return order1.value() - order2.value();
+        }
+    }
 
 }

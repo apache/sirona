@@ -23,6 +23,7 @@ import org.apache.sirona.pathtracking.test.ExtendedInMemoryPathTrackingDataStore
 import org.apache.sirona.store.DataStoreFactory;
 import org.apache.sirona.tracking.PathTracker;
 import org.apache.sirona.tracking.PathTrackingEntry;
+import org.apache.sirona.tracking.PathTrackingInvocationListener;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -111,6 +112,22 @@ public class PathTrackingListenerTest
         Assert.assertEquals( 4, entry.getLevel() );
 
         Assert.assertTrue( entry.getExecutionTime() >= 300 * 1000000 );
+
+        // we have only one here
+        PathTrackingInvocationListener listener = PathTracker.getPathTrackingInvocationListeners()[0];
+
+        MockPathTrackingInvocationListener mock = MockPathTrackingInvocationListener.class.cast( listener );
+
+        System.out.println( "mock.startPathCallCount: " + mock.startPathCallCount );
+
+        Assert.assertEquals( 1, mock.startPathCallCount );
+
+        Assert.assertEquals( 1, mock.endPathCallCount );
+
+        Assert.assertEquals( 3, mock.enterMethodCallCount );
+
+        Assert.assertEquals( 3, mock.exitMethodCallCount );
+
 
     }
 

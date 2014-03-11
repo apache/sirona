@@ -20,7 +20,7 @@ import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.configuration.ioc.AutoSet;
 import org.apache.sirona.javaagent.AgentContext;
 import org.apache.sirona.javaagent.logging.SironaAgentLogging;
-import org.apache.sirona.javaagent.spi.Order;
+import org.apache.sirona.spi.Order;
 import org.apache.sirona.tracking.PathTracker;
 import org.apache.sirona.tracking.PathTrackingInformation;
 

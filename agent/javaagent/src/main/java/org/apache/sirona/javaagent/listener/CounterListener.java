@@ -22,7 +22,7 @@ import org.apache.sirona.configuration.predicate.PredicateEvaluator;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.javaagent.AgentContext;
 import org.apache.sirona.javaagent.spi.InvocationListener;
-import org.apache.sirona.javaagent.spi.Order;
+import org.apache.sirona.spi.Order;
 
 @Order(0)
 @AutoSet

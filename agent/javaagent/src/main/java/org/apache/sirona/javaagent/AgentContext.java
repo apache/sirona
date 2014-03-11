@@ -21,7 +21,7 @@ import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.javaagent.spi.InvocationListener;
 import org.apache.sirona.javaagent.spi.InvocationListenerFactory;
-import org.apache.sirona.javaagent.spi.Order;
+import org.apache.sirona.spi.Order;
 import org.apache.sirona.spi.SPI;
 
 import java.lang.reflect.Method;

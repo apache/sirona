@@ -32,7 +32,7 @@ public class Context
 
     private List<PathTrackingEntry> entries;
 
-    private PathTrackingInformation trackingInformation;
+    private PathTrackingInformation pathTrackingInformation;
 
     protected Context()
     {
@@ -56,9 +56,9 @@ public class Context
         return entries;
     }
 
-    public PathTrackingInformation getTrackingInformation()
+    public PathTrackingInformation getPathTrackingInformation()
     {
-        return trackingInformation;
+        return pathTrackingInformation;
     }
 
     public void setUuid( String uuid )
@@ -76,8 +76,8 @@ public class Context
         this.entries = entries;
     }
 
-    public void setTrackingInformation( PathTrackingInformation trackingInformation )
+    public void setPathTrackingInformation( PathTrackingInformation pathTrackingInformation )
     {
-        this.trackingInformation = trackingInformation;
+        this.pathTrackingInformation = pathTrackingInformation;
     }
 }
