@@ -22,6 +22,7 @@ import org.apache.sirona.javaagent.AgentContext;
 import org.apache.sirona.javaagent.logging.SironaAgentLogging;
 import org.apache.sirona.javaagent.spi.Order;
 import org.apache.sirona.tracking.PathTracker;
+import org.apache.sirona.tracking.PathTrackingInformation;
 
 @Order( 1 )
 @AutoSet
@@ -53,9 +54,9 @@ public class PathTrackingListener
     }
 
     /**
-     * executed before method called to configure the start {@link org.apache.sirona.tracking.PathTracker.PathTrackingInformation}
+     * executed before method called to configure the start {@link org.apache.sirona.tracking.PathTrackingInformation}
      * and set various thread local variable as invocation level
-     * will call {@link org.apache.sirona.tracking.PathTracker#start(org.apache.sirona.tracking.PathTracker.PathTrackingInformation)}
+     * will call {@link org.apache.sirona.tracking.PathTracker#start(org.apache.sirona.tracking.PathTrackingInformation)}
      *
      * @param context
      */
@@ -71,8 +72,8 @@ public class PathTrackingListener
         String className = key.substring( 0, lastDot );
         String methodName = key.substring( lastDot + 1, key.length() );
 
-        final PathTracker.PathTrackingInformation pathTrackingInformation =
-            new PathTracker.PathTrackingInformation( className, methodName );
+        final PathTrackingInformation pathTrackingInformation =
+            new PathTrackingInformation( className, methodName );
 
         SironaAgentLogging.debug( "call PathTracker#start with {0}", pathTrackingInformation );
 

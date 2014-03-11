@@ -59,7 +59,7 @@ public class PathTracker
     private static boolean USE_SINGLE_STORE = Boolean.parseBoolean(
         Configuration.getProperty( Configuration.CONFIG_PROPERTY_PREFIX + "pathtracking.singlestore", "false" ) );
 
-    protected static ExecutorService executorService;
+    protected static ExecutorService EXECUTORSERVICE;
 
     static
     {
@@ -68,7 +68,7 @@ public class PathTracker
         {
             int threadsNumber =
                 Configuration.getInteger( Configuration.CONFIG_PROPERTY_PREFIX + "pathtracking.executors", 5 );
-            executorService = Executors.newFixedThreadPool( threadsNumber );
+            EXECUTORSERVICE = Executors.newFixedThreadPool( threadsNumber );
         }
     }
 
@@ -100,83 +100,6 @@ public class PathTracker
         THREAD_LOCAL.remove();
     }
 
-    public static class PathTrackingInformation
-    {
-        private String className;
-
-        private String methodName;
-
-        private PathTrackingInformation parent;
-
-        private long start;
-
-        private long end;
-
-        private int level;
-
-        public PathTrackingInformation( String className, String methodName )
-        {
-            this.className = className;
-            this.methodName = methodName;
-        }
-
-        public String getClassName()
-        {
-            return className;
-        }
-
-        public String getMethodName()
-        {
-            return methodName;
-        }
-
-        public PathTrackingInformation getParent()
-        {
-            return parent;
-        }
-
-        public void setParent( PathTrackingInformation parent )
-        {
-            this.parent = parent;
-        }
-
-        public void setStart( final long start )
-        {
-            this.start = start;
-        }
-
-        public long getStart()
-        {
-            return start;
-        }
-
-        public long getEnd()
-        {
-            return end;
-        }
-
-        public void setEnd( final long end )
-        {
-            this.end = end;
-        }
-
-        public int getLevel()
-        {
-            return level;
-        }
-
-        public void setLevel( final int level )
-        {
-            this.level = level;
-        }
-
-        @Override
-        public String toString()
-        {
-            return "PathTrackingInformation{className='" + className + "', methodName='" + methodName + "\', parent="
-                + parent + '}';
-        }
-    }
 
     // An other solution could be using Thread.currentThread().getStackTrace() <- very slow
 
@@ -256,7 +179,7 @@ public class PathTracker
                 };
                 if ( USE_EXECUTORS )
                 {
-                    executorService.submit( runnable );
+                    EXECUTORSERVICE.submit( runnable );
                 }
                 else
                 {
@@ -274,7 +197,7 @@ public class PathTracker
 
     public static void shutdown()
     {
-        executorService.shutdownNow();
+        EXECUTORSERVICE.shutdownNow();
     }
 
 

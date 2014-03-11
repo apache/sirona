@@ -16,9 +16,21 @@
 */
 package org.apache.sirona.javaagent.listener;
 
+import org.apache.sirona.javaagent.AgentContext;
+import org.apache.sirona.tracking.PathTrackingInformation;
+
 /**
- * @author Olivier Lamy
+ *
  */
 public interface PathTrackingInvocationListener
 {
+
+    void startPath( AgentContext agentContext, PathTrackingInformation pathTrackingInformation );
+
+    void enterMethod( AgentContext agentContext, PathTrackingInformation pathTrackingInformation );
+
+    void exitMethod( AgentContext agentContext, PathTrackingInformation pathTrackingInformation );
+
+    void endPath( AgentContext agentContext, PathTrackingInformation pathTrackingInformation );
+
 }
