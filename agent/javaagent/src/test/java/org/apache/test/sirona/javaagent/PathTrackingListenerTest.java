@@ -36,7 +36,7 @@ import java.util.Set;
  *
  */
 @RunWith(JavaAgentRunner.class)
-public class PathTrackingInvocationListenerTest
+public class PathTrackingListenerTest
 {
 
     @Test

@@ -17,7 +17,7 @@
 package org.apache.test.sirona.javaagent;
 
 import org.apache.sirona.configuration.ioc.IoCs;
-import org.apache.sirona.javaagent.listener.PathTrackingInvocationListener;
+import org.apache.sirona.javaagent.listener.PathTrackingListener;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
@@ -25,7 +25,7 @@ import static org.junit.Assert.assertFalse;
 public class AutoSetPathTrackingListenerTest {
     @Test
     public void autoSet() throws Exception {
-        final PathTrackingInvocationListener listener = IoCs.autoSet(null, new PathTrackingInvocationListener());
+        final PathTrackingListener listener = IoCs.autoSet(null, new PathTrackingListener());
         assertFalse(listener.accept("org.junit"));
     }
 }

@@ -1,2 +1,2 @@
 org.apache.sirona.javaagent.listener.CounterListener
-org.apache.sirona.javaagent.listener.PathTrackingInvocationListener
+org.apache.sirona.javaagent.listener.PathTrackingListener
