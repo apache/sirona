@@ -54,21 +54,18 @@ public class HttpClientCube
 
             PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
 
-            // FIXME configurable
-            connectionManager.setMaxTotal( 10 );
+            connectionManager.setMaxTotal( cubeBuilder.getMaxTotalConnections() );
 
-            connectionManager.setDefaultMaxPerRoute( 10 );
+            connectionManager.setDefaultMaxPerRoute( cubeBuilder.getDefaultMaxPerRoute() );
 
             builder = builder.setConnectionManager( connectionManager );
 
             httpclient = builder.build();
 
-            // FIXME configurable
-
             requestConfig = RequestConfig.custom() //
-                .setSocketTimeout( 5000 ) //
-                .setConnectTimeout( 5000 ) //
-                .setConnectionRequestTimeout( 5000 ) //
+                .setSocketTimeout( cubeBuilder.getPostTimeout() ) //
+                .setConnectTimeout( cubeBuilder.getConnectionTimeout() ) //
+                .setConnectionRequestTimeout( cubeBuilder.getConnectionRequestTimeout() ) //
                 .build();
 
         }

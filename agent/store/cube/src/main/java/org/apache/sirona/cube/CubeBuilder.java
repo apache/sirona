@@ -59,6 +59,14 @@ public class CubeBuilder {
      */
     private int postTimeout = 5000;
 
+    private int maxTotalConnections = 10;
+
+    private int defaultMaxPerRoute = 10;
+
+    private int connectionTimeout = 5000;
+
+    private int connectionRequestTimeout = 5000;
+
     public synchronized Cube build() {
         if (marker == null) {
             marker = Localhosts.get();
@@ -221,6 +229,26 @@ public class CubeBuilder {
     public String getSslKeyStoreProvider()
     {
         return sslKeyStoreProvider;
+    }
+
+    public int getMaxTotalConnections()
+    {
+        return maxTotalConnections;
+    }
+
+    public int getDefaultMaxPerRoute()
+    {
+        return defaultMaxPerRoute;
+    }
+
+    public int getConnectionTimeout()
+    {
+        return connectionTimeout;
+    }
+
+    public int getConnectionRequestTimeout()
+    {
+        return connectionRequestTimeout;
     }
 
     @Override
