@@ -22,9 +22,17 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.concurrent.FutureCallback;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
+import org.apache.http.impl.nio.client.HttpAsyncClients;
+import org.apache.http.impl.nio.conn.PoolingNHttpClientConnectionManager;
+import org.apache.http.impl.nio.reactor.DefaultConnectingIOReactor;
+import org.apache.http.impl.nio.reactor.IOReactorConfig;
+import org.apache.http.nio.conn.NHttpClientConnectionManager;
+import org.apache.http.nio.reactor.ConnectingIOReactor;
 
 import java.io.IOException;
 import java.net.URI;
@@ -43,6 +51,8 @@ public class HttpClientCube
 
     private HttpClient httpclient;
 
+    private CloseableHttpAsyncClient closeableHttpAsyncClient;
+
     private RequestConfig requestConfig;
 
     public HttpClientCube( CubeBuilder cubeBuilder )
@@ -50,23 +60,44 @@ public class HttpClientCube
         super( cubeBuilder );
         try
         {
-            HttpClientBuilder builder = HttpClientBuilder.create();
-
-            PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
-
-            connectionManager.setMaxTotal( cubeBuilder.getMaxTotalConnections() );
-
-            connectionManager.setDefaultMaxPerRoute( cubeBuilder.getDefaultMaxPerRoute() );
-
-            builder = builder.setConnectionManager( connectionManager );
-
-            httpclient = builder.build();
 
             requestConfig = RequestConfig.custom() //
                 .setSocketTimeout( cubeBuilder.getPostTimeout() ) //
                 .setConnectTimeout( cubeBuilder.getConnectionTimeout() ) //
                 .setConnectionRequestTimeout( cubeBuilder.getConnectionRequestTimeout() ) //
                 .build();
+
+            if ( cubeBuilder.isUseAsync() )
+            {
+                IOReactorConfig ioReactorConfig =
+                    IOReactorConfig.custom().setIoThreadCount( Runtime.getRuntime().availableProcessors() - 1 ) //
+                        .setConnectTimeout( cubeBuilder.getConnectionTimeout() ) //
+                        .setSoTimeout( cubeBuilder.getPostTimeout() ) //
+                        .build();
+
+                ConnectingIOReactor ioReactor = new DefaultConnectingIOReactor( ioReactorConfig );
+                NHttpClientConnectionManager manager = new PoolingNHttpClientConnectionManager( ioReactor );
+                closeableHttpAsyncClient = HttpAsyncClients.custom() //
+                    .setConnectionManager( manager ) //
+                    .setMaxConnPerRoute( cubeBuilder.getDefaultMaxPerRoute() ) //
+                    .setMaxConnTotal( cubeBuilder.getMaxTotalConnections() ) //
+                    .build();
+                closeableHttpAsyncClient.start();
+            }
+            else
+            {
+                HttpClientBuilder builder = HttpClientBuilder.create();
+
+                PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
+
+                connectionManager.setMaxTotal( cubeBuilder.getMaxTotalConnections() );
+
+                connectionManager.setDefaultMaxPerRoute( cubeBuilder.getDefaultMaxPerRoute() );
+
+                builder = builder.setConnectionManager( connectionManager );
+
+                httpclient = builder.build();
+            }
 
         }
         catch ( Exception e )
@@ -90,22 +121,52 @@ public class HttpClientCube
             httpPost.setHeader( X_SIRONA_CLASSNAME, className );
 
             httpPost.setConfig( requestConfig );
-
-            httpclient.execute( httpPost, new ResponseHandler<HttpResponse>()
+            if ( this.getConfig().isUseAsync() )
             {
-                public HttpResponse handleResponse( HttpResponse httpResponse )
-                    throws ClientProtocolException, IOException
+                closeableHttpAsyncClient.execute( httpPost, new FutureCallback<HttpResponse>()
                 {
-                    int status = httpResponse.getStatusLine().getStatusCode();
-                    if ( status != 200 )
+                    @Override
+                    public void completed( HttpResponse httpResponse )
                     {
-                        LOGGER.warning( "Pushed data but response code is: " + status + //
-                                            ", reason:" + httpResponse.getStatusLine().getReasonPhrase() );
+                        int status = httpResponse.getStatusLine().getStatusCode();
+                        if ( status != 200 )
+                        {
+                            LOGGER.warning( "Pushed data but response code is: " + status + //
+                                                ", reason:" + httpResponse.getStatusLine().getReasonPhrase() );
+                        }
                     }
-                    return httpResponse;
-                }
-            } );
 
+                    @Override
+                    public void failed( Exception e )
+                    {
+                        LOGGER.warning( "Failed to push data: " + e.getMessage() );
+                    }
+
+                    @Override
+                    public void cancelled()
+                    {
+                        LOGGER.warning( "Push data cancelled " );
+                    }
+                } );
+            }
+            else
+            {
+
+                httpclient.execute( httpPost, new ResponseHandler<HttpResponse>()
+                {
+                    public HttpResponse handleResponse( HttpResponse httpResponse )
+                        throws ClientProtocolException, IOException
+                    {
+                        int status = httpResponse.getStatusLine().getStatusCode();
+                        if ( status != 200 )
+                        {
+                            LOGGER.warning( "Pushed data but response code is: " + status + //
+                                                ", reason:" + httpResponse.getStatusLine().getReasonPhrase() );
+                        }
+                        return httpResponse;
+                    }
+                } );
+            }
         }
         catch ( URISyntaxException e )
         {

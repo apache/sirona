@@ -26,6 +26,7 @@ public class CubeDisruptorDataStoreFactory
             IoCs.processInstance(new CubeCounterDataStore()),
             IoCs.processInstance(new CubeGaugeDataStore()),
             IoCs.processInstance(new CubeNodeStatusDataStore()),
-            IoCs.processInstance(new DisruptorPathTrackingDataStore()));
+            IoCs.findOrCreateInstance( DisruptorPathTrackingDataStore.class ));
+        //  IoCs.processInstance(new DisruptorPathTrackingDataStore())
     }
 }

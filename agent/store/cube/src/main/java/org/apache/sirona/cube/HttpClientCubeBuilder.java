@@ -17,6 +17,7 @@
 package org.apache.sirona.cube;
 
 import org.apache.sirona.configuration.ioc.AutoSet;
+import org.apache.sirona.configuration.ioc.Created;
 
 /**
  * @author Olivier Lamy
@@ -25,9 +26,22 @@ import org.apache.sirona.configuration.ioc.AutoSet;
 public class HttpClientCubeBuilder
     extends CubeBuilder
 {
+
+    private Cube cubeInstance;
+
+    @Created
+    public void createInstance()
+    {
+        cubeInstance = this.build();
+    }
+
     @Override
     public synchronized Cube build()
     {
+        if (cubeInstance != null)
+        {
+            return cubeInstance;
+        }
         return new HttpClientCube( this );
     }
 }

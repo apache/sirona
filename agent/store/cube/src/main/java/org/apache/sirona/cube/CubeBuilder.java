@@ -18,6 +18,7 @@ package org.apache.sirona.cube;
 
 import org.apache.sirona.SironaException;
 import org.apache.sirona.configuration.ioc.AutoSet;
+import org.apache.sirona.configuration.ioc.Created;
 import org.apache.sirona.util.Localhosts;
 
 import javax.net.ssl.KeyManager;
@@ -59,15 +60,44 @@ public class CubeBuilder {
      */
     private int postTimeout = 5000;
 
+    /**
+     * only for httpclient
+     */
     private int maxTotalConnections = 10;
 
+    /**
+     * only for httpclient
+     */
     private int defaultMaxPerRoute = 10;
 
+    /**
+     * only for httpclient
+     */
     private int connectionTimeout = 5000;
 
+    /**
+     * only for httpclient
+     */
     private int connectionRequestTimeout = 5000;
 
+    /**
+     * only for httpclient
+     */
+    private boolean useAsync;
+
+    private Cube cubeInstance;
+
+    @Created
+    public void createInstance()
+    {
+        cubeInstance = this.build();
+    }
+
     public synchronized Cube build() {
+        if (cubeInstance != null)
+        {
+            return cubeInstance;
+        }
         if (marker == null) {
             marker = Localhosts.get();
         }
@@ -249,6 +279,106 @@ public class CubeBuilder {
     public int getConnectionRequestTimeout()
     {
         return connectionRequestTimeout;
+    }
+
+    public void setProxyHost( String proxyHost )
+    {
+        this.proxyHost = proxyHost;
+    }
+
+    public void setProxyPort( int proxyPort )
+    {
+        this.proxyPort = proxyPort;
+    }
+
+    public void setCollector( String collector )
+    {
+        this.collector = collector;
+    }
+
+    public void setMarker( String marker )
+    {
+        this.marker = marker;
+    }
+
+    public void setSocketFactory( SSLSocketFactory socketFactory )
+    {
+        this.socketFactory = socketFactory;
+    }
+
+    public void setSslTrustStore( String sslTrustStore )
+    {
+        this.sslTrustStore = sslTrustStore;
+    }
+
+    public void setSslTrustStoreType( String sslTrustStoreType )
+    {
+        this.sslTrustStoreType = sslTrustStoreType;
+    }
+
+    public void setSslTrustStorePassword( String sslTrustStorePassword )
+    {
+        this.sslTrustStorePassword = sslTrustStorePassword;
+    }
+
+    public void setSslTrustStoreProvider( String sslTrustStoreProvider )
+    {
+        this.sslTrustStoreProvider = sslTrustStoreProvider;
+    }
+
+    public void setSslKeyStore( String sslKeyStore )
+    {
+        this.sslKeyStore = sslKeyStore;
+    }
+
+    public void setSslKeyStoreType( String sslKeyStoreType )
+    {
+        this.sslKeyStoreType = sslKeyStoreType;
+    }
+
+    public void setSslKeyStorePassword( String sslKeyStorePassword )
+    {
+        this.sslKeyStorePassword = sslKeyStorePassword;
+    }
+
+    public void setSslKeyStoreProvider( String sslKeyStoreProvider )
+    {
+        this.sslKeyStoreProvider = sslKeyStoreProvider;
+    }
+
+    public void setBasicHeader( String basicHeader )
+    {
+        this.basicHeader = basicHeader;
+    }
+
+    public void setMaxTotalConnections( int maxTotalConnections )
+    {
+        this.maxTotalConnections = maxTotalConnections;
+    }
+
+    public void setDefaultMaxPerRoute( int defaultMaxPerRoute )
+    {
+        this.defaultMaxPerRoute = defaultMaxPerRoute;
+    }
+
+    public void setConnectionTimeout( int connectionTimeout )
+    {
+        this.connectionTimeout = connectionTimeout;
+    }
+
+    public void setConnectionRequestTimeout( int connectionRequestTimeout )
+    {
+        this.connectionRequestTimeout = connectionRequestTimeout;
+    }
+
+    public boolean isUseAsync()
+    {
+        return useAsync;
+    }
+
+    public void setUseAsync( boolean useAsync )
+    {
+        this.useAsync = useAsync;
     }
 
     @Override
