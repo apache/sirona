@@ -17,14 +17,16 @@
 
 package org.apache.sirona.cube;
 
+import com.lmax.disruptor.BusySpinWaitStrategy;
 import com.lmax.disruptor.EventFactory;
 import com.lmax.disruptor.EventHandler;
 import com.lmax.disruptor.EventTranslator;
 import com.lmax.disruptor.RingBuffer;
-import com.lmax.disruptor.SleepingWaitStrategy;
 import com.lmax.disruptor.dsl.Disruptor;
 import com.lmax.disruptor.dsl.ProducerType;
 import org.apache.sirona.configuration.Configuration;
+import org.apache.sirona.configuration.ioc.AutoSet;
+import org.apache.sirona.configuration.ioc.Created;
 import org.apache.sirona.configuration.ioc.Destroying;
 import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.store.tracking.BatchPathTrackingDataStore;
@@ -40,47 +42,38 @@ import java.util.concurrent.Executors;
 /**
  *
  */
+@AutoSet
 public class DisruptorPathTrackingDataStore
     extends BatchPathTrackingDataStore
     implements CollectorPathTrackingDataStore
 {
     private static final Cube CUBE = IoCs.findOrCreateInstance( CubeBuilder.class ).build();
 
-
-    private static final boolean USE_EXECUTORS = Boolean.parseBoolean(
-        Configuration.getProperty( Configuration.CONFIG_PROPERTY_PREFIX + "pathtracking.post.useexecutors", "false" ) );
-
     private static boolean USE_SINGLE_STORE = Boolean.parseBoolean(
         Configuration.getProperty( Configuration.CONFIG_PROPERTY_PREFIX + "pathtracking.singlestore", "false" ) );
 
 
-    protected static ExecutorService executorService;
+    private RingBuffer<PathTrackingEntry> ringBuffer;
 
-    private static RingBuffer<PathTrackingEntry> RINGBUFFER;
+    private Disruptor<PathTrackingEntry> disruptor;
 
-    static
+    private int ringBufferSize = 4096;
+
+    @Created
+    public void initialize()
     {
-
-        if ( USE_EXECUTORS )
-        {
-            int threadsNumber =
-                Configuration.getInteger( Configuration.CONFIG_PROPERTY_PREFIX + "pathtracking.post.executors", 5 );
-            executorService = Executors.newFixedThreadPool( threadsNumber );
-
-        }
-
         ExecutorService exec = Executors.newCachedThreadPool();
 
         // FIXME make configurable: ring buffer size and WaitStrategy
 
-        Disruptor<PathTrackingEntry> disruptor = new Disruptor<PathTrackingEntry>( new EventFactory<PathTrackingEntry>()
+        disruptor = new Disruptor<PathTrackingEntry>( new EventFactory<PathTrackingEntry>()
         {
             @Override
             public PathTrackingEntry newInstance()
             {
                 return new PathTrackingEntry();
             }
-        }, 2048, exec, ProducerType.SINGLE, new SleepingWaitStrategy()
+        }, ringBufferSize, exec, ProducerType.SINGLE, new BusySpinWaitStrategy()
         );
 
         final EventHandler<PathTrackingEntry> handler = new EventHandler<PathTrackingEntry>()
@@ -95,7 +88,7 @@ public class DisruptorPathTrackingDataStore
 
         disruptor.handleEventsWith( handler );
 
-        RINGBUFFER = disruptor.start();
+        ringBuffer = disruptor.start();
 
     }
 
@@ -103,7 +96,7 @@ public class DisruptorPathTrackingDataStore
     public void store( final PathTrackingEntry pathTrackingEntry )
     {
 
-        RINGBUFFER.publishEvent( new EventTranslator<PathTrackingEntry>()
+        ringBuffer.publishEvent( new EventTranslator<PathTrackingEntry>()
         {
             @Override
             public void translateTo( PathTrackingEntry event, long sequence )
@@ -139,10 +132,21 @@ public class DisruptorPathTrackingDataStore
         }
     }
 
+    public RingBuffer<PathTrackingEntry> getRingBuffer()
+    {
+        return ringBuffer;
+    }
+
+    public void setRingBuffer( RingBuffer<PathTrackingEntry> ringBuffer )
+    {
+        this.ringBuffer = ringBuffer;
+    }
+
     @Destroying
     public void destroy()
     {
-        executorService.shutdownNow();
+        // FIXME timeout??
+        disruptor.shutdown();
     }
 
 

@@ -16,12 +16,14 @@
  */
 package org.apache.sirona.cube;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.conn.ssl.SSLContexts;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 
 import java.io.IOException;
@@ -37,9 +39,11 @@ public class HttpClientCube
     extends Cube
 {
 
-    private static final Logger LOGGER = Logger.getLogger(HttpClientCube.class.getName());
+    private static final Logger LOGGER = Logger.getLogger( HttpClientCube.class.getName() );
 
     private HttpClient httpclient;
+
+    private RequestConfig requestConfig;
 
     public HttpClientCube( CubeBuilder cubeBuilder )
     {
@@ -50,10 +54,22 @@ public class HttpClientCube
 
             PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
 
-            builder.setConnectionManager( connectionManager );
+            // FIXME configurable
+            connectionManager.setMaxTotal( 10 );
+
+            connectionManager.setDefaultMaxPerRoute( 10 );
+
+            builder = builder.setConnectionManager( connectionManager );
 
             httpclient = builder.build();
 
+            // FIXME configurable
+
+            requestConfig = RequestConfig.custom() //
+                .setSocketTimeout( 5000 ) //
+                .setConnectTimeout( 5000 ) //
+                .setConnectionRequestTimeout( 5000 ) //
+                .build();
 
         }
         catch ( Exception e )
@@ -69,30 +85,49 @@ public class HttpClientCube
 
         try
         {
-            final URI uri = new URI(getConfig().getCollector());
+            final URI uri = new URI( getConfig().getCollector() );
 
             HttpPost httpPost = new HttpPost( uri );
             httpPost.setEntity( new ByteArrayEntity( bytes ) );
             httpPost.setHeader( CONTENT_TYPE, APPLICATION_JAVA_OBJECT );
             httpPost.setHeader( X_SIRONA_CLASSNAME, className );
 
-            httpclient.execute( httpPost );
+            httpPost.setConfig( requestConfig );
+
+            httpclient.execute( httpPost, new ResponseHandler<HttpResponse>()
+            {
+                public HttpResponse handleResponse( HttpResponse httpResponse )
+                    throws ClientProtocolException, IOException
+                {
+                    int status = httpResponse.getStatusLine().getStatusCode();
+                    if ( status != 200 )
+                    {
+                        LOGGER.warning( "Pushed data but response code is: " + status + //
+                                            ", reason:" + httpResponse.getStatusLine().getReasonPhrase() );
+                    }
+                    return httpResponse;
+                }
+            } );
+
         }
         catch ( URISyntaxException e )
         {
-            if (LOGGER.isLoggable( Level.FINE ) )
+            if ( LOGGER.isLoggable( Level.FINE ) )
             {
-                LOGGER.log(Level.FINE, "Can't post data to collector:" + e.getMessage(),e);
-            } else
+                LOGGER.log( Level.FINE, "Can't post data to collector:" + e.getMessage(), e );
+            }
+            else
             {
                 LOGGER.log( Level.WARNING, "Can't post data to collector: " + e.getMessage() );
             }
-        } catch ( IOException e)
+        }
+        catch ( IOException e )
         {
-            if (LOGGER.isLoggable( Level.FINE ) )
+            if ( LOGGER.isLoggable( Level.FINE ) )
             {
-                LOGGER.log(Level.FINE, "Can't post data to collector:" + e.getMessage(),e);
-            } else
+                LOGGER.log( Level.FINE, "Can't post data to collector:" + e.getMessage(), e );
+            }
+            else
             {
                 LOGGER.log( Level.WARNING, "Can't post data to collector: " + e.getMessage() );
             }
