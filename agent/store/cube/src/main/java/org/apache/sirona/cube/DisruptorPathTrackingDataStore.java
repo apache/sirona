@@ -64,7 +64,7 @@ public class DisruptorPathTrackingDataStore
     {
         ExecutorService exec = Executors.newCachedThreadPool();
 
-        // FIXME make configurable: ring buffer size and WaitStrategy
+        // FIXME make configurable: WaitStrategy
 
         disruptor = new Disruptor<PathTrackingEntry>( new EventFactory<PathTrackingEntry>()
         {
