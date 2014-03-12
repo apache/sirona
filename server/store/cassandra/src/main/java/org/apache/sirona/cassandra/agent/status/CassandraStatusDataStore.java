@@ -24,9 +24,12 @@ import org.apache.sirona.store.status.PeriodicNodeStatusDataStore;
 import org.apache.sirona.util.Localhosts;
 
 import java.util.Map;
+import java.util.logging.Logger;
 
 @AutoSet
 public class CassandraStatusDataStore extends PeriodicNodeStatusDataStore {
+    private static final Logger LOGGER = Logger.getLogger(CassandraStatusDataStore.class.getName());
+
     private final CassandraCollectorNodeStatusDataStore delegate = new CassandraCollectorNodeStatusDataStore();
     protected String marker;
     protected boolean readFromStore = true;
@@ -36,6 +39,7 @@ public class CassandraStatusDataStore extends PeriodicNodeStatusDataStore {
         if (marker == null) {
             marker = Localhosts.get();
         }
+        LOGGER.warning("This storage used on app side can be a bit slow, maybe consider using a remote collector");
     }
 
     @Override

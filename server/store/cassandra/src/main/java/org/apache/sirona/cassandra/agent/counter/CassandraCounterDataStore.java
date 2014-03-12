@@ -26,9 +26,12 @@ import org.apache.sirona.util.Localhosts;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.logging.Logger;
 
 @AutoSet // for marker
 public class CassandraCounterDataStore extends BatchCounterDataStore {
+    private static final Logger LOGGER = Logger.getLogger(CassandraCounterDataStore.class.getName());
+
     private final CassandraCollectorCounterDataStore delegate = new CassandraCollectorCounterDataStore();
     protected String marker;
     protected boolean readFromStore = true;
@@ -38,6 +41,7 @@ public class CassandraCounterDataStore extends BatchCounterDataStore {
         if (marker == null) {
             marker = Localhosts.get();
         }
+        LOGGER.warning("This storage used on app side can be a bit slow, maybe consider using a remote collector");
     }
 
     @Override

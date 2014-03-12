@@ -28,9 +28,12 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.SortedMap;
+import java.util.logging.Logger;
 
 @AutoSet
 public class CassandraGaugeDataStore extends BatchGaugeDataStoreAdapter {
+    private static final Logger LOGGER = Logger.getLogger(CassandraGaugeDataStore.class.getName());
+
     private final CassandraCollectorGaugeDataStore delegate = new CassandraCollectorGaugeDataStore();
     protected String marker;
     protected boolean readFromStore = true;
@@ -40,6 +43,7 @@ public class CassandraGaugeDataStore extends BatchGaugeDataStoreAdapter {
         if (marker == null) {
             marker = Localhosts.get();
         }
+        LOGGER.warning("This storage used on app side can be a bit slow, maybe consider using a remote collector");
     }
 
     @Override
