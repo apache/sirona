@@ -17,6 +17,7 @@
 
 package org.apache.sirona.cassandra.pathtracking;
 
+import me.prettyprint.cassandra.serializers.IntegerSerializer;
 import me.prettyprint.cassandra.serializers.LongSerializer;
 import me.prettyprint.cassandra.serializers.StringSerializer;
 import me.prettyprint.hector.api.Keyspace;
@@ -33,6 +34,7 @@ import org.apache.sirona.store.tracking.BatchPathTrackingDataStore;
 import org.apache.sirona.store.tracking.CollectorPathTrackingDataStore;
 import org.apache.sirona.store.tracking.PathTrackingDataStore;
 import org.apache.sirona.tracking.PathTrackingEntry;
+import org.apache.sirona.tracking.PathTrackingEntryComparator;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -167,9 +169,6 @@ public class CassandraPathTrackingDataStore
             String className = columnSlice.getColumnByName( "className" ).getValue();
             String methodName = columnSlice.getColumnByName( "methodName" ).getValue();
 
-            //Serializer<String> stringSerializer = columnSlice.getColumnByName( "startTime" ).getValueSerializer();
-
-            //String foo = columnSlice.getColumnByName( "startTime" ).getValue();
             long startTime = getOrDefault( serializer, //
                                            columnSlice.getColumnByName( "startTime" ), //
                                            LongSerializer.get() ).longValue();
@@ -180,12 +179,12 @@ public class CassandraPathTrackingDataStore
 
             int level = getOrDefault( serializer, //
                                       columnSlice.getColumnByName( "level" ), //
-                                      LongSerializer.get() ).intValue();
+                                      IntegerSerializer.get() ).intValue();
 
             Set<PathTrackingEntry> pathTrackingEntries = entries.get( trackingId );
             if ( pathTrackingEntries == null )
             {
-                pathTrackingEntries = new TreeSet<PathTrackingEntry>();
+                pathTrackingEntries = new TreeSet<PathTrackingEntry>( PathTrackingEntryComparator.INSTANCE );
             }
             pathTrackingEntries.add( new PathTrackingEntry( trackingId, //
                                                             nodeId, //

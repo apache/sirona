@@ -18,6 +18,8 @@ package org.apache.sirona.cassandra.collector;
 
 import me.prettyprint.cassandra.model.ConfigurableConsistencyLevel;
 import me.prettyprint.cassandra.serializers.DoubleSerializer;
+import me.prettyprint.cassandra.serializers.IntegerSerializer;
+import me.prettyprint.cassandra.serializers.LongSerializer;
 import me.prettyprint.cassandra.serializers.SerializerTypeInferer;
 import me.prettyprint.cassandra.service.CassandraHostConfigurator;
 import me.prettyprint.cassandra.service.StringKeyIterator;
@@ -180,13 +182,25 @@ public class CassandraSirona {
 
     public static Number getOrDefault(final DynamicDelegatedSerializer delegatedSerializer, final HColumn<?, ?> col, final Serializer<?> serializer) {
         delegatedSerializer.setDelegate(serializer);
+
         if (col == null || col.getValue() == null) {
             if ( DoubleSerializer.get() == serializer) {
                 return Double.NaN;
             }
             return 0;
         }
-        final Object value = col.getValue();
+
+        if ( LongSerializer.get() == serializer)
+        {
+          return Number.class.cast( serializer.fromByteBuffer( col.getValueBytes() ) );
+        }
+
+        if ( IntegerSerializer.get() == serializer)
+        {
+            return Number.class.cast( serializer.fromByteBuffer( col.getValueBytes() ) );
+        }
+
+        Object value = col.getValue();
         if (Number.class.isInstance(value)) {
             return Number.class.cast(value);
         }
