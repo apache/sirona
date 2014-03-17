@@ -17,7 +17,6 @@
 
 package org.apache.sirona.cassandra.collector.pathtracking;
 
-import me.prettyprint.cassandra.serializers.IntegerSerializer;
 import me.prettyprint.cassandra.serializers.LongSerializer;
 import me.prettyprint.cassandra.serializers.StringSerializer;
 import me.prettyprint.hector.api.Keyspace;
@@ -108,7 +107,7 @@ public class CassandraPathTrackingDataStore
                 .addInsertion( id, family, column( "methodName", pathTrackingEntry.getMethodName() ) ) //
                 .addInsertion( id, family, column( "startTime", pathTrackingEntry.getStartTime() ) ) //
                 .addInsertion( id, family, column( "executionTime", pathTrackingEntry.getExecutionTime() ) ) //
-                // we force level as long to be able to do slice queries include filtering on level, startTime
+                    // we force level as long to be able to do slice queries include filtering on level, startTime
                 .addInsertion( id, family, column( "level", Long.valueOf( pathTrackingEntry.getLevel() ) ) ) //
                 .addInsertion( "PATH_TRACKING", markerFamilly, emptyColumn( id ) ) //
                 .execute();
@@ -128,7 +127,36 @@ public class CassandraPathTrackingDataStore
     @Override
     public Collection<PathTrackingEntry> retrieve( String trackingId )
     {
-        return null;
+        final QueryResult<OrderedRows<String, String, String>> cResult = //
+            HFactory.createRangeSlicesQuery( keyspace, //
+                                             StringSerializer.get(), //
+                                             StringSerializer.get(), //
+                                             StringSerializer.get() ) //
+                .setColumnNames( "trackingId", "nodeId", "className", "methodName", "startTime", "executionTime",
+                                 "level" ) //
+                .addEqualsExpression( "trackingId", trackingId ) //
+                .setColumnFamily( family ) //
+                .execute();
+
+        Set<PathTrackingEntry> entries = new TreeSet<PathTrackingEntry>( START_TIME_COMPARATOR );
+
+        OrderedRows<String, String, String> rows = cResult.get();
+
+        if ( rows == null )
+        {
+            return entries;
+        }
+
+        for ( Row<String, String, String> row : rows.getList() )
+        {
+            ColumnSlice<String, String> columnSlice = row.getColumnSlice();
+
+            PathTrackingEntry pathTrackingEntry = map( columnSlice );
+
+            entries.add( pathTrackingEntry );
+        }
+
+        return entries;
     }
 
     @Override
@@ -147,7 +175,7 @@ public class CassandraPathTrackingDataStore
 
         int size = cResult.get().getList().size();
 
-        Set<String> ids = new HashSet<String>();
+        Set<String> ids = new HashSet<String>( size );
 
         OrderedRows<String, String, Long> rows = cResult.get();
 

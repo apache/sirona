@@ -19,9 +19,9 @@ package org.apache.sirona.cassandra.local;
 import me.prettyprint.hector.api.Cluster;
 import me.prettyprint.hector.api.ddl.KeyspaceDefinition;
 import org.apache.sirona.cassandra.CassandraBuilder;
+import org.apache.sirona.cassandra.collector.pathtracking.CassandraPathTrackingDataStore;
 import org.apache.sirona.cassandra.framework.CassandraRunner;
 import org.apache.sirona.cassandra.framework.CassandraTestInject;
-import org.apache.sirona.cassandra.collector.pathtracking.CassandraPathTrackingDataStore;
 import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.tracking.PathTrackingEntry;
 import org.junit.Assert;
@@ -38,7 +38,7 @@ import java.util.UUID;
 /**
  *
  */
-@RunWith(CassandraRunner.class)
+@RunWith( CassandraRunner.class )
 public class PathTrackingDataStoreTest
 {
 
@@ -48,15 +48,15 @@ public class PathTrackingDataStoreTest
 
     private final CassandraBuilder builder = IoCs.findOrCreateInstance( CassandraBuilder.class );
 
-    CassandraPathTrackingDataStore store;
+    CassandraPathTrackingDataStore thestore;
 
     protected CassandraPathTrackingDataStore getStore()
     {
-        if ( store != null )
+        if ( thestore != null )
         {
-            return store;
+            return thestore;
         }
-        return store = IoCs.findOrCreateInstance(
+        return thestore = IoCs.findOrCreateInstance(
             CassandraPathTrackingDataStore.class );// .processInstance( new CassandraPathTrackingDataStore() );
     }
 
@@ -120,12 +120,12 @@ public class PathTrackingDataStoreTest
             uuid = UUID.randomUUID().toString();
             ids.add( uuid );
             PathTrackingEntry second = new PathTrackingEntry( uuid, //
-                                           "nodeId", //
-                                           "org.au.beer.TheBest", //
-                                           "littlecreatures", //
-                                           twoDaysAgo.getTime().getTime(), //
-                                           12, //
-                                           1 );
+                                                              "nodeId", //
+                                                              "org.au.beer.TheBest", //
+                                                              "littlecreatures", //
+                                                              twoDaysAgo.getTime().getTime(), //
+                                                              12, //
+                                                              1 );
 
             getStore().store( second );
 
@@ -136,13 +136,93 @@ public class PathTrackingDataStoreTest
             Calendar yesterday = Calendar.getInstance();
             yesterday.add( Calendar.DATE, -1 );
 
-            Collection<String> trackingIds = store.retrieveTrackingIds( yesterday.getTime(), new Date() );
-
-            KeyspaceDefinition definition = cluster.describeKeyspace( builder.getKeyspace() );
+            Collection<String> trackingIds = getStore().retrieveTrackingIds( yesterday.getTime(), new Date() );
 
             Assert.assertEquals( 1, trackingIds.size() );
 
             Assert.assertEquals( first.getTrackingId(), trackingIds.iterator().next() );
+
+
+        }
+        finally
+        {
+            cluster.truncate( builder.getKeyspace(), builder.getPathTrackingColumFamily() );
+
+            Assert.assertTrue( getStore().retrieveAll().isEmpty() );
+
+            Assert.assertEquals( 0, getStore().retrieveAll().size() );
+
+        }
+    }
+
+
+    @Test
+    public void test_retrieve_tracking_path()
+        throws Exception
+    {
+
+        try
+        {
+            String firstuuid = UUID.randomUUID().toString();
+
+            PathTrackingEntry first = new PathTrackingEntry( firstuuid, //
+                                                             "nodeId", //
+                                                             "org.au.beer.TheBest", //
+                                                             "littlecreatures", //
+                                                             new Date().getTime(), //
+                                                             12, //
+                                                             1 );
+
+            getStore().store( first );
+
+            Calendar twoDaysAgo = Calendar.getInstance();
+            twoDaysAgo.add( Calendar.DATE, -2 );
+
+            String seconduuid = UUID.randomUUID().toString();
+
+            PathTrackingEntry second = new PathTrackingEntry( seconduuid, //
+                                                              "nodeId", //
+                                                              "org.au.beer.TheBest", //
+                                                              "littlecreatures", //
+                                                              twoDaysAgo.getTime().getTime(), //
+                                                              12, //
+                                                              1 );
+
+            getStore().store( second );
+
+            Assert.assertFalse( getStore().retrieveAll().isEmpty() );
+
+            Assert.assertEquals( 2, getStore().retrieveAll().size() );
+
+            PathTrackingEntry third = new PathTrackingEntry( firstuuid, //
+                                                             "nodeId", //
+                                                             "org.au.beer.TheBest", //
+                                                             "littlecreatures", //
+                                                             new Date().getTime(), //
+                                                             23, //
+                                                             2 );
+
+            getStore().store( third );
+
+            Assert.assertFalse( getStore().retrieveAll().isEmpty() );
+
+            Assert.assertEquals( 2, getStore().retrieveAll().size() );
+
+            Assert.assertEquals( 2, getStore().retrieveAll().get( firstuuid ).size() );
+
+            Calendar yesterday = Calendar.getInstance();
+            yesterday.add( Calendar.DATE, -1 );
+
+            Collection<String> trackingIds = getStore().retrieveTrackingIds( yesterday.getTime(), new Date() );
+
+
+            Assert.assertEquals( 1, trackingIds.size() );
+
+            Assert.assertEquals( first.getTrackingId(), trackingIds.iterator().next() );
+
+            Collection<PathTrackingEntry> entries = getStore().retrieve( firstuuid );
+
+            Assert.assertEquals( 2, entries.size() );
 
 
         }
