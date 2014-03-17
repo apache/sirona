@@ -23,8 +23,10 @@ import me.prettyprint.hector.api.Keyspace;
 import me.prettyprint.hector.api.beans.ColumnSlice;
 import me.prettyprint.hector.api.beans.OrderedRows;
 import me.prettyprint.hector.api.beans.Row;
+import me.prettyprint.hector.api.exceptions.HInvalidRequestException;
 import me.prettyprint.hector.api.factory.HFactory;
 import me.prettyprint.hector.api.query.QueryResult;
+import org.apache.cassandra.thrift.InvalidRequestException;
 import org.apache.sirona.cassandra.DynamicDelegatedSerializer;
 import org.apache.sirona.cassandra.collector.CassandraSirona;
 import org.apache.sirona.configuration.ioc.IoCs;
@@ -99,18 +101,26 @@ public class CassandraPathTrackingDataStore
         {
             final String id = id( pathTrackingEntry );
 
-            HFactory.createMutator( keyspace, StringSerializer.get() )
-                //  values
-                .addInsertion( id, family, column( "trackingId", pathTrackingEntry.getTrackingId() ) ) //
-                .addInsertion( id, family, column( "nodeId", pathTrackingEntry.getNodeId() ) ) //
-                .addInsertion( id, family, column( "className", pathTrackingEntry.getClassName() ) ) //
-                .addInsertion( id, family, column( "methodName", pathTrackingEntry.getMethodName() ) ) //
-                .addInsertion( id, family, column( "startTime", pathTrackingEntry.getStartTime() ) ) //
-                .addInsertion( id, family, column( "executionTime", pathTrackingEntry.getExecutionTime() ) ) //
+            try
+            {
+                HFactory.createMutator( keyspace, StringSerializer.get() )
+                    //  values
+                    .addInsertion( id, family, column( "trackingId", pathTrackingEntry.getTrackingId() ) ) //
+                    .addInsertion( id, family, column( "nodeId", pathTrackingEntry.getNodeId() ) ) //
+                    .addInsertion( id, family, column( "className", pathTrackingEntry.getClassName() ) ) //
+                    .addInsertion( id, family, column( "methodName", pathTrackingEntry.getMethodName() ) ) //
+                    .addInsertion( id, family, column( "startTime", pathTrackingEntry.getStartTime() ) ) //
+                    .addInsertion( id, family, column( "executionTime", pathTrackingEntry.getExecutionTime() ) ) //
                     // we force level as long to be able to do slice queries include filtering on level, startTime
-                .addInsertion( id, family, column( "level", Long.valueOf( pathTrackingEntry.getLevel() ) ) ) //
-                .addInsertion( "PATH_TRACKING", markerFamilly, emptyColumn( id ) ) //
-                .execute();
+                    .addInsertion( id, family, column( "level", Long.valueOf( pathTrackingEntry.getLevel() ) ) ) //
+                    .addInsertion( "PATH_TRACKING", markerFamilly, emptyColumn( id ) ) //
+                    .execute();
+            }
+            catch ( HInvalidRequestException e )
+            {
+                // ignore but log it
+                e.printStackTrace();
+            }
         }
     }
 

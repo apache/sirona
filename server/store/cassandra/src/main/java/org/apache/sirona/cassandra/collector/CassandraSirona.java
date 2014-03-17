@@ -92,11 +92,12 @@ public class CassandraSirona {
         pathTracking.setComparatorType( ComparatorType.UTF8TYPE );
 
         // creating indexes for cql query
+
         BasicColumnDefinition levelColumn = new BasicColumnDefinition();
         levelColumn.setName( StringSerializer.get().toByteBuffer("level"));
         levelColumn.setIndexName("level");
         levelColumn.setIndexType( ColumnIndexType.KEYS);
-        levelColumn.setValidationClass(ComparatorType.INTEGERTYPE.getClassName());
+        levelColumn.setValidationClass(ComparatorType.LONGTYPE.getClassName());
         pathTracking.addColumnDefinition( levelColumn  );
 
         BasicColumnDefinition startTimeColumn = new BasicColumnDefinition();
@@ -105,6 +106,15 @@ public class CassandraSirona {
         startTimeColumn.setIndexType( ColumnIndexType.KEYS);
         startTimeColumn.setValidationClass(ComparatorType.LONGTYPE.getClassName());
         pathTracking.addColumnDefinition( startTimeColumn  );
+
+        // force the validation class for this column as can fail on non embeded cassandra
+        BasicColumnDefinition executionTimeColumn = new BasicColumnDefinition();
+        executionTimeColumn.setName( StringSerializer.get().toByteBuffer("executionTime"));
+        //startTimeColumn.setIndexName("startTime");
+        //startTimeColumn.setIndexType( ColumnIndexType.KEYS);
+        executionTimeColumn.setValidationClass(ComparatorType.LONGTYPE.getClassName());
+        pathTracking.addColumnDefinition( executionTimeColumn  );
+
 
         final ColumnFamilyDefinition markerPathTracking =
             HFactory.createColumnFamilyDefinition( keyspaceName, builder.getMarkerPathTrackingColumFamily(), ComparatorType.UTF8TYPE);
