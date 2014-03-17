@@ -16,11 +16,13 @@
  */
 package org.apache.sirona.cassandra.collector;
 
+import me.prettyprint.cassandra.model.BasicColumnDefinition;
 import me.prettyprint.cassandra.model.ConfigurableConsistencyLevel;
 import me.prettyprint.cassandra.serializers.DoubleSerializer;
 import me.prettyprint.cassandra.serializers.IntegerSerializer;
 import me.prettyprint.cassandra.serializers.LongSerializer;
 import me.prettyprint.cassandra.serializers.SerializerTypeInferer;
+import me.prettyprint.cassandra.serializers.StringSerializer;
 import me.prettyprint.cassandra.service.CassandraHostConfigurator;
 import me.prettyprint.cassandra.service.StringKeyIterator;
 import me.prettyprint.cassandra.service.ThriftKsDef;
@@ -29,6 +31,7 @@ import me.prettyprint.hector.api.Keyspace;
 import me.prettyprint.hector.api.Serializer;
 import me.prettyprint.hector.api.beans.HColumn;
 import me.prettyprint.hector.api.ddl.ColumnFamilyDefinition;
+import me.prettyprint.hector.api.ddl.ColumnIndexType;
 import me.prettyprint.hector.api.ddl.ComparatorType;
 import me.prettyprint.hector.api.factory.HFactory;
 import org.apache.sirona.cassandra.CassandraBuilder;
@@ -55,6 +58,7 @@ public class CassandraSirona {
     public CassandraSirona() {
         final CassandraHostConfigurator configurator = new CassandraHostConfigurator(builder.getHosts());
         configurator.setMaxActive(builder.getMaxActive());
+
         cluster = HFactory.getOrCreateCluster(builder.getCluster(), configurator);
 
         final String keyspaceName = builder.getKeyspace();
@@ -84,6 +88,23 @@ public class CassandraSirona {
 
         final ColumnFamilyDefinition pathTracking =
             HFactory.createColumnFamilyDefinition( keyspaceName, builder.getPathTrackingColumFamily(), ComparatorType.UTF8TYPE);
+        pathTracking.setDefaultValidationClass( ComparatorType.UTF8TYPE.getClassName() );
+        pathTracking.setComparatorType( ComparatorType.UTF8TYPE );
+
+        // creating indexes for cql query
+        BasicColumnDefinition levelColumn = new BasicColumnDefinition();
+        levelColumn.setName( StringSerializer.get().toByteBuffer("level"));
+        levelColumn.setIndexName("level");
+        levelColumn.setIndexType( ColumnIndexType.KEYS);
+        levelColumn.setValidationClass(ComparatorType.INTEGERTYPE.getClassName());
+        pathTracking.addColumnDefinition( levelColumn  );
+
+        BasicColumnDefinition startTimeColumn = new BasicColumnDefinition();
+        startTimeColumn.setName( StringSerializer.get().toByteBuffer("startTime"));
+        startTimeColumn.setIndexName("startTime");
+        startTimeColumn.setIndexType( ColumnIndexType.KEYS);
+        startTimeColumn.setValidationClass(ComparatorType.LONGTYPE.getClassName());
+        pathTracking.addColumnDefinition( startTimeColumn  );
 
         final ColumnFamilyDefinition markerPathTracking =
             HFactory.createColumnFamilyDefinition( keyspaceName, builder.getMarkerPathTrackingColumFamily(), ComparatorType.UTF8TYPE);
@@ -92,8 +113,17 @@ public class CassandraSirona {
             if (cluster.describeKeyspace(keyspaceName) == null) {
                 LOGGER.info("Creating Sirona Cassandra '" + keyspaceName + "' keyspace.");
                 cluster.addKeyspace(
-                    HFactory.createKeyspaceDefinition(keyspaceName, ThriftKsDef.DEF_STRATEGY_CLASS, builder.getReplicationFactor(),
-                        asList(counters, markersCounters, gauges, markersGauges, statuses, markersStatuses,pathTracking,markerPathTracking)));
+                    HFactory.createKeyspaceDefinition(keyspaceName, //
+                                                      ThriftKsDef.DEF_STRATEGY_CLASS, //
+                                                      builder.getReplicationFactor(), //
+                                                      asList(counters, //
+                                                             markersCounters, //
+                                                             gauges, //
+                                                             markersGauges, //
+                                                             statuses, //
+                                                             markersStatuses, //
+                                                             pathTracking, //
+                                                             markerPathTracking)));
             }
         }
     }
@@ -169,7 +199,10 @@ public class CassandraSirona {
     }
 
     public static <A, B> HColumn<A, B> column(final A name, final B value) {
-        return HFactory.createColumn(name, value, (Serializer<A>) SerializerTypeInferer.getSerializer(name), (Serializer<B>) SerializerTypeInferer.getSerializer(value));
+        return HFactory.createColumn(name, //
+                                     value, //
+                                     (Serializer<A>) SerializerTypeInferer.getSerializer(name), //
+                                     (Serializer<B>) SerializerTypeInferer.getSerializer(value));
     }
 
     public static Collection<String> keys(final Keyspace keyspace, final String family) {

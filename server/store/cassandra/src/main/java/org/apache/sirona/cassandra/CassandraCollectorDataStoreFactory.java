@@ -19,7 +19,7 @@ package org.apache.sirona.cassandra;
 import org.apache.sirona.cassandra.collector.counter.CassandraCollectorCounterDataStore;
 import org.apache.sirona.cassandra.collector.gauge.CassandraCollectorGaugeDataStore;
 import org.apache.sirona.cassandra.collector.status.CassandraCollectorNodeStatusDataStore;
-import org.apache.sirona.cassandra.pathtracking.CassandraPathTrackingDataStore;
+import org.apache.sirona.cassandra.collector.pathtracking.CassandraPathTrackingDataStore;
 import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.store.DelegateDataStoreFactory;
 

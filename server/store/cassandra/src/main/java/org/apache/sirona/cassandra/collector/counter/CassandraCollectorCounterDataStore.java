@@ -67,11 +67,13 @@ public class CassandraCollectorCounterDataStore extends InMemoryCollectorCounter
 
     @Override
     public Collection<? extends LeafCollectorCounter> getCounters(final String marker) {
-        final QueryResult<ColumnSlice<String, String>> qResult = HFactory.createSliceQuery(keyspace, StringSerializer.get(), StringSerializer.get(), StringSerializer.get())
-            .setKey(marker)
-            .setColumnFamily(markerFamily)
-            .setRange(null, null, false, Integer.MAX_VALUE)
-            .execute();
+        final QueryResult<ColumnSlice<String, String>> qResult =
+            HFactory
+                .createSliceQuery(keyspace, StringSerializer.get(), StringSerializer.get(), StringSerializer.get()) //
+                .setKey(marker) //
+                .setColumnFamily(markerFamily) //
+                .setRange(null, null, false, Integer.MAX_VALUE) //
+                .execute();
 
         final Collection<CassandraLeafCounter> counters = new LinkedList<CassandraLeafCounter>();
         if (qResult == null || qResult.get() == null) {

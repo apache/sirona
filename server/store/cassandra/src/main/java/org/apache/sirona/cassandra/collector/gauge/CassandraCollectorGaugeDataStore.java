@@ -92,10 +92,11 @@ public class CassandraCollectorGaugeDataStore implements CollectorGaugeDataStore
 
     @Override
     public SortedMap<Long, Double> getGaugeValues(final GaugeValuesRequest gaugeValuesRequest, final String marker) {
-        final QueryResult<ColumnSlice<Long, Double>> qResult = HFactory.createSliceQuery(keyspace, StringSerializer.get(), LongSerializer.get(), DoubleSerializer.get())
-            .setKey(id(gaugeValuesRequest.getRole(), marker))
-            .setColumnFamily(valueFamily)
-            .setRange(gaugeValuesRequest.getStart(), gaugeValuesRequest.getEnd(), false, Integer.MAX_VALUE)
+        final QueryResult<ColumnSlice<Long, Double>> qResult =
+            HFactory.createSliceQuery(keyspace, StringSerializer.get(), LongSerializer.get(), DoubleSerializer.get()) //
+            .setKey(id(gaugeValuesRequest.getRole(), marker)) //
+            .setColumnFamily(valueFamily) //
+            .setRange(gaugeValuesRequest.getStart(), gaugeValuesRequest.getEnd(), false, Integer.MAX_VALUE) //
             .execute();
 
         final SortedMap<Long, Double> result = new TreeMap<Long, Double>();

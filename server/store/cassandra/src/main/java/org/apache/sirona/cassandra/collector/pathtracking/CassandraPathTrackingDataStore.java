@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.sirona.cassandra.pathtracking;
+package org.apache.sirona.cassandra.collector.pathtracking;
 
 import me.prettyprint.cassandra.serializers.IntegerSerializer;
 import me.prettyprint.cassandra.serializers.LongSerializer;
 import me.prettyprint.cassandra.serializers.StringSerializer;
 import me.prettyprint.hector.api.Keyspace;
-import me.prettyprint.hector.api.Serializer;
 import me.prettyprint.hector.api.beans.ColumnSlice;
 import me.prettyprint.hector.api.beans.OrderedRows;
 import me.prettyprint.hector.api.beans.Row;
@@ -36,7 +35,6 @@ import org.apache.sirona.store.tracking.PathTrackingDataStore;
 import org.apache.sirona.tracking.PathTrackingEntry;
 import org.apache.sirona.tracking.PathTrackingEntryComparator;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -47,7 +45,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.concurrent.ConcurrentMap;
 
 import static org.apache.sirona.cassandra.collector.CassandraSirona.*;
 
@@ -111,7 +108,8 @@ public class CassandraPathTrackingDataStore
                 .addInsertion( id, family, column( "methodName", pathTrackingEntry.getMethodName() ) ) //
                 .addInsertion( id, family, column( "startTime", pathTrackingEntry.getStartTime() ) ) //
                 .addInsertion( id, family, column( "executionTime", pathTrackingEntry.getExecutionTime() ) ) //
-                .addInsertion( id, family, column( "level", pathTrackingEntry.getLevel() ) ) //
+                // we force level as long to be able to do slice queries include filtering on level, startTime
+                .addInsertion( id, family, column( "level", Long.valueOf( pathTrackingEntry.getLevel() ) ) ) //
                 .addInsertion( "PATH_TRACKING", markerFamilly, emptyColumn( id ) ) //
                 .execute();
         }
@@ -123,7 +121,8 @@ public class CassandraPathTrackingDataStore
                                       pathTrackingEntry.getClassName(),//
                                       pathTrackingEntry.getMethodName(), //
                                       Long.toString( pathTrackingEntry.getStartTime() ),//
-                                      pathTrackingEntry.getNodeId() );
+                                      pathTrackingEntry.getNodeId(), //
+                                      Integer.toString( pathTrackingEntry.getLevel() ) );
     }
 
     @Override
@@ -135,9 +134,39 @@ public class CassandraPathTrackingDataStore
     @Override
     public Collection<String> retrieveTrackingIds( Date startTime, Date endTime )
     {
-        return retrieveAll().keySet();
-    }
 
+        final QueryResult<OrderedRows<String, String, Long>> cResult = //
+            HFactory.createRangeSlicesQuery( keyspace, //
+                                             StringSerializer.get(), //
+                                             StringSerializer.get(), //
+                                             LongSerializer.get() ) //
+                .setColumnNames( "trackingId", "nodeId", "className", "methodName", "startTime", "executionTime",
+                                 "level" ) //
+                .addEqualsExpression( "level", Long.valueOf( 1 ) ) //
+                .addGteExpression( "startTime", startTime.getTime() ).setColumnFamily( family ).execute();
+
+        int size = cResult.get().getList().size();
+
+        Set<String> ids = new HashSet<String>();
+
+        OrderedRows<String, String, Long> rows = cResult.get();
+
+        if ( rows == null )
+        {
+            return ids;
+        }
+
+        for ( Row<String, String, Long> row : rows.getList() )
+        {
+            ColumnSlice<String, Long> columnSlice = row.getColumnSlice();
+
+            PathTrackingEntry pathTrackingEntry = map( columnSlice );
+
+            ids.add( pathTrackingEntry.getTrackingId() );
+        }
+
+        return ids;
+    }
 
 
     /**
@@ -159,46 +188,63 @@ public class CassandraPathTrackingDataStore
 
         Map<String, Set<PathTrackingEntry>> entries = new TreeMap<String, Set<PathTrackingEntry>>();
 
-        final DynamicDelegatedSerializer<Object> serializer = new DynamicDelegatedSerializer<Object>();
-
         for ( Row<String, String, String> row : cResult.get().getList() )
         {
             ColumnSlice<String, String> columnSlice = row.getColumnSlice();
-            String trackingId = columnSlice.getColumnByName( "trackingId" ).getValue();
-            String nodeId = columnSlice.getColumnByName( "nodeId" ).getValue();
-            String className = columnSlice.getColumnByName( "className" ).getValue();
-            String methodName = columnSlice.getColumnByName( "methodName" ).getValue();
 
-            long startTime = getOrDefault( serializer, //
-                                           columnSlice.getColumnByName( "startTime" ), //
-                                           LongSerializer.get() ).longValue();
+            PathTrackingEntry pathTrackingEntry = map( columnSlice );
 
-            long executionTime = getOrDefault( serializer, //
-                                               columnSlice.getColumnByName( "executionTime" ), //
-                                               LongSerializer.get() ).longValue();
-
-            int level = getOrDefault( serializer, //
-                                      columnSlice.getColumnByName( "level" ), //
-                                      IntegerSerializer.get() ).intValue();
+            String trackingId = pathTrackingEntry.getTrackingId();
 
             Set<PathTrackingEntry> pathTrackingEntries = entries.get( trackingId );
             if ( pathTrackingEntries == null )
             {
                 pathTrackingEntries = new TreeSet<PathTrackingEntry>( PathTrackingEntryComparator.INSTANCE );
             }
-            pathTrackingEntries.add( new PathTrackingEntry( trackingId, //
-                                                            nodeId, //
-                                                            className, //
-                                                            methodName, //
-                                                            startTime, //
-                                                            executionTime, //
-                                                            level ) );
+            pathTrackingEntries.add( pathTrackingEntry );
 
             entries.put( trackingId, pathTrackingEntries );
 
         }
 
         return entries;
+    }
+
+    private PathTrackingEntry map( ColumnSlice<String, ?> columnSlice )
+    {
+        final DynamicDelegatedSerializer<Object> serializer = new DynamicDelegatedSerializer<Object>();
+
+        String trackingId =
+            StringSerializer.get().fromByteBuffer( columnSlice.getColumnByName( "trackingId" ).getValueBytes() );
+
+        String nodeId =
+            StringSerializer.get().fromByteBuffer( columnSlice.getColumnByName( "nodeId" ).getValueBytes() );
+        String className =
+            StringSerializer.get().fromByteBuffer( columnSlice.getColumnByName( "className" ).getValueBytes() );
+        String methodName =
+            StringSerializer.get().fromByteBuffer( columnSlice.getColumnByName( "methodName" ).getValueBytes() );
+
+        long startTime = getOrDefault( serializer, //
+                                       columnSlice.getColumnByName( "startTime" ), //
+                                       LongSerializer.get() ).longValue();
+
+        long executionTime = getOrDefault( serializer, //
+                                           columnSlice.getColumnByName( "executionTime" ), //
+                                           LongSerializer.get() ).longValue();
+
+        int level = getOrDefault( serializer, //
+                                  columnSlice.getColumnByName( "level" ), //
+                                  LongSerializer.get() ).intValue();
+
+        return new PathTrackingEntry( trackingId, //
+                                      nodeId, //
+                                      className, //
+                                      methodName, //
+                                      startTime, //
+                                      executionTime, //
+                                      level );
+
+
     }
 
 

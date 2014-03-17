@@ -24,7 +24,7 @@ import me.prettyprint.hector.api.beans.Row;
 import me.prettyprint.hector.api.factory.HFactory;
 import me.prettyprint.hector.api.query.QueryResult;
 import org.apache.sirona.cassandra.DynamicDelegatedSerializer;
-import org.apache.sirona.cassandra.pathtracking.CassandraPathTrackingDataStore;
+import org.apache.sirona.cassandra.collector.pathtracking.CassandraPathTrackingDataStore;
 import org.apache.sirona.tracking.PathTrackingEntry;
 
 import java.util.Map;

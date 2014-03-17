@@ -17,7 +17,9 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-lg-3">
-
+            #foreach( $id in $trackingIds )
+                $id
+            #end
         </div>
         <div class="col-lg-3">
 

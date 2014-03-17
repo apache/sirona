@@ -20,16 +20,15 @@ import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.reporting.web.plugin.api.MapBuilder;
 import org.apache.sirona.reporting.web.plugin.api.Regex;
 import org.apache.sirona.reporting.web.plugin.api.Template;
-import org.apache.sirona.reporting.web.plugin.api.graph.Graphs;
 import org.apache.sirona.store.tracking.PathTrackingDataStore;
 import org.apache.sirona.util.Environment;
 
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.SortedMap;
 
 /**
  *
@@ -48,10 +47,18 @@ public class PathTrackingEndpoints
         {
 
         }
+
+        Calendar cal = Calendar.getInstance();
+        cal.add( Calendar.DATE, -1 );
+
+        Collection<String> ids = PATH_TRACKING_DATA_STORE.retrieveTrackingIds( cal.getTime(), new Date() );
+
+        params.put( "trackingIds", ids );
+
         return new Template( "pathtracking/home.vm", params );
     }
 
-    @Regex( "/startend/([0-9]*)/([0-9]*)" )
+    @Regex("/startend/([0-9]*)/([0-9]*)")
     public String startend( final long start, final long end )
     {
 
@@ -69,22 +76,24 @@ public class PathTrackingEndpoints
     }
 
 
-
-    static String toJson(final Map<String, String> data) { // helper to generate Json
-        final StringBuilder builder = new StringBuilder().append("[");
-        final Iterator<Map.Entry<String,String>> iterator = data.entrySet().iterator();
-        while (iterator.hasNext()) {
+    static String toJson( final Map<String, String> data )
+    { // helper to generate Json
+        final StringBuilder builder = new StringBuilder().append( "[" );
+        final Iterator<Map.Entry<String, String>> iterator = data.entrySet().iterator();
+        while ( iterator.hasNext() )
+        {
             final Map.Entry<String, String> entry = iterator.next();
-            builder.append("[") //
-                .append(entry.getKey().toString()) //
-                .append(", ") //
-                .append(entry.getValue().toString()) //
-                .append("]");
-            if (iterator.hasNext()) {
-                builder.append(", ");
+            builder.append( "[" ) //
+                .append( entry.getKey().toString() ) //
+                .append( ", " ) //
+                .append( entry.getValue().toString() ) //
+                .append( "]" );
+            if ( iterator.hasNext() )
+            {
+                builder.append( ", " );
             }
         }
-        return builder.append("]").toString();
+        return builder.append( "]" ).toString();
     }
 
 }
