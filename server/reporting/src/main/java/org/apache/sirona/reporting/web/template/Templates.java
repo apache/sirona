@@ -20,81 +20,102 @@ import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.reporting.web.plugin.PluginRepository;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.log.JdkLogChute;
 import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
-import org.apache.velocity.runtime.resource.loader.ResourceLoader;
+import org.apache.velocity.tools.generic.DateTool;
 
 import java.io.PrintWriter;
 import java.util.Map;
 import java.util.Properties;
 
-public final class Templates {
+public final class Templates
+{
     public static final String RESOURCE_LOADER_KEY = "monitoring." + RuntimeConstants.RESOURCE_LOADER + ".class";
 
     private static String mapping;
+
     private static VelocityEngine engine;
 
-    public static void init(final String context, final String filterMapping) {
+    public static void init( final String context, final String filterMapping )
+    {
         final Properties velocityConfiguration = new Properties();
-        velocityConfiguration.setProperty(RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS, JdkLogChute.class.getName());
-        velocityConfiguration.setProperty(RuntimeConstants.ENCODING_DEFAULT, "UTF-8");
-        velocityConfiguration.setProperty(RuntimeConstants.INPUT_ENCODING, "UTF-8");
-        velocityConfiguration.setProperty(RuntimeConstants.OUTPUT_ENCODING, "UTF-8");
-        velocityConfiguration.setProperty(RuntimeConstants.RUNTIME_REFERENCES_STRICT, Boolean.TRUE.toString());
-        velocityConfiguration.setProperty(RuntimeConstants.RUNTIME_REFERENCES_STRICT_ESCAPE, Boolean.TRUE.toString());
-        velocityConfiguration.setProperty(RuntimeConstants.RESOURCE_LOADER, "monitoring");
-        velocityConfiguration.setProperty(RuntimeConstants.VM_LIBRARY, "/templates/macro.vm");
-        velocityConfiguration.setProperty(RESOURCE_LOADER_KEY, Configuration.getProperty(Configuration.CONFIG_PROPERTY_PREFIX + "reporting.resource-loader", ClasspathResourceLoader.class.getName()));
-        engine = new VelocityEngine(velocityConfiguration);
+        velocityConfiguration.setProperty( RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS, JdkLogChute.class.getName() );
+        velocityConfiguration.setProperty( RuntimeConstants.ENCODING_DEFAULT, "UTF-8" );
+        velocityConfiguration.setProperty( RuntimeConstants.INPUT_ENCODING, "UTF-8" );
+        velocityConfiguration.setProperty( RuntimeConstants.OUTPUT_ENCODING, "UTF-8" );
+        velocityConfiguration.setProperty( RuntimeConstants.RUNTIME_REFERENCES_STRICT, Boolean.TRUE.toString() );
+        velocityConfiguration.setProperty( RuntimeConstants.RUNTIME_REFERENCES_STRICT_ESCAPE, Boolean.TRUE.toString() );
+        velocityConfiguration.setProperty( RuntimeConstants.RESOURCE_LOADER, "monitoring" );
+        velocityConfiguration.setProperty( RuntimeConstants.VM_LIBRARY, "/templates/macro.vm" );
+        velocityConfiguration.setProperty( RESOURCE_LOADER_KEY, //
+                                           Configuration.getProperty(
+                                               Configuration.CONFIG_PROPERTY_PREFIX + "reporting.resource-loader", //
+                                               ClasspathResourceLoader.class.getName() //
+                                           ) //
+        );
+        engine = new VelocityEngine( velocityConfiguration );
 
-        if (filterMapping.isEmpty()) {
+        if ( filterMapping.isEmpty() )
+        {
             mapping = context;
-        } else {
+        }
+        else
+        {
             mapping = context + filterMapping;
         }
     }
 
-    public static void htmlRender(final PrintWriter writer, final String template, final Map<String, ?> variables) {
-        final VelocityContext context = newVelocityContext(variables);
-        context.put("mapping", mapping);
-        context.put("currentTemplate", template);
-        context.put("plugins", PluginRepository.PLUGIN_INFO);
-        if (context.get("templateId") == null) {
-            context.put("templateId", template.replace(".vm", ""));
+    public static void htmlRender( final PrintWriter writer, final String template, final Map<String, ?> variables )
+    {
+        final VelocityContext context = newVelocityContext( variables );
+        context.put( "mapping", mapping );
+        context.put( "currentTemplate", template );
+        context.put( "plugins", PluginRepository.PLUGIN_INFO );
+        if ( context.get( "templateId" ) == null )
+        {
+            context.put( "templateId", template.replace( ".vm", "" ) );
         }
 
-        boolean onlyBodyRendering=variables.containsKey( "onlyBody" );
+        boolean onlyBodyRendering = variables.containsKey( "onlyBody" );
 
-        final Template velocityTemplate = onlyBodyRendering ?
-            engine.getTemplate("/templates/" + template, "UTF-8") : engine.getTemplate("/templates/page.vm", "UTF-8");
-        velocityTemplate.merge(context, writer);
+        final Template velocityTemplate = onlyBodyRendering
+            ? engine.getTemplate( "/templates/" + template, "UTF-8" )
+            : engine.getTemplate( "/templates/page.vm", "UTF-8" );
+        velocityTemplate.merge( context, writer );
     }
 
-    public static void render(final PrintWriter writer, final String template, final Map<String, ?> variables) {
-        final VelocityContext context = newVelocityContext(variables);
-        context.put("mapping", mapping);
-        final Template velocityTemplate = engine.getTemplate(template, "UTF-8");
-        velocityTemplate.merge(context, writer);
+    public static void render( final PrintWriter writer, final String template, final Map<String, ?> variables )
+    {
+        final VelocityContext context = newVelocityContext( variables );
+        context.put( "mapping", mapping );
+        final Template velocityTemplate = engine.getTemplate( template, "UTF-8" );
+        velocityTemplate.merge( context, writer );
     }
 
-    private static VelocityContext newVelocityContext(final Map<String, ?> variables) {
+    private static VelocityContext newVelocityContext( final Map<String, ?> variables )
+    {
         final VelocityContext context;
-        if (variables.isEmpty()) {
+        if ( variables.isEmpty() )
+        {
             context = new VelocityContext();
-        } else {
-            context = new VelocityContext(variables);
         }
+        else
+        {
+            context = new VelocityContext( variables );
+        }
+        context.put( "date", new DateTool() );
         return context;
     }
 
-    public static Object property(final String key) {
-        return engine.getProperty(key);
+    public static Object property( final String key )
+    {
+        return engine.getProperty( key );
     }
 
-    private Templates() {
+    private Templates()
+    {
         // no-op
     }
 }
