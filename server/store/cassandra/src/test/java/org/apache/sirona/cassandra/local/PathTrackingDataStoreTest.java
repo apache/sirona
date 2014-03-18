@@ -23,6 +23,7 @@ import org.apache.sirona.cassandra.collector.pathtracking.CassandraPathTrackingD
 import org.apache.sirona.cassandra.framework.CassandraRunner;
 import org.apache.sirona.cassandra.framework.CassandraTestInject;
 import org.apache.sirona.configuration.ioc.IoCs;
+import org.apache.sirona.tracking.PathCallInformation;
 import org.apache.sirona.tracking.PathTrackingEntry;
 import org.junit.Assert;
 import org.junit.Test;
@@ -136,11 +137,11 @@ public class PathTrackingDataStoreTest
             Calendar yesterday = Calendar.getInstance();
             yesterday.add( Calendar.DATE, -1 );
 
-            Collection<String> trackingIds = getStore().retrieveTrackingIds( yesterday.getTime(), new Date() );
+            Collection<PathCallInformation> trackingIds = getStore().retrieveTrackingIds( yesterday.getTime(), new Date() );
 
             Assert.assertEquals( 1, trackingIds.size() );
 
-            Assert.assertEquals( first.getTrackingId(), trackingIds.iterator().next() );
+            Assert.assertEquals( first.getTrackingId(), trackingIds.iterator().next().getTrackingId() );
 
 
         }
@@ -213,12 +214,12 @@ public class PathTrackingDataStoreTest
             Calendar yesterday = Calendar.getInstance();
             yesterday.add( Calendar.DATE, -1 );
 
-            Collection<String> trackingIds = getStore().retrieveTrackingIds( yesterday.getTime(), new Date() );
+            Collection<PathCallInformation> trackingIds = getStore().retrieveTrackingIds( yesterday.getTime(), new Date() );
 
 
             Assert.assertEquals( 1, trackingIds.size() );
 
-            Assert.assertEquals( first.getTrackingId(), trackingIds.iterator().next() );
+            Assert.assertEquals( first.getTrackingId(), trackingIds.iterator().next().getTrackingId() );
 
             Collection<PathTrackingEntry> entries = getStore().retrieve( firstuuid );
 

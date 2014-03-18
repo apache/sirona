@@ -22,6 +22,7 @@ import org.apache.sirona.reporting.web.plugin.api.Regex;
 import org.apache.sirona.reporting.web.plugin.api.Template;
 import org.apache.sirona.reporting.web.plugin.report.format.HTMLFormat;
 import org.apache.sirona.store.tracking.PathTrackingDataStore;
+import org.apache.sirona.tracking.PathCallInformation;
 import org.apache.sirona.tracking.PathTrackingEntry;
 import org.apache.sirona.util.Environment;
 
@@ -53,9 +54,10 @@ public class PathTrackingEndpoints
         Calendar cal = Calendar.getInstance();
         cal.add( Calendar.DATE, -1 );
 
-        Collection<String> ids = PATH_TRACKING_DATA_STORE.retrieveTrackingIds( cal.getTime(), new Date() );
+        Collection<PathCallInformation> pathCallInformations =
+            PATH_TRACKING_DATA_STORE.retrieveTrackingIds( cal.getTime(), new Date() );
 
-        params.put( "trackingIds", ids );
+        params.put( "pathCallInformations", pathCallInformations );
 
         return new Template( "pathtracking/home.vm", params );
     }
@@ -64,13 +66,19 @@ public class PathTrackingEndpoints
     public String startend( final long start, final long end )
     {
 
-        Collection<String> entries = PATH_TRACKING_DATA_STORE.retrieveTrackingIds( new Date( start ), new Date( end ) );
+        Collection<PathCallInformation> entries =
+            PATH_TRACKING_DATA_STORE.retrieveTrackingIds( new Date( start ), new Date( end ) );
 
         MapBuilder<String, String> mapBuilder = new MapBuilder<String, String>();
 
-        for ( String entry : entries )
+        for ( PathCallInformation entry : entries )
         {
-            mapBuilder = mapBuilder.set( "trackingId", entry );
+            mapBuilder = mapBuilder.set( //
+                                         new MapBuilder<String, String>() //
+                                             .set( "trackingId", entry.getTrackingId() ) //
+                                             .set( "startTime", Long.toString( entry.getStartTime() ) ) //
+                                             .build()
+            );
         }
 
         return toJson( mapBuilder.build() );

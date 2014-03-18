@@ -19,7 +19,7 @@
         <div class="col-lg-9">
             <ul>
               #foreach( $entry in $entries)
-                <li>$entry.className:$entry.methodName</li>
+                <li>$entry.className:$entry.methodName:$entry.level:$entry.executionTime</li>
               #end
             </ul>
         </div>

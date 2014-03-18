@@ -105,7 +105,7 @@ public final class Templates
         {
             context = new VelocityContext( variables );
         }
-        context.put( "date", new DateTool() );
+        context.put( "dateTool", new DateTool() );
         return context;
     }
 

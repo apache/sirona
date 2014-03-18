@@ -16,6 +16,7 @@
  */
 package org.apache.sirona.store.tracking;
 
+import org.apache.sirona.tracking.PathCallInformation;
 import org.apache.sirona.tracking.PathTrackingEntry;
 import org.apache.sirona.tracking.PathTrackingEntryComparator;
 import org.apache.sirona.util.SerializeUtils;
@@ -102,9 +103,9 @@ public class InMemoryPathTrackingDataStore
     }
 
     @Override
-    public Collection<String> retrieveTrackingIds( Date startTime, Date endTime )
+    public Collection<PathCallInformation> retrieveTrackingIds( Date startTime, Date endTime )
     {
-        List<String> trackingIds = new ArrayList<String>();
+        Set<PathCallInformation> trackingIds = new TreeSet<PathCallInformation>( PathCallInformation.COMPARATOR );
         for ( List<Pointer> buffers : this.pathTrackingEntries.values() )
         {
             if ( pathTrackingEntries.isEmpty() )
@@ -118,7 +119,8 @@ public class InMemoryPathTrackingDataStore
             if ( first.getStartTime() / 1000000 > startTime.getTime() //
                 && first.getStartTime() / 1000000 < endTime.getTime() )
             {
-                trackingIds.add( first.getTrackingId() );
+                trackingIds.add(
+                    new PathCallInformation( first.getTrackingId(), new Date( startTime.getTime() / 1000000 ) ) );
             }
         }
         return trackingIds;
@@ -233,7 +235,7 @@ public class InMemoryPathTrackingDataStore
             }
         }
 
-        for (String key : entriesToRemove)
+        for ( String key : entriesToRemove )
         {
             pathTrackingEntries.remove( key );
         }

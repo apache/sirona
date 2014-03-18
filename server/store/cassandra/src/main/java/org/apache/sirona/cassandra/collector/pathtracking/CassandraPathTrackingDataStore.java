@@ -32,6 +32,7 @@ import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.store.tracking.BatchPathTrackingDataStore;
 import org.apache.sirona.store.tracking.CollectorPathTrackingDataStore;
 import org.apache.sirona.store.tracking.PathTrackingDataStore;
+import org.apache.sirona.tracking.PathCallInformation;
 import org.apache.sirona.tracking.PathTrackingEntry;
 import org.apache.sirona.tracking.PathTrackingEntryComparator;
 
@@ -39,7 +40,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -185,7 +185,7 @@ public class CassandraPathTrackingDataStore
     }
 
     @Override
-    public Collection<String> retrieveTrackingIds( Date startTime, Date endTime )
+    public Collection<PathCallInformation> retrieveTrackingIds( Date startTime, Date endTime )
     {
 
         final QueryResult<OrderedRows<String, String, Long>> cResult = //
@@ -200,7 +200,7 @@ public class CassandraPathTrackingDataStore
 
         int size = cResult.get().getList().size();
 
-        Set<String> ids = new HashSet<String>( size );
+        Set<PathCallInformation> ids = new TreeSet<PathCallInformation>( PathCallInformation.COMPARATOR );
 
         OrderedRows<String, String, Long> rows = cResult.get();
 
@@ -215,7 +215,8 @@ public class CassandraPathTrackingDataStore
 
             PathTrackingEntry pathTrackingEntry = map( columnSlice );
 
-            ids.add( pathTrackingEntry.getTrackingId() );
+            ids.add( new PathCallInformation( pathTrackingEntry.getTrackingId(),
+                                              new Date( pathTrackingEntry.getStartTime() / 1000000 ) ) );
         }
 
         return ids;

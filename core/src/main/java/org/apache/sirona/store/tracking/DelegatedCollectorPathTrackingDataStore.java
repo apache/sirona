@@ -17,6 +17,7 @@
 package org.apache.sirona.store.tracking;
 
 import org.apache.sirona.configuration.ioc.IoCs;
+import org.apache.sirona.tracking.PathCallInformation;
 import org.apache.sirona.tracking.PathTrackingEntry;
 
 import java.util.Collection;
@@ -62,7 +63,7 @@ public class DelegatedCollectorPathTrackingDataStore
     }
 
     @Override
-    public Collection<String> retrieveTrackingIds( Date startTime, Date endTime )
+    public Collection<PathCallInformation> retrieveTrackingIds( Date startTime, Date endTime )
     {
         return this.delegatedPathTrackingDataStore.retrieveTrackingIds( startTime, endTime );
     }

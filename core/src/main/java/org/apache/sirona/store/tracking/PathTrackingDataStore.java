@@ -16,6 +16,7 @@
  */
 package org.apache.sirona.store.tracking;
 
+import org.apache.sirona.tracking.PathCallInformation;
 import org.apache.sirona.tracking.PathTrackingEntry;
 
 import java.util.Collection;
@@ -44,9 +45,9 @@ public interface PathTrackingDataStore
     /**
      * @param startTime
      * @param endTime
-     * @return {@link java.lang.String} of all trackingIds available in the system between startTime and endTime
+     * @return {@link org.apache.sirona.tracking.PathCallInformation} of all trackingIds available in the system between startTime and endTime
      */
-    Collection<String> retrieveTrackingIds( Date startTime, Date endTime );
+    Collection<PathCallInformation> retrieveTrackingIds( Date startTime, Date endTime );
 
 
 
