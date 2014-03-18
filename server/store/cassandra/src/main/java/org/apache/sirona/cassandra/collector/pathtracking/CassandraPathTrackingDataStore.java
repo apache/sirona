@@ -26,7 +26,6 @@ import me.prettyprint.hector.api.beans.Row;
 import me.prettyprint.hector.api.exceptions.HInvalidRequestException;
 import me.prettyprint.hector.api.factory.HFactory;
 import me.prettyprint.hector.api.query.QueryResult;
-import org.apache.cassandra.thrift.InvalidRequestException;
 import org.apache.sirona.cassandra.DynamicDelegatedSerializer;
 import org.apache.sirona.cassandra.collector.CassandraSirona;
 import org.apache.sirona.configuration.ioc.IoCs;
@@ -75,6 +74,15 @@ public class CassandraPathTrackingDataStore
         }
     };
 
+    private static final Comparator<PathTrackingEntry> LEVEL_COMPARATOR = new Comparator<PathTrackingEntry>()
+    {
+        @Override
+        public int compare( PathTrackingEntry o1, PathTrackingEntry o2 )
+        {
+            return Integer.valueOf( o1.getLevel() ).compareTo( Integer.valueOf( o2.getLevel() ) );
+        }
+    };
+
 
     public CassandraPathTrackingDataStore()
     {
@@ -111,7 +119,7 @@ public class CassandraPathTrackingDataStore
                     .addInsertion( id, family, column( "methodName", pathTrackingEntry.getMethodName() ) ) //
                     .addInsertion( id, family, column( "startTime", pathTrackingEntry.getStartTime() ) ) //
                     .addInsertion( id, family, column( "executionTime", pathTrackingEntry.getExecutionTime() ) ) //
-                    // we force level as long to be able to do slice queries include filtering on level, startTime
+                        // we force level as long to be able to do slice queries include filtering on level, startTime
                     .addInsertion( id, family, column( "level", Long.valueOf( pathTrackingEntry.getLevel() ) ) ) //
                     .addInsertion( "PATH_TRACKING", markerFamilly, emptyColumn( id ) ) //
                     .execute();
@@ -134,6 +142,12 @@ public class CassandraPathTrackingDataStore
                                       Integer.toString( pathTrackingEntry.getLevel() ) );
     }
 
+    /**
+     * <b>ordered by level!</b>
+     *
+     * @param trackingId
+     * @return
+     */
     @Override
     public Collection<PathTrackingEntry> retrieve( String trackingId )
     {
@@ -146,9 +160,10 @@ public class CassandraPathTrackingDataStore
                                  "level" ) //
                 .addEqualsExpression( "trackingId", trackingId ) //
                 .setColumnFamily( family ) //
+                .setRowCount( Integer.MAX_VALUE ) //
                 .execute();
 
-        Set<PathTrackingEntry> entries = new TreeSet<PathTrackingEntry>( START_TIME_COMPARATOR );
+        Set<PathTrackingEntry> entries = new TreeSet<PathTrackingEntry>( LEVEL_COMPARATOR );
 
         OrderedRows<String, String, String> rows = cResult.get();
 

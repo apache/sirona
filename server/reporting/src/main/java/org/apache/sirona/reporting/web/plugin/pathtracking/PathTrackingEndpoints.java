@@ -20,7 +20,9 @@ import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.reporting.web.plugin.api.MapBuilder;
 import org.apache.sirona.reporting.web.plugin.api.Regex;
 import org.apache.sirona.reporting.web.plugin.api.Template;
+import org.apache.sirona.reporting.web.plugin.report.format.HTMLFormat;
 import org.apache.sirona.store.tracking.PathTrackingDataStore;
+import org.apache.sirona.tracking.PathTrackingEntry;
 import org.apache.sirona.util.Environment;
 
 import java.util.Calendar;
@@ -58,7 +60,7 @@ public class PathTrackingEndpoints
         return new Template( "pathtracking/home.vm", params );
     }
 
-    @Regex("/startend/([0-9]*)/([0-9]*)")
+    @Regex( "/startend/([0-9]*)/([0-9]*)" )
     public String startend( final long start, final long end )
     {
 
@@ -73,6 +75,19 @@ public class PathTrackingEndpoints
 
         return toJson( mapBuilder.build() );
 
+    }
+
+    @Regex( "/pathtrackingdetail/(.*)" )
+    public Template displayPathTrackingDetail( String pathTrackingId )
+    {
+
+        Collection<PathTrackingEntry> entries = PATH_TRACKING_DATA_STORE.retrieve( pathTrackingId );
+
+        return new Template( "pathtracking/pathtrackingdetail.vm", //
+                             new MapBuilder<String, Object>() //
+                                 .set( "headers", HTMLFormat.ATTRIBUTES_ORDERED_LIST ) //
+                                 .set( "entries", entries ).build()//
+        );
     }
 
 

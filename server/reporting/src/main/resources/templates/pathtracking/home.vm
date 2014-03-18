@@ -17,9 +17,11 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-lg-3">
+            <ul>
             #foreach( $id in $trackingIds )
-                $id
+                <li><a href="$mapping/pathtracking/pathtrackingdetail/$id">$id</a></li>
             #end
+            </ul>
         </div>
         <div class="col-lg-3">
 
