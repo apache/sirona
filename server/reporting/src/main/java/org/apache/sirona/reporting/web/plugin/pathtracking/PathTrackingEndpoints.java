@@ -76,7 +76,7 @@ public class PathTrackingEndpoints
             mapBuilder = mapBuilder.set( //
                                          new MapBuilder<String, String>() //
                                              .set( "trackingId", entry.getTrackingId() ) //
-                                             .set( "startTime", Long.toString( entry.getStartTime() ) ) //
+                                             .set( "startTime", Long.toString( entry.getStartTime().getTime() ) ) //
                                              .build()
             );
         }
