@@ -482,10 +482,17 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
     public static class SironaKeyVisitor extends ClassVisitor implements Opcodes {
         private final String javaName;
         private final Map<String, String> keys = new HashMap<String, String>();
+        private boolean isInterface;
 
         public SironaKeyVisitor(final String javaName) {
             super(ASM4, null);
             this.javaName = javaName;
+        }
+
+        @Override
+        public void visit(final int version, final int access, final String name,
+                          final String signature, final String supername, final String[] interfaces) {
+            this.isInterface = ((access & Opcodes.ACC_INTERFACE) != 0);
         }
 
         @Override
@@ -506,7 +513,7 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
         }
 
         public boolean hasAdviced() {
-            return !keys.isEmpty();
+            return !isInterface && !keys.isEmpty();
         }
 
         public Map<String, String> getKeys() {
