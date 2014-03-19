@@ -30,7 +30,7 @@
   <properties>
     <test.debug.remote>false</test.debug.remote>
     <sirona.agent.debug>false</sirona.agent.debug>
-    <asm.version>4.2</asm.version>
+    <asm.version>5.0</asm.version>
     <agent.class>org.apache.sirona.javaagent.SironaAgent</agent.class>
   </properties>
 

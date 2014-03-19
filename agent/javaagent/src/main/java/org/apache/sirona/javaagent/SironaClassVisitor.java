@@ -52,7 +52,7 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
     private Type classType;
 
     public SironaClassVisitor(final ClassWriter writer, final String javaName, final Map<String, String> keys) {
-        super(ASM4, new SironaStaticInitMerger(writer, keys));
+        super(ASM5, new SironaStaticInitMerger(writer, keys));
         this.javaName = javaName;
     }
 
@@ -137,7 +137,7 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
         private final Method method;
 
         public ProxyMethodsVisitor(final MethodVisitor methodVisitor, final int access, final Method method, final Type clazz) {
-            super(ASM4, methodVisitor, access, method.getName(), method.getDescriptor());
+            super(ASM5, methodVisitor, access, method.getName(), method.getDescriptor());
             this.clazz = clazz;
             this.method = method;
             this.isStatic = Modifier.isStatic(access);
@@ -248,7 +248,7 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
         private final Collection<Runnable> rewriteTasks = new LinkedList<Runnable>();
 
         public MoveAnnotationOnProxy(final ProxyMethodsVisitor decorator, final MethodVisitor methodVisitor) {
-            super(ASM4);
+            super(ASM5);
             this.decorator = decorator;
             this.delegate = methodVisitor;
         }
@@ -327,6 +327,11 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
         @Override
         public void visitFieldInsn(int opcode, String owner, String name, String desc) {
             delegate.visitFieldInsn(opcode, owner, name, desc);
+        }
+
+        @Override
+        public void visitMethodInsn(int opcode, String owner, String name, String desc, boolean itf) {
+            delegate.visitMethodInsn(opcode, owner, name, desc, itf);
         }
 
         @Override
@@ -412,7 +417,7 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
         private AnnotationVisitor delegate;
 
         public AnnotationRewriter(final Collection<Runnable> tasks) {
-            super(ASM4);
+            super(ASM5);
             this.runnables = tasks;
         }
 
@@ -536,7 +541,7 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
             if (STATIC_INIT.equals(name)) {
                 final String n = STATIC_CLINT_MERGE_PREFIX + counter++;
                 final MethodVisitor mv = cv.visitMethod(ACC_PRIVATE + ACC_STATIC, n, desc, signature, exceptions);
-                clinit.visitMethodInsn(INVOKESTATIC, this.name, n, desc);
+                clinit.visitMethodInsn(INVOKESTATIC, this.name, n, desc, false);
                 return mv;
             }
             return cv.visitMethod(access, name, desc, signature, exceptions);
