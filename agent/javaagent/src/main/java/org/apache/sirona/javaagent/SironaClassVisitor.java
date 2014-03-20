@@ -89,6 +89,26 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
         return visitor;
     }
 
+    @Override
+    public void visitEnd() {
+        // TODO
+        // for all implemented interface with default method
+        // and when default methods are not overriden
+        // just declare calling Interface.super.method() + generating proxy
+        /*
+mv = cw.visitMethod(ACC_PUBLIC, methodName", signature, null, null);
+mv.visitCode();
+mv.visitVarInsn(ALOAD, 0);
+mv.visitMethodInsn(INVOKESPECIAL, interfaceType, methodName, signature, true);
+mv.visitInsn(ARETURN);
+mv.visitMaxs(1, 1);
+mv.visitEnd();
+
+         */
+
+        super.visitEnd();
+    }
+
     private static int forcePrivate(final int access) {
         return (access & ~(Modifier.PRIVATE | Modifier.PUBLIC | Modifier.PROTECTED)) | Modifier.PRIVATE;
     }
