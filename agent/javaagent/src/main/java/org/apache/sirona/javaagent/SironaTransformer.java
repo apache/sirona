@@ -32,7 +32,7 @@ public class SironaTransformer implements ClassFileTransformer {
     private final boolean debug;
 
     public SironaTransformer(final boolean debug) {
-        this.debug = debug;
+        this.debug = debug || Boolean.getBoolean("sirona.javaagent.debug");
     }
 
     @Override
@@ -51,22 +51,21 @@ public class SironaTransformer implements ClassFileTransformer {
             final SironaClassVisitor advisor = new SironaClassVisitor(writer, className);
             reader.accept(advisor, ClassReader.SKIP_FRAMES);
 
-            final byte[] bytes = writer.toByteArray();
-            if (debug) {
-                final File dump = new File(System.getProperty("java.io.tmpdir"), "sirona-dump/" + className + ".class");
-                dump.getParentFile().mkdirs();
-                FileOutputStream w = null;
-                try {
-                    w = new FileOutputStream(dump);
-                    w.write(bytes);
-                } finally {
-                    if (w != null) {
-                        w.close();
+            if (advisor.wasAdviced()) {
+                final byte[] bytes = writer.toByteArray();
+                if (debug) {
+                    final File dump = new File(System.getProperty("java.io.tmpdir"), "sirona-dump/" + className + ".class");
+                    dump.getParentFile().mkdirs();
+                    FileOutputStream w = null;
+                    try {
+                        w = new FileOutputStream(dump);
+                        w.write(bytes);
+                    } finally {
+                        if (w != null) {
+                            w.close();
+                        }
                     }
                 }
-            }
-
-            if (advisor.wasAdviced()) {
                 return bytes;
             }
             return classfileBuffer;
