@@ -70,91 +70,7 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
         final String label = javaName.replace("/", ".") + "." + name;
         if (AgentContext.listeners(label) != null) {
             count++;
-
-            return new AdviceAdapter(ASM5, visitor, access, name, desc) {
-                private int ctxLocal;
-                private final Label tryStart = new Label();
-                private final Label endLabel = new Label();
-                private final Label handlerLabel = new Label();
-
-                @Override
-                public void onMethodEnter() {
-                    final boolean isStatic = Modifier.isStatic(access);
-                    if (isStatic) {
-                        visitInsn(ACONST_NULL);
-                    } else {
-                        loadThis();
-                    }
-                    push(label);
-
-                    ctxLocal = newLocal(AGENT_CONTEXT);
-                    invokeStatic(AGENT_CONTEXT, START_METHOD);
-                    storeLocal(ctxLocal);
-
-                    visitLabel(tryStart);
-                }
-
-                @Override
-                public void onMethodExit(final int opCode) {
-                    if (opCode == ATHROW) {
-                        return;
-                    }
-
-                    int stateLocal = -1;
-                    if (opCode != MIN_VALUE) {
-                        final Type returnType = Type.getReturnType(desc);
-                        final boolean isVoid = Type.VOID_TYPE.equals(returnType);
-                        if (!isVoid) {
-                            stateLocal = newLocal(returnType);
-                            storeLocal(stateLocal);
-                        }
-                    } else {
-                        stateLocal = newLocal(THROWABLE_TYPE);
-                        storeLocal(stateLocal);
-                    }
-
-                    loadLocal(ctxLocal);
-                    if (stateLocal != -1) {
-                        loadLocal(stateLocal);
-                        if (opCode != MIN_VALUE) {
-                            valueOf(Type.getReturnType(desc));
-                        }
-                    } else {
-                        visitInsn(ACONST_NULL);
-                    }
-                    if (opCode != MIN_VALUE) {
-                        invokeVirtual(AGENT_CONTEXT, STOP_METHOD);
-                    } else {
-                        invokeVirtual(AGENT_CONTEXT, STOP_WITH_EXCEPTION_METHOD);
-                    }
-
-                    if (stateLocal != -1) {
-                        loadLocal(stateLocal);
-                    }
-
-                    if (opCode != MIN_VALUE) {
-                        visitLabel(endLabel);
-                    }
-                }
-
-                private void ensureLabelWasVisited(final Label label) {
-                    try {
-                        label.getOffset();
-                    } catch (final IllegalStateException ise) {
-                        visitLabel(label);
-                    }
-                }
-
-                @Override
-                public void visitMaxs(final int maxStack, final int maxLocals) {
-                    ensureLabelWasVisited(endLabel);
-                    visitLabel(handlerLabel);
-                    visitTryCatchBlock(tryStart, endLabel, handlerLabel, THROWABLE_TYPE.getInternalName());
-                    onMethodExit(MIN_VALUE);
-                    throwException();
-                    super.visitMaxs(0, 0);
-                }
-            };
+            return new SironaAdviceAdapter(visitor, access, name, desc, label);
         }
         return visitor;
     }
@@ -166,5 +82,100 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
 
     public boolean wasAdviced() {
         return count > 0;
+    }
+
+    private class SironaAdviceAdapter extends AdviceAdapter {
+        private final boolean isStatic;
+        private final String label;
+        private final String desc;
+
+        public SironaAdviceAdapter(final MethodVisitor visitor, final int access, final String name, final String desc, final String label) {
+            super(ASM5, visitor, access, name, desc);
+            this.isStatic = Modifier.isStatic(access);
+            this.label = label;
+            this.desc = desc;
+        }
+
+        private int ctxLocal;
+        private final Label tryStart = new Label();
+        private final Label endLabel = new Label();
+        private final Label handlerLabel = new Label();
+
+        @Override
+        public void onMethodEnter() {
+            if (isStatic) {
+                visitInsn(ACONST_NULL);
+            } else {
+                loadThis();
+            }
+            push(label);
+
+            ctxLocal = newLocal(AGENT_CONTEXT);
+            invokeStatic(AGENT_CONTEXT, START_METHOD);
+            storeLocal(ctxLocal);
+
+            visitLabel(tryStart);
+        }
+
+        @Override
+        public void onMethodExit(final int opCode) {
+            if (opCode == ATHROW) {
+                return;
+            }
+
+            int stateLocal = -1;
+            if (opCode != MIN_VALUE) {
+                final Type returnType = Type.getReturnType(desc);
+                final boolean isVoid = Type.VOID_TYPE.equals(returnType);
+                if (!isVoid) {
+                    stateLocal = newLocal(returnType);
+                    storeLocal(stateLocal);
+                }
+            } else {
+                stateLocal = newLocal(THROWABLE_TYPE);
+                storeLocal(stateLocal);
+            }
+
+            loadLocal(ctxLocal);
+            if (stateLocal != -1) {
+                loadLocal(stateLocal);
+                if (opCode != MIN_VALUE) {
+                    valueOf(Type.getReturnType(desc));
+                }
+            } else {
+                visitInsn(ACONST_NULL);
+            }
+            if (opCode != MIN_VALUE) {
+                invokeVirtual(AGENT_CONTEXT, STOP_METHOD);
+            } else {
+                invokeVirtual(AGENT_CONTEXT, STOP_WITH_EXCEPTION_METHOD);
+            }
+
+            if (stateLocal != -1) {
+                loadLocal(stateLocal);
+            }
+
+            if (opCode != MIN_VALUE) {
+                visitLabel(endLabel);
+            }
+        }
+
+        private void ensureLabelWasVisited(final Label label) {
+            try {
+                label.getOffset();
+            } catch (final IllegalStateException ise) {
+                visitLabel(label);
+            }
+        }
+
+        @Override
+        public void visitMaxs(final int maxStack, final int maxLocals) {
+            ensureLabelWasVisited(endLabel);
+            visitLabel(handlerLabel);
+            visitTryCatchBlock(tryStart, endLabel, handlerLabel, THROWABLE_TYPE.getInternalName());
+            onMethodExit(MIN_VALUE);
+            throwException();
+            super.visitMaxs(0, 0);
+        }
     }
 }
