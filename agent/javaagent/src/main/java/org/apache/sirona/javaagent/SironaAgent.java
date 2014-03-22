@@ -19,7 +19,6 @@ package org.apache.sirona.javaagent;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.lang.annotation.Annotation;
 import java.lang.instrument.Instrumentation;
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -112,13 +111,11 @@ public class SironaAgent {
             final boolean reloadable = instrumentation.isRetransformClassesSupported() && FORCE_RELOAD;
             instrumentation.addTransformer(transformer, reloadable);
 
-            final Class<? extends Annotation> instrumentedMarker = (Class<? extends Annotation>) loader.loadClass("org.apache.sirona.javaagent.Instrumented");
             final Class<?> listener = loader.loadClass("org.apache.sirona.javaagent.spi.InvocationListener");
             if (reloadable) {
                 for (final Class<?> clazz : instrumentation.getAllLoadedClasses()) {
                     if (!clazz.isArray()
                             && !listener.isAssignableFrom(clazz)
-                            && clazz.getAnnotation(instrumentedMarker) == null
                             && instrumentation.isModifiableClass(clazz)) {
                         try {
 
@@ -232,7 +229,7 @@ public class SironaAgent {
     /**
      *
      * @param agentArgs foo=bar|beer=palepale|etc...
-     * @return
+     * @return parameters
      */
     protected static Map<String, String> extractParameters(String agentArgs){
         if(agentArgs==null||agentArgs.length()<1){

@@ -59,7 +59,7 @@ public class AgentContext {
     }
 
     // called by agent
-    public static AgentContext startOn(final String key, final Object that) {
+    public static AgentContext startOn(final Object that, final String key) {
 		if (key == null) { // possible in static inits, the best would be to ignore it in instrumentation
 			return FAKE_CONTEXT;
 		}

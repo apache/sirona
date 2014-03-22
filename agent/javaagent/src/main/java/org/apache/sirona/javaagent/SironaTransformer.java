@@ -46,29 +46,27 @@ public class SironaTransformer implements ClassFileTransformer {
 
     protected byte[] doTransform(final String className, final byte[] classfileBuffer) {
         try {
-            final SironaClassVisitor.SironaKeyVisitor keyVisitor = new SironaClassVisitor.SironaKeyVisitor(className);
-            new ClassReader(classfileBuffer).accept(keyVisitor, ClassReader.SKIP_DEBUG);
-            if (keyVisitor.hasAdviced()) {
-                final ClassReader reader = new ClassReader(classfileBuffer);
-                final ClassWriter writer = new SironaClassWriter(reader, ClassWriter.COMPUTE_FRAMES);
-                final SironaClassVisitor advisor = new SironaClassVisitor(writer, className, keyVisitor.getKeys());
-                reader.accept(advisor, 0);
+            final ClassReader reader = new ClassReader(classfileBuffer);
+            final ClassWriter writer = new SironaClassWriter(reader, ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
+            final SironaClassVisitor advisor = new SironaClassVisitor(writer, className);
+            reader.accept(advisor, ClassReader.SKIP_FRAMES);
 
-                final byte[] bytes = writer.toByteArray();
-                if (debug) {
-                    final File dump = new File(System.getProperty("java.io.tmpdir"), "sirona-dump/" + className + ".class");
-                    dump.getParentFile().mkdirs();
-                    FileOutputStream w = null;
-                    try {
-                        w = new FileOutputStream(dump);
-                        w.write(bytes);
-                    } finally {
-                        if (w != null) {
-                            w.close();
-                        }
+            final byte[] bytes = writer.toByteArray();
+            if (debug) {
+                final File dump = new File(System.getProperty("java.io.tmpdir"), "sirona-dump/" + className + ".class");
+                dump.getParentFile().mkdirs();
+                FileOutputStream w = null;
+                try {
+                    w = new FileOutputStream(dump);
+                    w.write(bytes);
+                } finally {
+                    if (w != null) {
+                        w.close();
                     }
                 }
+            }
 
+            if (advisor.wasAdviced()) {
                 return bytes;
             }
             return classfileBuffer;

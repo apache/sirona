@@ -111,7 +111,6 @@ public class SimpleTest {
     @Test
     public void annotations() throws NoSuchMethodException {
         assertTrue(ServiceWithAnnotationTransform.class.getMethod("mtd").getAnnotation(AgentArgs.class) != null);
-        assertTrue(ServiceWithAnnotationTransform.class.getDeclaredMethod("mtd_$_$irona_$_internal_$_original_$_").getAnnotation(AgentArgs.class) == null);
     }
 
     @Test

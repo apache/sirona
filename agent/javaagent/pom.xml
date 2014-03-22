@@ -45,6 +45,7 @@
         </exclusion>
       </exclusions>
     </dependency>
+
     <dependency>
       <groupId>org.ow2.asm</groupId>
       <artifactId>asm</artifactId>
@@ -60,14 +61,12 @@
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
     </dependency>
-
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
       <version>3.2.1</version>
       <scope>test</scope>
     </dependency>
-
   </dependencies>
 
   <build>
@@ -117,7 +116,7 @@
               <relocations>
                 <relocation>
                   <pattern>org.objectweb.asm</pattern>
-                  <shadedPattern>org.apache.sirona.asm4</shadedPattern>
+                  <shadedPattern>org.apache.sirona.asm</shadedPattern>
                 </relocation>
                 <!--
                 <relocation>
