@@ -126,4 +126,16 @@ public class OptimizedStatistics {
     public OptimizedStatistics copy() {
         return new OptimizedStatistics(n, sum, min, max, m1, m2);
     }
+
+    @Override
+    public String toString() {
+        return "OptimizedStatistics{" +
+                "n=" + n +
+                ", sum=" + sum +
+                ", min=" + min +
+                ", max=" + max +
+                ", m1=" + m1 +
+                ", m2=" + m2 +
+                '}';
+    }
 }
