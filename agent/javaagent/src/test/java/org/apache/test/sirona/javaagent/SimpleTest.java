@@ -102,6 +102,13 @@ public class SimpleTest {
     }
 
     @Test
+    public void alreadyTryCatchWithReturn() {
+        assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.alreadyTryCatchWithReturnPrimitive", 0);
+        assertTrue(new ServiceTransform().alreadyTryCatchWithReturnPrimitive());
+        assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.alreadyTryCatchWithReturnPrimitive", 1);
+    }
+
+    @Test
     public void primitive() {
         assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.soPrimitive", 0);
         ServiceTransform.soPrimitive();
@@ -171,6 +178,14 @@ public class SimpleTest {
                 throw new NullPointerException();
             } catch (final NullPointerException iae) {
                 // no-op
+            }
+        }
+
+        public boolean alreadyTryCatchWithReturnPrimitive() {
+            try {
+                return true;
+            } catch (final NullPointerException iae) {
+                return false;
             }
         }
     }
