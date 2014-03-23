@@ -239,10 +239,13 @@ public abstract class AbstractPerformanceInterceptor<T> implements Serializable 
                 final long elapsedTime = stopWatch.getElapsedTime();
 
                 if (error != null) {
+                    /*
                     final ByteArrayOutputStream writer = new ByteArrayOutputStream();
                     error.printStackTrace(new PrintStream(writer));
                     final String toString = writer.toString();
-                    Repository.INSTANCE.getCounter(new Counter.Key(Role.FAILURES, toString.substring(0, Math.min(MAX_LENGTH, toString.length())))).add(elapsedTime);
+                    */
+                    Repository.INSTANCE.getCounter(
+                            new Counter.Key(Role.FAILURES, error.getClass().getName() + ":" + (error.getMessage() != null ? error.getMessage() : ""))).add(elapsedTime);
                 }
 
                 activationContext.elapsedTime(elapsedTime);

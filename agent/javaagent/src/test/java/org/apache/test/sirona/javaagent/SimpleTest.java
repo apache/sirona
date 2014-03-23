@@ -121,7 +121,7 @@ public class SimpleTest {
     }
 
     @Test
-    @AgentArgs(value = CounterListener.DISABLE_PARAMETER_KEY)
+    @AgentArgs(CounterListener.DISABLE_PARAMETER_KEY)
     public void primitiveDisable() {
         assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.soPrimitive", 0);
         ServiceTransform.soPrimitive();
