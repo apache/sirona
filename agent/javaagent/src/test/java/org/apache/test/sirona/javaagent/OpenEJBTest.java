@@ -16,9 +16,12 @@
  */
 package org.apache.test.sirona.javaagent;
 
+import org.apache.openejb.loader.JarLocation;
 import org.apache.openejb.util.proxy.LocalBeanProxyFactory;
 import org.apache.sirona.javaagent.InJvmTransformerRunner;
 import org.apache.sirona.repositories.Repository;
+import org.apache.xbean.finder.AnnotationFinder;
+import org.apache.xbean.finder.archive.FileArchive;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,6 +38,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
 import java.util.Collection;
 import java.util.List;
 
@@ -47,6 +51,12 @@ public class OpenEJBTest {
     @After
     public void reset() {
         Repository.INSTANCE.reset();
+    }
+
+    @Test
+    public void scanning() throws MalformedURLException {
+        final AnnotationFinder finder = new AnnotationFinder(new FileArchive(Thread.currentThread().getContextClassLoader(), JarLocation.jarLocation(TicTacToeServiceEJB.class).toURI().toURL())).link();
+        assertEquals(1, finder.findMetaAnnotatedFields(PersistenceContext.class).size());
     }
 
     @Test

@@ -76,9 +76,14 @@ public class InJvmTransformerRunner extends BlockJUnit4ClassRunner {
                 }
 
                 @Override
-                public Class<?> loadClass(String name) throws ClassNotFoundException {
+                public Class<?> loadClass(final String name) throws ClassNotFoundException {
                     if (!name.startsWith(getTestClass().getName())) {
                         return getParent().loadClass(name);
+                    }
+
+                    final Class<?> existing  = findLoadedClass(name);
+                    if (existing != null) {
+                        return existing;
                     }
 
                     try {
