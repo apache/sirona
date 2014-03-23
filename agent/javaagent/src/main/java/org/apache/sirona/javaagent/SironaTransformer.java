@@ -70,16 +70,16 @@ public class SironaTransformer implements ClassFileTransformer {
             }
             return classfileBuffer;
         } catch (final Exception e) {
-            if ( SironaAgentLogging.AGENT_DEBUG) {
-                SironaAgentLogging.debug( "fail transforming class {0} : {1}", className, e.getMessage() );
+            if (SironaAgentLogging.AGENT_DEBUG) {
+                SironaAgentLogging.debug("fail transforming class {0} : {1}", className, e.getMessage());
                 e.printStackTrace();
             }
             //throw new RuntimeException( e.getMessage(), e );
             e.printStackTrace();
             return classfileBuffer;
-        } catch ( StackOverflowError e ) {
-            if ( SironaAgentLogging.AGENT_DEBUG) {
-                SironaAgentLogging.debug( "fail transforming class {0} : {1}", className, e.getMessage() );
+        } catch (StackOverflowError e) {
+            if (SironaAgentLogging.AGENT_DEBUG) {
+                SironaAgentLogging.debug("fail transforming class {0} : {1}", className, e.getMessage());
                 e.printStackTrace();
             }
             //throw new RuntimeException( e.getMessage(), e );
@@ -88,20 +88,18 @@ public class SironaTransformer implements ClassFileTransformer {
         }
     }
 
-    public static class SironaClassWriter extends ClassWriter
-    {
-        private SironaClassWriter( int flags )
-        {
-            super( flags );
+    public static class SironaClassWriter extends ClassWriter {
+        private SironaClassWriter(int flags) {
+            super(flags);
         }
 
-        public SironaClassWriter( ClassReader classReader, int flags )
-        {
-            super( classReader, flags );
+        public SironaClassWriter(ClassReader classReader, int flags) {
+            super(classReader, flags);
         }
 
         /**
          * copy paste code from asm as we need a different way to load classes
+         *
          * @param type1
          * @param type2
          * @return
@@ -131,27 +129,19 @@ public class SironaTransformer implements ClassFileTransformer {
             }
         }
 
-        protected Class<?> findClass( String className )
-            throws ClassNotFoundException
-        {
-            ClassLoader classLoader = getClass().getClassLoader();
-
-            try
-            {
-                return Class.forName( className, false, classLoader );
-            }
-            catch ( ClassNotFoundException e )
-            {
+        protected Class<?> findClass(final String className)
+                throws ClassNotFoundException {
+            try { // first TCCL
                 ClassLoader tccl = Thread.currentThread().getContextClassLoader();
-                return Class.forName( className, false, tccl );
+                if (tccl == null) {
+                    tccl = getClass().getClassLoader();
+                }
+                return Class.forName(className, false, tccl);
+            } catch (ClassNotFoundException e) {
+                return Class.forName(className, false, getClass().getClassLoader());
             }
-
         }
-
     }
-
-
-
 
     protected boolean shouldTransform(final String className, final ClassLoader loader) {
         return !(className == null // framework with bug
