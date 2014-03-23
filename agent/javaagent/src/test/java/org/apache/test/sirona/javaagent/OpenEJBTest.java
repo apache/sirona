@@ -19,8 +19,6 @@ package org.apache.test.sirona.javaagent;
 import org.apache.openejb.util.proxy.LocalBeanProxyFactory;
 import org.apache.sirona.javaagent.InJvmTransformerRunner;
 import org.apache.sirona.repositories.Repository;
-import org.apache.xbean.finder.AnnotationFinder;
-import org.apache.xbean.finder.archive.ClassesArchive;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,13 +47,6 @@ public class OpenEJBTest {
     @After
     public void reset() {
         Repository.INSTANCE.reset();
-    }
-
-    @Test
-    public void checkScanning() {
-        // do bytecode parsing so ensure we are still valid
-        assertEquals(1, new AnnotationFinder(new ClassesArchive(TicTacToeServiceEJB.class))
-                .link().findMetaAnnotatedFields(PersistenceContext.class).size());
     }
 
     @Test
