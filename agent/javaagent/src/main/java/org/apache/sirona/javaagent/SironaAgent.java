@@ -107,7 +107,11 @@ public class SironaAgent {
 
 
         try {
-            final SironaTransformer transformer = new SironaTransformer("true".equals(extractConfig(agentArgs, "debug=")));
+            final boolean debug = "true".equalsIgnoreCase(extractConfig(agentArgs, "debug="));
+            if (debug) {
+                System.out.println("Sirona debugging activated, find instrumented classes in /tmp/sirona-dump/");
+            }
+            final SironaTransformer transformer = new SironaTransformer(debug);
             final boolean reloadable = instrumentation.isRetransformClassesSupported() && FORCE_RELOAD;
             instrumentation.addTransformer(transformer, reloadable);
 
