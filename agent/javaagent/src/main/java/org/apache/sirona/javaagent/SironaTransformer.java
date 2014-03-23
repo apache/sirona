@@ -88,14 +88,14 @@ public class SironaTransformer implements ClassFileTransformer {
         }
     }
 
-    private static class SironaClassWriter extends ClassWriter
+    public static class SironaClassWriter extends ClassWriter
     {
         private SironaClassWriter( int flags )
         {
             super( flags );
         }
 
-        private SironaClassWriter( ClassReader classReader, int flags )
+        public SironaClassWriter( ClassReader classReader, int flags )
         {
             super( classReader, flags );
         }
