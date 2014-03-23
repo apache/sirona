@@ -50,7 +50,7 @@ public class InJvmTransformerRunner extends BlockJUnit4ClassRunner {
         if (customTransformers != null) {
             transformers = customTransformers.value();
         } else {
-            transformers = new Class[] { SironaTransformer.class };
+            transformers = new Class[]{SironaTransformer.class};
         }
 
         Thread.currentThread().setContextClassLoader(getTestLoader());
@@ -69,70 +69,7 @@ public class InJvmTransformerRunner extends BlockJUnit4ClassRunner {
     private ClassLoader getTestLoader() {
         if (testLoader == null) {
             originalLoader = Thread.currentThread().getContextClassLoader();
-            testLoader = new URLClassLoader(new URL[0]) {
-                @Override
-                public String toString() {
-                    return InJvmTransformerRunner.class.getSimpleName() + "-" + super.toString();
-                }
-
-                @Override
-                public Class<?> loadClass(final String name) throws ClassNotFoundException {
-                    if (!name.startsWith(getTestClass().getName())) {
-                        return getParent().loadClass(name);
-                    }
-
-                    final Class<?> existing  = findLoadedClass(name);
-                    if (existing != null) {
-                        return existing;
-                    }
-
-                    try {
-                        final String resourceName = name.replaceAll("\\.", "/") + ".class";
-                        final InputStream is = getResourceAsStream(resourceName);
-                        if (is == null) {
-                            throw new ClassNotFoundException(name);
-                        }
-
-                        final String className = resourceName.replace(".class", "");
-
-                        byte[] buffer = IOUtils.toByteArray(is);
-                        for (final Class<?> t : transformers) {
-                            if (SironaTransformer.class.equals(t)) {
-                                final SironaTransformer transformer = new SironaTransformer(false);
-                                buffer = transformer.transform(this, className, null, null, buffer);
-                            } else if (PCClassFileTransformer.class.equals(t)) {
-                                if (name.endsWith("Entity")) {
-                                    // hacky but avoid to build a full openjpa project/context
-                                    final PersistenceMetaDataFactory factory = new PersistenceMetaDataFactory();
-                                    factory.setTypes("org.apache.test.sirona.javaagent.OpenJPATest$ServiceSquareEntity");
-
-                                    final MetaDataRepository repos = new MetaDataRepository();
-                                    repos.setConfiguration(new OpenJPAConfigurationImpl());
-                                    repos.setMetaDataFactory(factory);
-
-                                    final BCClass type = new Project().loadClass(new ByteArrayInputStream(buffer), new URLClassLoader(new URL[0], originalLoader));
-                                    final PCEnhancer enhancer = new PCEnhancer(repos.getConfiguration(), type, repos, this);
-                                    enhancer.setAddDefaultConstructor(true);
-                                    enhancer.setEnforcePropertyRestrictions(true);
-
-                                    if (enhancer.run() != PCEnhancer.ENHANCE_NONE) {
-                                        final BCClass pcb = enhancer.getPCBytecode();
-                                        final byte[] transformed = AsmAdaptor.toByteArray(pcb, pcb.toByteArray());
-                                        if (transformed != null) {
-                                            buffer = transformed;
-                                        }
-                                    }
-                                }
-                            } else {
-                                buffer = ClassFileTransformer.class.cast(t.newInstance()).transform(this, className, null, null, buffer);
-                            }
-                        }
-                        return defineClass(name, buffer, 0, buffer.length);
-                    } catch (final Throwable t) {
-                        throw new ClassNotFoundException(t.getMessage(), t);
-                    }
-                }
-            };
+            testLoader = new SironaClassLoader(getTestClass().getJavaClass(), transformers, originalLoader);
         }
         return testLoader;
     }
@@ -162,5 +99,85 @@ public class InJvmTransformerRunner extends BlockJUnit4ClassRunner {
                 }
             }
         };
+    }
+
+    public static class SironaClassLoader extends URLClassLoader {
+        private final Class<?>[] transformers;
+        private final Class<?> testClass;
+
+        public SironaClassLoader(final URL[] urls, final Class<?> testClass, final Class<?>[] transformers, final ClassLoader parent) {
+            super(urls, parent);
+            this.testClass = testClass;
+            this.transformers = transformers;
+        }
+
+        public SironaClassLoader(final Class<?> testClass, final Class<?>[] transformers, final ClassLoader parent) {
+            super(new URL[0], parent);
+            this.testClass = testClass;
+            this.transformers = transformers;
+        }
+
+        @Override
+        public String toString() {
+            return InJvmTransformerRunner.class.getSimpleName() + "-" + super.toString();
+        }
+
+        @Override
+        public Class<?> loadClass(final String name) throws ClassNotFoundException {
+            if (!name.startsWith(testClass.getName())) {
+                return getParent().loadClass(name);
+            }
+
+            final Class<?> existing = findLoadedClass(name);
+            if (existing != null) {
+                return existing;
+            }
+
+            try {
+                final String resourceName = name.replaceAll("\\.", "/") + ".class";
+                final InputStream is = getResourceAsStream(resourceName);
+                if (is == null) {
+                    throw new ClassNotFoundException(name);
+                }
+
+                final String className = resourceName.replace(".class", "");
+
+                byte[] buffer = IOUtils.toByteArray(is);
+                for (final Class<?> t : transformers) {
+                    if (SironaTransformer.class.equals(t)) {
+                        final SironaTransformer transformer = new SironaTransformer(false);
+                        buffer = transformer.transform(this, className, null, null, buffer);
+                    } else if (PCClassFileTransformer.class.equals(t)) {
+                        if (name.endsWith("Entity")) {
+                            // hacky but avoid to build a full openjpa project/context
+                            final PersistenceMetaDataFactory factory = new PersistenceMetaDataFactory();
+                            factory.setTypes("org.apache.test.sirona.javaagent.OpenJPATest$ServiceSquareEntity");
+
+                            final MetaDataRepository repos = new MetaDataRepository();
+                            repos.setConfiguration(new OpenJPAConfigurationImpl());
+                            repos.setMetaDataFactory(factory);
+
+                            final BCClass type = new Project().loadClass(new ByteArrayInputStream(buffer), new URLClassLoader(new URL[0], getParent()));
+                            final PCEnhancer enhancer = new PCEnhancer(repos.getConfiguration(), type, repos, this);
+                            enhancer.setAddDefaultConstructor(true);
+                            enhancer.setEnforcePropertyRestrictions(true);
+
+                            if (enhancer.run() != PCEnhancer.ENHANCE_NONE) {
+                                final BCClass pcb = enhancer.getPCBytecode();
+                                final byte[] transformed = AsmAdaptor.toByteArray(pcb, pcb.toByteArray());
+                                if (transformed != null) {
+                                    buffer = transformed;
+                                }
+                            }
+                        }
+                    } else {
+                        buffer = ClassFileTransformer.class.cast(t.newInstance()).transform(this, className, null, null, buffer);
+                    }
+                }
+                return defineClass(name, buffer, 0, buffer.length);
+            } catch (final Throwable t) {
+                throw new ClassNotFoundException(t.getMessage(), t);
+            }
+        }
     }
 }
