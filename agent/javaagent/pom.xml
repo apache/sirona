@@ -48,12 +48,7 @@
 
     <dependency>
       <groupId>org.ow2.asm</groupId>
-      <artifactId>asm</artifactId>
-      <version>${asm.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.ow2.asm</groupId>
-      <artifactId>asm-commons</artifactId>
+      <artifactId>asm-all</artifactId>
       <version>${asm.version}</version>
     </dependency>
 

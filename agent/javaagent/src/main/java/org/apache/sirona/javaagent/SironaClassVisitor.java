@@ -62,6 +62,7 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
 
     @Override
     public MethodVisitor visitMethod(final int access, final String name, final String desc, final String signature, final String[] exceptions) {
+        // final MethodVisitor visitor = new JSRInlinerAdapter(super.visitMethod(access, name, desc, signature, exceptions), access, name, desc, signature, exceptions);
         final MethodVisitor visitor = super.visitMethod(access, name, desc, signature, exceptions);
         if (!isSironable(access, name)) {
             return visitor;
@@ -99,7 +100,6 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
         private int ctxLocal;
         private final Label tryStart = new Label();
         private final Label endLabel = new Label();
-        private final Label handlerLabel = new Label();
 
         @Override
         public void onMethodEnter() {
@@ -154,25 +154,12 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
             if (stateLocal != -1) {
                 loadLocal(stateLocal);
             }
-
-            if (opCode != MIN_VALUE) {
-                visitLabel(endLabel);
-            }
-        }
-
-        private void ensureLabelWasVisited(final Label label) {
-            try {
-                label.getOffset();
-            } catch (final IllegalStateException ise) {
-                visitLabel(label);
-            }
         }
 
         @Override
         public void visitMaxs(final int maxStack, final int maxLocals) {
-            ensureLabelWasVisited(endLabel);
-            visitLabel(handlerLabel);
-            visitTryCatchBlock(tryStart, endLabel, handlerLabel, THROWABLE_TYPE.getInternalName());
+            visitLabel(endLabel);
+            catchException(tryStart, endLabel, THROWABLE_TYPE);
             onMethodExit(MIN_VALUE);
             throwException();
             super.visitMaxs(0, 0);
