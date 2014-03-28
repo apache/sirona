@@ -53,11 +53,14 @@ public class DisruptorPathTrackingDataStore
         Configuration.getProperty( Configuration.CONFIG_PROPERTY_PREFIX + "pathtracking.singlestore", "false" ) );
 
 
+
     private RingBuffer<PathTrackingEntry> ringBuffer;
 
     private Disruptor<PathTrackingEntry> disruptor;
 
     private int ringBufferSize = 4096;
+
+    private int numberOfConsumers = 4;
 
     @Created
     public void initialize()
@@ -76,12 +79,8 @@ public class DisruptorPathTrackingDataStore
         }, ringBufferSize, exec, ProducerType.SINGLE, new BusySpinWaitStrategy()
         );
 
-        // FIXME configurable
-        int numberOfConsumers = 4;
-
         for ( int i = 0; i < numberOfConsumers; i++ )
         {
-            System.out.println( "create PathTrackingEntryEventHandler" );
             disruptor.handleEventsWith( new PathTrackingEntryEventHandler( i, numberOfConsumers ) );
         }
         ringBuffer = disruptor.start();
@@ -161,6 +160,26 @@ public class DisruptorPathTrackingDataStore
     public void setRingBuffer( RingBuffer<PathTrackingEntry> ringBuffer )
     {
         this.ringBuffer = ringBuffer;
+    }
+
+    public int getNumberOfConsumers()
+    {
+        return numberOfConsumers;
+    }
+
+    public void setNumberOfConsumers( int numberOfConsumers )
+    {
+        this.numberOfConsumers = numberOfConsumers;
+    }
+
+    public int getRingBufferSize()
+    {
+        return ringBufferSize;
+    }
+
+    public void setRingBufferSize( int ringBufferSize )
+    {
+        this.ringBufferSize = ringBufferSize;
     }
 
     @Destroying
