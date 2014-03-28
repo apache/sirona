@@ -85,6 +85,8 @@ public class CubeBuilder {
      */
     private boolean useAsync;
 
+    private int asyncIoThreadCount = Runtime.getRuntime().availableProcessors() - 1;
+
     private Cube cubeInstance;
 
     @Created
@@ -379,6 +381,16 @@ public class CubeBuilder {
     public void setUseAsync( boolean useAsync )
     {
         this.useAsync = useAsync;
+    }
+
+    public int getAsyncIoThreadCount()
+    {
+        return asyncIoThreadCount;
+    }
+
+    public void setAsyncIoThreadCount( int asyncIoThreadCount )
+    {
+        this.asyncIoThreadCount = asyncIoThreadCount;
     }
 
     @Override

@@ -70,7 +70,7 @@ public class HttpClientCube
             if ( cubeBuilder.isUseAsync() )
             {
                 IOReactorConfig ioReactorConfig =
-                    IOReactorConfig.custom().setIoThreadCount( Runtime.getRuntime().availableProcessors() - 1 ) //
+                    IOReactorConfig.custom().setIoThreadCount( cubeBuilder.getAsyncIoThreadCount() ) //
                         .setConnectTimeout( cubeBuilder.getConnectionTimeout() ) //
                         .setSoTimeout( cubeBuilder.getPostTimeout() ) //
                         .build();
@@ -81,6 +81,7 @@ public class HttpClientCube
                     .setConnectionManager( manager ) //
                     .setMaxConnPerRoute( cubeBuilder.getDefaultMaxPerRoute() ) //
                     .setMaxConnTotal( cubeBuilder.getMaxTotalConnections() ) //
+                    .setDefaultIOReactorConfig( ioReactorConfig ) //
                     .build();
                 closeableHttpAsyncClient.start();
             }
@@ -140,6 +141,7 @@ public class HttpClientCube
                     public void failed( Exception e )
                     {
                         LOGGER.warning( "Failed to push data: " + e.getMessage() );
+                        e.printStackTrace();
                     }
 
                     @Override
