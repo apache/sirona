@@ -75,6 +75,7 @@ public class SironaTransformer implements ClassFileTransformer {
                 e.printStackTrace();
             }
             //throw new RuntimeException( e.getMessage(), e );
+            System.out.println("fail to transform class:" + className + ", " + e.getMessage());
             e.printStackTrace();
             return classfileBuffer;
         } catch (StackOverflowError e) {
@@ -83,6 +84,7 @@ public class SironaTransformer implements ClassFileTransformer {
                 e.printStackTrace();
             }
             //throw new RuntimeException( e.getMessage(), e );
+            System.out.println("fail to transform class:" + className + ", " + e.getMessage());
             e.printStackTrace();
             return classfileBuffer;
         }
