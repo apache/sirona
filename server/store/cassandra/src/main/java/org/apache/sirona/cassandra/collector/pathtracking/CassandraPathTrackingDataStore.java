@@ -29,6 +29,7 @@ import me.prettyprint.hector.api.mutation.Mutator;
 import me.prettyprint.hector.api.query.QueryResult;
 import org.apache.sirona.cassandra.DynamicDelegatedSerializer;
 import org.apache.sirona.cassandra.collector.CassandraSirona;
+import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.store.tracking.BatchPathTrackingDataStore;
 import org.apache.sirona.store.tracking.CollectorPathTrackingDataStore;
@@ -46,6 +47,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static org.apache.sirona.cassandra.collector.CassandraSirona.*;
 
@@ -85,6 +88,26 @@ public class CassandraPathTrackingDataStore
     };
 
 
+    private static final boolean USE_EXECUTORS = Boolean.parseBoolean(
+        Configuration.getProperty( Configuration.CONFIG_PROPERTY_PREFIX + "pathtracking.cassandra.useexecutors",
+                                   "false" )
+    );
+
+
+    protected static ExecutorService EXECUTORSERVICE;
+
+    static
+    {
+
+        if ( USE_EXECUTORS )
+        {
+            int threadsNumber =
+                Configuration.getInteger( Configuration.CONFIG_PROPERTY_PREFIX + "pathtracking.cassandra.executors",
+                                          5 );
+            EXECUTORSERVICE = Executors.newFixedThreadPool( threadsNumber );
+        }
+    }
+
     public CassandraPathTrackingDataStore()
     {
         this.cassandra = IoCs.findOrCreateInstance( CassandraSirona.class );
@@ -94,9 +117,26 @@ public class CassandraPathTrackingDataStore
     }
 
     @Override
-    public void store( PathTrackingEntry pathTrackingEntry )
+    public void store( final PathTrackingEntry pathTrackingEntry )
     {
-        store( Collections.singletonList( pathTrackingEntry ) );
+        Runnable runnable = new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                store( Collections.singletonList( pathTrackingEntry ) );
+            }
+        };
+
+        if ( USE_EXECUTORS )
+        {
+            EXECUTORSERVICE.submit( runnable );
+        }
+        else
+        {
+            runnable.run();
+        }
+
     }
 
     @Override

@@ -76,19 +76,40 @@ public class DisruptorPathTrackingDataStore
         }, ringBufferSize, exec, ProducerType.SINGLE, new BusySpinWaitStrategy()
         );
 
-        final EventHandler<PathTrackingEntry> handler = new EventHandler<PathTrackingEntry>()
+        // FIXME configurable
+        int numberOfConsumers = 4;
+
+        for ( int i = 0; i < numberOfConsumers; i++ )
         {
-            // event will eventually be recycled by the Disruptor after it wraps
-            public void onEvent( final PathTrackingEntry entry, final long sequence, final boolean endOfBatch )
-                throws Exception
+            System.out.println( "create PathTrackingEntryEventHandler" );
+            disruptor.handleEventsWith( new PathTrackingEntryEventHandler( i, numberOfConsumers ) );
+        }
+        ringBuffer = disruptor.start();
+
+    }
+
+    private static class PathTrackingEntryEventHandler
+        implements EventHandler<PathTrackingEntry>
+    {
+
+        private final long ordinal;
+
+        private final long numberOfConsumers;
+
+        public PathTrackingEntryEventHandler( final long ordinal, final long numberOfConsumers )
+        {
+            this.ordinal = ordinal;
+            this.numberOfConsumers = numberOfConsumers;
+        }
+
+        public void onEvent( final PathTrackingEntry entry, final long sequence, final boolean endOfBatch )
+            throws Exception
+        {
+            if ( ( sequence % numberOfConsumers ) == ordinal )
             {
                 CUBE.doPostBytes( SerializeUtils.serialize( entry ), PathTrackingEntry.class.getName() );
             }
-        };
-
-        disruptor.handleEventsWith( handler );
-
-        ringBuffer = disruptor.start();
+        }
 
     }
 
