@@ -73,6 +73,7 @@ public class HttpClientCube
                     IOReactorConfig.custom().setIoThreadCount( cubeBuilder.getAsyncIoThreadCount() ) //
                         .setConnectTimeout( cubeBuilder.getConnectionTimeout() ) //
                         .setSoTimeout( cubeBuilder.getPostTimeout() ) //
+                        .setConnectTimeout( cubeBuilder.getConnectionTimeout() ) //
                         .build();
 
                 ConnectingIOReactor ioReactor = new DefaultConnectingIOReactor( ioReactorConfig );
