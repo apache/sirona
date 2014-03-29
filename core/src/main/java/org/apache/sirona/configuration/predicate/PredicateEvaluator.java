@@ -147,7 +147,9 @@ public final class PredicateEvaluator {
                         }
                     }
                 } else if ("jvm".equalsIgnoreCase(container)) {
-                    if (value.startsWith("java") || value.startsWith("sun") || value.startsWith("com.sun")) {
+                    if (value.startsWith("java")
+                            || value.startsWith("sun") || value.startsWith("com.sun")
+                            || value.startsWith("jdk.")) {
                         return true;
                     }
                     if (value.startsWith("org.")) {
