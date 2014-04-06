@@ -19,7 +19,7 @@
         <div class="col-lg-9">
             <ul>
             #foreach( $pathCallInformation in $pathCallInformations )
-                <li><a href="$mapping/pathtracking/pathtrackingdetail/$pathCallInformation.trackingId">$pathCallInformation.trackingId:  $dateTool.format("yyyy-MM-dd'T'HH:mm:ssz", $pathCallInformation.startTime.time)</a></li>
+                <li><a href="$mapping/pathtracking/pathtrackingdetail/$pathCallInformation.trackingId">$pathCallInformation.trackingId:  $dateTool.format("yyyy-MM-dd'T'HH:mm:ssz", $pathCallInformation.startTime)</a></li>
             #end
             </ul>
         </div>

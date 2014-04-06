@@ -24,11 +24,16 @@ import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.log.JdkLogChute;
 import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
-import org.apache.velocity.tools.generic.DateTool;
 
 import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.LinkedBlockingDeque;
 
 public final class Templates
 {
@@ -105,13 +110,57 @@ public final class Templates
         {
             context = new VelocityContext( variables );
         }
-        context.put( "dateTool", new DateTool() );
+        context.put( "dateTool", DateTool.INSTANCE );
         return context;
     }
 
     public static Object property( final String key )
     {
         return engine.getProperty( key );
+    }
+
+    // velocity tool brings so much dependencies we really don't want
+    // and implementation is so simple we can just do it here
+    public static class DateTool {
+        public static final DateTool INSTANCE = new DateTool();
+
+        private static final int POOL_SIZE = Configuration.getInteger(Configuration.CONFIG_PROPERTY_PREFIX + "dateformat.pool.size", 10);
+
+        private final ConcurrentMap<String, BlockingQueue<SimpleDateFormat>> formats = new ConcurrentHashMap<String, BlockingQueue<SimpleDateFormat>>();
+
+        public String format(final String format, final Date date) {
+            BlockingQueue<SimpleDateFormat> dateFormats = formats.get(format);
+            if (dateFormats == null) {
+                dateFormats = new LinkedBlockingDeque<SimpleDateFormat>(POOL_SIZE);
+                final BlockingQueue<SimpleDateFormat> existing = formats.putIfAbsent(format, dateFormats);
+                if (existing != null) {
+                    dateFormats = existing;
+                } else { // init pool
+                    for (int i = 0; i < POOL_SIZE; i++) {
+                        dateFormats.offer(new SimpleDateFormat(format));
+                    }
+                }
+            }
+
+            final SimpleDateFormat take;
+            try {
+                take = dateFormats.take();
+            } catch (final InterruptedException e) {
+                // at this point the JVM should be in a state we can't do anything to help but
+                // just try to return a new instance, we don't care about perf anymore here
+                return new SimpleDateFormat(format).format(date);
+            }
+
+            try {
+                return take.format(date);
+            } finally {
+                dateFormats.add(take);
+            }
+        }
+
+        private DateTool() {
+            // no-op
+        }
     }
 
     private Templates()
