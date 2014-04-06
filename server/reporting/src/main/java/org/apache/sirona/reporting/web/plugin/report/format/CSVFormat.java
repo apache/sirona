@@ -26,7 +26,7 @@ import java.util.Map;
 
 public class CSVFormat extends MapFormat implements Format {
     private static final String SEPARATOR = Configuration.getProperty(Configuration.CONFIG_PROPERTY_PREFIX + "csv.separator", ";");
-    public static final String HEADER = "Monitor" + SEPARATOR + "Role" + SEPARATOR + toCsv(ATTRIBUTES_ORDERED_LIST);
+    public static final String HEADER = "Counter" + SEPARATOR + "Role" + SEPARATOR + toCsv(ATTRIBUTES_ORDERED_LIST);
 
     @Override
     public Template render(final Map<String, ?> params) {
@@ -47,6 +47,10 @@ public class CSVFormat extends MapFormat implements Format {
     private static String toCsv(final Collection<String> line) {
         final StringBuilder builder = new StringBuilder();
         for (final String s : line) {
+            if ("Counter".equals(s) || "Role".equals(s)) { // forced first
+                continue;
+            }
+
             builder.append(s).append(SEPARATOR);
         }
 
