@@ -57,6 +57,20 @@
     </dependency>
 
     <dependency>
+      <groupId>com.ning</groupId>
+      <artifactId>async-http-client</artifactId>
+      <version>1.8.7</version>
+      <optional>true</optional>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <scope>runtime</scope>
+      <optional>true</optional>
+    </dependency>
+
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
     </dependency>
@@ -115,6 +129,18 @@
                 <relocation>
                   <pattern>org.apache.commons</pattern>
                   <shadedPattern>org.apache.sirona.org.apache.commons</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>com.ning.http</pattern>
+                  <shadedPattern>org.apache.sirona.com.ning.http</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>org.jboss.netty</pattern>
+                  <shadedPattern>org.apache.sirona.org.jboss.netty</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>org.slf4j</pattern>
+                  <shadedPattern>org.apache.sirona.org.slf4j</shadedPattern>
                 </relocation>
                 <!--
                 <relocation>
