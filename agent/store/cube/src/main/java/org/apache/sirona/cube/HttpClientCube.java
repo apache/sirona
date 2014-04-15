@@ -88,7 +88,6 @@ public class HttpClientCube
             }
             else
             {
-                HttpClientBuilder builder = HttpClientBuilder.create();
 
                 PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
 
@@ -96,9 +95,8 @@ public class HttpClientCube
 
                 connectionManager.setDefaultMaxPerRoute( cubeBuilder.getDefaultMaxPerRoute() );
 
-                builder = builder.setConnectionManager( connectionManager );
+                httpclient = HttpClientBuilder.create().setConnectionManager( connectionManager ).build();
 
-                httpclient = builder.build();
             }
 
         }

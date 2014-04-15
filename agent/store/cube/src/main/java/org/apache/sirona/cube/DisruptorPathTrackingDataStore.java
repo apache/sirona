@@ -52,8 +52,6 @@ public class DisruptorPathTrackingDataStore
     private static boolean USE_SINGLE_STORE = Boolean.parseBoolean(
         Configuration.getProperty( Configuration.CONFIG_PROPERTY_PREFIX + "pathtracking.singlestore", "false" ) );
 
-
-
     private RingBuffer<PathTrackingEntry> ringBuffer;
 
     private Disruptor<PathTrackingEntry> disruptor;

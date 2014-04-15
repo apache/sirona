@@ -19,6 +19,13 @@ package org.apache.sirona.collector.server;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.lmax.disruptor.BusySpinWaitStrategy;
+import com.lmax.disruptor.EventFactory;
+import com.lmax.disruptor.EventHandler;
+import com.lmax.disruptor.EventTranslator;
+import com.lmax.disruptor.RingBuffer;
+import com.lmax.disruptor.dsl.Disruptor;
+import com.lmax.disruptor.dsl.ProducerType;
 import org.apache.sirona.Role;
 import org.apache.sirona.SironaException;
 import org.apache.sirona.collector.server.api.SSLSocketFactoryProvider;
@@ -64,6 +71,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -106,6 +114,14 @@ public class Collector extends HttpServlet {
     private long collectionPeriod;
     private SecurityProvider securityProvider;
     private SSLSocketFactoryProvider sslSocketFactoryProvider;
+
+    private RingBuffer<PathTrackingEntry> ringBuffer;
+
+    private Disruptor<PathTrackingEntry> disruptor;
+
+    private int ringBufferSize = 4096;
+
+    private int numberOfConsumers = 4;
 
     @Override
     public void init(final ServletConfig sc) throws ServletException {
@@ -187,7 +203,59 @@ public class Collector extends HttpServlet {
                 sslSocketFactoryProvider = null;
             }
         }
+
+
+        ExecutorService exec = Executors.newCachedThreadPool();
+
+        // FIXME make configurable: use of disruptor && WaitStrategy
+
+        disruptor = new Disruptor<PathTrackingEntry>( new EventFactory<PathTrackingEntry>()
+        {
+            @Override
+            public PathTrackingEntry newInstance()
+            {
+                return new PathTrackingEntry();
+            }
+        }, ringBufferSize, exec, ProducerType.SINGLE, new BusySpinWaitStrategy()
+        );
+
+        for ( int i = 0; i < numberOfConsumers; i++ )
+        {
+            disruptor.handleEventsWith( new PathTrackingEntryEventHandler( i, numberOfConsumers, this.pathTrackingDataStore ) );
+        }
+        ringBuffer = disruptor.start();
+
     }
+
+
+    private static class PathTrackingEntryEventHandler
+        implements EventHandler<PathTrackingEntry>
+    {
+
+        private final long ordinal;
+
+        private final long numberOfConsumers;
+
+        private final CollectorPathTrackingDataStore pathTrackingDataStore;
+
+        public PathTrackingEntryEventHandler( final long ordinal, final long numberOfConsumers, CollectorPathTrackingDataStore pathTrackingDataStore )
+        {
+            this.ordinal = ordinal;
+            this.numberOfConsumers = numberOfConsumers;
+            this.pathTrackingDataStore = pathTrackingDataStore;
+        }
+
+        public void onEvent( final PathTrackingEntry entry, final long sequence, final boolean endOfBatch )
+            throws Exception
+        {
+            if ( ( sequence % numberOfConsumers ) == ordinal )
+            {
+                pathTrackingDataStore.store( entry );
+            }
+        }
+
+    }
+
 
     @Override
     public void destroy() {
@@ -336,20 +404,57 @@ public class Collector extends HttpServlet {
     private void updatePathTracking(final Event event) {
         final Map<String, Object> data = event.getData();
 
-        pathTrackingDataStore.store(
+        final PathTrackingEntry pathTrackingEntry =
             new PathTrackingEntry(  String.class.cast(data.get("trackingId")),//
                                     String.class.cast(data.get("nodeId")), //
                                     String.class.cast(data.get("className")), //
                                     String.class.cast(data.get("methodName")), //
                                     Number.class.cast(data.get("startTime")).longValue(), //
                                     Number.class.cast(data.get("executionTime")).longValue(), //
-                                    Number.class.cast(data.get("level") ).intValue() ));
+                                    Number.class.cast(data.get("level") ).intValue() );
+
+        // FIXME if not using disruptor
+        //pathTrackingDataStore.store(pathTrackingEntry);
+
+        ringBuffer.publishEvent( new EventTranslator<PathTrackingEntry>()
+        {
+            @Override
+            public void translateTo( PathTrackingEntry event, long sequence )
+            {
+                event.setClassName( pathTrackingEntry.getClassName() );
+                event.setExecutionTime( pathTrackingEntry.getExecutionTime() );
+                event.setLevel( pathTrackingEntry.getLevel() );
+                event.setMethodName( pathTrackingEntry.getMethodName() );
+                event.setNodeId( pathTrackingEntry.getNodeId() );
+                event.setStartTime( pathTrackingEntry.getStartTime() );
+                event.setTrackingId( pathTrackingEntry.getTrackingId() );
+            }
+        } );
+
     }
 
 
     private void updatePathTracking(final byte[] bytes) {
 
-        pathTrackingDataStore.store( SerializeUtils.deserialize( bytes, PathTrackingEntry.class ) );
+        final PathTrackingEntry pathTrackingEntry = SerializeUtils.deserialize( bytes, PathTrackingEntry.class );
+
+        // FIXME if not using disruptor
+        //pathTrackingDataStore.store(pathTrackingEntry);
+
+        ringBuffer.publishEvent( new EventTranslator<PathTrackingEntry>()
+        {
+            @Override
+            public void translateTo( PathTrackingEntry event, long sequence )
+            {
+                event.setClassName( pathTrackingEntry.getClassName() );
+                event.setExecutionTime( pathTrackingEntry.getExecutionTime() );
+                event.setLevel( pathTrackingEntry.getLevel() );
+                event.setMethodName( pathTrackingEntry.getMethodName() );
+                event.setNodeId( pathTrackingEntry.getNodeId() );
+                event.setStartTime( pathTrackingEntry.getStartTime() );
+                event.setTrackingId( pathTrackingEntry.getTrackingId() );
+            }
+        } );
     }
 
 
