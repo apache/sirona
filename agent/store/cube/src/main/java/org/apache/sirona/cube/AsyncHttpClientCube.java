@@ -57,7 +57,6 @@ public class AsyncHttpClientCube
                 .setMaxRequestRetry( 1 ) //
                 .setMaximumConnectionsPerHost( cubeBuilder.getDefaultMaxPerRoute() ) //
                 .setMaximumConnectionsTotal( cubeBuilder.getMaxTotalConnections() ) //
-                .set
                 .build();
         this.asyncHttpClient = new AsyncHttpClient( asyncHttpClientConfig );
 
