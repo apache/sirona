@@ -27,6 +27,7 @@ import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.TimeoutException;
 import com.lmax.disruptor.dsl.Disruptor;
 import com.lmax.disruptor.dsl.ProducerType;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.apache.sirona.Role;
 import org.apache.sirona.SironaException;
 import org.apache.sirona.collector.server.api.SSLSocketFactoryProvider;
@@ -116,13 +117,13 @@ public class Collector extends HttpServlet {
     private SecurityProvider securityProvider;
     private SSLSocketFactoryProvider sslSocketFactoryProvider;
 
+    private boolean disableDisruptor;
+
     private RingBuffer<PathTrackingEntry> ringBuffer;
 
     private Disruptor<PathTrackingEntry> disruptor;
 
-    private int ringBufferSize = 4096;
 
-    private int numberOfConsumers = 4;
 
     @Override
     public void init(final ServletConfig sc) throws ServletException {
@@ -204,28 +205,40 @@ public class Collector extends HttpServlet {
                 sslSocketFactoryProvider = null;
             }
         }
-
-
-        ExecutorService exec = Executors.newCachedThreadPool();
-
-        // FIXME make configurable: use of disruptor && WaitStrategy
-
-        disruptor = new Disruptor<PathTrackingEntry>( new EventFactory<PathTrackingEntry>()
-        {
-            @Override
-            public PathTrackingEntry newInstance()
+        { // disruptor or not
+            String key = Configuration.CONFIG_PROPERTY_PREFIX + "collector.pathtracking.disabledisruptor";
+            this.disableDisruptor = Boolean.parseBoolean( Configuration.getProperty( key, "false" ) );
+            if ( !this.disableDisruptor )
             {
-                return new PathTrackingEntry();
+                ExecutorService exec = Executors.newCachedThreadPool();
+
+                key = Configuration.CONFIG_PROPERTY_PREFIX + "collector.pathtracking.disruptor.ringBufferSize";
+
+                int ringBufferSize = Configuration.getInteger( key, 4096 );
+
+                key = Configuration.CONFIG_PROPERTY_PREFIX + "collector.pathtracking.disruptor.numberOfConsumers";
+
+                int numberOfConsumers = Configuration.getInteger( key, 4 );
+
+                // FIXME make configurable: WaitStrategy
+
+                disruptor = new Disruptor<PathTrackingEntry>( new EventFactory<PathTrackingEntry>()
+                {
+                    @Override
+                    public PathTrackingEntry newInstance()
+                    {
+                        return new PathTrackingEntry();
+                    }
+                }, ringBufferSize, exec, ProducerType.SINGLE, new BusySpinWaitStrategy()
+                );
+
+                for ( int i = 0; i < numberOfConsumers; i++ )
+                {
+                    disruptor.handleEventsWith( new PathTrackingEntryEventHandler( i, numberOfConsumers, this.pathTrackingDataStore ) );
+                }
+                ringBuffer = disruptor.start();
             }
-        }, ringBufferSize, exec, ProducerType.SINGLE, new BusySpinWaitStrategy()
-        );
-
-        for ( int i = 0; i < numberOfConsumers; i++ )
-        {
-            disruptor.handleEventsWith( new PathTrackingEntryEventHandler( i, numberOfConsumers, this.pathTrackingDataStore ) );
         }
-        ringBuffer = disruptor.start();
-
     }
 
 
@@ -423,24 +436,24 @@ public class Collector extends HttpServlet {
                                     Number.class.cast(data.get("executionTime")).longValue(), //
                                     Number.class.cast(data.get("level") ).intValue() );
 
-        // FIXME if not using disruptor
-        //pathTrackingDataStore.store(pathTrackingEntry);
-
-        ringBuffer.publishEvent( new EventTranslator<PathTrackingEntry>()
-        {
-            @Override
-            public void translateTo( PathTrackingEntry event, long sequence )
+        if (this.disableDisruptor) {
+            pathTrackingDataStore.store( pathTrackingEntry );
+        } else {
+            ringBuffer.publishEvent( new EventTranslator<PathTrackingEntry>()
             {
-                event.setClassName( pathTrackingEntry.getClassName() );
-                event.setExecutionTime( pathTrackingEntry.getExecutionTime() );
-                event.setLevel( pathTrackingEntry.getLevel() );
-                event.setMethodName( pathTrackingEntry.getMethodName() );
-                event.setNodeId( pathTrackingEntry.getNodeId() );
-                event.setStartTime( pathTrackingEntry.getStartTime() );
-                event.setTrackingId( pathTrackingEntry.getTrackingId() );
-            }
-        } );
-
+                @Override
+                public void translateTo( PathTrackingEntry event, long sequence )
+                {
+                    event.setClassName( pathTrackingEntry.getClassName() );
+                    event.setExecutionTime( pathTrackingEntry.getExecutionTime() );
+                    event.setLevel( pathTrackingEntry.getLevel() );
+                    event.setMethodName( pathTrackingEntry.getMethodName() );
+                    event.setNodeId( pathTrackingEntry.getNodeId() );
+                    event.setStartTime( pathTrackingEntry.getStartTime() );
+                    event.setTrackingId( pathTrackingEntry.getTrackingId() );
+                }
+            } );
+        }
     }
 
 
@@ -448,23 +461,25 @@ public class Collector extends HttpServlet {
 
         final PathTrackingEntry pathTrackingEntry = SerializeUtils.deserialize( bytes, PathTrackingEntry.class );
 
-        // FIXME if not using disruptor
-        //pathTrackingDataStore.store(pathTrackingEntry);
-
-        ringBuffer.publishEvent( new EventTranslator<PathTrackingEntry>()
+        if (this.disableDisruptor)
         {
-            @Override
-            public void translateTo( PathTrackingEntry event, long sequence )
+            pathTrackingDataStore.store( pathTrackingEntry );
+        } else {
+            ringBuffer.publishEvent( new EventTranslator<PathTrackingEntry>()
             {
-                event.setClassName( pathTrackingEntry.getClassName() );
-                event.setExecutionTime( pathTrackingEntry.getExecutionTime() );
-                event.setLevel( pathTrackingEntry.getLevel() );
-                event.setMethodName( pathTrackingEntry.getMethodName() );
-                event.setNodeId( pathTrackingEntry.getNodeId() );
-                event.setStartTime( pathTrackingEntry.getStartTime() );
-                event.setTrackingId( pathTrackingEntry.getTrackingId() );
-            }
-        } );
+                @Override
+                public void translateTo( PathTrackingEntry event, long sequence )
+                {
+                    event.setClassName( pathTrackingEntry.getClassName() );
+                    event.setExecutionTime( pathTrackingEntry.getExecutionTime() );
+                    event.setLevel( pathTrackingEntry.getLevel() );
+                    event.setMethodName( pathTrackingEntry.getMethodName() );
+                    event.setNodeId( pathTrackingEntry.getNodeId() );
+                    event.setStartTime( pathTrackingEntry.getStartTime() );
+                    event.setTrackingId( pathTrackingEntry.getTrackingId() );
+                }
+            } );
+        }
     }
 
 
