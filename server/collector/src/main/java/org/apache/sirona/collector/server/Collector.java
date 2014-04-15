@@ -24,6 +24,7 @@ import com.lmax.disruptor.EventFactory;
 import com.lmax.disruptor.EventHandler;
 import com.lmax.disruptor.EventTranslator;
 import com.lmax.disruptor.RingBuffer;
+import com.lmax.disruptor.TimeoutException;
 import com.lmax.disruptor.dsl.Disruptor;
 import com.lmax.disruptor.dsl.ProducerType;
 import org.apache.sirona.Role;
@@ -261,6 +262,15 @@ public class Collector extends HttpServlet {
     public void destroy() {
         if (collectionFuture != null) {
             collectionFuture.done();
+        }
+        if (this.disruptor != null) {
+            // FIXME make timeout configurable?
+            try
+            {
+                disruptor.shutdown( 1000, TimeUnit.MILLISECONDS );
+            } catch ( TimeoutException e ) {
+                e.printStackTrace();
+            }
         }
     }
 
