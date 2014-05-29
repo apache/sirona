@@ -21,7 +21,7 @@
   <parent>
     <artifactId>sirona-performance</artifactId>
     <groupId>org.apache.sirona</groupId>
-    <version>0.2-incubating-SNAPSHOT</version>
+    <version>0.2-incubating</version>
   </parent>
 
   <artifactId>sirona-spring</artifactId>
