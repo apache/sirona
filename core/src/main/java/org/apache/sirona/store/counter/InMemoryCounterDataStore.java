@@ -30,8 +30,8 @@ import org.apache.sirona.repositories.Repository;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import java.lang.management.ManagementFactory;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.locks.Lock;
@@ -43,7 +43,7 @@ public class InMemoryCounterDataStore implements CounterDataStore {
     protected final boolean jmx = Configuration.is(Configuration.CONFIG_PROPERTY_PREFIX + "counter.with-jmx", false);
 
     protected final ConcurrentMap<Counter.Key, Counter> counters = newCounterMap();
-    protected final Collection<Gauge> gauges = new LinkedList<Gauge>();
+    protected final ConcurrentMap<Counter.Key, Collection<Gauge>> gauges = new ConcurrentHashMap<Counter.Key, Collection<Gauge>>();
     protected final ReadWriteLock stateLock = new ReentrantReadWriteLock(); // this lock ensures consistency between createcounter and clearcounters
 
     protected ConcurrentMap<Counter.Key, Counter> newCounterMap() {
@@ -68,9 +68,17 @@ public class InMemoryCounterDataStore implements CounterDataStore {
                 } else { // new
                     if (gauged) {
                         final Values values = new Values(counter);
-                        newGauge(new SyncCounterGauge(counter, MetricData.Sum, values));
-                        newGauge(new SyncCounterGauge(counter, MetricData.Max, values));
-                        newGauge(new SyncCounterGauge(counter, MetricData.Hits, values));
+
+                        final Collection<Gauge> counterGauges = new ArrayList<Gauge>(3);
+                        counterGauges.add(new SyncCounterGauge(counter, MetricData.Sum, values));
+                        counterGauges.add(new SyncCounterGauge(counter, MetricData.Max, values));
+                        counterGauges.add(new SyncCounterGauge(counter, MetricData.Hits, values));
+
+                        for (final Gauge gauge : counterGauges) {
+                            Repository.INSTANCE.addGauge(gauge);
+                        }
+
+                        gauges.putIfAbsent(key, counterGauges);
                     }
                     if (jmx) {
                         final MBeanServer server = ManagementFactory.getPlatformMBeanServer();
@@ -100,13 +108,6 @@ public class InMemoryCounterDataStore implements CounterDataStore {
         return name.replace('=', '_').replace(',', '_');
     }
 
-    private void newGauge(final Gauge gauge) {
-        Repository.INSTANCE.addGauge(gauge);
-        synchronized (gauges) {
-            gauges.add(gauge);
-        }
-    }
-
     @Destroying
     public void cleanUp() {
         clearCounters();
@@ -130,8 +131,11 @@ public class InMemoryCounterDataStore implements CounterDataStore {
             counters.clear();
 
             synchronized (gauges) {
-                for (final Gauge g : gauges) {
-                    Repository.INSTANCE.stopGauge(g);
+                for (final Collection<Gauge> list : gauges.values()) {
+                    for (final Gauge g : list) {
+                        Repository.INSTANCE.stopGauge(g);
+                    }
+                    list.clear();
                 }
                 gauges.clear();
             }
