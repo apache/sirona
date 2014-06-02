@@ -37,7 +37,7 @@ import java.util.concurrent.ConcurrentSkipListMap;
 // ensure we don't explode memory cause of web counters, this class will be integrated in sirona > 0.2
 public class LimitedInMemoryCounterDataStore extends InMemoryCounterDataStore {
     private static final int MAX_SIZE = Configuration.getInteger(Configuration.CONFIG_PROPERTY_PREFIX + "counter.max-size", 1000);
-    private static final boolean ONLY_EVICT_WEB_COUNTERS = Boolean.parseBoolean(Configuration.getProperty(Configuration.CONFIG_PROPERTY_PREFIX + "counter.evict-web-only", "true");
+    private static final boolean ONLY_EVICT_WEB_COUNTERS = Boolean.parseBoolean(Configuration.getProperty(Configuration.CONFIG_PROPERTY_PREFIX + "counter.evict-web-only", "true"));
     private static final double EVITION_RATIO = Double.parseDouble(Configuration.getProperty(Configuration.CONFIG_PROPERTY_PREFIX
             + "counter.evition.ratio", "0.25"));
 
