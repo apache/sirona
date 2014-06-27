@@ -42,6 +42,10 @@ public interface PathTrackingDataStore
      */
     Collection<PathTrackingEntry> retrieve( String trackingId );
 
+    Collection<PathTrackingEntry> retrieve( String trackingId, int number );
+
+    Collection<PathTrackingEntry> retrieve( String trackingId, String start, String end );
+
     /**
      * @param startTime
      * @param endTime

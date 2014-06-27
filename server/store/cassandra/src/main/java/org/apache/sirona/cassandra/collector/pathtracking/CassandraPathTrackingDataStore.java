@@ -17,6 +17,8 @@
 
 package org.apache.sirona.cassandra.collector.pathtracking;
 
+import me.prettyprint.cassandra.model.CqlQuery;
+import me.prettyprint.cassandra.model.CqlRows;
 import me.prettyprint.cassandra.serializers.LongSerializer;
 import me.prettyprint.cassandra.serializers.StringSerializer;
 import me.prettyprint.hector.api.Keyspace;
@@ -233,6 +235,72 @@ public class CassandraPathTrackingDataStore
         return entries;
     }
 
+    public Collection<PathTrackingEntry> retrieve( String trackingId, int number )
+    {
+        /*
+        QueryResult<OrderedRows<String, String, String>> cResult = //
+            HFactory.createRangeSlicesQuery( keyspace, //
+                                             StringSerializer.get(), //
+                                             StringSerializer.get(), //
+                                             StringSerializer.get() ) //
+                .setColumnNames( "trackingId", "nodeId", "className", "methodName", "startTime", "executionTime",
+                                 "level" ) //
+                .addEqualsExpression( "trackingId", trackingId ) //
+                .addEqualsExpression( "level", "0" )//
+                .setColumnFamily( family ) //
+                .setRowCount( number ) //
+                .execute();
+        */
+
+        CqlQuery<String,String, String> cqlQuery = new CqlQuery<String, String, String>( keyspace, StringSerializer.get(), StringSerializer.get(), StringSerializer.get() );
+
+        String query = "select * from " + family + " where trackingId='" + trackingId + "' AND level=" + 1 + ";";
+
+        cqlQuery.setQuery( query );
+
+        QueryResult<CqlRows<String,String,String>> cqlRowsQueryResult = cqlQuery.execute();
+
+
+
+        QueryResult<OrderedRows<String, String, String>>cResult = //
+            HFactory.createRangeSlicesQuery( keyspace, //
+                                             StringSerializer.get(), //
+                                             StringSerializer.get(), //
+                                             StringSerializer.get() ) //
+                .setColumnNames( "trackingId", "nodeId", "className", "methodName", "startTime", "executionTime",
+                                 "level" ) //
+                .addEqualsExpression( "trackingId", trackingId ) //
+                .setColumnFamily( family ) //
+                .setRowCount( number ) //
+                .execute();
+
+        Set<PathTrackingEntry> entries = new TreeSet<PathTrackingEntry>( LEVEL_COMPARATOR );
+
+        OrderedRows<String, String, String> rows = cResult.get();
+
+        if ( rows == null )
+        {
+            return entries;
+        }
+
+        for ( Row<String, String, String> row : rows.getList() )
+        {
+            ColumnSlice<String, String> columnSlice = row.getColumnSlice();
+
+            PathTrackingEntry pathTrackingEntry = map( columnSlice );
+
+            entries.add( pathTrackingEntry );
+        }
+
+        return entries;
+    }
+
+    @Override
+    public Collection<PathTrackingEntry> retrieve( String trackingId, String start, String end )
+    {
+        return super.retrieve( trackingId, start, end );
+    }
+
     @Override
     public Collection<PathCallInformation> retrieveTrackingIds( Date startTime, Date endTime )
     {
@@ -245,7 +313,9 @@ public class CassandraPathTrackingDataStore
                 .setColumnNames( "trackingId", "nodeId", "className", "methodName", "startTime", "executionTime",
                                  "level" ) //
                 .addEqualsExpression( "level", Long.valueOf( 1 ) ) //
-                .addGteExpression( "startTime", startTime.getTime() ).setColumnFamily( family ).execute();
+                .addGteExpression( "startTime", startTime.getTime() ) //
+                .setColumnFamily( family ) //
+                .execute();
 
         int size = cResult.get().getList().size();
 

@@ -85,11 +85,19 @@ public class PathTrackingEndpoints
 
     }
 
-    @Regex( "/pathtrackingdetail/(.*)" )
-    public Template displayPathTrackingDetail( String pathTrackingId )
+    /**
+     * retrieve a slice of pathtracking entries
+     *
+     * @param pathTrackingId
+     * @param number
+     * @return
+     */
+    @Regex( "/pathtrackingdetail/(.*)/(.*)" )
+    public Template displayPathTrackingDetail( String pathTrackingId, String number )
     {
 
-        Collection<PathTrackingEntry> entries = PATH_TRACKING_DATA_STORE.retrieve( pathTrackingId );
+        Collection<PathTrackingEntry> entries =
+            PATH_TRACKING_DATA_STORE.retrieve( pathTrackingId, Integer.parseInt( number ) );
 
         return new Template( "pathtracking/pathtrackingdetail.vm", //
                              new MapBuilder<String, Object>() //

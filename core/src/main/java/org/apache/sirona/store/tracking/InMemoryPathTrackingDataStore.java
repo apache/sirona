@@ -41,6 +41,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * <b>MUST NOT be used in production</b>
  */
 public class InMemoryPathTrackingDataStore
+    extends AbstractPathTrackingDataStore
     implements PathTrackingDataStore, CollectorPathTrackingDataStore
 {
 

@@ -67,4 +67,16 @@ public class DelegatedCollectorPathTrackingDataStore
     {
         return this.delegatedPathTrackingDataStore.retrieveTrackingIds( startTime, endTime );
     }
+
+    @Override
+    public Collection<PathTrackingEntry> retrieve( String trackingId, int number )
+    {
+        return this.delegatedPathTrackingDataStore.retrieve( trackingId, number );
+    }
+
+    @Override
+    public Collection<PathTrackingEntry> retrieve( String trackingId, String start, String end )
+    {
+        return this.delegatedPathTrackingDataStore.retrieve( trackingId, start, end );
+    }
 }
