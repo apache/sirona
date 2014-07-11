@@ -47,6 +47,10 @@
     </dependency>
     <dependency>
       <groupId>org.apache.sirona</groupId>
+      <artifactId>sirona-reporting-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.sirona</groupId>
       <artifactId>sirona-plugins-api</artifactId>
       <version>${project.version}</version>
     </dependency>
