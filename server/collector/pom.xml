@@ -45,7 +45,7 @@
     </dependency>
     <dependency>
       <groupId>org.apache.sirona</groupId>
-      <artifactId>sirona-reporting</artifactId>
+      <artifactId>sirona-reporting-webapp</artifactId>
       <version>${project.version}</version>
       <classifier>classes</classifier>
       <scope>runtime</scope>

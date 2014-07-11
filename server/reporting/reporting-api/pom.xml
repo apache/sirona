@@ -15,33 +15,17 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
   <parent>
     <groupId>org.apache.sirona</groupId>
-    <artifactId>sirona</artifactId>
+    <artifactId>sirona-reporting</artifactId>
     <version>0.3-incubating-SNAPSHOT</version>
   </parent>
 
-  <modelVersion>4.0.0</modelVersion>
-
-  <artifactId>sirona-reporting</artifactId>
-  <name>Apache Sirona Incubator :: Reporting</name>
-  <packaging>pom</packaging>
-
-  <modules>
-    <module>reporting-api</module>
-    <module>reporting-ui</module>
-    <module>reporting-webapp</module>
-  </modules>
-
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.apache.sirona</groupId>
-        <artifactId>sirona-reporting-api</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
+  <artifactId>sirona-reporting-api</artifactId>
+  <name>Apache Sirona Incubator :: Server :: Reporting :: Api</name>
+  <packaging>jar</packaging>
 
 </project>
