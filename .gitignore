@@ -6,6 +6,10 @@ out/
 agent/javaagent/dependency-reduced-pom.xml
 .java-version
 
+.project
+.settings/
+.classpath
+
 ## local testing files 
 agentToTomcat.sh
 server/reporting/src/test/sirona.properties
