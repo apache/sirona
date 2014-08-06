@@ -37,8 +37,8 @@ require.config({
     'controllers': 'app/controllers/controllers',
     'services': 'app/services/services',
     'sirona': 'sirona',
-    'morris': 'plugins/morris/morris',
-    'raphael': 'plugins/morris/raphael.min'
+    'morris': 'plugins/morris/morris-0.5.0.min',
+    'raphael': 'plugins/morris/raphael-2.1.2.min'
   },
 
   shim: {
