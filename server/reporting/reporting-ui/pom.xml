@@ -30,6 +30,7 @@
 
   <properties>
     <sirona.reporting.ui.tomcat.skip>false</sirona.reporting.ui.tomcat.skip>
+    <log4j2.version>2.0</log4j2.version>
   </properties>
 
   <dependencies>
@@ -42,6 +43,43 @@
       <groupId>org.apache.sirona</groupId>
       <artifactId>sirona-reporting-api</artifactId>
     </dependency>
+
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-frontend-jaxrs</artifactId>
+      <version>${cxf.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.jaxrs</groupId>
+      <artifactId>jackson-jaxrs-json-provider</artifactId>
+      <version>${jacksonVersion}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.jaxrs</groupId>
+      <artifactId>jackson-jaxrs-xml-provider</artifactId>
+      <version>${jacksonVersion}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-web</artifactId>
+      <version>${spring.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jul-to-slf4j</artifactId>
+      <version>1.7.7</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-servlet_3.0_spec</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
   </dependencies>
 
   <build>
@@ -53,6 +91,7 @@
           <port>${tomcatRunPort}</port>
           <path>${tomcatRunPath}</path>
           <skip>${sirona.reporting.ui.tomcat.skip}</skip>
+          <useTestClasspath>true</useTestClasspath>
           <systemProperties>
             <org.apache.sirona.configuration.sirona.properties>${sirona.properties.path}</org.apache.sirona.configuration.sirona.properties>
           </systemProperties>
@@ -62,6 +101,26 @@
             <groupId>org.apache.sirona</groupId>
             <artifactId>sirona-core</artifactId>
             <version>${project.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-1.2-api</artifactId>
+            <version>${log4j2.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <version>${log4j2.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-jcl</artifactId>
+            <version>${log4j2.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jul-to-slf4j</artifactId>
+            <version>1.7.7</version>
           </dependency>
         </dependencies>
       </plugin>

@@ -32,6 +32,9 @@
     <tomcatRunPort>8080</tomcatRunPort>
     <tomcatRunPath>/sirona</tomcatRunPath>
     <sirona.properties.path>${basedir}/src/test/sirona.properties</sirona.properties.path>
+    <cxf.version>3.0.1</cxf.version>
+    <jacksonVersion>2.4.1</jacksonVersion>
+    <spring.version>4.0.6.RELEASE</spring.version>
   </properties>
 
   <modules>
@@ -55,7 +58,7 @@
       <dependency>
         <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-rt-frontend-jaxrs</artifactId>
-        <version>3.0.1</version>
+        <version>${cxf.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

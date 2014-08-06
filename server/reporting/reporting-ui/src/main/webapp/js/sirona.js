@@ -3,8 +3,6 @@
 define(['jquery','controllers', 'angular-route', 'bootstrap'],
        function (jquery,controllers) {
 
-  console.log("load sirona.js");
-
   var sirona = angular.module('sirona', [
     'ngRoute',
     'homeControllers'
@@ -25,4 +23,5 @@ define(['jquery','controllers', 'angular-route', 'bootstrap'],
     }]);
 
   angular.bootstrap(document,['sirona']);
+
 });
