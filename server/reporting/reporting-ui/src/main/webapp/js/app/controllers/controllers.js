@@ -38,15 +38,19 @@ define(['angular','services','morris'], function (){
 
     var now = new Date();
 
-    //var cpuResults = jvmCpu.query({start:yesterday.getTime(),end:now.getTime()});
-
     jvmCpu.query({start:yesterday.getTime(),end:now.getTime()} ).$promise.then(function(cpuResults){
+      var morrisDatas=toMorrisFormat(cpuResults.data);
       Morris.Line({
                     element: 'cpu',
-                    data: toMorrisFormat(cpuResults.data),
+                    data: morrisDatas,
                     xkey: 'x',
-                    ykeys: ['a'],
-                    labels: [cpuResults.label]
+                    ykeys: 'y',
+                    labels: [cpuResults.label],
+                    xLabelFormat:function(ret){
+                      return new Date(morrisDatas[ret.x].x).toString();
+                    },
+                    parseTime: false,
+                    hideHover: 'auto'
                   });
 
     });
@@ -77,11 +81,12 @@ define(['angular','services','morris'], function (){
     }
     var values = [];
     angular.forEach(reportResult, function(key,value) {
-      this.push({x:value,a: key});
+      this.push({x:value,y: key});
     }, values);
 
-    console.log("size:"+values.length+':'+values[0].x);
-    console.log("size:"+values.length+':'+values[1].x);
+    console.log("size:"+values.length+':'+values[0].x+","+values[0].y);
+    console.log("size:"+values.length+':'+values[1].x+","+values[1].y);
+    console.log("size:"+values.length+':'+values[10].x+","+values[10].y);
 
     return values;
   }
