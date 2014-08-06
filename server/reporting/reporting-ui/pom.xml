@@ -26,7 +26,7 @@
 
   <artifactId>sirona-reporting-ui</artifactId>
   <name>Apache Sirona Incubator :: Server :: Reporting :: Ui</name>
-  <packaging>war</packaging>
+  <packaging>jar</packaging>
 
   <build>
     <pluginManagement>

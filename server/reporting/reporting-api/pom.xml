@@ -30,6 +30,10 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.apache.sirona</groupId>
+      <artifactId>sirona-core</artifactId>
+    </dependency>
+    <dependency>
       <groupId>javax.ws.rs</groupId>
       <artifactId>jsr311-api</artifactId>
     </dependency>
