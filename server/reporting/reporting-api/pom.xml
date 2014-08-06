@@ -37,6 +37,10 @@
       <groupId>javax.ws.rs</groupId>
       <artifactId>javax.ws.rs-api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.apache.sirona</groupId>
+      <artifactId>sirona-web</artifactId>
+    </dependency>
   </dependencies>
 
 </project>
