@@ -16,6 +16,7 @@
  */
 package org.apache.sirona.reporting.web;
 
+import org.apache.cxf.transport.servlet.CXFServlet;
 import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.reporting.web.handler.FilteringEndpoints;
 import org.apache.sirona.reporting.web.handler.HomeEndpoint;
@@ -58,6 +59,7 @@ public class SironaController implements Filter {
     private String mapping = null;
     private ClassLoader classloader;
     private Invoker defaultInvoker;
+    private CXFServlet cxfServlet;
 
     @Override
     public void init(final FilterConfig config) throws ServletException {
@@ -67,6 +69,7 @@ public class SironaController implements Filter {
         initMapping(config.getInitParameter("monitoring-mapping"));
         Templates.init(config.getServletContext().getContextPath(), mapping);
         initHandlers();
+
     }
 
     private void initHandlers() {
@@ -114,11 +117,15 @@ public class SironaController implements Filter {
             return;
         }
 
+
         final HttpServletRequest httpRequest = HttpServletRequest.class.cast(request);
         final HttpServletResponse httpResponse = HttpServletResponse.class.cast(response);
 
         final String baseUri = httpRequest.getContextPath() + mapping;
         request.setAttribute("baseUri", baseUri);
+
+
+
 
         final String requestURI = httpRequest.getRequestURI();
         final String path = buildMatchablePath(httpRequest, baseUri, requestURI, true);

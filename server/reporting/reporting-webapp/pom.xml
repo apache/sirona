@@ -29,21 +29,14 @@
   <packaging>war</packaging>
 
   <properties>
-    <tomcatRunPort>8080</tomcatRunPort>
-    <tomcatRunPath>/sirona</tomcatRunPath>
     <sirona.reporting.tomcat.skip>false</sirona.reporting.tomcat.skip>
-    <sirona.properties.path>${basedir}/src/test/sirona.properties</sirona.properties.path>
+    <jacksonVersion>2.4.1</jacksonVersion>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>org.apache.geronimo.specs</groupId>
       <artifactId>geronimo-servlet_3.0_spec</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.sirona</groupId>
-      <artifactId>sirona-core</artifactId>
-      <scope>provided</scope> <!-- using to put it in the container to get JDBC monitoring and deploy the webapp -->
     </dependency>
     <dependency>
       <groupId>org.apache.sirona</groupId>
@@ -71,7 +64,25 @@
       <artifactId>velocity</artifactId>
       <version>1.7</version>
     </dependency>
-
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-frontend-jaxrs</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-web</artifactId>
+      <version>4.0.6.RELEASE</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.jaxrs</groupId>
+      <artifactId>jackson-jaxrs-json-provider</artifactId>
+      <version>${jacksonVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.jaxrs</groupId>
+      <artifactId>jackson-jaxrs-xml-provider</artifactId>
+      <version>${jacksonVersion}</version>
+    </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -137,13 +148,6 @@
             <org.apache.sirona.configuration.sirona.properties>${sirona.properties.path}</org.apache.sirona.configuration.sirona.properties>
           </systemProperties>
         </configuration>
-        <dependencies>
-          <dependency>
-            <groupId>org.apache.sirona</groupId>
-            <artifactId>sirona-core</artifactId>
-            <version>${project.version}</version>
-          </dependency>
-        </dependencies>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>

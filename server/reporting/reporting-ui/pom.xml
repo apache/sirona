@@ -26,7 +26,19 @@
 
   <artifactId>sirona-reporting-ui</artifactId>
   <name>Apache Sirona Incubator :: Server :: Reporting :: Ui</name>
-  <packaging>jar</packaging>
+  <packaging>war</packaging>
+
+  <properties>
+    <sirona.reporting.ui.tomcat.skip>false</sirona.reporting.ui.tomcat.skip>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.sirona</groupId>
+      <artifactId>sirona-core</artifactId>
+      <scope>provided</scope> <!-- using to put it in the container to get JDBC monitoring and deploy the webapp -->
+    </dependency>
+  </dependencies>
 
   <build>
     <pluginManagement>
@@ -40,6 +52,27 @@
         </plugin>
       </plugins>
     </pluginManagement>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.tomcat.maven</groupId>
+        <artifactId>tomcat7-maven-plugin</artifactId>
+        <configuration>
+          <port>${tomcatRunPort}</port>
+          <path>${tomcatRunPath}</path>
+          <skip>${sirona.reporting.ui.tomcat.skip}</skip>
+          <systemProperties>
+            <org.apache.sirona.configuration.sirona.properties>${sirona.properties.path}</org.apache.sirona.configuration.sirona.properties>
+          </systemProperties>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.sirona</groupId>
+            <artifactId>sirona-core</artifactId>
+            <version>${project.version}</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+    </plugins>
   </build>
 
 </project>

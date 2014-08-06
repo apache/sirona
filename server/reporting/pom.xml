@@ -28,6 +28,12 @@
   <name>Apache Sirona Incubator :: Reporting</name>
   <packaging>pom</packaging>
 
+  <properties>
+    <tomcatRunPort>8080</tomcatRunPort>
+    <tomcatRunPath>/sirona</tomcatRunPath>
+    <sirona.properties.path>${basedir}/src/test/sirona.properties</sirona.properties.path>
+  </properties>
+
   <modules>
     <module>reporting-api</module>
     <module>reporting-ui</module>
@@ -43,8 +49,13 @@
       </dependency>
       <dependency>
         <groupId>javax.ws.rs</groupId>
-        <artifactId>jsr311-api</artifactId>
-        <version>1.1.1</version>
+        <artifactId>javax.ws.rs-api</artifactId>
+        <version>2.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-rt-frontend-jaxrs</artifactId>
+        <version>3.0.1</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

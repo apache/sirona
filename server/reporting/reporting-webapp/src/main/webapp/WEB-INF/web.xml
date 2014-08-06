@@ -25,8 +25,19 @@
     <param-value>org.apache.sirona.reporting.web.plugin</param-value>
   </context-param>
 
+  <context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>
+      classpath*:META-INF/spring-context.xml, /WEB-INF/applicationContext.xml
+    </param-value>
+  </context-param>
+
   <listener>
     <listener-class>org.apache.sirona.web.discovery.GaugeDiscoveryListener</listener-class>
+  </listener>
+
+  <listener>
+    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
 
   <filter>
@@ -38,5 +49,16 @@
     <filter-name>Monitoring</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
+
+  <servlet>
+    <servlet-name>CXFServlet</servlet-name>
+    <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>CXFServlet</servlet-name>
+    <url-pattern>/restServices/*</url-pattern>
+  </servlet-mapping>
 
 </web-app>
