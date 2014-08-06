@@ -125,8 +125,6 @@ public class SironaController implements Filter {
         request.setAttribute("baseUri", baseUri);
 
 
-
-
         final String requestURI = httpRequest.getRequestURI();
         final String path = buildMatchablePath(httpRequest, baseUri, requestURI, true);
         final String pathWithoutParams = buildMatchablePath(httpRequest, baseUri, requestURI, false);
