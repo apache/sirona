@@ -17,6 +17,7 @@
 package org.apache.sirona.reporting.web.jvm;
 
 import org.apache.sirona.gauges.jvm.CPUGauge;
+import org.apache.sirona.gauges.jvm.UsedMemoryGauge;
 import org.apache.sirona.reporting.web.Graph;
 import org.apache.sirona.repositories.Repository;
 
@@ -41,6 +42,17 @@ public class JvmReports
     {
         final SortedMap<Long, Double> gaugeValues = Repository.INSTANCE.getGaugeValues( start, end, CPUGauge.CPU );
         return new Graph( "CPU Usage", Graph.DEFAULT_COLOR, gaugeValues );
+
+    }
+
+    @GET
+    @Path( "/memory/{start}/{end}" )
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    public Graph memory( @PathParam( "start" ) final long start, @PathParam( "end" ) final long end )
+    {
+        final SortedMap<Long, Double> gaugeValues =
+            Repository.INSTANCE.getGaugeValues( start, end, UsedMemoryGauge.USED_MEMORY );
+        return new Graph( "Used Memory", Graph.DEFAULT_COLOR, gaugeValues );
 
     }
 

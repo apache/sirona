@@ -27,4 +27,11 @@ define(['angular','angular-resource'], function (){
                        {query: {method:'GET', params:{}}});
     }]);
 
+  sironaServices.factory('jvmMemory', ['$resource',
+    function($resource){
+      return $resource('restServices/sironaServices/jvmreports/memory/:start/:end',
+                       {start:'@start',end:'@end'},
+                       {query: {method:'GET', params:{}}});
+    }]);
+
 });

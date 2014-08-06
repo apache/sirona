@@ -30,30 +30,49 @@ define(['angular','services','morris'], function (){
 
   var jvmControllers = angular.module('jvmControllers', ['sironaJvmServices']);
 
-  jvmControllers.controller( 'JvmHomeCtrl', ['$scope','jvmCpu', function ( $scope,jvmCpu ){
-    console.log("JvmHomeCtrl");
+  jvmControllers.controller( 'JvmHomeCtrl', ['$scope','jvmCpu','jvmMemory',
+    function ( $scope,jvmCpu,jvmMemory ){
 
-    var yesterday = new Date();
-    yesterday.setTime(yesterday.getTime() - dayDuration);
+      console.log("JvmHomeCtrl");
 
-    var now = new Date();
+      var yesterday = new Date();
+      yesterday.setTime(yesterday.getTime() - dayDuration);
 
-    jvmCpu.query({start:yesterday.getTime(),end:now.getTime()} ).$promise.then(function(cpuResults){
-      var morrisDatas=toMorrisFormat(cpuResults.data);
-      Morris.Line({
-                    element: 'cpu',
-                    data: morrisDatas,
-                    xkey: 'x',
-                    ykeys: 'y',
-                    labels: [cpuResults.label],
-                    xLabelFormat:function(ret){
-                      return new Date(morrisDatas[ret.x].x).toString();
-                    },
-                    parseTime: false,
-                    hideHover: 'auto'
-                  });
+      var now = new Date();
 
-    });
+      jvmCpu.query({start:yesterday.getTime(),end:now.getTime()} ).$promise.then(function(cpuResults){
+        var morrisDatas=toMorrisFormat(cpuResults.data);
+        Morris.Line({
+                      element: 'cpu',
+                      data: morrisDatas,
+                      xkey: 'x',
+                      ykeys: 'y',
+                      labels: [cpuResults.label],
+                      xLabelFormat:function(ret){
+                        return new Date(morrisDatas[ret.x].x).toString();
+                      },
+                      parseTime: false,
+                      hideHover: 'auto'
+                    });
+
+      });
+
+      jvmMemory.query({start:yesterday.getTime(),end:now.getTime()} ).$promise.then(function(memoryResults){
+        var morrisDatas=toMorrisFormat(memoryResults.data);
+        Morris.Line({
+                      element: 'memory',
+                      data: morrisDatas,
+                      xkey: 'x',
+                      ykeys: 'y',
+                      labels: [memoryResults.label],
+                      xLabelFormat:function(ret){
+                        return new Date(morrisDatas[ret.x].x).toString();
+                      },
+                      parseTime: false,
+                      hideHover: 'auto'
+                    });
+
+      });
 
 
   }]);
@@ -84,9 +103,6 @@ define(['angular','services','morris'], function (){
       this.push({x:value,y: key});
     }, values);
 
-    console.log("size:"+values.length+':'+values[0].x+","+values[0].y);
-    console.log("size:"+values.length+':'+values[1].x+","+values[1].y);
-    console.log("size:"+values.length+':'+values[10].x+","+values[10].y);
 
     return values;
   }
