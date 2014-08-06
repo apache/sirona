@@ -1,12 +1,14 @@
 'use strict';
 
 /* Services */
+define(['angular'], function (){
+  var sironaServices = angular.module('sironaJvmServices', ['ngResource']);
 
-var sironaServices = angular.module('sironaServices', ['ngResource']);
+  sironaServices.factory('jvmCpu', ['$resource',
+    function($resource){
+      return $resource('restServices/sironaServices/jvmreports/cpu', {}, {
+        query: {method:'GET', params:{}, isArray:true}
+      });
+    }]);
 
-sironaServices.factory('jvm', ['$resource',
-  function($resource){
-    return $resource('jvm', {}, {
-      query: {method:'GET', params:{}, isArray:true}
-    });
-  }]);
+});

@@ -5,7 +5,8 @@ define(['jquery','controllers', 'angular-route', 'bootstrap'],
 
   var sirona = angular.module('sirona', [
     'ngRoute',
-    'homeControllers'
+    'homeControllers',
+    'jvmControllers'
   ]);
 
   sirona.config(['$routeProvider',
@@ -16,6 +17,12 @@ define(['jquery','controllers', 'angular-route', 'bootstrap'],
                 templateUrl: 'partials/home.html',
                 controller: 'HomeCtrl'
              }
+         ).
+         when('/jvm',
+              {
+                templateUrl: 'partials/jvm.html',
+                controller: 'JvmHomeCtrl'
+              }
          ).
         otherwise({
           redirectTo: '/home'
