@@ -38,6 +38,10 @@
       <artifactId>sirona-core</artifactId>
       <scope>provided</scope> <!-- using to put it in the container to get JDBC monitoring and deploy the webapp -->
     </dependency>
+    <dependency>
+      <groupId>org.apache.sirona</groupId>
+      <artifactId>sirona-reporting-api</artifactId>
+    </dependency>
   </dependencies>
 
   <build>
