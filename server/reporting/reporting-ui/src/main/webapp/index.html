@@ -24,43 +24,47 @@
 
   <body>
 
-  <div id="wrapper">
+    <div id="wrapper">
 
-    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-      <div class="navbar-header">
-        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
-          <span class="sr-only">Toggle navigation</span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand" href="http://sirona.incubator.apache.org/">Sirona</a>
+      <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://sirona.incubator.apache.org/">Sirona</a>
+        </div>
+
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+          <ul class="nav navbar-nav side-nav" id="plugins">
+            <li class="active">
+            <li>
+              <a href="$mapping/">Home</a>
+            </li>
+            <li class="active">
+            <li>
+              <a href="$mapping$plugin.url">$plugin.name</a>
+            </li>
+          </ul>
+
+          <ul class="nav navbar-nav navbar-right navbar-user">
+            <li><a href="http://www.apache.org/">Apache Software Foundation</a></li>
+          </ul>
+        </div>
+      </nav>
+
+
+      <div id="page-wrapper" ng-view>
+        Foo
       </div>
 
-      <div class="collapse navbar-collapse navbar-ex1-collapse">
-        <ul class="nav navbar-nav side-nav" id="plugins">
-          <li class="active">
-          <li>
-            <a href="$mapping/">Home</a>
-          </li>
-          <li class="active">
-          <li>
-            <a href="$mapping$plugin.url">$plugin.name</a>
-          </li>
-        </ul>
-
-        <ul class="nav navbar-nav navbar-right navbar-user">
-          <li><a href="http://www.apache.org/">Apache Software Foundation</a></li>
-        </ul>
-      </div>
-    </nav>
-
-
-    <div id="page-wrapper">
-      Foo
     </div>
 
-  </div>
-
   </body>
+
+  <script type="text/javascript" src="js/jquery-1.11.0.js"></script>
+  <script type="text/javascript" data-main="js/main.js" src="js/require-2.1.14.js"></script>
+
 </html>
