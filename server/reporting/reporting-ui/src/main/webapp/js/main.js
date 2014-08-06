@@ -18,7 +18,9 @@
 'use strict';
 
 
-var angularVersion='1.3.0-beta.16';
+var angularVersion='1.3.0-beta.17';
+
+var useAngularMin=false;
 
 require.config({
 
@@ -28,9 +30,9 @@ require.config({
   urlArgs: "_timestamp=" +  (new Date()).getTime(),
   paths: {
     'jquery': 'jquery-1.11.0',
-    'angular': 'angular-'+angularVersion,
-    'angular-route': 'angular-route-'+angularVersion,
-    'angular-resource': 'angular-resource-'+angularVersion,
+    'angular': 'angular-'+angularVersion+(useAngularMin?".min":""),
+    'angular-route': 'angular-route-'+angularVersion+(useAngularMin?".min":""),
+    'angular-resource': 'angular-resource-'+angularVersion+(useAngularMin?".min":""),
     'bootstrap' : 'bootstrap.3.2.0.min',
     'controllers': 'app/controllers/controllers',
     'services': 'app/services/services',
@@ -39,7 +41,8 @@ require.config({
 
   shim: {
     'angular': ['jquery'],
-    'angular-route': ['angular']
+    'angular-route': ['angular'],
+    'angular-resource': ['angular']
   },
 
   deps: ['sirona']

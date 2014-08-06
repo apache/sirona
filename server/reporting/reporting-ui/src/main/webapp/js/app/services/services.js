@@ -17,7 +17,7 @@
 'use strict';
 
 /* Services */
-define(['angular'], function (){
+define(['angular','angular-resource'], function (){
   var sironaServices = angular.module('sironaJvmServices', ['ngResource']);
 
   sironaServices.factory('jvmCpu', ['$resource',
