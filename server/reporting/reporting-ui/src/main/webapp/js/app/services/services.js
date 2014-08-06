@@ -22,9 +22,9 @@ define(['angular','angular-resource'], function (){
 
   sironaServices.factory('jvmCpu', ['$resource',
     function($resource){
-      return $resource('restServices/sironaServices/jvmreports/cpu', {}, {
-        query: {method:'GET', params:{}, isArray:true}
-      });
+      return $resource('restServices/sironaServices/jvmreports/cpu/:start/:end',
+                       {start:'@start',end:'@end'},
+                       {query: {method:'GET', params:{}}});
     }]);
 
 });

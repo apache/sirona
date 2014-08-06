@@ -36,13 +36,16 @@ require.config({
     'bootstrap' : 'bootstrap.3.2.0.min',
     'controllers': 'app/controllers/controllers',
     'services': 'app/services/services',
-    'sirona': 'sirona'
+    'sirona': 'sirona',
+    'morris': 'plugins/morris/morris',
+    'raphael': 'plugins/morris/raphael.min'
   },
 
   shim: {
     'angular': ['jquery'],
     'angular-route': ['angular'],
-    'angular-resource': ['angular']
+    'angular-resource': ['angular'],
+    'morris': ['raphael']
   },
 
   deps: ['sirona']

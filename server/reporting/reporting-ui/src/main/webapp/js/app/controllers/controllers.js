@@ -17,9 +17,11 @@
 'use strict';
 
 /* Controllers */
-define(['angular','services'], function (){
+define(['angular','services','morris'], function (){
 
-  var homeControllers = angular.module('homeControllers', []);
+  var dayDuration = 24 * 3600 * 1000;
+
+  var homeControllers = angular.module('homeControllers', ['sironaJvmServices']);
 
   homeControllers.controller( 'HomeCtrl', ['$scope', function ( $scope ){
     console.log("HomeCtrl");
@@ -28,9 +30,61 @@ define(['angular','services'], function (){
 
   var jvmControllers = angular.module('jvmControllers', ['sironaJvmServices']);
 
-  jvmControllers.controller( 'JvmHomeCtrl', ['$scope', function ( $scope ){
+  jvmControllers.controller( 'JvmHomeCtrl', ['$scope','jvmCpu', function ( $scope,jvmCpu ){
     console.log("JvmHomeCtrl");
+
+    var yesterday = new Date();
+    yesterday.setTime(yesterday.getTime() - dayDuration);
+
+    var now = new Date();
+
+    //var cpuResults = jvmCpu.query({start:yesterday.getTime(),end:now.getTime()});
+
+    jvmCpu.query({start:yesterday.getTime(),end:now.getTime()} ).$promise.then(function(cpuResults){
+      Morris.Line({
+                    element: 'cpu',
+                    data: toMorrisFormat(cpuResults.data),
+                    xkey: 'x',
+                    ykeys: ['a'],
+                    labels: [cpuResults.label]
+                  });
+
+    });
+
+
   }]);
+
+  /*
+   format
+   {"label":"CPU Usage","color":"#317eac"
+   ,"data":{"1407322921555":3.71142578125,"1407322981555":2.63671875,"1407323041555":1.97216796875}}
+
+   to morris format
+   [
+   { y: '2006', a: 100 },
+   { y: '2007', a: 75 },
+   { y: '2008', a: 50 },
+   { y: '2009', a: 75 },
+   { y: '2010', a: 50 },
+   { y: '2011', a: 75 },
+   { y: '2012', a: 100 }
+   ]
+   */
+  var toMorrisFormat=function(reportResult){
+    if (reportResult==null){
+      console.log("reportResult==null");
+      return [];
+    }
+    var values = [];
+    angular.forEach(reportResult, function(key,value) {
+      this.push({x:value,a: key});
+    }, values);
+
+    console.log("size:"+values.length+':'+values[0].x);
+    console.log("size:"+values.length+':'+values[1].x);
+
+    return values;
+  }
 
 });
 
