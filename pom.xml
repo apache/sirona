@@ -263,7 +263,7 @@
             <exclude>**/META-INF/services/*</exclude>
             <exclude>**/resources/resources/**/*</exclude>
             <exclude>src/main/webapp/css/bootstrap**</exclude>
-            <exclude>src/main/webapp/css/plugins/morris.css</exclude>
+            <exclude>src/main/webapp/css/plugins/morris*.css</exclude>
             <exclude>src/main/webapp/font-awesome-4.1.0/**</exclude>
             <exclude>src/main/webapp/fonts/**</exclude>
             <exclude>src/main/webapp/js/angular**</exclude>
