@@ -31,7 +31,7 @@ import javax.ws.rs.core.MediaType;
 import java.util.SortedMap;
 
 /**
- * @author Olivier Lamy
+ *
  */
 @Path( "/jvmreports" )
 public class JvmReports

@@ -20,7 +20,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 /**
- * @author Olivier Lamy
+ *
  */
 public class Graph
     implements Serializable

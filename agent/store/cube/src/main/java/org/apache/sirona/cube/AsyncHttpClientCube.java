@@ -31,7 +31,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * @author Olivier Lamy
+ *
  */
 public class AsyncHttpClientCube
     extends Cube

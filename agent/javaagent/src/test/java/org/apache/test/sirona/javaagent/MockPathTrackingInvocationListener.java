@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author Olivier Lamy
+ *
  */
 public class MockPathTrackingInvocationListener implements PathTrackingInvocationListener
 {

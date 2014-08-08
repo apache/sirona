@@ -20,7 +20,7 @@ import org.apache.sirona.configuration.ioc.AutoSet;
 import org.apache.sirona.configuration.ioc.Created;
 
 /**
- * @author Olivier Lamy
+ *
  */
 @AutoSet
 public class AsyncHttpClientCubeBuilder

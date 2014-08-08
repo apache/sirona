@@ -26,7 +26,7 @@ import java.lang.management.MemoryMXBean;
 import java.lang.management.OperatingSystemMXBean;
 
 /**
- * @author Olivier Lamy
+ *
  */
 @Path( "/environment" )
 public class Environment
