@@ -34,4 +34,18 @@ define(['angular','angular-resource'], function (){
                        {query: {method:'GET', params:{}}});
     }]);
 
+  sironaServices.factory('nonHeapMemory', ['$resource',
+    function($resource){
+      return $resource('restServices/sironaServices/jvmreports/nonheapmemory/:start/:end',
+                       {start:'@start',end:'@end'},
+                       {query: {method:'GET', params:{}}});
+    }]);
+
+  sironaServices.factory('activeThreads', ['$resource',
+    function($resource){
+      return $resource('restServices/sironaServices/jvmreports/activethreads/:start/:end',
+                       {start:'@start',end:'@end'},
+                       {query: {method:'GET', params:{}}});
+    }]);
+
 });

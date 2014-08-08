@@ -30,8 +30,8 @@ define(['angular','services','morris'], function (){
 
   var jvmControllers = angular.module('jvmControllers', ['sironaJvmServices']);
 
-  jvmControllers.controller( 'JvmHomeCtrl', ['$scope','jvmCpu','jvmMemory',
-    function ( $scope,jvmCpu,jvmMemory ){
+  jvmControllers.controller( 'JvmHomeCtrl', ['$scope','jvmCpu','jvmMemory','nonHeapMemory','activeThreads',
+    function ( $scope,jvmCpu,jvmMemory,nonHeapMemory,activeThreads ){
 
       console.log("JvmHomeCtrl");
 
@@ -74,25 +74,43 @@ define(['angular','services','morris'], function (){
 
       });
 
+      nonHeapMemory.query({start:yesterday.getTime(),end:now.getTime()} ).$promise.then(function(memoryResults){
+        var morrisDatas=toMorrisFormat(memoryResults.data);
+        Morris.Line({
+                      element: 'nonheapmemory',
+                      data: morrisDatas,
+                      xkey: 'x',
+                      ykeys: 'y',
+                      labels: [memoryResults.label],
+                      xLabelFormat:function(ret){
+                        return new Date(morrisDatas[ret.x].x).toString();
+                      },
+                      parseTime: false,
+                      hideHover: 'auto'
+                    });
+
+      });
+
+      activeThreads.query({start:yesterday.getTime(),end:now.getTime()} ).$promise.then(function(results){
+        var morrisDatas=toMorrisFormat(results.data);
+        Morris.Line({
+                      element: 'activethreads',
+                      data: morrisDatas,
+                      xkey: 'x',
+                      ykeys: 'y',
+                      labels: [results.label],
+                      xLabelFormat:function(ret){
+                        return new Date(morrisDatas[ret.x].x).toString();
+                      },
+                      parseTime: false,
+                      hideHover: 'auto'
+                    });
+
+      });
 
   }]);
 
-  /*
-   format
-   {"label":"CPU Usage","color":"#317eac"
-   ,"data":{"1407322921555":3.71142578125,"1407322981555":2.63671875,"1407323041555":1.97216796875}}
 
-   to morris format
-   [
-   { y: '2006', a: 100 },
-   { y: '2007', a: 75 },
-   { y: '2008', a: 50 },
-   { y: '2009', a: 75 },
-   { y: '2010', a: 50 },
-   { y: '2011', a: 75 },
-   { y: '2012', a: 100 }
-   ]
-   */
   var toMorrisFormat=function(reportResult){
     if (reportResult==null){
       console.log("reportResult==null");

@@ -16,8 +16,10 @@
  */
 package org.apache.sirona.reporting.web.jvm;
 
+import org.apache.sirona.gauges.jvm.ActiveThreadGauge;
 import org.apache.sirona.gauges.jvm.CPUGauge;
 import org.apache.sirona.gauges.jvm.UsedMemoryGauge;
+import org.apache.sirona.gauges.jvm.UsedNonHeapMemoryGauge;
 import org.apache.sirona.reporting.web.Graph;
 import org.apache.sirona.repositories.Repository;
 
@@ -53,6 +55,28 @@ public class JvmReports
         final SortedMap<Long, Double> gaugeValues =
             Repository.INSTANCE.getGaugeValues( start, end, UsedMemoryGauge.USED_MEMORY );
         return new Graph( "Used Memory", Graph.DEFAULT_COLOR, gaugeValues );
+
+    }
+
+    @GET
+    @Path( "/nonheapmemory/{start}/{end}" )
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    public Graph nonHeapmemory( @PathParam( "start" ) final long start, @PathParam( "end" ) final long end )
+    {
+        final SortedMap<Long, Double> gaugeValues =
+            Repository.INSTANCE.getGaugeValues( start, end, UsedNonHeapMemoryGauge.USED_NONHEAPMEMORY );
+        return new Graph( "Used Non Heap Memory", Graph.DEFAULT_COLOR, gaugeValues );
+
+    }
+
+    @GET
+    @Path( "/activethreads/{start}/{end}" )
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    public Graph activeThreads( @PathParam( "start" ) final long start, @PathParam( "end" ) final long end )
+    {
+        final SortedMap<Long, Double> gaugeValues =
+            Repository.INSTANCE.getGaugeValues( start, end, ActiveThreadGauge.ACTIVE_THREAD );
+        return new Graph( "Active Thread Count", Graph.DEFAULT_COLOR, gaugeValues );
 
     }
 
