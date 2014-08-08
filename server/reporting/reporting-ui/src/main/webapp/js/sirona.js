@@ -17,7 +17,7 @@
 
 'use strict';
 
-define(['jquery','controllers', 'angular-route', 'bootstrap'],
+define(['jquery','controllers','controllers-jvm', 'angular-route', 'bootstrap'],
        function (jquery,controllers) {
 
   var sirona = angular.module('sirona', [

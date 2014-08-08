@@ -17,117 +17,15 @@
 'use strict';
 
 /* Controllers */
-define(['angular','services','morris'], function (){
+define(['angular'], function (){
 
   var dayDuration = 24 * 3600 * 1000;
 
-  var homeControllers = angular.module('homeControllers', ['sironaJvmServices']);
+  var homeControllers = angular.module('homeControllers', []);
 
   homeControllers.controller( 'HomeCtrl', ['$scope', function ( $scope ){
     console.log("HomeCtrl");
   }]);
-
-
-  var jvmControllers = angular.module('jvmControllers', ['sironaJvmServices']);
-
-  jvmControllers.controller( 'JvmHomeCtrl', ['$scope','jvmCpu','jvmMemory','nonHeapMemory','activeThreads',
-    function ( $scope,jvmCpu,jvmMemory,nonHeapMemory,activeThreads ){
-
-      console.log("JvmHomeCtrl");
-
-      var yesterday = new Date();
-      yesterday.setTime(yesterday.getTime() - dayDuration);
-
-      var now = new Date();
-
-      jvmCpu.query({start:yesterday.getTime(),end:now.getTime()} ).$promise.then(function(cpuResults){
-        var morrisDatas=toMorrisFormat(cpuResults.data);
-        $("#cpu" ).empty();
-        Morris.Line({
-                      element: 'cpu',
-                      data: morrisDatas,
-                      xkey: 'x',
-                      ykeys: 'y',
-                      labels: [cpuResults.label],
-                      xLabelFormat:function(ret){
-                        return new Date(morrisDatas[ret.x].x).toString();
-                      },
-                      parseTime: false,
-                      hideHover: 'auto'
-                    });
-
-      });
-
-      jvmMemory.query({start:yesterday.getTime(),end:now.getTime()} ).$promise.then(function(memoryResults){
-        var morrisDatas=toMorrisFormat(memoryResults.data);
-        $("#memory" ).empty();
-        Morris.Line({
-                      element: 'memory',
-                      data: morrisDatas,
-                      xkey: 'x',
-                      ykeys: 'y',
-                      labels: [memoryResults.label],
-                      xLabelFormat:function(ret){
-                        return new Date(morrisDatas[ret.x].x).toString();
-                      },
-                      parseTime: false,
-                      hideHover: 'auto'
-                    });
-
-      });
-
-      nonHeapMemory.query({start:yesterday.getTime(),end:now.getTime()} ).$promise.then(function(memoryResults){
-        var morrisDatas=toMorrisFormat(memoryResults.data);
-        $("#nonheapmemory" ).empty();
-        Morris.Line({
-                      element: 'nonheapmemory',
-                      data: morrisDatas,
-                      xkey: 'x',
-                      ykeys: 'y',
-                      labels: [memoryResults.label],
-                      xLabelFormat:function(ret){
-                        return new Date(morrisDatas[ret.x].x).toString();
-                      },
-                      parseTime: false,
-                      hideHover: 'auto'
-                    });
-
-      });
-
-      activeThreads.query({start:yesterday.getTime(),end:now.getTime()} ).$promise.then(function(results){
-        var morrisDatas=toMorrisFormat(results.data);
-        $("#activethreads" ).empty();
-        Morris.Line({
-                      element: 'activethreads',
-                      data: morrisDatas,
-                      xkey: 'x',
-                      ykeys: 'y',
-                      labels: [results.label],
-                      xLabelFormat:function(ret){
-                        return new Date(morrisDatas[ret.x].x).toString();
-                      },
-                      parseTime: false,
-                      hideHover: 'auto'
-                    });
-
-      });
-
-  }]);
-
-
-  var toMorrisFormat=function(reportResult){
-    if (reportResult==null){
-      console.log("reportResult==null");
-      return [];
-    }
-    var values = [];
-    angular.forEach(reportResult, function(key,value) {
-      this.push({x:value,y: key});
-    }, values);
-
-
-    return values;
-  }
 
 });
 

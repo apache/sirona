@@ -35,6 +35,7 @@ require.config({
     'angular-resource': 'angular-resource-'+angularVersion+(useAngularMin?".min":""),
     'bootstrap' : 'bootstrap.3.2.0.min',
     'controllers': 'app/controllers/controllers',
+    'controllers-jvm': 'app/controllers/controllers-jvm',
     'services': 'app/services/services',
     'sirona': 'sirona',
     'morris': 'plugins/morris/morris-0.5.0.min',
