@@ -25,27 +25,47 @@ define(['angular','angular-resource'], function (){
       return $resource('restServices/sironaServices/jvmreports/cpu/:start/:end',
                        {start:'@start',end:'@end'},
                        {query: {method:'GET', params:{}}});
-    }]);
+    }
+  ]);
 
   sironaServices.factory('jvmMemory', ['$resource',
     function($resource){
       return $resource('restServices/sironaServices/jvmreports/memory/:start/:end',
                        {start:'@start',end:'@end'},
                        {query: {method:'GET', params:{}}});
-    }]);
+    }
+  ]);
 
   sironaServices.factory('nonHeapMemory', ['$resource',
     function($resource){
       return $resource('restServices/sironaServices/jvmreports/nonheapmemory/:start/:end',
                        {start:'@start',end:'@end'},
                        {query: {method:'GET', params:{}}});
-    }]);
+    }
+  ]);
 
   sironaServices.factory('activeThreads', ['$resource',
     function($resource){
       return $resource('restServices/sironaServices/jvmreports/activethreads/:start/:end',
                        {start:'@start',end:'@end'},
                        {query: {method:'GET', params:{}}});
-    }]);
+    }
+  ]);
+
+  sironaServices.factory('osInfo', ['$resource',
+    function($resource){
+      return $resource('restServices/sironaServices/environment/os',
+                       {},
+                       {query: {method:'GET', params:{}}});
+    }
+  ]);
+
+  sironaServices.factory('memoryInfo', ['$resource',
+    function($resource){
+      return $resource('restServices/sironaServices/environment/memory',
+                       {},
+                       {query: {method:'GET', params:{}}});
+    }
+  ]);
 
 });

@@ -40,7 +40,7 @@
     </property>
   </bean>
 
-  <jaxrs:server id="sironaServices" address="/sironaServices" basePackages="org.apache.sirona.reporting.web.**">
+  <jaxrs:server id="sironaServices" address="/sironaServices" basePackages="org.apache.sirona.reporting.web.**,org.apache.sirona.reporting.web**">
     <jaxrs:providers>
       <ref bean="jsonProvider"/>
     </jaxrs:providers>

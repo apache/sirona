@@ -26,6 +26,23 @@
         <div id="cpu"><i class="fa fa-spinner fa-spin"></i></div>
       </div>
     </div>
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        <h3 class="panel-title">
+          <i class="icon-table"></i>Computer Info
+        </h3>
+      </div>
+      <div class="panel-body">
+        <table id="cpu-table" class="table table-bordered table-striped table-hover">
+          <tbody>
+          <tr><td>OS Name</td><td>{{os.name}}</td></tr>
+          <tr><td>Version</td><td>{{os.version}}</td></tr>
+          <tr><td>Architecture</td><td>{{os.arch}}</td></tr>
+          <tr><td>Number of processors</td><td>{{os.numberProcessor}}</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
   <div class="col-lg-3">
     <div class="panel panel-primary">
@@ -38,6 +55,21 @@
         <div id="memory"><i class="fa fa-spinner fa-spin"></i></div>
       </div>
     </div>
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        <h3 class="panel-title">
+          <i class="icon-table"></i>Memory Status
+        </h3>
+      </div>
+      <div class="panel-body">
+        <table id="memory-table" class="table table-bordered table-striped table-hover">
+          <tbody>
+          <tr><td>Init</td><td>{{memory.initMemory}}</td></tr>
+          <tr><td>Max</td><td>{{memory.maxMemory}}</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
   <div class="col-lg-3">
     <div class="panel panel-primary">
@@ -48,6 +80,21 @@
       </div>
       <div class="panel-body">
         <div id="nonheapmemory"><i class="fa fa-spinner fa-spin"></i></div>
+      </div>
+    </div>
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        <h3 class="panel-title">
+          <i class="icon-table"></i>Non Heap Memory Status
+        </h3>
+      </div>
+      <div class="panel-body">
+        <table id="memory-table" class="table table-bordered table-striped table-hover">
+          <tbody>
+          <tr><td>Init</td><td>{{memory.initNonHeapMemory}}</td></tr>
+          <tr><td>Max</td><td>{{memory.maxNonHeapMemory}}</td></tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>

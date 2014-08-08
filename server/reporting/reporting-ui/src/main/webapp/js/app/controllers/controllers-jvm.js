@@ -25,7 +25,8 @@ define(['angular','services','morris'], function (){
   var jvmControllers = angular.module('jvmControllers', ['sironaJvmServices']);
 
   jvmControllers.controller( 'JvmHomeCtrl', ['$scope','jvmCpu','jvmMemory','nonHeapMemory','activeThreads',
-    function ( $scope,jvmCpu,jvmMemory,nonHeapMemory,activeThreads ){
+                                              'osInfo','memoryInfo',
+    function ( $scope,jvmCpu,jvmMemory,nonHeapMemory,activeThreads,osInfo,memoryInfo){
 
       console.log("JvmHomeCtrl");
 
@@ -104,6 +105,15 @@ define(['angular','services','morris'], function (){
                       hideHover: 'auto'
                     });
 
+      });
+
+      osInfo.query().$promise.then(function(result){
+        $scope.os=result;
+
+      });
+
+      memoryInfo.query().$promise.then(function(result){
+        $scope.memory=result;
       });
 
   }]);
