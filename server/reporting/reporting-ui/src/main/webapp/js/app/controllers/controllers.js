@@ -42,6 +42,7 @@ define(['angular','services','morris'], function (){
 
       jvmCpu.query({start:yesterday.getTime(),end:now.getTime()} ).$promise.then(function(cpuResults){
         var morrisDatas=toMorrisFormat(cpuResults.data);
+        $("#cpu" ).empty();
         Morris.Line({
                       element: 'cpu',
                       data: morrisDatas,
@@ -59,6 +60,7 @@ define(['angular','services','morris'], function (){
 
       jvmMemory.query({start:yesterday.getTime(),end:now.getTime()} ).$promise.then(function(memoryResults){
         var morrisDatas=toMorrisFormat(memoryResults.data);
+        $("#memory" ).empty();
         Morris.Line({
                       element: 'memory',
                       data: morrisDatas,
@@ -76,6 +78,7 @@ define(['angular','services','morris'], function (){
 
       nonHeapMemory.query({start:yesterday.getTime(),end:now.getTime()} ).$promise.then(function(memoryResults){
         var morrisDatas=toMorrisFormat(memoryResults.data);
+        $("#nonheapmemory" ).empty();
         Morris.Line({
                       element: 'nonheapmemory',
                       data: morrisDatas,
@@ -93,6 +96,7 @@ define(['angular','services','morris'], function (){
 
       activeThreads.query({start:yesterday.getTime(),end:now.getTime()} ).$promise.then(function(results){
         var morrisDatas=toMorrisFormat(results.data);
+        $("#activethreads" ).empty();
         Morris.Line({
                       element: 'activethreads',
                       data: morrisDatas,
