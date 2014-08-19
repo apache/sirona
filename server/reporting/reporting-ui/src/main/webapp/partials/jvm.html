@@ -23,8 +23,26 @@
         </h3>
       </div>
       <div class="panel-body">
-        <div id="cpu"><i class="fa fa-spinner fa-spin"></i></div>
+        <div class="row">
+          <div id="cpu"><i class="fa fa-spinner fa-spin"></i></div>
+        </div>
+        <div class="row">
+            <p class="input-group">
+              <input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="dt" is-open="opened"
+                     min-date="minDate" datepicker-options="dateOptions" ng-required="true" close-text="Close" />
+              <span class="input-group-btn">
+                <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+              </span>
+
+              <input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="dt" is-open="opened"
+                     min-date="minDate" datepicker-options="dateOptions" ng-required="true" close-text="Close" />
+              <span class="input-group-btn">
+                <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+              </span>
+            </p>
+        </div>
       </div>
+
     </div>
     <div class="panel panel-primary">
       <div class="panel-heading">

@@ -17,12 +17,12 @@
 'use strict';
 
 /* Controllers */
-define(['angular','services','morris'], function (){
+define(['angular','services','morris','ui-bootstrap'], function (){
 
   var dayDuration = 24 * 3600 * 1000;
 
 
-  var jvmControllers = angular.module('jvmControllers', ['sironaJvmServices']);
+  var jvmControllers = angular.module('jvmControllers', ['sironaJvmServices','ui.bootstrap']);
 
   jvmControllers.controller( 'JvmHomeCtrl', ['$scope','jvmCpu','jvmMemory','nonHeapMemory','activeThreads',
                                               'osInfo','memoryInfo',
@@ -99,7 +99,7 @@ define(['angular','services','morris'], function (){
                       ykeys: 'y',
                       labels: [results.label],
                       xLabelFormat:function(ret){
-                        return new Date(morrisDatas[ret.x].x).toString();
+                        return "";// new Date(morrisDatas[ret.x].x).toString();
                       },
                       parseTime: false,
                       hideHover: 'auto'
@@ -116,6 +116,18 @@ define(['angular','services','morris'], function (){
         $scope.memory=result;
       });
 
+
+      $scope.initDate = new Date('2016-15-20');
+      $scope.formats = ['dd/MM/yy'];// 'dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy',
+      $scope.format = $scope.formats[0];
+
+      $scope.open = function($event) {
+        $event.preventDefault();
+        $event.stopPropagation();
+
+        $scope.opened = true;
+      };
+
   }]);
 
 
@@ -127,6 +139,7 @@ define(['angular','services','morris'], function (){
     var values = [];
     angular.forEach(reportResult, function(key,value) {
       this.push({x:value,y: key});
+      console.log(value+":"+new Date(value ));
     }, values);
 
 

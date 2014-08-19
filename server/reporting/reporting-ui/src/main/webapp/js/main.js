@@ -39,14 +39,16 @@ require.config({
     'services': 'app/services/services',
     'sirona': 'sirona',
     'morris': 'plugins/morris/morris-0.5.0.min',
-    'raphael': 'plugins/morris/raphael-2.1.2.min'
+    'raphael': 'plugins/morris/raphael-2.1.2.min',
+    'ui-bootstrap': 'ui-bootstrap-tpls-0.11.0'
   },
 
   shim: {
     'angular': ['jquery'],
     'angular-route': ['angular'],
     'angular-resource': ['angular'],
-    'morris': ['raphael']
+    'morris': ['raphael'],
+    'ui-bootstrap': ['angular','bootstrap']
   },
 
   deps: ['sirona']
