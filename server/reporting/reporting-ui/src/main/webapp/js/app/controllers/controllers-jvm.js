@@ -111,7 +111,7 @@ define(['jquery','angular','bootstrap','services','morris','ui-bootstrap','datet
       var drawActiveThreads = function(){
         activeThreads.query({start:$scope.data.startDate.getTime(),end:$scope.data.endDate.getTime()} ).$promise.then(function(results){
           var morrisDatas=toMorrisFormat(results.data);
-          $("#activethreads" ).empty();
+          jQuery("#activethreads").empty();
           Morris.Line({
                         element: 'activethreads',
                         data: morrisDatas,
@@ -119,7 +119,9 @@ define(['jquery','angular','bootstrap','services','morris','ui-bootstrap','datet
                         ykeys: 'y',
                         labels: [results.label],
                         xLabelFormat:function(ret){
-                          return "";
+                          var date = new Date();
+                          date.setTime(morrisDatas[ret.x].x);
+                          return date.toLocaleString();
                         },
                         parseTime: false,
                         hideHover: 'auto'
