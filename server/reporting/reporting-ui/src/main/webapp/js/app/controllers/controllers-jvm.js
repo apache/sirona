@@ -29,9 +29,9 @@ define(['jquery','angular','bootstrap','services','morris','ui-bootstrap','datet
     function ( $scope,jvmCpu,jvmMemory,nonHeapMemory,activeThreads,osInfo,memoryInfo){
 
       console.log("JvmHomeCtrl");
-
+      $scope.data={};
       $scope.data.startDate = new Date();
-      $scope.data.startDate.setTime($scope.startDate.getTime() - dayDuration);
+      $scope.data.startDate.setTime($scope.data.startDate.getTime() - dayDuration);
 
 
       $scope.data.endDate = new Date();
@@ -41,12 +41,10 @@ define(['jquery','angular','bootstrap','services','morris','ui-bootstrap','datet
       jQuery("#dropdown-enddate").dropdown();
       jQuery("#dropdown-startdate").dropdown();
 
-      var drawCpu = function()
-      {
-        console.log("$scope.endDate:"+$scope.endDate);
-        jvmCpu.query({start: $scope.data.startDate.getTime(),end: $scope.endDate.getTime()} ).$promise.then( function ( results ){
+      var drawCpu = function(){
+        jvmCpu.query({start: $scope.data.startDate.getTime(),end: $scope.data.endDate.getTime()} ).$promise.then( function ( results ){
           $scope.cpuResults = toMorrisFormat( results.data );
-          $("#cpu").empty();
+          jQuery("#cpu").empty();
           Morris.Line({
                         element: 'cpu',
                         data: $scope.cpuResults,
@@ -64,65 +62,71 @@ define(['jquery','angular','bootstrap','services','morris','ui-bootstrap','datet
           });
       };
 
-      drawCpu();
+      var drawHeapMemory = function(){
+        jvmMemory.query({start:$scope.data.startDate.getTime(),end:$scope.data.endDate.getTime()} ).$promise.then(function(memoryResults){
+          var morrisDatas=toMorrisFormat(memoryResults.data);
+          jQuery("#memory" ).empty();
+          Morris.Line({
+                        element: 'memory',
+                        data: morrisDatas,
+                        xkey: 'x',
+                        ykeys: 'y',
+                        labels: [memoryResults.label],
+                        xLabelFormat:function(ret){
+                          var date = new Date();
+                          date.setTime(morrisDatas[ret.x].x);
+                          return date.toLocaleString();
+                        },
+                        parseTime: false,
+                        hideHover: 'auto'
+                      });
 
-      jvmMemory.query({start:$scope.data.startDate.getTime(),end:$scope.endDate.getTime()} ).$promise.then(function(memoryResults){
-        var morrisDatas=toMorrisFormat(memoryResults.data);
-        $("#memory" ).empty();
-        Morris.Line({
-                      element: 'memory',
-                      data: morrisDatas,
-                      xkey: 'x',
-                      ykeys: 'y',
-                      labels: [memoryResults.label],
-                      xLabelFormat:function(ret){
-                        var date = new Date();
-                        date.setTime(morrisDatas[ret.x].x);
-                        return date.toLocaleString();
-                      },
-                      parseTime: false,
-                      hideHover: 'auto'
-                    });
+        });        
+      };
+      
+      var drawNonHeapMemory = function(){
 
-      });
+        nonHeapMemory.query({start:$scope.data.startDate.getTime(),end:$scope.data.endDate.getTime()} ).$promise.then(function(memoryResults){
+          var morrisDatas=toMorrisFormat(memoryResults.data);
+          jQuery("#nonheapmemory" ).empty();
+          Morris.Line({
+                        element: 'nonheapmemory',
+                        data: morrisDatas,
+                        xkey: 'x',
+                        ykeys: 'y',
+                        labels: [memoryResults.label],
+                        xLabelFormat:function(ret){
+                          var date = new Date();
+                          date.setTime(morrisDatas[ret.x].x);
+                          return date.toLocaleString();
+                        },
+                        parseTime: false,
+                        hideHover: 'auto'
+                      });
 
-      nonHeapMemory.query({start:$scope.data.startDate.getTime(),end:$scope.endDate.getTime()} ).$promise.then(function(memoryResults){
-        var morrisDatas=toMorrisFormat(memoryResults.data);
-        $("#nonheapmemory" ).empty();
-        Morris.Line({
-                      element: 'nonheapmemory',
-                      data: morrisDatas,
-                      xkey: 'x',
-                      ykeys: 'y',
-                      labels: [memoryResults.label],
-                      xLabelFormat:function(ret){
-                        var date = new Date();
-                        date.setTime(morrisDatas[ret.x].x);
-                        return date.toLocaleString();
-                      },
-                      parseTime: false,
-                      hideHover: 'auto'
-                    });
+        });
 
-      });
+      };
 
-      activeThreads.query({start:$scope.data.startDate.getTime(),end:$scope.data.endDate.getTime()} ).$promise.then(function(results){
-        var morrisDatas=toMorrisFormat(results.data);
-        $("#activethreads" ).empty();
-        Morris.Line({
-                      element: 'activethreads',
-                      data: morrisDatas,
-                      xkey: 'x',
-                      ykeys: 'y',
-                      labels: [results.label],
-                      xLabelFormat:function(ret){
-                        return "";
-                      },
-                      parseTime: false,
-                      hideHover: 'auto'
-                    });
+      var drawActiveThreads = function(){
+        activeThreads.query({start:$scope.data.startDate.getTime(),end:$scope.data.endDate.getTime()} ).$promise.then(function(results){
+          var morrisDatas=toMorrisFormat(results.data);
+          $("#activethreads" ).empty();
+          Morris.Line({
+                        element: 'activethreads',
+                        data: morrisDatas,
+                        xkey: 'x',
+                        ykeys: 'y',
+                        labels: [results.label],
+                        xLabelFormat:function(ret){
+                          return "";
+                        },
+                        parseTime: false,
+                        hideHover: 'auto'
+                      });
 
-      });
+        });
+      };
 
       osInfo.query().$promise.then(function(result){
         $scope.os=result;
@@ -134,10 +138,13 @@ define(['jquery','angular','bootstrap','services','morris','ui-bootstrap','datet
       });
 
       $scope.updateGraphs = function(){
-        console.log("updateGraphs:"+$scope.data.endDate.toLocaleString());
         drawCpu();
+        drawHeapMemory();
+        drawNonHeapMemory();
+        drawActiveThreads();
       };
 
+      $scope.updateGraphs();
 
   }]);
 
