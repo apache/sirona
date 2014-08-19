@@ -30,33 +30,21 @@ define(['jquery','angular','bootstrap','services','morris','ui-bootstrap','datet
 
       console.log("JvmHomeCtrl");
 
-      $scope.startDate = new Date();
-      $scope.startDate.setTime($scope.startDate.getTime() - dayDuration);
+      $scope.data.startDate = new Date();
+      $scope.data.startDate.setTime($scope.startDate.getTime() - dayDuration);
 
 
-      $scope.endDate = new Date();
+      $scope.data.endDate = new Date();
 
+      $scope.data.format = 'dd/MM/yyyy HH:mm:ss';
 
-      $scope.format = 'dd/MM/yyyy HH:mm:ss';
-
-      $scope.startDateOpen = function($event) {
-        $event.preventDefault();
-        $event.stopPropagation();
-        $scope.startDateOpened=!$scope.startDateOpened;
-
-      };
-
-      $scope.endDateOpen = function($event) {
-        $event.preventDefault();
-        $event.stopPropagation();
-        $scope.endDateOpened=!$scope.endDateOpened;
-
-      };
+      jQuery("#dropdown-enddate").dropdown();
+      jQuery("#dropdown-startdate").dropdown();
 
       var drawCpu = function()
       {
         console.log("$scope.endDate:"+$scope.endDate);
-        jvmCpu.query({start: $scope.startDate.getTime(),end: $scope.endDate.getTime()} ).$promise.then( function ( results ){
+        jvmCpu.query({start: $scope.data.startDate.getTime(),end: $scope.endDate.getTime()} ).$promise.then( function ( results ){
           $scope.cpuResults = toMorrisFormat( results.data );
           $("#cpu").empty();
           Morris.Line({
@@ -78,7 +66,7 @@ define(['jquery','angular','bootstrap','services','morris','ui-bootstrap','datet
 
       drawCpu();
 
-      jvmMemory.query({start:$scope.startDate.getTime(),end:$scope.endDate.getTime()} ).$promise.then(function(memoryResults){
+      jvmMemory.query({start:$scope.data.startDate.getTime(),end:$scope.endDate.getTime()} ).$promise.then(function(memoryResults){
         var morrisDatas=toMorrisFormat(memoryResults.data);
         $("#memory" ).empty();
         Morris.Line({
@@ -98,7 +86,7 @@ define(['jquery','angular','bootstrap','services','morris','ui-bootstrap','datet
 
       });
 
-      nonHeapMemory.query({start:$scope.startDate.getTime(),end:$scope.endDate.getTime()} ).$promise.then(function(memoryResults){
+      nonHeapMemory.query({start:$scope.data.startDate.getTime(),end:$scope.endDate.getTime()} ).$promise.then(function(memoryResults){
         var morrisDatas=toMorrisFormat(memoryResults.data);
         $("#nonheapmemory" ).empty();
         Morris.Line({
@@ -118,7 +106,7 @@ define(['jquery','angular','bootstrap','services','morris','ui-bootstrap','datet
 
       });
 
-      activeThreads.query({start:$scope.startDate.getTime(),end:$scope.endDate.getTime()} ).$promise.then(function(results){
+      activeThreads.query({start:$scope.data.startDate.getTime(),end:$scope.data.endDate.getTime()} ).$promise.then(function(results){
         var morrisDatas=toMorrisFormat(results.data);
         $("#activethreads" ).empty();
         Morris.Line({
@@ -146,12 +134,10 @@ define(['jquery','angular','bootstrap','services','morris','ui-bootstrap','datet
       });
 
       $scope.updateGraphs = function(){
-        console.log("updateGraphs:"+$scope.endDate.toLocaleString());
+        console.log("updateGraphs:"+$scope.data.endDate.toLocaleString());
         drawCpu();
       };
 
-      jQuery("#dropdown-enddate").dropdown();// 'toggle'
-      //jQuery(".dropdown-toggle" ).dropdown();//'toggle'
 
   }]);
 
