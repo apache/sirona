@@ -68,4 +68,13 @@ define(['angular','angular-resource'], function (){
     }
   ]);
 
+
+  sironaServices.factory('threads', ['$resource',
+    function($resource){
+      return $resource('restServices/sironaServices/threads',
+                       {},
+                       {query: {method:'GET', params:{},isArray:true}});
+    }
+  ]);
+
 });

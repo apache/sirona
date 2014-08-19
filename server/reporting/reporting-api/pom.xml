@@ -41,6 +41,10 @@
       <groupId>org.apache.sirona</groupId>
       <artifactId>sirona-web</artifactId>
     </dependency>
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+    </dependency>
   </dependencies>
 
 </project>
