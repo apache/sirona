@@ -15,9 +15,9 @@
   limitations under the License.
 -->
 <div class="row">
-  <div class="col-lg-3">
+  <div class="col-lg-2">
   </div>
-  <div class="col-lg-3">
+  <div class="col-lg-4">
     <div class="form-group" role="form">
       <label for="icpu-datetimepicker-start">From</label>
       <button type="button" class="btn btn-default" ng-click="startDateOpen($event)"><i class="glyphicon glyphicon-calendar"></i></button>
@@ -25,15 +25,27 @@
              min-date="minDate" datepicker-options="dateOptions" ng-required="true" close-text="Close" id="icpu-datetimepicker-start" />
     </div>
   </div>
-  <div class="col-lg-3">
-    <div class="form-group" role="form">
-      <label for="icpu-datetimepicker-end">To</label>
-      <button type="button" class="btn btn-default" ng-click="endDateOpen($event)"><i class="glyphicon glyphicon-calendar"></i></button>
-      <input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="endDate" is-open="endDateOpened"
-             min-date="minDate" datepicker-options="dateOptions" ng-required="true" close-text="Close" id="icpu-datetimepicker-end" />
+  <div class="col-lg-4">
+    <div class="dropdown">
+      <label for="datetimepicker-to">To</label>
+      <div class="input-group">
+
+        <input type="text" class="form-control" data-ng-model="endDate" id="datetimepicker-to">
+        <span class="input-group-addon">
+        <a class="dropdown-toggle" id="dropdown-enddate" role="button" data-toggle="dropdown" data-target="#" href="#">
+        <i class="glyphicon glyphicon-calendar"></i>
+        </a>
+        </span>
+      </div>
+      <ul class="dropdown-menu" role="menu" aria-labelledby="dropdown-enddate">
+        <li>
+          <datetimepicker data-ng-model="endDate" data-datetimepicker-config="{  }"/>
+        </li>
+      </ul>
     </div>
+
   </div>
-  <div class="col-lg-3">
+  <div class="col-lg-2">
     <button type="button" class="btn btn-primary" ng-click="updateGraphs()">Update</button>
   </div>
 </div>

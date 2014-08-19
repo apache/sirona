@@ -40,7 +40,9 @@ require.config({
     'sirona': 'sirona',
     'morris': 'plugins/morris/morris-0.5.0.min',
     'raphael': 'plugins/morris/raphael-2.1.2.min',
-    'ui-bootstrap': 'ui-bootstrap-tpls-0.11.0'
+    'ui-bootstrap': 'ui-bootstrap-tpls-0.11.0',
+    'datetimepicker': 'datetimepicker-0.2.4',
+    'moment': 'moment-2.8.1.min'
   },
 
   shim: {
@@ -48,7 +50,8 @@ require.config({
     'angular-route': ['angular'],
     'angular-resource': ['angular'],
     'morris': ['raphael'],
-    'ui-bootstrap': ['angular','bootstrap']
+    'ui-bootstrap': ['angular','bootstrap'],
+    'datetimepicker': ['angular','bootstrap','moment']
   },
 
   deps: ['sirona']

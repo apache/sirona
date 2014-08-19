@@ -17,7 +17,7 @@
 
 'use strict';
 
-define(['jquery','controllers','controllers-jvm', 'angular-route', 'bootstrap'],
+define(['jquery','controllers','controllers-jvm', 'angular-route', 'bootstrap','datetimepicker'],
        function (jquery,controllers) {
 
   var sirona = angular.module('sirona', [
@@ -26,8 +26,9 @@ define(['jquery','controllers','controllers-jvm', 'angular-route', 'bootstrap'],
     'jvmControllers'
   ]);
 
-  sirona.config(['$routeProvider',
-    function($routeProvider) {
+  sirona.config(['$routeProvider','$logProvider',
+    function($routeProvider,$logProvider) {
+      $logProvider.debugEnabled(true);
       $routeProvider.
         when('/home',
              {

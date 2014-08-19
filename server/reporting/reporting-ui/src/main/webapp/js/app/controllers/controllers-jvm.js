@@ -17,12 +17,12 @@
 'use strict';
 
 /* Controllers */
-define(['angular','services','morris','ui-bootstrap'], function (){
+define(['jquery','angular','bootstrap','services','morris','ui-bootstrap','datetimepicker'], function (){
 
   var dayDuration = 24 * 3600 * 1000;
 
 
-  var jvmControllers = angular.module('jvmControllers', ['sironaJvmServices','ui.bootstrap']);
+  var jvmControllers = angular.module('jvmControllers', ['sironaJvmServices','ui.bootstrap','ui.bootstrap.datetimepicker']);
 
   jvmControllers.controller( 'JvmHomeCtrl', ['$scope','jvmCpu','jvmMemory','nonHeapMemory','activeThreads',
                                               'osInfo','memoryInfo',
@@ -56,29 +56,24 @@ define(['angular','services','morris','ui-bootstrap'], function (){
       var drawCpu = function()
       {
         console.log("$scope.endDate:"+$scope.endDate);
-        jvmCpu.query( {
-                        start: $scope.startDate.getTime(),
-                        end: $scope.endDate.getTime()
-                      } ).$promise.then( function ( results ){
-                                           $scope.cpuResults = toMorrisFormat( results.data );
-                                           $("#cpu").empty();
-                                           Morris.Line( {
-                                                          element: 'cpu',
-                                                          data: $scope.cpuResults,
-                                                          xkey: 'x',
-                                                          ykeys: 'y',
-                                                          labels: [results.label],
-                                                          xLabelFormat: function ( ret )
-                                                          {
-                                                            var date = new Date();
-                                                            date.setTime($scope.cpuResults[ret.x].x);
-                                                            return date.toLocaleString();
-                                                          },
-                                                          parseTime: false,
-                                                          hideHover: 'auto'
-                                                        } );
-
-                                         } );
+        jvmCpu.query({start: $scope.startDate.getTime(),end: $scope.endDate.getTime()} ).$promise.then( function ( results ){
+          $scope.cpuResults = toMorrisFormat( results.data );
+          $("#cpu").empty();
+          Morris.Line({
+                        element: 'cpu',
+                        data: $scope.cpuResults,
+                        xkey: 'x',
+                        ykeys: 'y',
+                        labels: [results.label],
+                        xLabelFormat: function ( ret ){
+                          var date = new Date();
+                          date.setTime($scope.cpuResults[ret.x].x);
+                          return date.toLocaleString();
+                        },
+                        parseTime: false,
+                        hideHover: 'auto'
+                      });
+          });
       };
 
       drawCpu();
@@ -151,9 +146,12 @@ define(['angular','services','morris','ui-bootstrap'], function (){
       });
 
       $scope.updateGraphs = function(){
-        console.log("updateGraphs");
+        console.log("updateGraphs:"+$scope.endDate.toLocaleString());
         drawCpu();
       };
+
+      jQuery("#dropdown-enddate").dropdown();// 'toggle'
+      //jQuery(".dropdown-toggle" ).dropdown();//'toggle'
 
   }]);
 
