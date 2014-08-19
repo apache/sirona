@@ -263,6 +263,7 @@
             <exclude>**/META-INF/services/*</exclude>
             <exclude>**/resources/resources/**/*</exclude>
             <exclude>src/main/webapp/css/bootstrap**</exclude>
+            <exclude>src/main/webapp/css/datetimepicker*css</exclude>
             <exclude>src/main/webapp/css/plugins/morris*.css</exclude>
             <exclude>src/main/webapp/font-awesome-4.1.0/**</exclude>
             <exclude>src/main/webapp/fonts/**</exclude>
@@ -271,6 +272,9 @@
             <exclude>src/main/webapp/js/jquery**</exclude>
             <exclude>src/main/webapp/js/plugins/**</exclude>
             <exclude>src/main/webapp/js/require-*.js</exclude>
+            <exclude>src/main/webapp/js/datetimepicker-*.js</exclude>
+            <exclude>src/main/webapp/js/moment-*.min.js</exclude>
+            <exclude>src/main/webapp/js/ui-bootstrap-tpls-*.js</exclude>
           </excludes>
         </configuration>
         <executions>
