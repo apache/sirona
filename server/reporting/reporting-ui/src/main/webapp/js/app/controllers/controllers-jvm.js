@@ -30,30 +30,43 @@ define(['angular','services','morris','ui-bootstrap'], function (){
 
       console.log("JvmHomeCtrl");
 
-      var yesterday = new Date();
-      yesterday.setTime(yesterday.getTime() - dayDuration);
+      $scope.startDate = new Date();
 
-      var now = new Date();
+      $scope.startDate.setTime($scope.startDate.getTime() - dayDuration);
 
-      jvmCpu.query({start:yesterday.getTime(),end:now.getTime()} ).$promise.then(function(cpuResults){
-        var morrisDatas=toMorrisFormat(cpuResults.data);
-        $("#cpu" ).empty();
-        Morris.Line({
-                      element: 'cpu',
-                      data: morrisDatas,
-                      xkey: 'x',
-                      ykeys: 'y',
-                      labels: [cpuResults.label],
-                      xLabelFormat:function(ret){
-                        return new Date(morrisDatas[ret.x].x).toString();
-                      },
-                      parseTime: false,
-                      hideHover: 'auto'
-                    });
+      $scope.endDate = new Date();
+      $scope.endDateStr = $scope.endDate.toString();
 
-      });
+      var drawCpu = function()
+      {
+        console.log("$scope.endDate:"+$scope.endDate+",str:"+$scope.endDateStr);
+        new Date();
+        jvmCpu.query( {
+                        start: $scope.startDate.getTime(),
+                        end: $scope.endDate.getTime()
+                      } ).$promise.then( function ( results ){
+                                           $scope.cpuResults = toMorrisFormat( results.data );
+                                           $("#cpu").empty();
+                                           Morris.Line( {
+                                                          element: 'cpu',
+                                                          data: $scope.cpuResults,
+                                                          xkey: 'x',
+                                                          ykeys: 'y',
+                                                          labels: [$scope.cpuResults.label],
+                                                          xLabelFormat: function ( ret )
+                                                          {
+                                                            return new Date( $scope.cpuResults[ret.x].x ).toString();
+                                                          },
+                                                          parseTime: false,
+                                                          hideHover: 'auto'
+                                                        } );
 
-      jvmMemory.query({start:yesterday.getTime(),end:now.getTime()} ).$promise.then(function(memoryResults){
+                                         } );
+      };
+
+      drawCpu();
+
+      jvmMemory.query({start:$scope.startDate.getTime(),end:$scope.endDate.getTime()} ).$promise.then(function(memoryResults){
         var morrisDatas=toMorrisFormat(memoryResults.data);
         $("#memory" ).empty();
         Morris.Line({
@@ -71,7 +84,7 @@ define(['angular','services','morris','ui-bootstrap'], function (){
 
       });
 
-      nonHeapMemory.query({start:yesterday.getTime(),end:now.getTime()} ).$promise.then(function(memoryResults){
+      nonHeapMemory.query({start:$scope.startDate.getTime(),end:$scope.endDate.getTime()} ).$promise.then(function(memoryResults){
         var morrisDatas=toMorrisFormat(memoryResults.data);
         $("#nonheapmemory" ).empty();
         Morris.Line({
@@ -89,7 +102,7 @@ define(['angular','services','morris','ui-bootstrap'], function (){
 
       });
 
-      activeThreads.query({start:yesterday.getTime(),end:now.getTime()} ).$promise.then(function(results){
+      activeThreads.query({start:$scope.startDate.getTime(),end:$scope.endDate.getTime()} ).$promise.then(function(results){
         var morrisDatas=toMorrisFormat(results.data);
         $("#activethreads" ).empty();
         Morris.Line({
@@ -99,7 +112,7 @@ define(['angular','services','morris','ui-bootstrap'], function (){
                       ykeys: 'y',
                       labels: [results.label],
                       xLabelFormat:function(ret){
-                        return "";// new Date(morrisDatas[ret.x].x).toString();
+                        return "";
                       },
                       parseTime: false,
                       hideHover: 'auto'
@@ -116,16 +129,25 @@ define(['angular','services','morris','ui-bootstrap'], function (){
         $scope.memory=result;
       });
 
+      $scope.format = 'dd/MM/yyyy HH:mm:ss';
 
-      $scope.initDate = new Date('2016-15-20');
-      $scope.formats = ['dd/MM/yy'];// 'dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy',
-      $scope.format = $scope.formats[0];
-
-      $scope.open = function($event) {
+      $scope.startDateOpen = function($event) {
         $event.preventDefault();
         $event.stopPropagation();
+        $scope.startDateOpened=!$scope.startDateOpened;
 
-        $scope.opened = true;
+      };
+
+      $scope.endDateOpen = function($event) {
+        $event.preventDefault();
+        $event.stopPropagation();
+        $scope.endDateOpened=!$scope.endDateOpened;
+
+      };
+
+      $scope.updateGraphs = function(){
+        console.log("updateGraphs");
+        drawCpu();
       };
 
   }]);

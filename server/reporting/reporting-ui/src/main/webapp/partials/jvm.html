@@ -16,6 +16,29 @@
 -->
 <div class="row">
   <div class="col-lg-3">
+  </div>
+  <div class="col-lg-3">
+    <div class="form-group" role="form">
+      <label for="icpu-datetimepicker-start">From</label>
+      <button type="button" class="btn btn-default" ng-click="startDateOpen($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+      <input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="startDate" is-open="startDateOpened"
+             min-date="minDate" datepicker-options="dateOptions" ng-required="true" close-text="Close" id="icpu-datetimepicker-start" />
+    </div>
+  </div>
+  <div class="col-lg-3">
+    <div class="form-group" role="form">
+      <label for="icpu-datetimepicker-end">To</label>
+      <button type="button" class="btn btn-default" ng-click="endDateOpen($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+      <input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="endDateStr" is-open="endDateOpened"
+             min-date="minDate" datepicker-options="dateOptions" ng-required="true" close-text="Close" id="icpu-datetimepicker-end" />
+    </div>
+  </div>
+  <div class="col-lg-3">
+    <button type="button" class="btn btn-primary" ng-click="updateGraphs()">Update</button>
+  </div>
+</div>
+<div class="row">
+  <div class="col-lg-3">
     <div class="panel panel-primary">
       <div class="panel-heading">
         <h3 class="panel-title">
@@ -25,21 +48,6 @@
       <div class="panel-body">
         <div class="row">
           <div id="cpu"><i class="fa fa-spinner fa-spin"></i></div>
-        </div>
-        <div class="row">
-            <p class="input-group">
-              <input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="dt" is-open="opened"
-                     min-date="minDate" datepicker-options="dateOptions" ng-required="true" close-text="Close" />
-              <span class="input-group-btn">
-                <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
-              </span>
-
-              <input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="dt" is-open="opened"
-                     min-date="minDate" datepicker-options="dateOptions" ng-required="true" close-text="Close" />
-              <span class="input-group-btn">
-                <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
-              </span>
-            </p>
         </div>
       </div>
 
