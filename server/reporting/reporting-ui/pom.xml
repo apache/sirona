@@ -135,6 +135,18 @@
           </dependency>
         </dependencies>
       </plugin>
+      <plugin>
+        <groupId>org.apache.openejb.maven</groupId>
+        <artifactId>tomee-maven-plugin</artifactId>
+        <version>1.6.0.2</version>
+        <configuration>
+          <tomeeVersion>1.6.0.2</tomeeVersion>
+          <tomeeClassifier>plus</tomeeClassifier>
+          <libs>
+            <lib>org.apache.sirona:sirona-core:${project.version}</lib>
+          </libs>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
