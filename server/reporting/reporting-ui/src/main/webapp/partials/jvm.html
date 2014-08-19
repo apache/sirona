@@ -29,7 +29,7 @@
     <div class="form-group" role="form">
       <label for="icpu-datetimepicker-end">To</label>
       <button type="button" class="btn btn-default" ng-click="endDateOpen($event)"><i class="glyphicon glyphicon-calendar"></i></button>
-      <input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="endDateStr" is-open="endDateOpened"
+      <input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="endDate" is-open="endDateOpened"
              min-date="minDate" datepicker-options="dateOptions" ng-required="true" close-text="Close" id="icpu-datetimepicker-end" />
     </div>
   </div>
@@ -61,10 +61,10 @@
       <div class="panel-body">
         <table id="cpu-table" class="table table-bordered table-striped table-hover">
           <tbody>
-          <tr><td>OS Name</td><td>{{os.name}}</td></tr>
-          <tr><td>Version</td><td>{{os.version}}</td></tr>
-          <tr><td>Architecture</td><td>{{os.arch}}</td></tr>
-          <tr><td>Number of processors</td><td>{{os.numberProcessor}}</td></tr>
+          <tr><td>OS Name</td><td>{{::os.name}}</td></tr>
+          <tr><td>Version</td><td>{{::os.version}}</td></tr>
+          <tr><td>Architecture</td><td>{{::os.arch}}</td></tr>
+          <tr><td>Number of processors</td><td>{{::os.numberProcessor}}</td></tr>
           </tbody>
         </table>
       </div>

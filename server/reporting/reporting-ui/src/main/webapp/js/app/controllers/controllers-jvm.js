@@ -31,16 +31,31 @@ define(['angular','services','morris','ui-bootstrap'], function (){
       console.log("JvmHomeCtrl");
 
       $scope.startDate = new Date();
-
       $scope.startDate.setTime($scope.startDate.getTime() - dayDuration);
 
+
       $scope.endDate = new Date();
-      $scope.endDateStr = $scope.endDate.toString();
+
+
+      $scope.format = 'dd/MM/yyyy HH:mm:ss';
+
+      $scope.startDateOpen = function($event) {
+        $event.preventDefault();
+        $event.stopPropagation();
+        $scope.startDateOpened=!$scope.startDateOpened;
+
+      };
+
+      $scope.endDateOpen = function($event) {
+        $event.preventDefault();
+        $event.stopPropagation();
+        $scope.endDateOpened=!$scope.endDateOpened;
+
+      };
 
       var drawCpu = function()
       {
-        console.log("$scope.endDate:"+$scope.endDate+",str:"+$scope.endDateStr);
-        new Date();
+        console.log("$scope.endDate:"+$scope.endDate);
         jvmCpu.query( {
                         start: $scope.startDate.getTime(),
                         end: $scope.endDate.getTime()
@@ -52,10 +67,12 @@ define(['angular','services','morris','ui-bootstrap'], function (){
                                                           data: $scope.cpuResults,
                                                           xkey: 'x',
                                                           ykeys: 'y',
-                                                          labels: [$scope.cpuResults.label],
+                                                          labels: [results.label],
                                                           xLabelFormat: function ( ret )
                                                           {
-                                                            return new Date( $scope.cpuResults[ret.x].x ).toString();
+                                                            var date = new Date();
+                                                            date.setTime($scope.cpuResults[ret.x].x);
+                                                            return date.toLocaleString();
                                                           },
                                                           parseTime: false,
                                                           hideHover: 'auto'
@@ -76,7 +93,9 @@ define(['angular','services','morris','ui-bootstrap'], function (){
                       ykeys: 'y',
                       labels: [memoryResults.label],
                       xLabelFormat:function(ret){
-                        return new Date(morrisDatas[ret.x].x).toString();
+                        var date = new Date();
+                        date.setTime(morrisDatas[ret.x].x);
+                        return date.toLocaleString();
                       },
                       parseTime: false,
                       hideHover: 'auto'
@@ -94,7 +113,9 @@ define(['angular','services','morris','ui-bootstrap'], function (){
                       ykeys: 'y',
                       labels: [memoryResults.label],
                       xLabelFormat:function(ret){
-                        return new Date(morrisDatas[ret.x].x).toString();
+                        var date = new Date();
+                        date.setTime(morrisDatas[ret.x].x);
+                        return date.toLocaleString();
                       },
                       parseTime: false,
                       hideHover: 'auto'
@@ -129,22 +150,6 @@ define(['angular','services','morris','ui-bootstrap'], function (){
         $scope.memory=result;
       });
 
-      $scope.format = 'dd/MM/yyyy HH:mm:ss';
-
-      $scope.startDateOpen = function($event) {
-        $event.preventDefault();
-        $event.stopPropagation();
-        $scope.startDateOpened=!$scope.startDateOpened;
-
-      };
-
-      $scope.endDateOpen = function($event) {
-        $event.preventDefault();
-        $event.stopPropagation();
-        $scope.endDateOpened=!$scope.endDateOpened;
-
-      };
-
       $scope.updateGraphs = function(){
         console.log("updateGraphs");
         drawCpu();
@@ -161,7 +166,6 @@ define(['angular','services','morris','ui-bootstrap'], function (){
     var values = [];
     angular.forEach(reportResult, function(key,value) {
       this.push({x:value,y: key});
-      console.log(value+":"+new Date(value ));
     }, values);
 
 
