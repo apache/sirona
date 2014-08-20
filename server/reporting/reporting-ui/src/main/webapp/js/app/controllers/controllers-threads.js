@@ -22,16 +22,24 @@ define(['jquery','angular','bootstrap','services','morris','ui-bootstrap','datet
 
   var jvmControllers = angular.module('threadsControllers', ['sironaJvmServices','ui.bootstrap','ui.bootstrap.datetimepicker']);
 
-  jvmControllers.controller( 'ThreadsHomeCtrl', ['$scope','threads',
-    function ( $scope,threads){
+  jvmControllers.controller( 'ThreadsHomeCtrl', ['$scope','$routeParams','threads',
+    function ($scope,$routeParams,threads){
 
       $scope.data={};
-      console.log("ThreadsHomeCtrl");
+
+      var threadName=$routeParams.threadName;
+
+      console.log("ThreadsHomeCtrl:"+threadName);
 
       threads.query().$promise.then(function(result){
         $scope.data.threadInfos=result;
 
       });
+
+      if (angular.isDefined(threadName)){
+        $scope.data.currentThread = threads.get({threadName:threadName});
+      }
+
 
   }]);
 

@@ -44,11 +44,11 @@ public class ThreadsReports
     }
 
     @GET
-    @Path( "/{threadName}" )
+    @Path( "/{threadencodedName}" )
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
-    public ThreadDump getThread( @PathParam( "threadName" ) String name )
+    public ThreadDump getThread( @PathParam( "threadencodedName" ) String threadencodedName )
     {
-        Thread thread = findThread( name );
+        Thread thread = findThread( threadencodedName );
         if ( thread == null )
         {
             return null;
@@ -58,7 +58,7 @@ public class ThreadsReports
 
     }
 
-    private static Thread findThread( final String name )
+    private static Thread findThread( final String threadencodedName )
     {
         int count = Thread.activeCount();
         final Thread[] threads = new Thread[count];
@@ -66,7 +66,7 @@ public class ThreadsReports
 
         for ( int i = 0; i < count; i++ )
         {
-            if ( threads[i].getName().equals( name ) )
+            if ( Base64.encodeBase64URLSafeString( threads[i].getName().getBytes() ).equals( threadencodedName ) )
             {
                 return threads[i];
             }

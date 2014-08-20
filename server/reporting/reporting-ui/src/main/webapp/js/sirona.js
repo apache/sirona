@@ -49,6 +49,12 @@ define(['jquery','controllers','controllers-jvm','controllers-threads','angular-
                controller: 'ThreadsHomeCtrl'
              }
         ).
+        when('/threads/:threadName',
+             {
+               templateUrl: 'partials/threads.html',
+               controller: 'ThreadsHomeCtrl'
+             }
+        ).
         otherwise({
           redirectTo: '/home'
         });

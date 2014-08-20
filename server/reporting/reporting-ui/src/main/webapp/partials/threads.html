@@ -18,11 +18,16 @@
   <div class="col-lg-2" style="word-break: break-all; word-wrap: break-word;">
     <ul>
       <li ng-repeat="threadInfo in data.threadInfos">
-        {{threadInfo.name}}
+        <a href="#threads/{{::threadInfo.encodedName}}">{{::threadInfo.name}}</a>
       </li>
     </ul>
   </div>
   <div class="col-lg-10">
-    content
+    <p>
+      State: {{::data.currentThread.state}}
+    </p>
+    <p>
+      <pre>{{::data.currentThread.dump}}</pre>
+    </p>
   </div>
 </div>
