@@ -22,19 +22,20 @@ define(['jquery','angular','bootstrap','services','ui-bootstrap','nggrid'], func
   var dayDuration = 24 * 3600 * 1000;
 
 
-  var reportControllers = angular.module('countersControllers', ['sironaJvmServices','ui.bootstrap','ui.bootstrap.datetimepicker']);
+  var reportControllers = angular.module('countersControllers', ['sironaJvmServices','ngGrid']);
 
-  reportControllers.controller( 'countersHomeCtrl', ['$scope','$routeParams','counters',
-    function ( $scope,$routeParams,counters){
+  reportControllers.controller( 'countersHomeCtrl', ['$scope','$routeParams','$http','counters',
+    function ( $scope,$routeParams,$http,counters){
 
-      $scope.data={};
+      $scope.gridOptions={};
 
-      console.log("countersHomeCtrl");
+      $http.get('restServices/sironaServices/counters')
+          .success(function(data) {
 
-      counters.query().$promise.then(function(result){
-        $scope.data.counters=result;
+                     $scope.counters = data;
+                   });
 
-      });
+      $scope.gridOptions.data='counters';
 
   }]);
 
