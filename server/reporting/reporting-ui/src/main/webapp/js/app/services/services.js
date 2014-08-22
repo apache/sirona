@@ -77,4 +77,12 @@ define(['angular','angular-resource'], function (){
     }
   ]);
 
+  sironaServices.factory('counters', ['$resource',
+    function($resource){
+      return $resource('restServices/sironaServices/counters/:reportName/:unitName',
+                       {},
+                       {query: {method:'GET', params:{reportName:'@reportName',unitName:'@unitName'},isArray:true}});
+    }
+  ]);
+
 });

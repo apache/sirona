@@ -37,13 +37,15 @@ require.config({
     'controllers': 'app/controllers/controllers',
     'controllers-jvm': 'app/controllers/controllers-jvm',
     'controllers-threads': 'app/controllers/controllers-threads',
+    'controllers-report': 'app/controllers/controllers-report',
     'services': 'app/services/services',
     'sirona': 'sirona',
     'morris': 'plugins/morris/morris-0.5.0.min',
     'raphael': 'plugins/morris/raphael-2.1.2.min',
     'ui-bootstrap': 'ui-bootstrap-tpls-0.11.0',
     'datetimepicker': 'datetimepicker-0.2.4',
-    'moment': 'moment-2.8.1.min'
+    'moment': 'moment-2.8.1.min',
+    'nggrid': 'ng-grid-2.0.12.debug'
   },
 
   shim: {
@@ -52,7 +54,8 @@ require.config({
     'angular-resource': ['angular'],
     'morris': ['raphael'],
     'ui-bootstrap': ['angular','bootstrap'],
-    'datetimepicker': ['angular','bootstrap','moment']
+    'datetimepicker': ['angular','bootstrap','moment'],
+    'nggrid': ['angular','bootstrap','ui-bootstrap']
   },
 
   deps: ['sirona']

@@ -31,7 +31,7 @@ import javax.ws.rs.core.MediaType;
 import java.util.SortedMap;
 
 /**
- *
+ * @since 0.3
  */
 @Path( "/jvmreports" )
 public class JvmReports

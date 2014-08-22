@@ -26,7 +26,7 @@ import java.lang.management.MemoryMXBean;
 import java.lang.management.OperatingSystemMXBean;
 
 /**
- *
+ * @since 0.3
  */
 @Path( "/environment" )
 public class Environment
