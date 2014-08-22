@@ -48,11 +48,11 @@ public class CountersService
 
         for ( Counter counter : counters )
         {
-            out.add( new CounterInfo( new KeyInfo( counter.getKey() ), MetricData.Hits.value( counter ),
-                                      MetricData.Max.value( counter ), //
-                                      MetricData.Mean.value( counter ), MetricData.Min.value( counter ), //
-                                      MetricData.StandardDeviation.value( counter ), MetricData.Sum.value( counter ), //
-                                      MetricData.Variance.value( counter ), MetricData.Concurrency.value( counter ), //
+            out.add( new CounterInfo( new KeyInfo( counter.getKey() ), MetricData.Hits.value( counter ), //
+                                      MetricData.Max.value( counter ), MetricData.Mean.value( counter ), //
+                                      MetricData.Min.value( counter ), MetricData.StandardDeviation.value( counter ), //
+                                      MetricData.Sum.value( counter ), MetricData.Variance.value( counter ), //
+                                      MetricData.Concurrency.value( counter ),
                                       MetricData.MaxConcurrency.value( counter ) ) ); //
         }
 
@@ -71,12 +71,11 @@ public class CountersService
 
         return counter == null
             ? null
-            : new CounterInfo( new KeyInfo( counter.getKey() ), MetricData.Hits.value( counter ),
-                               MetricData.Max.value( counter ), //
-                               MetricData.Mean.value( counter ), MetricData.Min.value( counter ), //
-                               MetricData.StandardDeviation.value( counter ), MetricData.Sum.value( counter ), //
-                               MetricData.Variance.value( counter ), MetricData.Concurrency.value( counter ), //
-                               MetricData.MaxConcurrency.value( counter ) );
+            : new CounterInfo( new KeyInfo( counter.getKey() ), MetricData.Hits.value( counter ), //
+                               MetricData.Max.value( counter ), MetricData.Mean.value( counter ), //
+                               MetricData.Min.value( counter ), MetricData.StandardDeviation.value( counter ), //
+                               MetricData.Sum.value( counter ), MetricData.Variance.value( counter ), //
+                               MetricData.Concurrency.value( counter ), MetricData.MaxConcurrency.value( counter ) );
 
     }
 

@@ -24,7 +24,11 @@ import org.apache.sirona.counters.Counter;
 public class CounterInfo
 {
 
-    private final KeyInfo keyInfo;
+    private final String name;
+
+    private final String roleName;
+
+    private final String unitName;
 
     private final double hits;
 
@@ -47,7 +51,9 @@ public class CounterInfo
     public CounterInfo( KeyInfo keyInfo, double hits, double max, double mean, double min, double standardDeviation,
                         double sum, double variance, double concurrency, double maxConcurrency )
     {
-        this.keyInfo = keyInfo;
+        this.name = keyInfo.getName();
+        this.roleName = keyInfo.getRoleName();
+        this.unitName = keyInfo.getUnitName();
         this.hits = hits;
         this.max = max;
         this.mean = mean;
@@ -59,9 +65,19 @@ public class CounterInfo
         this.maxConcurrency = maxConcurrency;
     }
 
-    public KeyInfo getKeyInfo()
+    public String getName()
     {
-        return keyInfo;
+        return name;
+    }
+
+    public String getRoleName()
+    {
+        return roleName;
+    }
+
+    public String getUnitName()
+    {
+        return unitName;
     }
 
     public double getHits()
@@ -113,7 +129,9 @@ public class CounterInfo
     public String toString()
     {
         return "CounterInfo{" +
-            "keyInfo=" + keyInfo +
+            "name='" + name + '\'' +
+            ", roleName='" + roleName + '\'' +
+            ", unitName='" + unitName + '\'' +
             ", hits=" + hits +
             ", max=" + max +
             ", mean=" + mean +
