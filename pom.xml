@@ -267,6 +267,7 @@
             <exclude>src/main/webapp/css/plugins/morris*.css</exclude>
             <exclude>src/main/webapp/font-awesome-4.1.0/**</exclude>
             <exclude>src/main/webapp/fonts/**</exclude>
+            <exclude>src/main/webapp/css/ng-grid.*.css</exclude>
             <exclude>src/main/webapp/js/angular**</exclude>
             <exclude>src/main/webapp/js/bootstrap**</exclude>
             <exclude>src/main/webapp/js/jquery**</exclude>
@@ -275,6 +276,7 @@
             <exclude>src/main/webapp/js/datetimepicker-*.js</exclude>
             <exclude>src/main/webapp/js/moment-*.min.js</exclude>
             <exclude>src/main/webapp/js/ui-bootstrap-tpls-*.js</exclude>
+            <exclude>src/main/webapp/js/ng-grid-*.debug.js</exclude>
           </excludes>
         </configuration>
         <executions>
