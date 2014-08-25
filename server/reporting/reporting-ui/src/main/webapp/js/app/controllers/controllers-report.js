@@ -28,7 +28,7 @@ define(['jquery','angular','bootstrap','services','ui-bootstrap','nggrid'], func
     function ( $scope,$routeParams,$http,counters){
 
       $scope.colDefs = [
-        {field: 'name', displayName: 'Counter'},
+        {field: 'name', displayName: 'Counter',enableFiltering: true},
         {field: 'roleName', displayName: 'Role', cellTemplate:"<div class='ngCellText'>{{row.getProperty(col.field)}} ({{row.getProperty('unitName')}})</div>"},
         {field: 'hits', displayName: 'Hits'},
         {field: 'max', displayName: 'Max'},
@@ -50,16 +50,17 @@ define(['jquery','angular','bootstrap','services','ui-bootstrap','nggrid'], func
       };
 
       $scope.gridOptions={
+        enableFiltering: true,
         enablePaging: true,
         pagingOptions: $scope.pagingOptions,
         showFooter: true,
-        showGroupPanel: true,
+        showHeader: true,
         jqueryUITheme: false,
         columnDefs: 'colDefs',
         plugins: [new ngGridFlexibleHeightPlugin(), new ngGridCsvExportPlugin(csvOpts)]
       };
 
-      $http.get('restServices/sironaServices/counters')
+      $http.get('restServices/sironaServices/counters?unit=ms') //
           .success(function(data) {
                      $scope.counters = data;
                    });

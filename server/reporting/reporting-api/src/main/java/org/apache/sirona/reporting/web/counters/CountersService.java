@@ -26,6 +26,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,20 +41,48 @@ public class CountersService
 
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
-    public List<CounterInfo> all()
+    public List<CounterInfo> all( @QueryParam( "unit" ) String unitName )
     {
         Collection<Counter> counters = Repository.INSTANCE.counters();
 
         List<CounterInfo> out = new ArrayList<CounterInfo>( counters.size() );
 
+        Unit unit = null;
+
+        if ( unitName != null )
+        {
+            unit = Unit.get( unitName );
+        }
+
         for ( Counter counter : counters )
         {
-            out.add( new CounterInfo( new KeyInfo( counter.getKey() ), MetricData.Hits.value( counter ), //
-                                      MetricData.Max.value( counter ), MetricData.Mean.value( counter ), //
-                                      MetricData.Min.value( counter ), MetricData.StandardDeviation.value( counter ), //
-                                      MetricData.Sum.value( counter ), MetricData.Variance.value( counter ), //
-                                      MetricData.Concurrency.value( counter ),
-                                      MetricData.MaxConcurrency.value( counter ) ) ); //
+            Unit currentUnit = counter.getKey().getRole().getUnit();
+            if ( unit == null )
+            {
+                out.add( new CounterInfo( new KeyInfo( counter.getKey() ), //
+                                          MetricData.Hits.value( counter ), //
+                                          MetricData.Max.value( counter ), //
+                                          MetricData.Mean.value( counter ), //
+                                          MetricData.Min.value( counter ), //
+                                          MetricData.StandardDeviation.value( counter ), //
+                                          MetricData.Sum.value( counter ), //
+                                          MetricData.Variance.value( counter ), //
+                                          MetricData.Concurrency.value( counter ), //
+                                          MetricData.MaxConcurrency.value( counter ) ) ); //
+            }
+            else
+            {
+                out.add( new CounterInfo( new KeyInfo( counter.getKey() ).unitName( unit.getName() ), //
+                                          MetricData.Hits.value( counter ), //
+                                          unit.convert( MetricData.Max.value( counter ), currentUnit ), //
+                                          unit.convert( MetricData.Mean.value( counter ), currentUnit ), //
+                                          unit.convert( MetricData.Min.value( counter ), currentUnit ), //
+                                          unit.convert( MetricData.StandardDeviation.value( counter ), currentUnit ), //
+                                          unit.convert( MetricData.Sum.value( counter ), currentUnit ), //
+                                          unit.convert( MetricData.Variance.value( counter ), currentUnit ), //
+                                          MetricData.Concurrency.value( counter ), //
+                                          MetricData.MaxConcurrency.value( counter ) ) ); //
+            }
         }
 
         return out;

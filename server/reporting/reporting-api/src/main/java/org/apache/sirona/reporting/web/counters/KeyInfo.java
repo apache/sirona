@@ -32,7 +32,7 @@ public class KeyInfo
 
     private final String roleName;
 
-    private final String unitName;
+    private String unitName;
 
     public KeyInfo( Counter.Key key )
     {
@@ -56,6 +56,17 @@ public class KeyInfo
     public String getUnitName()
     {
         return unitName;
+    }
+
+    public void setUnitName( String unitName )
+    {
+        this.unitName = unitName;
+    }
+
+    public KeyInfo unitName( String unitName )
+    {
+        this.unitName = unitName;
+        return this;
     }
 
     @Override
