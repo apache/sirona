@@ -93,4 +93,12 @@ define(['angular','angular-resource'], function (){
     }
   ]);
 
+  sironaServices.factory('gaugesResults', ['$resource',
+    function($resource){
+      return $resource('restServices/sironaServices/gauges/:gaugeName/:start/:end',
+                       {},
+                       {query: {method:'GET', params:{gaugeName:'@gaugeName',start:'@start',end:'@end'},isArray:false}});
+    }
+  ]);
+
 });

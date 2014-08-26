@@ -70,6 +70,12 @@ define(['jquery','controllers','controllers-jvm','controllers-threads','controll
                controller: 'GaugesHomeCtrl'
              }
         ).
+          when('/gauges/:gaugeName',
+             {
+               templateUrl: 'partials/gauge-detail.html',
+               controller: 'gaugeDetailCtrl'
+             }
+        ).
         otherwise({
           redirectTo: '/home'
         });

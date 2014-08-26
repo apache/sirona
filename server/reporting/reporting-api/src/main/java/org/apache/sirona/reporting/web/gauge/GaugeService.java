@@ -22,12 +22,17 @@ import org.apache.sirona.repositories.Repository;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
 import java.util.TreeMap;
 
 /**
@@ -40,15 +45,42 @@ public class GaugeService
 
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
-    public Map<String, String> all()
+    public Collection<GaugeInfo> all()
     {
         return sortNames( Repository.INSTANCE.gauges() );
     }
 
 
+    @GET
+    @Path( "/{gaugeName}/{start}/{end}" )
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    public GaugeResult find( @PathParam( "gaugeName" ) String encodedGaugeName, //
+                             @PathParam( "start" ) final long start, //
+                             @PathParam( "end" ) final long end )
+    {
 
+        String gaugeName = decode( encodedGaugeName );
 
-    private static Map<String, String> sortNames( final Collection<Role> gauges )
+        Role role = Repository.INSTANCE.findGaugeRole( gaugeName );
+        if ( role == null )
+        {
+            return null;
+        }
+
+        SortedMap<Long, Double> values = Repository.INSTANCE.getGaugeValues( start, end, role );
+
+        List<GaugeValue> gaugeValues = new ArrayList<GaugeValue>( values.size() );
+
+        for ( Map.Entry<Long, Double> entry : values.entrySet() )
+        {
+            gaugeValues.add( new GaugeValue( entry.getKey(), entry.getValue() ) );
+        }
+
+        return new GaugeResult( gaugeName, gaugeValues );
+
+    }
+
+    private static Collection<GaugeInfo> sortNames( final Collection<Role> gauges )
     {
         final Map<String, String> names = new TreeMap<String, String>();
         for ( final Role gauge : gauges )
@@ -56,7 +88,15 @@ public class GaugeService
             final String name = gauge.getName();
             names.put( name, encode( name ) );
         }
-        return names;
+
+        Collection<GaugeInfo> out = new ArrayList<GaugeInfo>( names.size() );
+
+        for ( Map.Entry<String, String> entry : names.entrySet() )
+        {
+            out.add( new GaugeInfo( entry.getKey(), entry.getValue() ) );
+        }
+
+        return out;
     }
 
     private static String encode( final String role )
@@ -68,7 +108,19 @@ public class GaugeService
         }
         catch ( final UnsupportedEncodingException e )
         {
-            return base64; // shouldn't occur
+            return role; // shouldn't occur
+        }
+    }
+
+    private static String decode( final String base64Role )
+    {
+        try
+        {
+            return new String( Base64.decodeBase64( URLDecoder.decode( base64Role, UTF8 ) ) );
+        }
+        catch ( final UnsupportedEncodingException e )
+        {
+            return base64Role; // shouldn't occur
         }
     }
 
