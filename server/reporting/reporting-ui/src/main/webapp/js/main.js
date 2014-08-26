@@ -38,6 +38,7 @@ require.config({
     'controllers-jvm': 'app/controllers/controllers-jvm',
     'controllers-threads': 'app/controllers/controllers-threads',
     'controllers-report': 'app/controllers/controllers-report',
+    'controllers-gauges': 'app/controllers/controllers-gauges',
     'services': 'app/services/services',
     'sirona': 'sirona',
     'morris': 'plugins/morris/morris-0.5.0.min',

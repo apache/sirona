@@ -17,8 +17,8 @@
 
 'use strict';
 
-define(['jquery','controllers','controllers-jvm','controllers-threads','angular-route','bootstrap','datetimepicker'
-         ,'controllers-report'],
+define(['jquery','controllers','controllers-jvm','controllers-threads','controllers-gauges','angular-route',
+         'bootstrap','datetimepicker','controllers-report'],
        function (jquery,controllers) {
 
   var sirona = angular.module('sirona', [
@@ -26,7 +26,8 @@ define(['jquery','controllers','controllers-jvm','controllers-threads','angular-
     'homeControllers',
     'jvmControllers',
     'threadsControllers',
-    'countersControllers'
+    'countersControllers',
+    'gaugesControllers'
   ]);
 
   sirona.config(['$routeProvider','$logProvider',
@@ -61,6 +62,12 @@ define(['jquery','controllers','controllers-jvm','controllers-threads','angular-
              {
                templateUrl: 'partials/report.html',
                controller: 'countersHomeCtrl'
+             }
+        ).
+        when('/gauges',
+             {
+               templateUrl: 'partials/gauges.html',
+               controller: 'GaugesHomeCtrl'
              }
         ).
         otherwise({
