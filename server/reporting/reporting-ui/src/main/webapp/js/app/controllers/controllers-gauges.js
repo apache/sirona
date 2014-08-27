@@ -47,6 +47,9 @@ define(['jquery','angular','bootstrap','services','morris','ui-bootstrap','datet
 
       $scope.data.format = 'dd/MM/yyyy HH:mm:ss';
 
+      jQuery("#dropdown-enddate").dropdown();
+      jQuery("#dropdown-startdate").dropdown();
+
       var gaugeName=$routeParams.gaugeName;
 
       console.log("gaugeName:"+gaugeName);
@@ -76,7 +79,14 @@ define(['jquery','angular','bootstrap','services','morris','ui-bootstrap','datet
                            });
 
       };
-      drawGauge();
+
+      $scope.updateGraph = function(){
+        drawGauge();
+      };
+
+      $scope.updateGraph();
+
+
 
   }]);
 

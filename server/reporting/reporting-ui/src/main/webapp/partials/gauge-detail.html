@@ -15,6 +15,41 @@
   limitations under the License.
 -->
 <div class="row">
+  <div class="col-lg-2">
+  </div>
+  <div class="col-lg-4">
+    <div class="dropdown">
+      <label for="datetimepicker-from">From</label>
+      <a class="dropdown-toggle" id="dropdown-startdate" role="button" data-toggle="dropdown" data-target="#" href="#">
+        <button type="button" class="btn btn-default"><i class="glyphicon glyphicon-calendar"></i></button>
+      </a>
+      <input type="text" class="form-control" data-ng-model="data.startDate" id="datetimepicker-from">
+      <ul class="dropdown-menu" role="menu" aria-labelledby="dropdown-enddate">
+        <li>
+          <datetimepicker data-ng-model="data.startDate" data-datetimepicker-config="{  }"/>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="dropdown">
+      <label for="datetimepicker-to">To</label>
+      <a class="dropdown-toggle" id="dropdown-enddate" role="button" data-toggle="dropdown" data-target="#" href="#">
+        <button type="button" class="btn btn-default"><i class="glyphicon glyphicon-calendar"></i></button>
+      </a>
+      <input type="text" class="form-control" data-ng-model="data.endDate" id="datetimepicker-to">
+      <ul class="dropdown-menu" role="menu" aria-labelledby="dropdown-enddate">
+        <li>
+          <datetimepicker data-ng-model="data.endDate" data-datetimepicker-config="{  }"/>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="col-lg-2">
+    <button type="button" class="btn btn-primary" ng-click="updateGraph()">Update</button>
+  </div>
+</div>
+<div class="row">
   <div class="col-lg-12">
     <div class="panel panel-primary">
       <div class="panel-heading">
