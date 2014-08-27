@@ -23,7 +23,6 @@ angular.module('ui.bootstrap.datetimepicker', [])
   })
   .directive('datetimepicker', ['dateTimePickerConfig', function (defaultConfig) {
     "use strict";
-    console.log("inside datetimepicker directive");
     var validateConfiguration = function (configuration) {
       var validOptions = ['startView', 'minView', 'minuteStep', 'dropdownSelector', 'weekStart'];
 
