@@ -40,6 +40,9 @@ public class StatusService
     private static final String APP_DELIMITER = "#";
 
 
+    // FIXME olamy: write documentation on that as it's not very clear what's going on here!!
+    // it's simply an adaptation of the previous code
+
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     public Map<String, Map<String, NodeStatusInfo>> all()
