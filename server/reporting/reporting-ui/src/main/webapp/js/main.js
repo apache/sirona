@@ -29,7 +29,7 @@ require.config({
   // retrieve the version and if end with -SNAPSHOT do it only in this case
   urlArgs: "_timestamp=" +  (new Date()).getTime(),
   paths: {
-    'jquery': 'jquery-1.11.0',
+    'jquery': 'jquery-1.11.0.min',
     'angular': 'angular-'+angularVersion+(useAngularMin?".min":""),
     'angular-route': 'angular-route-'+angularVersion+(useAngularMin?".min":""),
     'angular-resource': 'angular-resource-'+angularVersion+(useAngularMin?".min":""),
