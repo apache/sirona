@@ -21,7 +21,6 @@ import org.apache.sirona.reporting.web.plugin.api.Template;
 import org.apache.sirona.repositories.Repository;
 import org.apache.sirona.status.NodeStatus;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
