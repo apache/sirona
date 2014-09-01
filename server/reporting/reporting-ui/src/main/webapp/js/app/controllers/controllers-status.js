@@ -22,15 +22,15 @@ define(['jquery','angular','bootstrap','services','morris','ui-bootstrap','datet
 
   var statusControllers = angular.module('statusControllers', ['sironaServices','ui.bootstrap']);
 
-  statusControllers.controller( 'StatusHomeCtrl', ['$scope','$routeParams','status',
+  statusControllers.controller( 'StatusHomeCtrl', ['$scope','status',
     function ($scope,status){
 
       $scope.data={};
 
       console.log("StatusHomeCtrl");
 
-      status.get().$promise.then( function ( results ){
-
+      status.all().$promise.then( function ( results ){
+        $scope.data.applicationStatuseses=results;
       });
 
   }]);

@@ -106,7 +106,10 @@ define(['angular','angular-resource'], function (){
     function($resource){
       return $resource('restServices/sironaServices/status/:nodeName',
                        {},
-                       {query: {method:'GET', params:{nodeName:'@nodeName'},isArray:false}});
+                       {
+                         query: {method:'GET', params:{nodeName:'@nodeName'},isArray:false},
+                         all: {method:'GET', params:{},isArray:true}
+                       });
     }
   ]);
 
