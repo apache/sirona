@@ -20,7 +20,7 @@
 define(['jquery','angular','bootstrap','services','morris','ui-bootstrap','datetimepicker'], function (){
 
 
-  var threadsControllers = angular.module('threadsControllers', ['sironaJvmServices','ui.bootstrap','ui.bootstrap.datetimepicker']);
+  var threadsControllers = angular.module('threadsControllers', ['sironaServices','ui.bootstrap','ui.bootstrap.datetimepicker']);
 
   threadsControllers.controller( 'ThreadsHomeCtrl', ['$scope','$routeParams','threads',
     function ($scope,$routeParams,threads){

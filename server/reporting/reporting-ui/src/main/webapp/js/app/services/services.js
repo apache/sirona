@@ -18,7 +18,7 @@
 
 /* Services */
 define(['angular','angular-resource'], function (){
-  var sironaServices = angular.module('sironaJvmServices', ['ngResource']);
+  var sironaServices = angular.module('sironaServices', ['ngResource']);
 
   sironaServices.factory('jvmCpu', ['$resource',
     function($resource){
@@ -101,6 +101,14 @@ define(['angular','angular-resource'], function (){
     }
   ]);
 
+
+  sironaServices.factory('status', ['$resource',
+    function($resource){
+      return $resource('restServices/sironaServices/status/:nodeName',
+                       {},
+                       {query: {method:'GET', params:{nodeName:'@nodeName'},isArray:false}});
+    }
+  ]);
 
 
 });

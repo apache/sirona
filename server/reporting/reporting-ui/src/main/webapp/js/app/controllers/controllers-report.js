@@ -22,7 +22,7 @@ define(['jquery','angular','bootstrap','services','ui-bootstrap','nggrid'], func
   var dayDuration = 24 * 3600 * 1000;
 
 
-  var reportControllers = angular.module('countersControllers', ['sironaJvmServices','ngGrid']);
+  var reportControllers = angular.module('countersControllers', ['sironaServices','ngGrid']);
 
   reportControllers.controller( 'countersHomeCtrl', ['$scope','$routeParams','$http','counters',
     function ( $scope,$routeParams,$http,counters){

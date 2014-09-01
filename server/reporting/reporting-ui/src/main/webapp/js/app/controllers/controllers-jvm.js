@@ -22,7 +22,7 @@ define(['jquery','angular','bootstrap','services','morris','ui-bootstrap','datet
   var dayDuration = 24 * 3600 * 1000;
 
 
-  var jvmControllers = angular.module('jvmControllers', ['sironaJvmServices','ui.bootstrap','ui.bootstrap.datetimepicker']);
+  var jvmControllers = angular.module('jvmControllers', ['sironaServices','ui.bootstrap','ui.bootstrap.datetimepicker']);
 
   jvmControllers.controller( 'JvmHomeCtrl', ['$scope','jvmCpu','jvmMemory','nonHeapMemory','activeThreads',
                                               'osInfo','memoryInfo',

@@ -20,14 +20,18 @@
 define(['jquery','angular','bootstrap','services','morris','ui-bootstrap','datetimepicker'], function (){
 
 
-  var statusControllers = angular.module('statusControllers', ['sironaJvmServices','ui.bootstrap']);
+  var statusControllers = angular.module('statusControllers', ['sironaServices','ui.bootstrap']);
 
-  statusControllers.controller( 'StatusHomeCtrl', ['$scope','$routeParams',
-    function ($scope,$routeParams){
+  statusControllers.controller( 'StatusHomeCtrl', ['$scope','$routeParams','status',
+    function ($scope,status){
 
       $scope.data={};
 
       console.log("StatusHomeCtrl");
+
+      status.get().$promise.then( function ( results ){
+
+      });
 
   }]);
 
