@@ -20,29 +20,25 @@
 define(['jquery','angular','bootstrap','services','morris','ui-bootstrap','datetimepicker'], function (){
 
 
-  var threadsControllers = angular.module('threadsControllers', ['sironaJvmServices','ui.bootstrap','ui.bootstrap.datetimepicker']);
+  var statusControllers = angular.module('statusControllers', ['sironaJvmServices','ui.bootstrap']);
 
-  threadsControllers.controller( 'ThreadsHomeCtrl', ['$scope','$routeParams','threads',
-    function ($scope,$routeParams,threads){
+  statusControllers.controller( 'StatusHomeCtrl', ['$scope','$routeParams',
+    function ($scope,$routeParams){
 
       $scope.data={};
 
-      var threadName=$routeParams.threadName;
-
-      console.log("ThreadsHomeCtrl:"+threadName);
-
-      threads.query().$promise.then(function(result){
-        $scope.data.threadInfos=result;
-
-      });
-
-      if (angular.isDefined(threadName)){
-        $scope.data.currentThread = threads.get({threadName:threadName});
-      }
-
+      console.log("StatusHomeCtrl");
 
   }]);
 
+  statusControllers.controller( 'StatusDetailCtrl', ['$scope','$routeParams',
+    function ($scope,$routeParams){
+
+      $scope.data={};
+
+      console.log("StatusDetailCtrl:"+$routeParams.nodeName);
+
+    }]);
 
 });
 

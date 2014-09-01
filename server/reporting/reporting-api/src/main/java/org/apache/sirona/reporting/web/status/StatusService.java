@@ -23,7 +23,9 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -39,13 +41,12 @@ public class StatusService
 
     private static final String APP_DELIMITER = "#";
 
-
-    // FIXME olamy: write documentation on that as it's not very clear what's going on here!!
-    // it's simply an adaptation of the previous code
+    // FIXME olamy: write documentation on that as it's not very clear!! what's going on here!!
+    // it's simply a copy/paste and adaptation of the previous code
 
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
-    public Map<String, Map<String, NodeStatusInfo>> all()
+    public List<ApplicationStatuses> all()
     {
         final Map<String, Map<String, NodeStatusInfo>> statusesByApp =
             new HashMap<String, Map<String, NodeStatusInfo>>();
@@ -68,10 +69,17 @@ public class StatusService
                 statusesOfTheApp = new TreeMap<String, NodeStatusInfo>();
                 statusesByApp.put( segments[0], statusesOfTheApp );
             }
-            statusesOfTheApp.put( segments[1], new NodeStatusInfo( entry.getValue() ) );
+            statusesOfTheApp.put( segments[1], new NodeStatusInfo( segments[1], entry.getValue() ) );
         }
 
-        return statusesByApp;
+        List<ApplicationStatuses> applicationStatuseses = new ArrayList<ApplicationStatuses>( statusesByApp.size() );
+
+        for ( Map.Entry<String, Map<String, NodeStatusInfo>> entry : statusesByApp.entrySet() )
+        {
+            applicationStatuseses.add( new ApplicationStatuses( entry.getKey(), entry.getValue().values() ) );
+        }
+
+        return applicationStatuseses;
     }
 
 }

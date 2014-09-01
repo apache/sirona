@@ -21,9 +21,9 @@ define(['jquery','angular','bootstrap','services','morris','ui-bootstrap','datet
 
   var dayDuration = 24 * 3600 * 1000;
 
-  var jvmControllers = angular.module('gaugesControllers', ['sironaJvmServices','ui.bootstrap','ui.bootstrap.datetimepicker']);
+  var gaugesControllers = angular.module('gaugesControllers', ['sironaJvmServices','ui.bootstrap','ui.bootstrap.datetimepicker']);
 
-  jvmControllers.controller( 'GaugesHomeCtrl', ['$scope','$routeParams','gauges',
+  gaugesControllers.controller( 'GaugesHomeCtrl', ['$scope','$routeParams','gauges',
     function ($scope,$routeParams,gauges){
 
       $scope.data={};
@@ -35,7 +35,7 @@ define(['jquery','angular','bootstrap','services','morris','ui-bootstrap','datet
 
   }]);
 
-  jvmControllers.controller( 'gaugeDetailCtrl', ['$scope','$routeParams','gaugesResults',
+  gaugesControllers.controller( 'gaugeDetailCtrl', ['$scope','$routeParams','gaugesResults',
     function ($scope,$routeParams,gauges){
 
       $scope.data={};

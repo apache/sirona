@@ -18,7 +18,7 @@
 'use strict';
 
 define(['jquery','controllers','controllers-jvm','controllers-threads','controllers-gauges','angular-route',
-         'bootstrap','datetimepicker','controllers-report'],
+         'bootstrap','datetimepicker','controllers-report','controllers-status'],
        function (jquery,controllers) {
 
   var sirona = angular.module('sirona', [
@@ -27,7 +27,8 @@ define(['jquery','controllers','controllers-jvm','controllers-threads','controll
     'jvmControllers',
     'threadsControllers',
     'countersControllers',
-    'gaugesControllers'
+    'gaugesControllers',
+    'statusControllers'
   ]);
 
   sirona.config(['$routeProvider','$logProvider',
@@ -70,10 +71,22 @@ define(['jquery','controllers','controllers-jvm','controllers-threads','controll
                controller: 'GaugesHomeCtrl'
              }
         ).
-          when('/gauges/:gaugeName',
+        when('/gauges/:gaugeName',
              {
                templateUrl: 'partials/gauge-detail.html',
                controller: 'gaugeDetailCtrl'
+             }
+        ).
+        when('/status',
+             {
+               templateUrl: 'partials/status.html',
+               controller: 'StatusHomeCtrl'
+             }
+        ).
+        when('/status/:nodeName',
+             {
+               templateUrl: 'partials/status-detail.html',
+               controller: 'StatusDetailCtrl'
              }
         ).
         otherwise({

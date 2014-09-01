@@ -31,14 +31,17 @@ public class NodeStatusInfo
     implements Serializable
 {
 
+    private final String name;
+
     private final List<ValidationResultInfo> results;
 
     private final Date date;
 
     private final String status;
 
-    public NodeStatusInfo( NodeStatus nodeStatus )
+    public NodeStatusInfo( String name, NodeStatus nodeStatus )
     {
+        this.name = name;
         this.date = nodeStatus.getDate();
         this.status = StatusHelper.map( nodeStatus.getStatus() );
 
@@ -58,8 +61,9 @@ public class NodeStatusInfo
         }
     }
 
-    public NodeStatusInfo( String status, Date date, List<ValidationResultInfo> results )
+    public NodeStatusInfo( String name, String status, Date date, List<ValidationResultInfo> results )
     {
+        this.name = name;
         this.status = status;
         this.date = date;
         this.results = results;
@@ -80,11 +84,17 @@ public class NodeStatusInfo
         return status;
     }
 
+    public String getName()
+    {
+        return name;
+    }
+
     @Override
     public String toString()
     {
         return "NodeStatusInfo{" +
-            "results=" + results +
+            "name='" + name + '\'' +
+            ", results=" + results +
             ", date=" + date +
             ", status='" + status + '\'' +
             '}';
