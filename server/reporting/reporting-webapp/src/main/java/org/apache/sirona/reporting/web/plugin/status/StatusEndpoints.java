@@ -18,6 +18,7 @@ package org.apache.sirona.reporting.web.plugin.status;
 
 import org.apache.sirona.reporting.web.plugin.api.Regex;
 import org.apache.sirona.reporting.web.plugin.api.Template;
+import org.apache.sirona.reporting.web.status.StatusHelper;
 import org.apache.sirona.repositories.Repository;
 import org.apache.sirona.status.NodeStatus;
 
