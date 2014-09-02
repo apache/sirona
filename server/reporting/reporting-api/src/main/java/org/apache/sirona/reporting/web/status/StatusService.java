@@ -21,6 +21,7 @@ import org.apache.sirona.status.NodeStatus;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
@@ -80,6 +81,17 @@ public class StatusService
         }
 
         return applicationStatuseses;
+    }
+
+
+    @GET
+    @Path( "/{node}" )
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    public ApplicationStatuses find( @PathParam( "node" ) String node )
+    {
+        NodeStatus nodeStatus = Repository.INSTANCE.statuses().get( node );
+
+        nodeStatus.
     }
 
 }

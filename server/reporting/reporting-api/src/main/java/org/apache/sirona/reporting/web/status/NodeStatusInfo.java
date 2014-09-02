@@ -39,18 +39,22 @@ public class NodeStatusInfo
 
     private final String status;
 
+    private final String statusLabel;
+
     public NodeStatusInfo( String name, NodeStatus nodeStatus )
     {
         this.name = name;
         this.date = nodeStatus.getDate();
-        this.status = StatusHelper.map( nodeStatus.getStatus() );
+        this.status = nodeStatus.getStatus().toString();
+        this.statusLabel = StatusHelper.map( nodeStatus.getStatus() );
 
         if ( nodeStatus.getResults() != null )
         {
             this.results = new ArrayList<ValidationResultInfo>( nodeStatus.getResults().length );
             for ( ValidationResult validationResult : nodeStatus.getResults() )
             {
-                this.results.add( new ValidationResultInfo( StatusHelper.map( validationResult.getStatus() ), //
+                this.results.add( new ValidationResultInfo( validationResult.getStatus().toString(),//
+                                                            StatusHelper.map( validationResult.getStatus() ), //
                                                             validationResult.getMessage(), //
                                                             validationResult.getName() ) );
             }
@@ -59,14 +63,6 @@ public class NodeStatusInfo
         {
             this.results = new ArrayList<ValidationResultInfo>( 0 );
         }
-    }
-
-    public NodeStatusInfo( String name, String status, Date date, List<ValidationResultInfo> results )
-    {
-        this.name = name;
-        this.status = status;
-        this.date = date;
-        this.results = results;
     }
 
     public List<ValidationResultInfo> getResults()
@@ -82,6 +78,11 @@ public class NodeStatusInfo
     public String getStatus()
     {
         return status;
+    }
+
+    public String getStatusLabel()
+    {
+        return statusLabel;
     }
 
     public String getName()

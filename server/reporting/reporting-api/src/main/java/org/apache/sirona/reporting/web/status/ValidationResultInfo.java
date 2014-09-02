@@ -28,13 +28,16 @@ public class ValidationResultInfo
 
     private final String status;
 
+    private final String statusLabel;
+
     private final String message;
 
     private final String name;
 
-    public ValidationResultInfo( String status, String message, String name )
+    public ValidationResultInfo( String status, String statusLabel, String message, String name )
     {
         this.status = status;
+        this.statusLabel = statusLabel;
         this.message = message;
         this.name = name;
     }
@@ -42,6 +45,11 @@ public class ValidationResultInfo
     public String getStatus()
     {
         return status;
+    }
+
+    public String getStatusLabel()
+    {
+        return statusLabel;
     }
 
     public String getMessage()

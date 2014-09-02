@@ -18,7 +18,13 @@
   <div class="col-lg-12">
     <ul>
       <li ng-repeat="applicationStatuses in data.applicationStatuseses">
-        <a href="#status/{{::applicationStatuses.name}}">{{::applicationStatuses.name}}</a>
+        {{::applicationStatuses.name}}
+        <ul>
+          <li ng-repeat="nodeStatusInfo in applicationStatuses.nodeStatusInfos">
+            <a href="#status/{{::nodeStatusInfo.name}}">{{::nodeStatusInfo.name}} ({{::nodeStatusInfo.date | date:'medium'}}) - {{::nodeStatusInfo.status}}</a>
+          </li>
+        </ul>
+        </li>
       </li>
     </ul>
   </div>
