@@ -87,20 +87,14 @@ define(['angular','angular-resource'], function (){
 
   sironaServices.factory('gauges', ['$resource',
     function($resource){
-      return $resource('restServices/sironaServices/gauges',
-                       {},
-                       {query: {method:'GET', params:{},isArray:true}});
-    }
-  ]);
-
-  sironaServices.factory('gaugesResults', ['$resource',
-    function($resource){
       return $resource('restServices/sironaServices/gauges/:gaugeName/:start/:end',
                        {},
-                       {query: {method:'GET', params:{gaugeName:'@gaugeName',start:'@start',end:'@end'},isArray:false}});
+                       {
+                         all: {method:'GET', params:{},isArray:true},
+                         query: {method:'GET', params:{gaugeName:'@gaugeName',start:'@start',end:'@end'},isArray:false}
+                       });
     }
   ]);
-
 
   sironaServices.factory('status', ['$resource',
     function($resource){

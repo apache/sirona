@@ -28,14 +28,14 @@ define(['jquery','angular','bootstrap','services','morris','ui-bootstrap','datet
 
       $scope.data={};
 
-      gauges.query().$promise.then(function(result){
+      gauges.all().$promise.then(function(result){
         $scope.data.gaugesInfo=result;
 
       });
 
   }]);
 
-  gaugesControllers.controller( 'gaugeDetailCtrl', ['$scope','$routeParams','gaugesResults',
+  gaugesControllers.controller( 'gaugeDetailCtrl', ['$scope','$routeParams','gauges',
     function ($scope,$routeParams,gauges){
 
       $scope.data={};
