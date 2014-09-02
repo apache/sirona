@@ -38,12 +38,10 @@ define(['jquery','angular','bootstrap','services','morris','ui-bootstrap','datet
   statusControllers.controller( 'StatusDetailCtrl', ['$scope','$routeParams','status',
     function ($scope,$routeParams,status){
 
-      $scope.data={};
-
       console.log("StatusDetailCtrl:"+$routeParams.nodeName);
 
       status.query({nodeName:$routeParams.nodeName}).$promise.then( function ( results ){
-        $scope.data.applicationStatuseses=results;
+        $scope.nodeStatusInfo=results;
       });
 
     }]);

@@ -16,6 +16,27 @@
 -->
 <div class="row">
   <div class="col-lg-12">
-    status detail
+    <h1>Node {{::nodeStatusInfo.name}}</h1>
+    <div>
+      <div class="alert alert-{{::nodeStatusInfo.statusLabel}}">Global status (({{::nodeStatusInfo.date | date:'medium'}})): {{::nodeStatusInfo.status}}</div>
+
+      <table class="table table-bordered table-striped">
+        <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+          <th>Status</th>
+        </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="validationResultInfo in nodeStatusInfos.results" class="{{::validationResultInfo.statusLabel}}">
+            <td>{{::validationResultInfo.name}}</td>
+            <td>{{::validationResultInfo.message}}</td>
+            <td>{{::validationResultInfo.status}}</td>
+          </tr>
+        </tbody>
+      </table>
+
+    </div>
   </div>
 </div>

@@ -87,11 +87,11 @@ public class StatusService
     @GET
     @Path( "/{node}" )
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
-    public ApplicationStatuses find( @PathParam( "node" ) String node )
+    public NodeStatusInfo find( @PathParam( "node" ) String node )
     {
         NodeStatus nodeStatus = Repository.INSTANCE.statuses().get( node );
 
-        nodeStatus.
+        return new NodeStatusInfo( node, nodeStatus );
     }
 
 }

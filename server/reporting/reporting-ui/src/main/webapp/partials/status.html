@@ -21,7 +21,9 @@
         {{::applicationStatuses.name}}
         <ul>
           <li ng-repeat="nodeStatusInfo in applicationStatuses.nodeStatusInfos">
-            <a href="#status/{{::nodeStatusInfo.name}}">{{::nodeStatusInfo.name}} ({{::nodeStatusInfo.date | date:'medium'}}) - {{::nodeStatusInfo.status}}</a>
+            <div class="alert alert-{{::nodeStatusInfo.statusLabel}}">
+              <a class="alert-{{::nodeStatusInfo.statusLabel}}" href="#status/{{::nodeStatusInfo.name}}">{{::nodeStatusInfo.name}} ({{::nodeStatusInfo.date | date:'medium'}}) - {{::nodeStatusInfo.status}}</a>
+            </div>
           </li>
         </ul>
         </li>
