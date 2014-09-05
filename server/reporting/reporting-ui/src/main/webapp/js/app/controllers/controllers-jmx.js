@@ -32,7 +32,7 @@ define(['jquery','angular','bootstrap','services','ui-bootstrap','abn-tree','ang
       console.log("jmxHomeCtrl:");
 
       jmx.query().$promise.then(function(result){
-        $scope.treeData=result;
+        $scope.treeData=[result];
         //return tree.expand_all();
       });
 

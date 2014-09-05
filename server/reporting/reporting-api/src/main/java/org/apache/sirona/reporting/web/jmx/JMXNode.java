@@ -29,7 +29,10 @@ import java.util.TreeMap;
 public class JMXNode
     implements Serializable
 {
+
     private final String name;
+
+    private final String label;
 
     private final Map<Key, JMXNode> children = new TreeMap<Key, JMXNode>();
 
@@ -38,6 +41,7 @@ public class JMXNode
     public JMXNode( final String name )
     {
         this.name = name;
+        this.label = name;
     }
 
     public static void addNode( final JMXNode rootNode, final String domain, final String props )
@@ -95,6 +99,11 @@ public class JMXNode
     public String getBase64()
     {
         return base64;
+    }
+
+    public String getLabel()
+    {
+        return label;
     }
 
     public Collection<JMXNode> getChildren()
