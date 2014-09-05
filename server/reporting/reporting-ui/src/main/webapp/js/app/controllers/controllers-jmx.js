@@ -23,8 +23,8 @@ define(['jquery','angular','bootstrap','services','ui-bootstrap','abn-tree','ang
   var jmxControllers = angular.module('jmxControllers', ['jmxControllers','ui.bootstrap','angularBootstrapNavTree'
                                       ,'ngAnimate']);
 
-  jmxControllers.controller( 'jmxHomeCtrl', ['$scope','$routeParams','jmx',
-    function ($scope,$routeParams,jmx){
+  jmxControllers.controller( 'jmxHomeCtrl', ['$scope','$routeParams','jmx','$location',
+    function ($scope,$routeParams,jmx,$location){
 
       $scope.treeData=[{label:"Loading"}];
 
@@ -33,10 +33,44 @@ define(['jquery','angular','bootstrap','services','ui-bootstrap','abn-tree','ang
 
       jmx.query().$promise.then(function(result){
         $scope.treeData=[result];
-        //return tree.expand_all();
       });
 
+      $scope.selectionHandler=function(branch){ //
+        if (branch.leaf){
+          console.log("selectionHandler:'"+branch.base64+"'");
+          $location.url("jmx/"+branch.base64);
+        }
+      }
+
   }]);
+
+  jmxControllers.controller( 'jmxDetailCtrl', ['$scope','$routeParams','jmx','$location',
+    function ($scope,$routeParams,jmx,$location){
+
+      $scope.treeData=[{label:"Loading"}];
+
+
+      console.log("jmxDetailCtrl:"+$routeParams.mbeanName);
+
+      jmx.query().$promise.then(function(result){
+        $scope.treeData=[result];
+
+        jmx.query({mbean:$routeParams.mbeanName}).$promise.then(function(result){
+          $scope.mbean=result;
+        });
+
+      });
+
+
+
+      $scope.selectionHandler=function(branch){ //
+        if (branch.leaf){
+          console.log("selectionHandler:'"+branch.base64+"'");
+          $location.url("jmx/"+branch.base64);
+        }
+      }
+
+    }]);
 
 
 });

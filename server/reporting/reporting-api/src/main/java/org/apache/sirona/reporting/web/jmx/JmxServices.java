@@ -16,11 +16,19 @@
  */
 package org.apache.sirona.reporting.web.jmx;
 
+import org.apache.commons.codec.binary.Base64;
+
+import javax.management.InstanceNotFoundException;
+import javax.management.IntrospectionException;
+import javax.management.MBeanInfo;
 import javax.management.MBeanServerConnection;
+import javax.management.MalformedObjectNameException;
 import javax.management.ObjectInstance;
 import javax.management.ObjectName;
+import javax.management.ReflectionException;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
@@ -42,6 +50,19 @@ public class JmxServices
         JMXNode jmxNode = buildJmxTree();
         return jmxNode;
     }
+
+    @GET
+    @Path( "/{encodedName}" )
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    public MBeanInfo find(@PathParam( "encodedName" ) String encodedName )
+        throws IOException, MalformedObjectNameException, InstanceNotFoundException, IntrospectionException,
+        ReflectionException
+    {
+        final ObjectName name = new ObjectName( new String( Base64.decodeBase64( encodedName ) ) );
+        final MBeanInfo info = server.getMBeanInfo( name );
+        return info;
+    }
+
 
     private JMXNode buildJmxTree()
         throws IOException

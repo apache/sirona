@@ -65,6 +65,7 @@
             };
             _ref = scope.treeData;
             _results = [];
+            console.log("for_each_branch:"+_ref.length);
             for (_i = 0, _len = _ref.length; _i < _len; _i++) {
               root_branch = _ref[_i];
               _results.push(do_f(root_branch, 1));
@@ -140,7 +141,7 @@
                 return b.uid = "" + Math.random();
               }
             });
-            console.log('UIDs are set.');
+            //console.log('UIDs are set.');
             for_each_branch(function(b) {
               var child, _i, _len, _ref, _results;
               if (angular.isArray(b.children)) {
@@ -226,6 +227,7 @@
           scope.$watch('treeData', on_treeData_change, true);
           if (attrs.initialSelection != null) {
             for_each_branch(function(b) {
+              console.log("attrs.initialSelection:"+attrs.initialSelection+":"+b.label);
               if (b.label === attrs.initialSelection) {
                 return $timeout(function() {
                   return select_branch(b);
@@ -234,7 +236,7 @@
             });
           }
           n = scope.treeData.length;
-          console.log('num root branches = ' + n);
+          //console.log('num root branches = ' + n);
           for_each_branch(function(b, level) {
             b.level = level;
             return b.expanded = b.level < expand_level;

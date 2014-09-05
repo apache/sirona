@@ -96,6 +96,12 @@ define(['jquery','controllers','controllers-jvm','controllers-threads','controll
                controller: 'jmxHomeCtrl'
              }
         ).
+        when('/jmx/:mbeanName',
+             {
+               templateUrl: 'partials/jmx-detail.html',
+               controller: 'jmxDetailCtrl'
+             }
+        ).
         otherwise({
           redirectTo: '/home'
         });

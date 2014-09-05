@@ -15,9 +15,10 @@
   limitations under the License.
 -->
 <div class="row">
-  <div class="col-lg-12">
-    jmx home
-    <abn-tree tree-data="treeData" on-select="selectionHandler(branch)"></abn-tree>
+  <div class="col-lg-2">
+    <abn-tree tree-data="treeData" on-select="selectionHandler(branch)" initial-selection="java.nio"></abn-tree>
   </div>
-
+  <div class="col-lg-10">
+    jmx detail: {{::mbean.description}}
+  </div>
 </div>
