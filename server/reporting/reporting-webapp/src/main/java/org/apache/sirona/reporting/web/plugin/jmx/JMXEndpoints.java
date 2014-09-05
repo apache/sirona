@@ -19,6 +19,7 @@ package org.apache.sirona.reporting.web.plugin.jmx;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.sirona.SironaException;
 import org.apache.sirona.configuration.Configuration;
+import org.apache.sirona.reporting.web.jmx.JMXNode;
 import org.apache.sirona.reporting.web.plugin.api.MapBuilder;
 import org.apache.sirona.reporting.web.plugin.api.Regex;
 import org.apache.sirona.reporting.web.plugin.api.Template;

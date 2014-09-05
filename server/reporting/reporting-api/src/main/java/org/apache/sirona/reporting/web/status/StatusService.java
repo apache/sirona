@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * @author Olivier Lamy
  * @since 0.3
  */
 @Path( "/status" )
