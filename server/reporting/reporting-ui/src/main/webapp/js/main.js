@@ -33,6 +33,7 @@ require.config({
     'angular': 'angular-'+angularVersion+(useAngularMin?".min":""),
     'angular-route': 'angular-route-'+angularVersion+(useAngularMin?".min":""),
     'angular-resource': 'angular-resource-'+angularVersion+(useAngularMin?".min":""),
+    'angular-animate': 'angular-animate-'+angularVersion+".min",
     'bootstrap' : 'bootstrap.3.2.0.min',
     'controllers': 'app/controllers/controllers',
     'controllers-jvm': 'app/controllers/controllers-jvm',
@@ -40,6 +41,7 @@ require.config({
     'controllers-report': 'app/controllers/controllers-report',
     'controllers-gauges': 'app/controllers/controllers-gauges',
     'controllers-status': 'app/controllers/controllers-status',
+    'controllers-jmx': 'app/controllers/controllers-jmx',
     'services': 'app/services/services',
     'sirona': 'sirona',
     'morris': 'plugins/morris/morris-0.5.0.min',
@@ -47,17 +49,20 @@ require.config({
     'ui-bootstrap': 'ui-bootstrap-tpls-0.11.0',
     'datetimepicker': 'datetimepicker-0.2.4',
     'moment': 'moment-2.8.1.min',
-    'nggrid': 'ng-grid-2.0.12.debug'
+    'nggrid': 'ng-grid-2.0.12.debug',
+    'abn-tree' : 'abn_tree_directive'
   },
 
   shim: {
     'angular': ['jquery'],
     'angular-route': ['angular'],
     'angular-resource': ['angular'],
+    'angular-animate': ['angular'],
     'morris': ['raphael'],
     'ui-bootstrap': ['angular','bootstrap'],
     'datetimepicker': ['angular','bootstrap','moment'],
-    'nggrid': ['angular','bootstrap','ui-bootstrap']
+    'nggrid': ['angular','bootstrap','ui-bootstrap'],
+    'abn-tree': ['angular','bootstrap']
   },
 
   deps: ['sirona']

@@ -107,5 +107,16 @@ define(['angular','angular-resource'], function (){
     }
   ]);
 
+  sironaServices.factory('jmx', ['$resource',
+    function($resource){
+      return $resource('restServices/sironaServices/jmx/:mbean',
+                       {},
+                       {
+                         query: {method:'GET', params:{mbean:'@mbean'},isArray:false},
+                         all: {method:'GET', params:{},isArray:true}
+                       });
+    }
+  ]);
+
 
 });
