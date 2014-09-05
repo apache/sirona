@@ -15,9 +15,23 @@
   limitations under the License.
 -->
 <div class="row">
-  <div class="col-lg-12">
+  <div class="col-lg-3">
     jmx home
     <abn-tree tree-data="treeData" on-select="selectionHandler(branch)"></abn-tree>
   </div>
+  <div class="col-lg-9">
+    jmx detail: {{::mbean.description}}
 
+    <ul class="nav nav-tabs" role="tablist">
+      <li class="active"><a href="#attributes" role="tab" data-toggle="tab">Attributes</a></li>
+      <li><a href="#operations" role="tab" data-toggle="tab">Operations</a></li>
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+      <div class="tab-pane active" id="attributes">attributes</div>
+      <div class="tab-pane" id="operations">operations</div>
+    </div>
+
+  </div>
 </div>

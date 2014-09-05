@@ -38,7 +38,10 @@ define(['jquery','angular','bootstrap','services','ui-bootstrap','abn-tree','ang
       $scope.selectionHandler=function(branch){ //
         if (branch.leaf){
           console.log("selectionHandler:'"+branch.base64+"'");
-          $location.url("jmx/"+branch.base64);
+          //$location.url("jmx/"+branch.base64);
+          jmx.query({mbean:branch.base64}).$promise.then(function(result){
+            $scope.mbean=result;
+          });
         }
       }
 

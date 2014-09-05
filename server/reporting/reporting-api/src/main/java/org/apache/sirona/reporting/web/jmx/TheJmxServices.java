@@ -38,7 +38,7 @@ import java.lang.management.ManagementFactory;
  * @since 0.3
  */
 @Path( "/jmx" )
-public class JmxServices
+public class TheJmxServices
 {
     protected final MBeanServerConnection server = ManagementFactory.getPlatformMBeanServer();
 
