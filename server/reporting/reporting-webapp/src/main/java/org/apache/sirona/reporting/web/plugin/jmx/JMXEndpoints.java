@@ -20,6 +20,9 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.sirona.SironaException;
 import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.reporting.web.jmx.JMXNode;
+import org.apache.sirona.reporting.web.jmx.MBeanAttribute;
+import org.apache.sirona.reporting.web.jmx.MBeanOperation;
+import org.apache.sirona.reporting.web.jmx.MBeanParameter;
 import org.apache.sirona.reporting.web.plugin.api.MapBuilder;
 import org.apache.sirona.reporting.web.plugin.api.Regex;
 import org.apache.sirona.reporting.web.plugin.api.Template;
@@ -313,78 +316,4 @@ public class JMXEndpoints {
         }
     }
 
-    public static class MBeanAttribute {
-        private final String name;
-        private final String type;
-        private final String description;
-        private final String value;
-
-        public MBeanAttribute(final String name, final String type, final String description, final String value) {
-            this.name = name;
-            this.type = type;
-            this.value = value;
-            if (description != null) {
-                this.description = description;
-            } else {
-                this.description = "No description";
-            }
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getType() {
-            return type;
-        }
-
-        public String getDescription() {
-            return description;
-        }
-
-        public String getValue() {
-            return value;
-        }
-    }
-
-    public static class MBeanOperation {
-        private final String name;
-        private final String returnType;
-        private final Collection<MBeanParameter> parameters = new LinkedList<MBeanParameter>();
-
-        public MBeanOperation(final String name, final String returnType) {
-            this.name = name;
-            this.returnType = returnType;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getReturnType() {
-            return returnType;
-        }
-
-        public Collection<MBeanParameter> getParameters() {
-            return parameters;
-        }
-    }
-
-    public static class MBeanParameter {
-        private final String name;
-        private final String type;
-
-        public MBeanParameter(final String name, final String type) {
-            this.name = name;
-            this.type = type.replace("java.lang.", "");
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getType() {
-            return type;
-        }
-    }
 }

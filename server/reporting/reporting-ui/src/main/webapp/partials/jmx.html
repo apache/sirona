@@ -20,7 +20,8 @@
     <abn-tree tree-data="treeData" on-select="selectionHandler(branch)"></abn-tree>
   </div>
   <div class="col-lg-9">
-    jmx detail: {{::mbean.description}}
+    <h1>{{::mbean.objectName}}</h1>
+    <h2>{{::mbean.classname}}</h2>
 
     <ul class="nav nav-tabs" role="tablist">
       <li class="active"><a href="#attributes" role="tab" data-toggle="tab">Attributes</a></li>
