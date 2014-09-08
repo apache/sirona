@@ -43,7 +43,11 @@ define(['jquery','angular','bootstrap','services','ui-bootstrap','abn-tree','ang
             $scope.mbean=result;
           });
         }
-      }
+      };
+
+      $scope.invoke=function(name){
+        console.log("name:"+name);
+      };
 
   }]);
 

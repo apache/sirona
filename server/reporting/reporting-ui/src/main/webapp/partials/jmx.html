@@ -20,8 +20,8 @@
     <abn-tree tree-data="treeData" on-select="selectionHandler(branch)"></abn-tree>
   </div>
   <div class="col-lg-9">
-    <h1>{{::mbean.objectName}}</h1>
-    <h2>{{::mbean.classname}}</h2>
+    <h1>{{mbean.objectName}}</h1>
+    <h2>{{mbean.classname}}</h2>
 
     <ul class="nav nav-tabs" role="tablist">
       <li class="active"><a href="#attributes" role="tab" data-toggle="tab">Attributes</a></li>
@@ -30,8 +30,37 @@
 
     <!-- Tab panes -->
     <div class="tab-content">
-      <div class="tab-pane active" id="attributes">attributes</div>
-      <div class="tab-pane" id="operations">operations</div>
+      <div class="tab-pane active" id="attributes">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Description</th>
+              <th>Value</th>
+              <th>Type</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="attribute in mbean.attributes">
+              <td>{{attribute.name}}</td>
+              <td>{{attribute.description}}</td>
+              <td>{{attribute.value}}</td>
+              <td>{{attribute.type}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="tab-pane" id="operations">
+        <ul>
+          <li ng-repeat="operation in mbean.operations">
+            <form class="form-inline" id="{{operation.name}}">
+              {{operation.name}}
+              <input ng-repeat="param in operation.parameters" type="text" class="input-small" placeholder="{{param.name}}">
+              <button type="submit" class="btn btn-primary" ng-click="invoke(operation.name)">Invoke</button>
+            </form>
+          </li>
+        </ul>
+      </div>
     </div>
 
   </div>
