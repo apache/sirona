@@ -56,7 +56,7 @@
             <form class="form-inline" id="{{operation.name}}">
               {{operation.name}}
               <input ng-repeat="param in operation.parameters" type="text" class="input-small" placeholder="{{param.name}}:{{param.type}}">
-              <button type="submit" class="btn btn-primary" ng-click="invoke(operation.name)">Invoke</button>
+              <button type="submit" class="btn btn-primary" ng-click="invoke(operation.name,mbean.objectNameHash)">Invoke</button>
             </form>
           </li>
         </ul>

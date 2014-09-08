@@ -16,7 +16,7 @@
  */
 package org.apache.sirona.util;
 
-public final class ClassLoaders {
+public class ClassLoaders {
     public static ClassLoader current() {
         final ClassLoader tccl = Thread.currentThread().getContextClassLoader();
         if (tccl != null) {

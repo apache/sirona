@@ -113,7 +113,8 @@ define(['angular','angular-resource'], function (){
                        {},
                        {
                          query: {method:'GET', params:{mbean:'@mbean'},isArray:false},
-                         all: {method:'GET', params:{},isArray:true}
+                         all: {method:'GET', params:{},isArray:true},
+                         invoke: {method:'POST', isArray:false}
                        });
     }
   ]);

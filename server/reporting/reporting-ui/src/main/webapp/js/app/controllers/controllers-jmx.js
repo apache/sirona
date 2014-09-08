@@ -45,8 +45,19 @@ define(['jquery','angular','bootstrap','services','ui-bootstrap','abn-tree','ang
         }
       };
 
-      $scope.invoke=function(name){
-        console.log("name:"+name);
+      $scope.invoke=function(name,base64){
+        console.log("name:"+name+","+base64);
+
+        var parameters = [];
+
+        jQuery("#"+name + " input").each(function( index ) {
+          parameters.push(jQuery( this ).val());
+        });
+
+        var request={ mbeanEncodedName: base64, operationName: name, parameters: parameters };
+
+        jmx.invoke({ mbeanEncodedName: base64, operationName: name, parameters: parameters });
+
       };
 
   }]);
