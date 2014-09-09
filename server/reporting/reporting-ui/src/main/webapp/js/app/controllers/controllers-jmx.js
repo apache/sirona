@@ -56,7 +56,11 @@ define(['jquery','angular','bootstrap','services','ui-bootstrap','abn-tree','ang
 
         var request={ mbeanEncodedName: base64, operationName: name, parameters: parameters };
 
-        jmx.invoke({ mbeanEncodedName: base64, operationName: name, parameters: parameters });
+        jmx.invoke({ mbeanEncodedName: base64, operationName: name, parameters: parameters })
+            .$promise.then(function(result){
+          $scope.invokeResult=result;
+        });
+
 
       };
 

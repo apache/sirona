@@ -19,6 +19,7 @@ package org.apache.sirona.reporting.web.jmx;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.sirona.SironaException;
 import org.apache.sirona.configuration.Configuration;
+import org.apache.sirona.util.ClassLoaders;
 
 import javax.management.InstanceNotFoundException;
 import javax.management.IntrospectionException;
@@ -47,12 +48,12 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.apache.sirona.util.ClassLoaders;
 
 /**
  * @since 0.3
@@ -130,7 +131,8 @@ public class JMXServices
 
     @POST
     @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
-    public String invoke( JMXInvocationRequest request )
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    public JMXInvocationResult invoke( JMXInvocationRequest request )
     {
 
         if ( !METHOD_INVOCATION_ALLOWED )
@@ -155,20 +157,16 @@ public class JMXServices
                     }
                     final Object result = server.invoke( name, request.getOperationName(),
                                                          convertParams( signature, request.getParameters() ), sign );
-                    return "<div>Method was invoked and returned:</div>" + value( result );
+                    return value( result );
                 }
             }
         }
         catch ( final Exception e )
         {
-            return "<div class=\"alert alert-error\">\n" +
-                "\n" + e.getMessage() + "\n" +
-                "</div>";
+            return new JMXInvocationResult().errorMessage( e.getMessage() );
         }
 
-        return "<div class=\"alert alert-error\">Operation" + request.getOperationName() + " not found.</div>";
-
-
+        return new JMXInvocationResult().errorMessage( request.getOperationName() + " not found" );
     }
 
     private Object[] convertParams( final MBeanParameterInfo[] signature, final List<String> params )
@@ -314,31 +312,30 @@ public class JMXServices
             }
             catch ( final Exception e )
             {
-                value = "<div class=\"alert-error\">" + e.getMessage() + "</div>";
+                value = e.getMessage();
             }
-            list.add( new MBeanAttribute( attribute.getName(), nullProtection( attribute.getType() ),
-                                          nullProtection( attribute.getDescription() ), value( value ) ) );
+            list.add( new MBeanAttribute( attribute.getName(), //
+                                          nullProtection( attribute.getType() ), //
+                                          nullProtection( attribute.getDescription() ), //
+                                          value == null ? "" : value.toString() ) );
         }
         return list;
     }
 
     public static String nullProtection( final String value )
     {
-        if ( value == null )
-        {
-            return EMPTY_STRING;
-        }
-        return value;
+        return ( value == null ) ? EMPTY_STRING : value;
     }
 
+
     // FIXME this html stuff here is just weird!!!
-    private static String value( final Object value )
+    private static JMXInvocationResult value( final Object value )
     {
         try
         {
             if ( value == null )
             {
-                return nullProtection( null );
+                return new JMXInvocationResult();
             }
 
             if ( value.getClass().isArray() )
@@ -346,48 +343,53 @@ public class JMXServices
                 final int length = Array.getLength( value );
                 if ( length == 0 )
                 {
-                    return "";
+                    return new JMXInvocationResult();
                 }
 
-                final StringBuilder builder = new StringBuilder().append( "<ul>" );
+                List<String> results = new ArrayList<String>( length );
                 for ( int i = 0; i < length; i++ )
                 {
-                    builder.append( "<li>" ).append( value( Array.get( value, i ) ) ).append( "</li>" );
+                    Object o = Array.get( value, i );
+                    if ( o != null )
+                    {
+                        results.add( o.toString() );
+                    }
                 }
-                builder.append( "</ul>" );
-                return builder.toString();
+                return new JMXInvocationResult().results( results );
             }
 
             if ( Collection.class.isInstance( value ) )
             {
-                final StringBuilder builder = new StringBuilder().append( "<ul>" );
+                List<String> results = new ArrayList<String>();
                 for ( final Object o : Collection.class.cast( value ) )
                 {
-                    builder.append( "<li>" ).append( value( o ) ).append( "</li>" );
+                    if ( o != null )
+                    {
+                        results.add( o.toString() );
+                    }
                 }
-                builder.append( "</ul>" );
-                return builder.toString();
+                return new JMXInvocationResult().results( results );
             }
 
             if ( TabularData.class.isInstance( value ) )
             {
                 final TabularData td = TabularData.class.cast( value );
-                final StringBuilder builder = new StringBuilder().append( "<table class=\"table table-condensed\">" );
+                List<String> results = new ArrayList<String>();
+                //final StringBuilder builder = new StringBuilder().append( "<table class=\"table table-condensed\">" );
                 for ( final Object type : td.keySet() )
                 {
                     final List<?> values = (List<?>) type;
                     final CompositeData data = td.get( values.toArray( new Object[values.size()] ) );
-                    builder.append( "<tr>" );
-                    final Set<String> dataKeys = data.getCompositeType().keySet();
                     for ( final String k : data.getCompositeType().keySet() )
                     {
-                        builder.append( "<td>" ).append( value( data.get( k ) ) ).append( "</td>" );
+                        Object o = data.get( k );
+                        if ( o != null )
+                        {
+                            results.add( o.toString() );
+                        }
                     }
-                    builder.append( "</tr>" );
                 }
-                builder.append( "</table>" );
-
-                return builder.toString();
+                return new JMXInvocationResult().results( results );
             }
 
             if ( CompositeData.class.isInstance( value ) )
@@ -395,39 +397,35 @@ public class JMXServices
                 final CompositeData cd = CompositeData.class.cast( value );
                 final Set<String> keys = cd.getCompositeType().keySet();
 
-                final StringBuilder builder = new StringBuilder().append( "<table class=\"table table-condensed\">" );
+                Map<String, String> results = new HashMap<String, String>();
+
                 for ( final String type : keys )
                 {
-                    builder.append( "<tr><td>" ).append( type ).append( "</td><td>" ).append(
-                        value( cd.get( type ) ) ).append( "</td></tr>" );
+
+                    Object o = cd.get( type );
+                    results.put( type, o != null ? o.toString() : "" );
                 }
-                builder.append( "</table>" );
-
-                return builder.toString();
-
+                return new JMXInvocationResult().mapResult( results );
             }
 
             if ( Map.class.isInstance( value ) )
             {
                 final Map<?, ?> map = Map.class.cast( value );
 
-                final StringBuilder builder = new StringBuilder().append( "<table class=\"table table-condensed\">" );
+                Map<String, String> results = new HashMap<String, String>();
+
                 for ( final Map.Entry<?, ?> entry : map.entrySet() )
                 {
-                    builder.append( "<tr><tr>" ).append( value( entry.getKey() ) ).append( "</td><td>" ).append(
-                        value( entry.getValue() ) ).append( "</td></tr>" );
+                    results.put( entry.getKey().toString(), entry.getValue().toString() );
                 }
-                builder.append( "</table>" );
-
-                return builder.toString();
-
+                return new JMXInvocationResult().mapResult( results );
             }
 
-            return value.toString();
+            return new JMXInvocationResult().results( Collections.singletonList( value.toString() ) );
         }
         catch ( final Exception e )
         {
-            throw new SironaException( e );
+            throw new SironaException( e.getMessage(), e );
         }
     }
 
