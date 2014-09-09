@@ -145,4 +145,12 @@ define(['angular','angular-resource'], function (){
     }
   ]);
 
+  sironaServices.factory('sessions', ['$resource',
+    function($resource){
+      return $resource('restServices/sironaServices/sessions/:start/:end',
+                       {start:'@start',end:'@end'},
+                       {query: {method:'GET', params:{},isArray:true}});
+    }
+  ]);
+
 });

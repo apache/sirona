@@ -22,9 +22,9 @@ define(['jquery','angular','bootstrap','services','morris','ui-bootstrap','datet
   var dayDuration = 24 * 3600 * 1000;
 
 
-  var jvmControllers = angular.module('jtaControllers', ['sironaServices','ui.bootstrap','ui.bootstrap.datetimepicker']);
+  var jtaControllers = angular.module('jtaControllers', ['sironaServices','ui.bootstrap','ui.bootstrap.datetimepicker']);
 
-  jvmControllers.controller( 'jtaHomeCtrl', ['$scope','jtaCommits','jtaRollbacks','jtaActives',
+  jtaControllers.controller( 'jtaHomeCtrl', ['$scope','jtaCommits','jtaRollbacks','jtaActives',
     function ( $scope,jtaCommits,jtaRollbacks,jtaActives){
 
       console.log("jtaHomeCtrl");

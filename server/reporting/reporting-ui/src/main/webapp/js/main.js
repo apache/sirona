@@ -43,6 +43,7 @@ require.config({
     'controllers-status': 'app/controllers/controllers-status',
     'controllers-jmx': 'app/controllers/controllers-jmx',
     'controllers-jta': 'app/controllers/controllers-jta',
+    'controllers-sessions': 'app/controllers/controllers-sessions',
     'services': 'app/services/services',
     'sirona': 'sirona',
     'morris': 'plugins/morris/morris-0.5.0.min',

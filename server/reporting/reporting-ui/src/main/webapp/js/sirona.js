@@ -18,7 +18,8 @@
 'use strict';
 
 define(['jquery','controllers','controllers-jvm','controllers-threads','controllers-gauges','angular-route',
-         'bootstrap','datetimepicker','controllers-report','controllers-status','controllers-jmx','controllers-jta'],
+         'bootstrap','datetimepicker','controllers-report','controllers-status','controllers-jmx','controllers-jta',
+         'controllers-sessions'],
        function (jquery,controllers) {
 
   var sirona = angular.module('sirona', [
@@ -30,7 +31,8 @@ define(['jquery','controllers','controllers-jvm','controllers-threads','controll
     'gaugesControllers',
     'statusControllers',
     'jmxControllers',
-    'jtaControllers'
+    'jtaControllers',
+    'sessionsControllers'
   ]);
 
   sirona.config(['$routeProvider','$logProvider',
@@ -107,6 +109,12 @@ define(['jquery','controllers','controllers-jvm','controllers-threads','controll
              {
                templateUrl: 'partials/jmx-detail.html',
                controller: 'jmxDetailCtrl'
+             }
+        ).
+        when('/sessions',
+             {
+               templateUrl: 'partials/sessions.html',
+               controller: 'sessionsHomeCtrl'
              }
         ).
         otherwise({
