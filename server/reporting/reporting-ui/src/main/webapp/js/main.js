@@ -42,6 +42,7 @@ require.config({
     'controllers-gauges': 'app/controllers/controllers-gauges',
     'controllers-status': 'app/controllers/controllers-status',
     'controllers-jmx': 'app/controllers/controllers-jmx',
+    'controllers-jta': 'app/controllers/controllers-jta',
     'services': 'app/services/services',
     'sirona': 'sirona',
     'morris': 'plugins/morris/morris-0.5.0.min',

@@ -120,4 +120,29 @@ define(['angular','angular-resource'], function (){
   ]);
 
 
+  sironaServices.factory('jtaCommits', ['$resource',
+    function($resource){
+      return $resource('restServices/sironaServices/jtareports/commits/:start/:end',
+                       {start:'@start',end:'@end'},
+                       {query: {method:'GET', params:{}}});
+    }
+  ]);
+
+
+  sironaServices.factory('jtaRollbacks', ['$resource',
+    function($resource){
+      return $resource('restServices/sironaServices/jtareports/rollbacks/:start/:end',
+                       {start:'@start',end:'@end'},
+                       {query: {method:'GET', params:{}}});
+    }
+  ]);
+
+  sironaServices.factory('jtaActives', ['$resource',
+    function($resource){
+      return $resource('restServices/sironaServices/jtareports/actives/:start/:end',
+                       {start:'@start',end:'@end'},
+                       {query: {method:'GET', params:{}}});
+    }
+  ]);
+
 });
