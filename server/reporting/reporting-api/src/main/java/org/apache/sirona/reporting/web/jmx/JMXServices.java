@@ -299,7 +299,6 @@ public class JMXServices
         return operations;
     }
 
-    // FIXME this html stuff here is just weird!!!
     private Collection<MBeanAttribute> attributes( final ObjectName name, final MBeanInfo info )
     {
         final Collection<MBeanAttribute> list = new LinkedList<MBeanAttribute>();
@@ -328,7 +327,6 @@ public class JMXServices
     }
 
 
-    // FIXME this html stuff here is just weird!!!
     private static JMXInvocationResult value( final Object value )
     {
         try
