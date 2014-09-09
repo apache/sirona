@@ -1,0 +1,96 @@
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<div class="row">
+  <div class="col-lg-2">
+  </div>
+  <div class="col-lg-4">
+    <div class="dropdown">
+      <label for="datetimepicker-from">From</label>
+      <a class="dropdown-toggle" id="dropdown-startdate" role="button" data-toggle="dropdown" data-target="#" href="#">
+        <button type="button" class="btn btn-default"><i class="glyphicon glyphicon-calendar"></i></button>
+      </a>
+      <input type="text" class="form-control" data-ng-model="data.startDate" id="datetimepicker-from" disabled>
+      <ul class="dropdown-menu" role="menu" aria-labelledby="dropdown-enddate">
+        <li>
+          <datetimepicker data-ng-model="data.startDate" data-datetimepicker-config="{  }"/>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="dropdown">
+      <label for="datetimepicker-to">To</label>
+      <a class="dropdown-toggle" id="dropdown-enddate" role="button" data-toggle="dropdown" data-target="#" href="#">
+        <button type="button" class="btn btn-default"><i class="glyphicon glyphicon-calendar"></i></button>
+      </a>
+      <input type="text" class="form-control" data-ng-model="data.endDate" id="datetimepicker-to" disabled>
+      <ul class="dropdown-menu" role="menu" aria-labelledby="dropdown-enddate">
+        <li>
+          <datetimepicker data-ng-model="data.endDate" data-datetimepicker-config="{  }"/>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="col-lg-2">
+    <button type="button" class="btn btn-primary" ng-click="updateGraphs()">Update</button>
+  </div>
+</div>
+<div class="row">
+  <div class="col-lg-4">
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        <h3 class="panel-title">
+          <i class="icon-bar-chart"></i>Commits
+        </h3>
+      </div>
+      <div class="panel-body">
+        <div class="row">
+          <div id="commits"><i class="fa fa-spinner fa-spin"></i></div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+  <div class="col-lg-4">
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        <h3 class="panel-title">
+          <i class="icon-bar-chart"></i>Rollbacks
+        </h3>
+      </div>
+      <div class="panel-body">
+        <div id="rollbacks"><i class="fa fa-spinner fa-spin"></i></div>
+      </div>
+    </div>
+
+  </div>
+  <div class="col-lg-4">
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        <h3 class="panel-title">
+          <i class="icon-bar-chart"></i>Actives
+        </h3>
+      </div>
+      <div class="panel-body">
+        <div id="actives"><i class="fa fa-spinner fa-spin"></i></div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
