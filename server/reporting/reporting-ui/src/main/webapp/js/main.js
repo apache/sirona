@@ -18,7 +18,7 @@
 'use strict';
 
 
-var angularVersion='1.3.0-beta.17';
+var angularVersion='1.3.0';
 
 var useAngularMin=false;
 
