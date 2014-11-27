@@ -21,6 +21,8 @@ import org.apache.commons.lang3.text.StrSubstitutor;
 import org.apache.sirona.repositories.Repository;
 import org.junit.Ignore;
 import org.junit.internal.TextListener;
+import org.junit.internal.runners.statements.RunAfters;
+import org.junit.internal.runners.statements.RunBefores;
 import org.junit.runner.Description;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
@@ -80,7 +82,7 @@ public class JavaAgentRunner extends BlockJUnit4ClassRunner {
 
     @Override
     protected Statement classBlock(final RunNotifier notifier) {
-        return new Statement() {
+        Statement statement = new Statement() {
             @Override
             public void evaluate() throws Throwable {
                 for (final FrameworkMethod mtd : getChildren()) {
@@ -101,6 +103,12 @@ public class JavaAgentRunner extends BlockJUnit4ClassRunner {
                 }
             }
         };
+
+        final List<FrameworkMethod> befores = getTestClass() .getAnnotatedMethods(BeforeFork.class);
+        statement = befores.isEmpty() ? statement : new RunBefores(statement, befores, null);
+        final List<FrameworkMethod> afters = getTestClass() .getAnnotatedMethods(AfterFork.class);
+        statement = befores.isEmpty() ? statement : new RunAfters(statement, afters, null);
+        return statement;
     }
 
     private void executeMethod(final FrameworkMethod mtd, final Description description, final RunNotifier notifier) throws IOException, InterruptedException {

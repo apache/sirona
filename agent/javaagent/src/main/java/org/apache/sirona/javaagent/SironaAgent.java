@@ -74,7 +74,6 @@ public class SironaAgent {
                     for (final File f : children) {
                         if (!f.isDirectory()) {
                             try {
-                                System.out.println("load file:" + f.getPath());
                                 instrumentation.appendToBootstrapClassLoaderSearch(new JarFile(f));
                             } catch (final IOException e) {
                                 e.printStackTrace();
