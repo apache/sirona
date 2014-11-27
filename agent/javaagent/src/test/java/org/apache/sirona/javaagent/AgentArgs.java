@@ -29,6 +29,7 @@ import java.lang.annotation.Target;
 public @interface AgentArgs
 {
     boolean removeTargetClassesFromClasspath() default true;
+    boolean removeSironaFromClasspath() default true;
 
     String value();
 

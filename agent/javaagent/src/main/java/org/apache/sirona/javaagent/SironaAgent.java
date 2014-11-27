@@ -18,14 +18,16 @@ package org.apache.sirona.javaagent;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.lang.instrument.Instrumentation;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.jar.JarFile;
+
+import static java.util.Arrays.asList;
 
 public class SironaAgent {
 
@@ -49,7 +51,7 @@ public class SironaAgent {
             }
         });
 
-        final ClassLoader loader = Thread.currentThread().getContextClassLoader();
+        final ClassLoader loader = ClassLoader.getSystemClassLoader(); // TCCL works for sirona but not for libs
         try {
             final String resource = SironaAgent.class.getName().replace('.', '/') + ".class";
             final URL agentUrl = loader.getResource(resource);
@@ -65,19 +67,21 @@ public class SironaAgent {
             e.printStackTrace();
         }
 
+        final boolean debug = "true".equalsIgnoreCase(extractConfig(agentArgs, "debug="));
+        final boolean envrtDebug = debug || "true".equalsIgnoreCase(extractConfig(agentArgs, "environment-debug="));
+
+        final StringBuilder out = new StringBuilder();
         final String libs = extractConfig(agentArgs, "libs=");
         if (libs != null) {
-            final File root = new File(libs);
-            if (root.exists()) {
-                final File[] children = root.listFiles();
-                if (children != null) {
-                    for (final File f : children) {
-                        if (!f.isDirectory()) {
-                            try {
-                                instrumentation.appendToBootstrapClassLoaderSearch(new JarFile(f));
-                            } catch (final IOException e) {
-                                e.printStackTrace();
-                            }
+            for (final String lib : libs.split(" *, *")) {
+                final File root = new File(lib);
+                if (root.isFile() && root.getName().endsWith(".jar")) {
+                    addLib(instrumentation, out, root);
+                } else if (root.isDirectory()) {
+                    final File[] children = root.listFiles();
+                    if (children != null) {
+                        for (final File f : children) {
+                            addLib(instrumentation, out, f);
                         }
                     }
                 }
@@ -89,6 +93,11 @@ public class SironaAgent {
             Class.forName("org.apache.sirona.javaagent.AgentContext", true, loader);
         } catch (final Exception e) {
             e.printStackTrace();
+        }
+
+        // we can log/sysout only from here
+        if (envrtDebug) {
+            System.out.print(out.toString());
         }
 
         try {
@@ -106,15 +115,24 @@ public class SironaAgent {
 
 
         try {
-            final boolean debug = "true".equalsIgnoreCase(extractConfig(agentArgs, "debug="));
             if (debug) {
                 System.out.println("Sirona debugging activated, find instrumented classes in /tmp/sirona-dump/");
             }
+
             final SironaTransformer transformer = new SironaTransformer(debug);
             final boolean reloadable = instrumentation.isRetransformClassesSupported() && FORCE_RELOAD;
             instrumentation.addTransformer(transformer, reloadable);
 
             final Class<?> listener = loader.loadClass("org.apache.sirona.javaagent.spi.InvocationListener");
+
+            if (envrtDebug) {
+                System.out.println("ClassLoader: " + loader);
+                System.out.println("Loading ClassLoader: " + listener.getClassLoader());
+                if (URLClassLoader.class.isInstance(loader)) {
+                    System.out.println("URLs: " + asList(URLClassLoader.class.cast(loader).getURLs()));
+                }
+            }
+
             if (reloadable) {
                 for (final Class<?> clazz : instrumentation.getAllLoadedClasses()) {
                     if (!clazz.isArray()
@@ -142,6 +160,19 @@ public class SironaAgent {
             if (isDebug(loader)) {
                 System.out.println( "finished instrumentation setup with exception:" + e.getMessage() );
             }
+            e.printStackTrace();
+        }
+    }
+
+    private static void addLib(final Instrumentation instrumentation, final StringBuilder out, final File f) {
+        if (out != null) {
+            out.append("Added ").append(f.getAbsolutePath())
+                    .append(" to (instrumentation) classpath")
+                    .append(System.getProperty("line.separator"));
+        }
+        try {
+            instrumentation.appendToSystemClassLoaderSearch(new JarFile(f));
+        } catch (final Exception e) {
             e.printStackTrace();
         }
     }

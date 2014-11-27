@@ -30,7 +30,7 @@
   <properties>
     <test.debug.remote>false</test.debug.remote>
     <sirona.agent.debug>false</sirona.agent.debug>
-    <asm.version>5.0.1</asm.version>
+    <asm.version>5.0.3</asm.version>
     <agent.class>org.apache.sirona.javaagent.SironaAgent</agent.class>
   </properties>
 
@@ -132,18 +132,21 @@
               <createSourcesJar>true</createSourcesJar>
               <shadedArtifactAttached>true</shadedArtifactAttached>
               <shadedClassifierName>shaded</shadedClassifierName>
+              <createDependencyReducedPom>true</createDependencyReducedPom>
+              <dependencyReducedPomLocation>${project.build.directory}/reduced-pom.xml</dependencyReducedPomLocation>
               <relocations>
                 <relocation>
                   <pattern>org.objectweb.asm</pattern>
                   <shadedPattern>org.apache.sirona.asm</shadedPattern>
                 </relocation>
-                <!--
-                <relocation>
-                  <pattern>org.apache.sirona</pattern>
-                  <shadedPattern>org.apache.sirona.sirona</shadedPattern>
-                </relocation>
-                -->
               </relocations>
+              <artifactSet>
+                <includes>
+                  <include>org.ow2.asm:asm-all</include>
+                  <include>org.apache.sirona:sirona-aop</include>
+                  <include>org.apache.sirona:sirona-core</include>
+                </includes>
+              </artifactSet>
             </configuration>
           </execution>
         </executions>

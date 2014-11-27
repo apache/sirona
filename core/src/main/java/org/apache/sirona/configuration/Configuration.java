@@ -42,7 +42,12 @@ public final class Configuration {
                 providers.add(new FileConfigurationProvider(source));
             }
             providers.add(new PropertiesConfigurationProvider(System.getProperties()));
-            for (final ConfigurationProvider provider : ServiceLoader.load(ConfigurationProvider.class, Configuration.class.getClassLoader())) {
+
+            ClassLoader classLoader = Configuration.class.getClassLoader();
+            if (classLoader == null) { // ServiceLoader fallbacks to it normally but ensure it is portable
+                classLoader = ClassLoader.getSystemClassLoader();
+            }
+            for (final ConfigurationProvider provider : ServiceLoader.load(ConfigurationProvider.class, classLoader)) {
                 providers.add(provider);
             }
             Collections.sort(providers, Sorter.INSTANCE);

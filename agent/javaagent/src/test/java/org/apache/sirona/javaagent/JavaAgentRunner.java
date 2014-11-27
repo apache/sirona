@@ -104,9 +104,9 @@ public class JavaAgentRunner extends BlockJUnit4ClassRunner {
             }
         };
 
-        final List<FrameworkMethod> befores = getTestClass() .getAnnotatedMethods(BeforeFork.class);
+        final List<FrameworkMethod> befores = getTestClass().getAnnotatedMethods(BeforeFork.class);
         statement = befores.isEmpty() ? statement : new RunBefores(statement, befores, null);
-        final List<FrameworkMethod> afters = getTestClass() .getAnnotatedMethods(AfterFork.class);
+        final List<FrameworkMethod> afters = getTestClass().getAnnotatedMethods(AfterFork.class);
         statement = befores.isEmpty() ? statement : new RunAfters(statement, afters, null);
         return statement;
     }
@@ -181,10 +181,15 @@ public class JavaAgentRunner extends BlockJUnit4ClassRunner {
             }
         }
 
-        final String cp = System.getProperty("surefire.test.class.path", System.getProperty("java.class.path"));
-
+        String cp = System.getProperty("surefire.test.class.path", System.getProperty("java.class.path"));
+        if (agentArgs == null || agentArgs.removeTargetClassesFromClasspath()) {
+            cp = removeAgentFromCp(cp);
+        }
+        if (agentArgs != null && agentArgs.removeSironaFromClasspath()) {
+            cp = removeSironaFromCp(cp);
+        }
         args.add("-cp");
-        args.add(agentArgs == null || agentArgs.removeTargetClassesFromClasspath() ? removeAgentFromCp(cp) : cp);
+        args.add(cp);
         args.add(JavaAgentRunner.class.getName());
         args.add(mtd.getMethod().getDeclaringClass().getName());
         args.add(mtd.getName());
@@ -196,11 +201,31 @@ public class JavaAgentRunner extends BlockJUnit4ClassRunner {
 
     private static String removeAgentFromCp(final String property) {
         final String path = new File("target" + File.separatorChar + "classes").getAbsolutePath();
+        return removeFromCp(property, new Predicate() {
+            @Override
+            public boolean accept(final String segment) {
+                return !segment.equals(path);
+            }
+        });
+    }
+
+    private static String removeSironaFromCp(final String property) {
+        return removeFromCp(property, new Predicate() {
+            @Override
+            public boolean accept(final String segment) {
+                final String name = new File(segment).getName();
+                // we remove sirona* but this jar with the runner
+                return !name.startsWith("sirona-") || name.endsWith("-tests.jar");
+            }
+        });
+    }
+
+    private static String removeFromCp(final String property, final Predicate predicate) {
         final String sep = System.getProperty("path.separator");
         final String[] segments = property.split(sep);
         final StringBuilder builder = new StringBuilder(property.length());
         for (final String segment : segments) {
-            if (!segment.equals(path)) {
+            if (predicate.accept(segment)) {
                 builder.append(segment).append(sep);
             }
         }
@@ -358,4 +383,7 @@ public class JavaAgentRunner extends BlockJUnit4ClassRunner {
 
     }
 
+    private static interface Predicate {
+        boolean accept(String path);
+    }
 }
