@@ -108,6 +108,9 @@
           </execution>
         </executions>
         <configuration>
+          <excludes> <!-- packaged to be reusable => don't reuse the test config -->
+            <exclude>**/sirona.properties</exclude>
+          </excludes>
           <archive>
             <manifestEntries>
               <Premain-Class>${agent.class}</Premain-Class>
