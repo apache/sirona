@@ -187,7 +187,7 @@ public class JavaAgentRunner extends BlockJUnit4ClassRunner {
     }
 
     private static String removeAgentFromCp(final String property) {
-        final String path = new File("target/classes").getAbsolutePath();
+        final String path = new File("target" + File.separatorChar + "classes").getAbsolutePath();
         final String sep = System.getProperty("path.separator");
         final String[] segments = property.split(sep);
         final StringBuilder builder = new StringBuilder(property.length());
