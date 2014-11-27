@@ -18,6 +18,7 @@ package org.apache.sirona.javaagent;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.StrSubstitutor;
+import org.apache.sirona.repositories.Repository;
 import org.junit.Ignore;
 import org.junit.internal.TextListener;
 import org.junit.runner.Description;
@@ -36,6 +37,8 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -127,55 +130,50 @@ public class JavaAgentRunner extends BlockJUnit4ClassRunner {
     protected String[] buildProcessArgs(final FrameworkMethod mtd) throws IOException {
         final Collection<String> args = new ArrayList<String>();
 
-        args.add( findJava() );
+        args.add(findJava());
 
-        AgentArgs agentArgs = mtd.getAnnotation( AgentArgs.class );
+        AgentArgs agentArgs = mtd.getAnnotation(AgentArgs.class);
 
         String maxMem = agentArgs == null ? "" : agentArgs.maxMem();
 
-        if ( maxMem.length() > 0 )
-        {
-            args.add( "-Xmx" + maxMem );
+        if (maxMem.length() > 0) {
+            args.add("-Xmx" + maxMem);
         }
 
         String minMem = agentArgs == null ? "" : agentArgs.minMem();
 
-        if ( minMem.length() > 0 )
-        {
-            args.add( "-Xms" + minMem );
+        if (minMem.length() > 0) {
+            args.add("-Xms" + minMem);
         }
 
         String javaAgentArgs =
-            agentArgs == null ? null : StrSubstitutor.replace( agentArgs.value(), System.getProperties() );
-        args.add( "-javaagent:" + buildJavaagent() + "=" + ( javaAgentArgs == null ? "" : javaAgentArgs ) );
+                agentArgs == null ? null : StrSubstitutor.replace(agentArgs.value(), System.getProperties());
+        args.add("-javaagent:" + buildJavaagent() + "=" + (javaAgentArgs == null ? "" : javaAgentArgs));
 
-        if ( Boolean.getBoolean( "test.debug.remote" ) )
-        {
-            args.add( "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=" + Integer.getInteger(
-                "test.debug.remote.port", 5005 ) );
+        if (Boolean.getBoolean("test.debug.remote")) {
+            args.add("-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=" + Integer.getInteger(
+                    "test.debug.remote.port", 5005));
         }
-        if ( agentArgs != null && agentArgs.noVerify() )
-        {
-            args.add( "-noverify" );
+        if (agentArgs != null && agentArgs.noVerify()) {
+            args.add("-noverify");
         }
 
         String sysProps = agentArgs == null ? "" : agentArgs.sysProps();
 
-        if (sysProps.length() > 0){
-             String[] splittedProps = StringUtils.split( sysProps, "|" );
-            for (String props : splittedProps)
-            {
-                String[] prop = StringUtils.split( props, "=" );
+        if (sysProps.length() > 0) {
+            String[] splittedProps = StringUtils.split(sysProps, "|");
+            for (String props : splittedProps) {
+                String[] prop = StringUtils.split(props, "=");
                 String key = prop[0];
                 String value = "";
-                if (prop.length>1){
+                if (prop.length > 1) {
                     value = prop[1];
                 }
-                args.add( "-D" + key + "=" + StrSubstitutor.replace(  value, System.getProperties() ) );
+                args.add("-D" + key + "=" + StrSubstitutor.replace(value, System.getProperties()));
             }
         }
 
-        args.add( "-cp" );
+        args.add("-cp");
         args.add(removeAgentFromCp(System.getProperty("surefire.test.class.path", System.getProperty("java.class.path"))));
         args.add(JavaAgentRunner.class.getName());
         args.add(mtd.getMethod().getDeclaringClass().getName());
@@ -220,15 +218,21 @@ public class JavaAgentRunner extends BlockJUnit4ClassRunner {
     }
 
     protected String buildJavaagent() throws IOException {
-        final File[] files = new File(System.getProperty("javaagent.jar.directory", "target")).listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.startsWith( System.getProperty( "javaagent.jar.name.start", "sirona-javaagent-" )) //
-                        && name.endsWith(".jar") //
-                        && name.endsWith("-shaded.jar");
+        final String target = System.getProperty("javaagent.jar.directory", "target");
+        if (target != null) {
+            final File[] files = new File(target).listFiles(new FilenameFilter() {
+                @Override
+                public boolean accept(File dir, String name) {
+                    return name.startsWith(System.getProperty("javaagent.jar.name.start", "sirona-javaagent-")) //
+                            && name.endsWith(".jar") //
+                            && name.endsWith("-shaded.jar");
+                }
+            });
+            if (files != null && files.length > 0) {
+                return files[0].getAbsolutePath();
             }
-        });
-        return files[0].getAbsolutePath();
+        }
+        return JarLocation.get().getAbsolutePath();
     }
 
     private static String findJava() {
@@ -246,4 +250,102 @@ public class JavaAgentRunner extends BlockJUnit4ClassRunner {
         }
         return "java";
     }
+
+    private static class JarLocation {
+
+        public static File get() {
+            return jarLocation(Repository.class);
+        }
+
+        public static File jarLocation(final Class clazz) {
+            try {
+                final String classFileName = clazz.getName().replace(".", "/") + ".class";
+
+                final ClassLoader loader = clazz.getClassLoader();
+                URL url;
+                if (loader != null) {
+                    url = loader.getResource(classFileName);
+                } else {
+                    url = clazz.getResource(classFileName);
+                }
+
+                if (url == null) {
+                    throw new IllegalStateException("classloader.getResource(classFileName) returned a null URL");
+                }
+
+                if ("jar".equals(url.getProtocol())) {
+                    final String spec = url.getFile();
+
+                    int separator = spec.indexOf('!');
+                    if (separator == -1) {
+                        throw new MalformedURLException("no ! found in jar url spec:" + spec);
+                    }
+
+                    url = new URL(spec.substring(0, separator++));
+
+                    return new File(decode(url.getFile()));
+
+                } else if ("file".equals(url.getProtocol())) {
+                    return toFile(classFileName, url);
+                } else {
+                    throw new IllegalArgumentException("Unsupported URL scheme: " + url.toExternalForm());
+                }
+            } catch (final RuntimeException e) {
+                throw e;
+            } catch (final Exception e) {
+                throw new IllegalStateException(e);
+            }
+        }
+
+        public static File toFile(final String classFileName, final URL url) {
+            String path = url.getFile();
+            path = path.substring(0, path.length() - classFileName.length());
+            return new File(decode(path));
+        }
+
+
+        public static String decode(final String fileName) {
+            if (fileName.indexOf('%') == -1) return fileName;
+
+            final StringBuilder result = new StringBuilder(fileName.length());
+            final ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+            for (int i = 0; i < fileName.length(); ) {
+                final char c = fileName.charAt(i);
+
+                if (c == '%') {
+                    out.reset();
+                    do {
+                        if (i + 2 >= fileName.length()) {
+                            throw new IllegalArgumentException("Incomplete % sequence at: " + i);
+                        }
+
+                        final int d1 = Character.digit(fileName.charAt(i + 1), 16);
+                        final int d2 = Character.digit(fileName.charAt(i + 2), 16);
+
+                        if (d1 == -1 || d2 == -1) {
+                            throw new IllegalArgumentException("Invalid % sequence (" + fileName.substring(i, i + 3) + ") at: " + String.valueOf(i));
+                        }
+
+                        out.write((byte) ((d1 << 4) + d2));
+
+                        i += 3;
+
+                    } while (i < fileName.length() && fileName.charAt(i) == '%');
+
+
+                    result.append(out.toString());
+
+                    continue;
+                } else {
+                    result.append(c);
+                }
+
+                i++;
+            }
+            return result.toString();
+        }
+
+    }
+
 }
