@@ -173,8 +173,10 @@ public class JavaAgentRunner extends BlockJUnit4ClassRunner {
             }
         }
 
+        final String cp = System.getProperty("surefire.test.class.path", System.getProperty("java.class.path"));
+
         args.add("-cp");
-        args.add(removeAgentFromCp(System.getProperty("surefire.test.class.path", System.getProperty("java.class.path"))));
+        args.add(agentArgs == null || agentArgs.removeTargetClassesFromClasspath() ? removeAgentFromCp(cp) : cp);
         args.add(JavaAgentRunner.class.getName());
         args.add(mtd.getMethod().getDeclaringClass().getName());
         args.add(mtd.getName());
@@ -185,12 +187,12 @@ public class JavaAgentRunner extends BlockJUnit4ClassRunner {
     }
 
     private static String removeAgentFromCp(final String property) {
-        final String path = "target" + File.separator + "classes";
+        final String path = new File("target/classes").getAbsolutePath();
         final String sep = System.getProperty("path.separator");
         final String[] segments = property.split(sep);
         final StringBuilder builder = new StringBuilder(property.length());
         for (final String segment : segments) {
-            if (!segment.endsWith(path)) {
+            if (!segment.equals(path)) {
                 builder.append(segment).append(sep);
             }
         }
