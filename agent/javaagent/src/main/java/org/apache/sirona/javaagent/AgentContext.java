@@ -24,6 +24,7 @@ import org.apache.sirona.javaagent.spi.InvocationListenerFactory;
 import org.apache.sirona.spi.Order;
 import org.apache.sirona.spi.SPI;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Collections;
@@ -45,6 +46,17 @@ public class AgentContext {
 	private static final AgentContext FAKE_CONTEXT = new AgentContext("init", null, new InvocationListener[0]);
 
 	private static final Map<String, String> AGENT_PARAMETERS = new ConcurrentHashMap<String, String>();
+    private static final Map<String, Class<?>> PRIMITIVES = new HashMap<String, Class<?>>();
+    static {
+        PRIMITIVES.put("int", int.class);
+        PRIMITIVES.put("short", short.class);
+        PRIMITIVES.put("byte", byte.class);
+        PRIMITIVES.put("long", long.class);
+        PRIMITIVES.put("char", char.class);
+        PRIMITIVES.put("double", double.class);
+        PRIMITIVES.put("float", float.class);
+        PRIMITIVES.put("boolean", boolean.class);
+    }
 
     public static void addAgentParameter( String key, String value){
         AGENT_PARAMETERS.put(key, value);
@@ -160,26 +172,57 @@ public class AgentContext {
     }
 
     public Class<?> keyAsClass() {
+        final int length = key.length();
+        final int parenthesis = key.lastIndexOf('(');
+        final int lastDot = key.substring(0, Math.min(parenthesis, length)).lastIndexOf('.');
         try {
-            Method method = keyAsMethod();
-            return method == null ? null : method.getDeclaringClass();
+            return tccl().loadClass(key.substring(0, lastDot < 0 ? parenthesis : lastDot));
         } catch (final Throwable th) {
             return null;
         }
     }
 
-    public Method keyAsMethod() {
+    public Method keyAsMethod() { // TODO: fixed size cache here?
         if (method != null) {
             return method;
         }
 
-        final int lastDot = key.lastIndexOf('.');
+        final int length = key.length();
+        final int parenthesis = key.lastIndexOf('(');
+        final int lastDot = key.substring(0, Math.min(parenthesis, length)).lastIndexOf('.');
         try {
-            method = tccl().loadClass(key.substring(0, lastDot)).getDeclaredMethod(key.substring(lastDot + 1));
+            final ClassLoader tccl = tccl();
+            final Class<?> loadClass = tccl.loadClass(key.substring(0, lastDot < 0 ? parenthesis : lastDot));
+            final String methodName = key.substring(lastDot + 1, parenthesis);
+            if (parenthesis == length - 2) { // no param
+                method = loadClass.getDeclaredMethod(methodName);
+            } else {
+                final Collection<Class<?>> params = new LinkedList<Class<?>>();
+                for (final String paramType : key.substring(parenthesis + 1, length - 1).split(",")) {
+                    params.add(load(tccl, paramType));
+                }
+                method = loadClass.getDeclaredMethod(methodName, params.toArray(new Class<?>[params.size()]));
+            }
         } catch (final Throwable th) {
             return null;
         }
         return method;
+    }
+
+    // TODO: enhance it
+    private Class<?> load(final ClassLoader tccl, final String paramType) throws ClassNotFoundException {
+        final int diamond = paramType.indexOf('<');
+        if (diamond > 0) { // skip generics
+            return tccl.loadClass(paramType.substring(0, diamond));
+        }
+        if (paramType.endsWith("[]")) { // array, TODO: use ASM to not instantiate it
+            return Array.newInstance(tccl.loadClass(paramType.substring(0, paramType.length() - "[]".length())), 0).getClass();
+        }
+        final Class<?> primitive = PRIMITIVES.get(paramType);
+        if (primitive != null) {
+            return primitive;
+        }
+        return tccl.loadClass(paramType);
     }
 
     private static ClassLoader tccl() {

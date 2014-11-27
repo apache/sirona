@@ -92,7 +92,7 @@ public class HttpUrlConnectionAddHeaderTest {
 
         @Override
         public boolean accept(final String key) {
-            return key.equals("sun.net.www.protocol.http.HttpURLConnection.connect");
+            return key.equals("sun.net.www.protocol.http.HttpURLConnection.connect()");
         }
     }
 }

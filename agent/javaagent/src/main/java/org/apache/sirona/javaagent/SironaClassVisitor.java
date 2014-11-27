@@ -68,12 +68,23 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
             return visitor;
         }
 
-        final String label = javaName.replace("/", ".") + "." + name;
+        final String label = javaName.replace("/", ".") + "." + name + "(" + typesToString(Type.getArgumentTypes(desc)) + ")";
         if (AgentContext.listeners(label) != null) {
             count++;
             return new SironaAdviceAdapter(visitor, access, name, desc, label);
         }
         return visitor;
+    }
+
+    private String typesToString(final Type[] argumentTypes) {
+        final StringBuilder b = new StringBuilder();
+        for (final Type t : argumentTypes) {
+            b.append(t.getClassName()).append(",");
+        }
+        if (b.length() > 0) {
+            b.setLength(b.length() - 1);
+        }
+        return b.toString();
     }
 
     private static boolean isSironable(final int access, final String name) {

@@ -75,7 +75,7 @@ public class PathTrackingListenerTest
 
         PathTrackingEntry entry = entries.get( 0 );
 
-        Assert.assertEquals( "beer", entry.getMethodName() );
+        Assert.assertEquals( "beer()", entry.getMethodName() );
 
         Assert.assertEquals( "org.apache.test.sirona.javaagent.App", entry.getClassName() );
 
@@ -83,7 +83,7 @@ public class PathTrackingListenerTest
 
         entry = entries.get( 1 );
 
-        Assert.assertEquals( "foo", entry.getMethodName() );
+        Assert.assertEquals( "foo()", entry.getMethodName() );
 
         Assert.assertEquals( "org.apache.test.sirona.javaagent.App", entry.getClassName() );
 
@@ -95,7 +95,7 @@ public class PathTrackingListenerTest
 
         entry = entries.get( 2 );
 
-        Assert.assertEquals( "pub", entry.getMethodName() );
+        Assert.assertEquals( "pub()", entry.getMethodName() );
 
         Assert.assertEquals( "org.apache.test.sirona.javaagent.App", entry.getClassName() );
 
@@ -105,7 +105,7 @@ public class PathTrackingListenerTest
 
         entry = entries.get( 3 );
 
-        Assert.assertEquals( "bar", entry.getMethodName() );
+        Assert.assertEquals( "bar()", entry.getMethodName() );
 
         Assert.assertEquals( "org.apache.test.sirona.javaagent.App", entry.getClassName() );
 

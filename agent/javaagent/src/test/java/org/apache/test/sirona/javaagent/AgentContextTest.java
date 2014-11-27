@@ -27,13 +27,13 @@ import static org.junit.Assert.assertEquals;
 public class AgentContextTest {
     @Test
     public void keyClass() {
-        final Class<?> clazz = new AgentContext("org.apache.test.sirona.javaagent.AgentContextTest.keyClass", this, new InvocationListener[0]).keyAsClass();
+        final Class<?> clazz = new AgentContext("org.apache.test.sirona.javaagent.AgentContextTest.keyClass()", this, new InvocationListener[0]).keyAsClass();
         assertEquals(AgentContextTest.class, clazz);
     }
 
     @Test
     public void keyMethod() throws NoSuchMethodException {
-        final Method mtd = new AgentContext("org.apache.test.sirona.javaagent.AgentContextTest.keyMethod", this, new InvocationListener[0]).keyAsMethod();
+        final Method mtd = new AgentContext("org.apache.test.sirona.javaagent.AgentContextTest.keyMethod()", this, new InvocationListener[0]).keyAsMethod();
         assertEquals(AgentContextTest.class.getMethod("keyMethod"), mtd);
     }
 }

@@ -38,81 +38,81 @@ public class SimpleTest {
 
     @Test
     public void staticMonitoring() {
-        assertHits("org.apache.test.sirona.javaagent.SimpleTest$StaticTransform.monitorMe", 0);
+        assertHits("org.apache.test.sirona.javaagent.SimpleTest$StaticTransform.monitorMe()", 0);
         assertEquals(1, StaticTransform.init);
-        assertHits("org.apache.test.sirona.javaagent.SimpleTest$StaticTransform.monitorMe", 1);
+        assertHits("org.apache.test.sirona.javaagent.SimpleTest$StaticTransform.monitorMe()", 1);
     }
 
     @Test
     public void staticMethod() {
-        assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.staticMethod", 0);
+        assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.staticMethod()", 0);
         ServiceTransform.staticMethod();
-        assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.staticMethod", 1);
+        assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.staticMethod()", 1);
     }
 
     @Test
     public void noReturnWithoutStatic() {
-        assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceNoStaticTransform.noReturn", 0);
+        assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceNoStaticTransform.noReturn()", 0);
         new ServiceNoStaticTransform().noReturn();
-        assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceNoStaticTransform.noReturn", 1);
+        assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceNoStaticTransform.noReturn()", 1);
     }
 
     @Test
     public void noReturn() {
-        assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.noReturn", 0);
+        assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.noReturn()", 0);
         new ServiceTransform().noReturn();
-        assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.noReturn", 1);
+        assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.noReturn()", 1);
     }
 
     @Test
     public void withReturn() {
-        assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.withReturn", 0);
+        assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.withReturn()", 0);
         new ServiceTransform().withReturn();
-        assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.withReturn", 1);
+        assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.withReturn()", 1);
     }
 
     @Test
     public void nested() {
-        assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.nest", 0);
-        assertHits("org.apache.test.sirona.javaagent.SimpleTest$Service2Transform.nested", 0);
+        assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.nest()", 0);
+        assertHits("org.apache.test.sirona.javaagent.SimpleTest$Service2Transform.nested()", 0);
         new ServiceTransform().nest();
-        assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.nest", 1);
-        assertHits("org.apache.test.sirona.javaagent.SimpleTest$Service2Transform.nested", 1);
+        assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.nest()", 1);
+        assertHits("org.apache.test.sirona.javaagent.SimpleTest$Service2Transform.nested()", 1);
     }
 
     @Test
     public void exception() {
-        assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.exception", 0);
+        assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.exception()", 0);
         try {
             new ServiceTransform().exception();
             fail();
         } catch (final IllegalArgumentException iae) {
             // OK
         }
-        assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.exception", 1);
+        assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.exception()", 1);
         assertException(1, IllegalArgumentException.class);
     }
 
     @Test
     public void alreadyTryCatch() {
-        assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.alreadyTryCatch", 0);
+        assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.alreadyTryCatch()", 0);
         new ServiceTransform().alreadyTryCatch();
-        assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.alreadyTryCatch", 1);
+        assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.alreadyTryCatch()", 1);
         assertException(0, NullPointerException.class);
     }
 
     @Test
     public void alreadyTryCatchWithReturn() {
-        assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.alreadyTryCatchWithReturnPrimitive", 0);
+        assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.alreadyTryCatchWithReturnPrimitive()", 0);
         assertTrue(new ServiceTransform().alreadyTryCatchWithReturnPrimitive());
-        assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.alreadyTryCatchWithReturnPrimitive", 1);
+        assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.alreadyTryCatchWithReturnPrimitive()", 1);
     }
 
     @Test
     public void primitive() {
-        assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.soPrimitive", 0);
+        assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.soPrimitive()", 0);
         ServiceTransform.soPrimitive();
-        assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.soPrimitive", 1);
+        assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.soPrimitive()", 1);
     }
 
     @Test
@@ -123,9 +123,9 @@ public class SimpleTest {
     @Test
     @AgentArgs(CounterListener.DISABLE_PARAMETER_KEY)
     public void primitiveDisable() {
-        assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.soPrimitive", 0);
+        assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.soPrimitive()", 0);
         ServiceTransform.soPrimitive();
-        assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.soPrimitive", 0);
+        assertHits("org.apache.test.sirona.javaagent.SimpleTest$ServiceTransform.soPrimitive()", 0);
     }
 
     private static void assertException(final int count, final Class<?> exception) {
