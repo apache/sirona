@@ -38,7 +38,7 @@ public class CounterListener extends AbstractPerformanceInterceptor<String> impl
     private boolean disabled;
 
     @Override
-    public boolean accept(final String key) {
+    public boolean accept(final String key, final byte[] rawClassBuffer) {
         return !AgentContext.getAgentParameters().containsKey( DISABLE_PARAMETER_KEY ) //
                 && includes.matches(key) //
                 && !excludes.matches(key) //

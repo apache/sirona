@@ -91,7 +91,7 @@ public class HttpUrlConnectionAddHeaderTest {
         }
 
         @Override
-        public boolean accept(final String key) {
+        public boolean accept(final String key, final byte[] rawClassBuffer) {
             return key.equals("sun.net.www.protocol.http.HttpURLConnection.connect()");
         }
     }

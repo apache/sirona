@@ -39,9 +39,9 @@ public class PathTrackingListener
         Configuration.is( Configuration.CONFIG_PROPERTY_PREFIX + "javaagent.path.tracking.activate", false );
 
     @Override
-    public boolean accept( String key )
+    public boolean accept( String key, byte[] rawClassBuffer )
     {
-        boolean include = super.accept( key );
+        boolean include = super.accept( key, rawClassBuffer );
         if ( !include )
         {
             return false;

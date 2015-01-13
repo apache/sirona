@@ -26,6 +26,6 @@ public class AutoSetPathTrackingListenerTest {
     @Test
     public void autoSet() throws Exception {
         final PathTrackingListener listener = IoCs.autoSet(null, new PathTrackingListener());
-        assertFalse(listener.accept("org.junit"));
+        assertFalse(listener.accept("org.junit", null));
     }
 }

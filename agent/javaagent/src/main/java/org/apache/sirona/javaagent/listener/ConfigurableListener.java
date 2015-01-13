@@ -72,7 +72,7 @@ public abstract class ConfigurableListener<I, R> implements InvocationListener {
     }
 
     @Override
-    public boolean accept(final String name) {
+    public boolean accept(final String name, final byte[] rawClassBuffer) {
         return includes.matches(name) && !excludes.matches(name);
     }
 

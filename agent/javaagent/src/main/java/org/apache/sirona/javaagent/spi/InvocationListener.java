@@ -23,9 +23,10 @@ public interface InvocationListener {
     /**
      *
      * @param key has the format of fqcn.methodName
+     * @param rawClassBuffer class being trasformed
      * @return to use this InvocationListener or not for this method
      */
-    boolean accept(String key);
+    boolean accept(String key, byte[] rawClassBuffer);
 
     /**
      * Method called before the real object method called

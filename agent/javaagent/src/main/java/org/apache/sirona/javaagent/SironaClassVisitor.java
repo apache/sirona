@@ -48,11 +48,13 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
     private static final Method STOP_WITH_EXCEPTION_METHOD = new Method("stopWithException", Type.VOID_TYPE, STOP_WITH_THROWABLE_ARGS_TYPES);
 
     private final String javaName;
+    private final byte[] classfileBuffer;
     private int count = 0;
 
-    public SironaClassVisitor(final ClassWriter writer, final String javaName) {
+    public SironaClassVisitor(final ClassWriter writer, final String javaName, final byte[] buffer) {
         super(ASM5, writer);
         this.javaName = javaName;
+        this.classfileBuffer = buffer;
     }
 
     @Override
@@ -69,7 +71,7 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
         }
 
         final String label = javaName.replace("/", ".") + "." + name + "(" + typesToString(Type.getArgumentTypes(desc)) + ")";
-        if (AgentContext.listeners(label) != null) {
+        if (AgentContext.listeners(label, classfileBuffer) != null) {
             count++;
             return new SironaAdviceAdapter(visitor, access, name, desc, label);
         }

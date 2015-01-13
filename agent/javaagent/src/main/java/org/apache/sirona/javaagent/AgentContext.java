@@ -75,7 +75,7 @@ public class AgentContext {
 		if (key == null) { // possible in static inits, the best would be to ignore it in instrumentation
 			return FAKE_CONTEXT;
 		}
-        return new AgentContext(key, that, listeners(key));
+        return new AgentContext(key, that, listeners(key, null));
     }
 
     // helper to init keys in javaagent
@@ -121,10 +121,10 @@ public class AgentContext {
         listeners.add(autoset);
     }
 
-    public static InvocationListener[] listeners(final String key) {
+    public static InvocationListener[] listeners(final String key, final byte[] buffer) {
         InvocationListener[] listeners = LISTENERS_BY_KEY.get(key);
-        if (listeners == null) {
-            listeners = findListeners(key);
+        if (listeners == null && buffer != null) {
+            listeners = findListeners(key, buffer);
             if (listeners.length == 0) {
                 return null;
             }
@@ -137,10 +137,10 @@ public class AgentContext {
         return listeners;
     }
 
-    private static InvocationListener[] findListeners(final String key) {
+    private static InvocationListener[] findListeners(final String key, final byte[] buffer) {
         final List<InvocationListener> listeners = new LinkedList<InvocationListener>();
         for (final InvocationListener listener : EXISTING_LISTENERS) {
-            if (listener.accept(key)) {
+            if (listener.accept(key, buffer)) {
                 listeners.add(listener);
             }
         }

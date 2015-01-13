@@ -45,24 +45,24 @@ public class CounterListenerConfigTest {
     public void include() {
         listener.setExcludes(null);
         listener.setIncludes("prefix:" + KEY);
-        assertTrue(listener.accept(KEY));
+        assertTrue(listener.accept(KEY, null));
     }
 
     @Test
     public void exclude() {
         listener.setExcludes("prefix:" + KEY);
         listener.setIncludes(null);
-        assertFalse(listener.accept(KEY));
+        assertFalse(listener.accept(KEY, null));
     }
 
     @Test
     public void includeExclude() {
         listener.setExcludes("prefix:" + KEY);
         listener.setIncludes("prefix:" + KEY);
-        assertFalse(listener.accept(KEY));
+        assertFalse(listener.accept(KEY, null));
 
         listener.setExcludes("prefix:" + KEY + "_");
         listener.setIncludes("prefix:" + KEY);
-        assertTrue(listener.accept(KEY));
+        assertTrue(listener.accept(KEY, null));
     }
 }
