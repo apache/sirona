@@ -194,7 +194,7 @@ public class JavaAgentRunner extends BlockJUnit4ClassRunner {
         args.add(mtd.getMethod().getDeclaringClass().getName());
         args.add(mtd.getName());
 
-        System.out.println("Running " + args.toString().replace(",", "").substring(1).replace("]", ""));
+        System.out.println("Running " + args.toString().replace(", ", " ").substring(1).replace("]", ""));
 
         return args.toArray(new String[args.size()]);
     }
