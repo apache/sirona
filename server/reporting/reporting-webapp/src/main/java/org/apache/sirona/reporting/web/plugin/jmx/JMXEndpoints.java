@@ -197,7 +197,7 @@ public class JMXEndpoints {
         // try all conversions in cascade until it works
         for (final Class<?> clazz : new Class<?>[] { Integer.class, Long.class, Double.class }) {
             try {
-                return Number.class.cast(clazz.getMethod("valueOf").invoke(null, value));
+                return Number.class.cast(clazz.getMethod("valueOf", String.class).invoke(null, value));
             } catch (final Exception e) {
                 // no-op
             }

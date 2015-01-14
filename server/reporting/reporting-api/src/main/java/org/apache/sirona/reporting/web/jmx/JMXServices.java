@@ -251,7 +251,7 @@ public class JMXServices
         {
             try
             {
-                return Number.class.cast( clazz.getMethod( "valueOf" ).invoke( null, value ) );
+                return Number.class.cast( clazz.getMethod( "valueOf", String.class ).invoke( null, value ) );
             }
             catch ( final Exception e )
             {
