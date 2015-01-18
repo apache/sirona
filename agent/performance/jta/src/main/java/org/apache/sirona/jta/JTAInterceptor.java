@@ -35,7 +35,7 @@ public class JTAInterceptor {
 
     @AroundInvoke
     @AroundTimeout
-    public Object jta(final InvocationContext invocationContext) throws Throwable {
+    public Object jta(final InvocationContext invocationContext) throws Exception {
         if (transactionSynchronizationRegistry.getTransactionStatus() == Status.STATUS_ACTIVE
                 && transactionSynchronizationRegistry.getResource(RESOURCE_KEY) == null) {
             JTAGauges.ACTIVE.incrementAndGet();

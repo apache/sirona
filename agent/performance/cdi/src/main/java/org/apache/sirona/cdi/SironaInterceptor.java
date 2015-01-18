@@ -16,6 +16,7 @@
  */
 package org.apache.sirona.cdi;
 
+import org.apache.sirona.SironaException;
 import org.apache.sirona.aop.AbstractPerformanceInterceptor;
 
 import javax.interceptor.AroundInvoke;
@@ -28,8 +29,14 @@ import javax.interceptor.InvocationContext;
 public class SironaInterceptor extends AbstractPerformanceInterceptor<InvocationContext> {
     @AroundInvoke
     @AroundTimeout
-    public Object monitor(final InvocationContext invocationContext) throws Throwable {
-        return doInvoke(invocationContext);
+    public Object monitor(final InvocationContext invocationContext) throws Exception {
+        try {
+            return doInvoke(invocationContext);
+        } catch (final Exception e) {
+            throw e;
+        } catch (final Throwable t) {
+            throw new SironaException(t);
+        }
     }
 
     @Override
