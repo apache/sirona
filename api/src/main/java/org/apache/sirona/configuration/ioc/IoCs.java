@@ -57,7 +57,6 @@ public final class IoCs {
     }
 
     public static synchronized <T> T findOrCreateInstance(final Class<T> clazz) {
-        System.out.println( "findOrCreateInstance of class " + clazz.getName() );
         final T t = clazz.cast(SINGLETONS.get(clazz));
         if (t != null) {
             return t;
@@ -68,7 +67,7 @@ public final class IoCs {
     public static synchronized <T> T newInstance(final Class<T> clazz) {
 
         String config = Configuration.getProperty(clazz.getName(), null);
-        System.out.println( "newInstance of class " + clazz.getName() + " with config " + config );
+
         try {
             if (config == null) {
                 if (clazz.isInterface()) {
