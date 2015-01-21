@@ -216,6 +216,19 @@ public final class IoCs {
         return clazz.cast(SINGLETONS.get(clazz));
     }
 
+    public static <T> T getInstance(final Class<T> clazz, String className)
+    {
+        try
+        {
+            Class<?> tClass = ClassLoaders.current().loadClass( className );
+            return (T) tClass.newInstance();
+        }
+        catch ( Exception e )
+        {
+            throw new SironaException( "cannot instantiante instance of '" + className + "'",e );
+        }
+    }
+
     public static void shutdown() {
         for (final ToDestroy c : INSTANCES) {
             c.destroy();
