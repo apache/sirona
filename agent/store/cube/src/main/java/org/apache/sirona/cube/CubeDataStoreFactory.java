@@ -18,7 +18,6 @@ package org.apache.sirona.cube;
 
 import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.store.DelegateDataStoreFactory;
-import org.apache.sirona.store.tracking.InMemoryPathTrackingDataStore;
 
 public class CubeDataStoreFactory extends DelegateDataStoreFactory {
     public CubeDataStoreFactory() {

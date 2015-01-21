@@ -29,7 +29,7 @@ import org.apache.sirona.repositories.Repository;
 import org.apache.sirona.store.BatchFuture;
 import org.apache.sirona.store.counter.CollectorCounterStore;
 import org.apache.sirona.store.counter.CounterDataStore;
-import org.apache.sirona.store.counter.memory.InMemoryCounterDataStore;
+import org.apache.sirona.store.memory.counter.InMemoryCounterDataStore;
 import org.apache.sirona.util.DaemonThreadFactory;
 
 import javax.servlet.ServletConfig;

@@ -1,1 +1,1 @@
-org.apache.sirona.store.counter.memory.InMemoryCollectorCounterStore
+org.apache.sirona.store.memory.counter.InMemoryCollectorCounterStore

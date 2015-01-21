@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.store.counter.memory.util;
+package org.apache.sirona.store.memory.tracking;
 
 import org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement;
 

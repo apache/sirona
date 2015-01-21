@@ -17,10 +17,10 @@
 package org.apache.sirona.agent.webapp.pull.store;
 
 import org.apache.sirona.store.DelegateDataStoreFactory;
-import org.apache.sirona.store.counter.memory.InMemoryCounterDataStore;
-import org.apache.sirona.store.gauge.InMemoryGaugeDataStore;
+import org.apache.sirona.store.memory.counter.InMemoryCounterDataStore;
+import org.apache.sirona.store.memory.gauge.InMemoryGaugeDataStore;
 import org.apache.sirona.store.status.EmptyStatuses;
-import org.apache.sirona.store.tracking.InMemoryPathTrackingDataStore;
+import org.apache.sirona.store.memory.tracking.InMemoryPathTrackingDataStore;
 
 public class PullDataStoreFactory
     extends DelegateDataStoreFactory

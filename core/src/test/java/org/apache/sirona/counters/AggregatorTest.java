@@ -20,7 +20,7 @@ import org.apache.sirona.Role;
 import org.apache.sirona.store.counter.CollectorCounterStore;
 import org.apache.sirona.math.M2AwareStatisticalSummary;
 import org.apache.sirona.repositories.Repository;
-import org.apache.sirona.store.counter.memory.InMemoryCollectorCounterStore;
+import org.apache.sirona.store.memory.counter.InMemoryCollectorCounterStore;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

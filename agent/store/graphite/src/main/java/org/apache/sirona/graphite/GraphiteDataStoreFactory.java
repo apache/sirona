@@ -19,7 +19,7 @@ package org.apache.sirona.graphite;
 import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.store.DelegateDataStoreFactory;
 import org.apache.sirona.store.status.EmptyStatuses;
-import org.apache.sirona.store.tracking.InMemoryPathTrackingDataStore;
+import org.apache.sirona.store.memory.tracking.InMemoryPathTrackingDataStore;
 
 public class GraphiteDataStoreFactory extends DelegateDataStoreFactory {
     public GraphiteDataStoreFactory() {

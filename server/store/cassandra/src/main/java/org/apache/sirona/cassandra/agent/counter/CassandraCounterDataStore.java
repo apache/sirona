@@ -21,7 +21,7 @@ import org.apache.sirona.configuration.ioc.AutoSet;
 import org.apache.sirona.configuration.ioc.Created;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.math.M2AwareStatisticalSummary;
-import org.apache.sirona.store.counter.memory.BatchCounterDataStore;
+import org.apache.sirona.store.memory.counter.BatchCounterDataStore;
 import org.apache.sirona.util.Localhosts;
 
 import java.util.Collection;

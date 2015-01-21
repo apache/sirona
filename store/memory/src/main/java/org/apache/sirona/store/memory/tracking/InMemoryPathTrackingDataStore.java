@@ -14,13 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.store.tracking;
+package org.apache.sirona.store.memory.tracking;
 
 import org.apache.sirona.pathtracking.PathCallInformation;
 import org.apache.sirona.pathtracking.PathTrackingEntry;
 import org.apache.sirona.pathtracking.PathTrackingEntryComparator;
+import org.apache.sirona.store.tracking.AbstractPathTrackingDataStore;
+import org.apache.sirona.store.tracking.CollectorPathTrackingDataStore;
+import org.apache.sirona.store.tracking.PathTrackingDataStore;
 import org.apache.sirona.util.SerializeUtils;
-import org.apache.sirona.store.counter.memory.util.UnsafeUtils;
 import org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement;
 
 import java.util.ArrayList;

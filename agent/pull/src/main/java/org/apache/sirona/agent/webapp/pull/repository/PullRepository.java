@@ -27,9 +27,9 @@ import org.apache.sirona.repositories.DefaultRepository;
 import org.apache.sirona.repositories.Repository;
 import org.apache.sirona.status.NodeStatus;
 import org.apache.sirona.status.NodeStatusReporter;
-import org.apache.sirona.store.counter.memory.InMemoryCounterDataStore;
+import org.apache.sirona.store.memory.counter.InMemoryCounterDataStore;
 import org.apache.sirona.store.status.EmptyStatuses;
-import org.apache.sirona.store.tracking.InMemoryPathTrackingDataStore;
+import org.apache.sirona.store.memory.tracking.InMemoryPathTrackingDataStore;
 
 import java.util.Collection;
 import java.util.Collections;

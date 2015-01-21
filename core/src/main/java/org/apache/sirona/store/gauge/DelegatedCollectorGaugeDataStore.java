@@ -19,6 +19,7 @@ package org.apache.sirona.store.gauge;
 import org.apache.sirona.Role;
 import org.apache.sirona.SironaException;
 import org.apache.sirona.configuration.Configuration;
+import org.apache.sirona.store.memory.gauge.InMemoryGaugeDataStore;
 
 import java.lang.reflect.Constructor;
 import java.util.Collection;

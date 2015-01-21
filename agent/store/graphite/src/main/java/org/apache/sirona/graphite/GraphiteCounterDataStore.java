@@ -19,7 +19,7 @@ package org.apache.sirona.graphite;
 import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.counters.MetricData;
-import org.apache.sirona.store.counter.memory.BatchCounterDataStore;
+import org.apache.sirona.store.memory.counter.BatchCounterDataStore;
 
 import java.io.IOException;
 import java.util.Collection;

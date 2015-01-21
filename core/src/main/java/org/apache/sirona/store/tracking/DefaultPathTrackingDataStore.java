@@ -16,6 +16,8 @@
  */
 package org.apache.sirona.store.tracking;
 
+import org.apache.sirona.store.memory.tracking.InMemoryPathTrackingDataStore;
+
 /**
  *
  */

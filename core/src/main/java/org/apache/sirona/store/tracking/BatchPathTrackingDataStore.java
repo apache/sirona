@@ -20,6 +20,7 @@ package org.apache.sirona.store.tracking;
 import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.configuration.ioc.Created;
 import org.apache.sirona.store.BatchFuture;
+import org.apache.sirona.store.memory.tracking.InMemoryPathTrackingDataStore;
 import org.apache.sirona.util.DaemonThreadFactory;
 
 import java.util.List;

@@ -17,7 +17,7 @@
 package org.apache.sirona.pathtracking.test;
 
 import org.apache.sirona.pathtracking.PathTrackingEntry;
-import org.apache.sirona.store.tracking.InMemoryPathTrackingDataStore;
+import org.apache.sirona.store.memory.tracking.InMemoryPathTrackingDataStore;
 
 import java.util.Map;
 import java.util.Set;

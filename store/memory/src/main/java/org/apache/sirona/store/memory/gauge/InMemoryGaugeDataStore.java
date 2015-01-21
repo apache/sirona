@@ -14,10 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.store.gauge;
+package org.apache.sirona.store.memory.gauge;
 
 import org.apache.sirona.Role;
 import org.apache.sirona.configuration.Configuration;
+import org.apache.sirona.store.gauge.BatchGaugeDataStoreAdapter;
+import org.apache.sirona.store.gauge.GaugeValuesRequest;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -28,7 +30,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 
-public class InMemoryGaugeDataStore extends BatchGaugeDataStoreAdapter {
+public class InMemoryGaugeDataStore extends BatchGaugeDataStoreAdapter
+{
     protected final ConcurrentMap<Role, SortedMap<Long, Double>> gauges = new ConcurrentHashMap<Role, SortedMap<Long, Double>>();
     protected final Map<String, Role> roleMapping = new ConcurrentHashMap<String, Role>();
 

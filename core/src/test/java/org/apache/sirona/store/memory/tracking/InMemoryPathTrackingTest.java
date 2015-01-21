@@ -14,9 +14,10 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package org.apache.sirona.store.tracking;
+package org.apache.sirona.store.memory.tracking;
 
 import org.apache.sirona.pathtracking.PathTrackingEntry;
+import org.apache.sirona.store.memory.tracking.InMemoryPathTrackingDataStore;
 import org.junit.Assert;
 import org.junit.Test;
 

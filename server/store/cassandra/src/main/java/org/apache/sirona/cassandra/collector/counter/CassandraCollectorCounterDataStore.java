@@ -34,7 +34,7 @@ import org.apache.sirona.counters.Unit;
 import org.apache.sirona.math.M2AwareStatisticalSummary;
 import org.apache.sirona.store.counter.AggregatedCollectorCounter;
 import org.apache.sirona.store.counter.LeafCollectorCounter;
-import org.apache.sirona.store.counter.memory.InMemoryCollectorCounterStore;
+import org.apache.sirona.store.memory.counter.InMemoryCollectorCounterStore;
 
 import java.util.Collection;
 import java.util.HashMap;
