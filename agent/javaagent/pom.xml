@@ -48,6 +48,21 @@
     </dependency>
 
     <dependency>
+      <groupId>org.apache.sirona</groupId>
+      <artifactId>sirona-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.sirona</groupId>
+      <artifactId>sirona-core</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.sirona</groupId>
+      <artifactId>sirona-store-memory</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>org.ow2.asm</groupId>
       <artifactId>asm-all</artifactId>
       <version>${asm.version}</version>
@@ -92,6 +107,7 @@
       <version>2.4</version>
       <scope>test</scope>
     </dependency>
+
   </dependencies>
 
   <build>
@@ -154,6 +170,8 @@
                   <include>org.ow2.asm:asm-all</include>
                   <include>org.apache.sirona:sirona-aop</include>
                   <include>org.apache.sirona:sirona-core</include>
+                  <include>org.apache.sirona:sirona-api</include>
+                  <include>org.apache.sirona:sirona-store-memory</include>
                 </includes>
               </artifactSet>
             </configuration>

@@ -167,10 +167,11 @@ public class SironaAgent {
         }
     }
 
+    @IgnoreJRERequirement
     private static void addLib(final Instrumentation instrumentation, final StringBuilder out, final File f) {
         if (out != null) {
-            out.append("Added ").append(f.getAbsolutePath())
-                    .append(" to (instrumentation) classpath")
+            out.append("Added ").append(f.getAbsolutePath()) //
+                    .append(" to (instrumentation) classpath") //
                     .append(System.getProperty("line.separator"));
         }
         try {
@@ -183,7 +184,8 @@ public class SironaAgent {
     private static void debug(ClassLoader loader, String msg, Object... objects) {
         try
         {
-            Method method =loader.loadClass( "org.apache.sirona.javaagent.logging.SironaAgentLogging")
+            Method method =loader //
+                .loadClass( "org.apache.sirona.javaagent.logging.SironaAgentLogging") //
                     .getMethod( "debug", String.class, Object.class );
 
             method.invoke( null, msg, objects );
@@ -198,8 +200,8 @@ public class SironaAgent {
         try
         {
             return Boolean.class.cast(
-                loader.loadClass( "org.apache.sirona.javaagent.logging.SironaAgentLogging")
-                    .getField( "AGENT_DEBUG" )
+                loader.loadClass( "org.apache.sirona.javaagent.logging.SironaAgentLogging") //
+                    .getField( "AGENT_DEBUG" ) //
                     .get( null ) );
         }
         catch ( Exception e )
