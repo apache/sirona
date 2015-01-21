@@ -38,12 +38,10 @@ public abstract class CollectorCounter implements Counter, Serializable {
         reset();
     }
 
-    @Override
     public Key getKey() {
         return key;
     }
 
-    @Override
     public void reset() {
         final Lock workLock = lock.writeLock();
         workLock.lock();
@@ -54,22 +52,18 @@ public abstract class CollectorCounter implements Counter, Serializable {
         }
     }
 
-    @Override
     public void add(final double delta) {
         // no-op: this counter is updated through update method
     }
 
-    @Override
     public void add(final double delta, Unit unit) {
         add(key.getRole().getUnit().convert(delta, unit));
     }
 
-    @Override
     public AtomicInteger currentConcurrency() {
         return concurrency;
     }
 
-    @Override
     public void updateConcurrency(final int concurrency) {
         if (concurrency > maxConcurrency) {
             final Lock workLock = lock.writeLock();
@@ -82,7 +76,6 @@ public abstract class CollectorCounter implements Counter, Serializable {
         }
     }
 
-    @Override
     public int getMaxConcurrency() {
         final Lock workLock = lock.readLock();
         workLock.lock();
@@ -93,7 +86,6 @@ public abstract class CollectorCounter implements Counter, Serializable {
         }
     }
 
-    @Override
     public double getMax() {
         final Lock workLock = lock.readLock();
         workLock.lock();
@@ -104,7 +96,6 @@ public abstract class CollectorCounter implements Counter, Serializable {
         }
     }
 
-    @Override
     public double getMin() {
         final Lock workLock = lock.readLock();
         workLock.lock();
@@ -115,7 +106,6 @@ public abstract class CollectorCounter implements Counter, Serializable {
         }
     }
 
-    @Override
     public long getHits() {
         final Lock workLock = lock.readLock();
         workLock.lock();
@@ -126,7 +116,7 @@ public abstract class CollectorCounter implements Counter, Serializable {
         }
     }
 
-    @Override
+    
     public double getSum() {
         final Lock workLock = lock.readLock();
         workLock.lock();
@@ -137,7 +127,7 @@ public abstract class CollectorCounter implements Counter, Serializable {
         }
     }
 
-    @Override
+    
     public double getStandardDeviation() {
         final Lock workLock = lock.readLock();
         workLock.lock();
@@ -148,7 +138,7 @@ public abstract class CollectorCounter implements Counter, Serializable {
         }
     }
 
-    @Override
+    
     public double getVariance() {
         final Lock workLock = lock.readLock();
         workLock.lock();
@@ -159,7 +149,7 @@ public abstract class CollectorCounter implements Counter, Serializable {
         }
     }
 
-    @Override
+    
     public double getMean() {
         final Lock workLock = lock.readLock();
         workLock.lock();
@@ -170,7 +160,7 @@ public abstract class CollectorCounter implements Counter, Serializable {
         }
     }
 
-    @Override
+    
     public double getSecondMoment() {
         final Lock workLock = lock.readLock();
         workLock.lock();
@@ -181,7 +171,7 @@ public abstract class CollectorCounter implements Counter, Serializable {
         }
     }
 
-    @Override
+    
     public boolean equals(final Object o) {
         if (this == o) {
             return true;
@@ -194,7 +184,7 @@ public abstract class CollectorCounter implements Counter, Serializable {
         return key.equals(that.getKey());
     }
 
-    @Override
+    
     public int hashCode() {
         return key.hashCode();
     }
