@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.store.counter;
+package org.apache.sirona.store.counter.memory;
 
 import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.configuration.ioc.Destroying;
@@ -26,6 +26,7 @@ import org.apache.sirona.counters.jmx.CounterJMX;
 import org.apache.sirona.gauges.Gauge;
 import org.apache.sirona.gauges.counter.CounterGauge;
 import org.apache.sirona.repositories.Repository;
+import org.apache.sirona.store.counter.CounterDataStore;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -38,7 +39,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class InMemoryCounterDataStore implements CounterDataStore {
+public class InMemoryCounterDataStore implements CounterDataStore
+{
     protected final boolean gauged = Configuration.is(Configuration.CONFIG_PROPERTY_PREFIX + "counter.with-gauge", false);
     protected final boolean jmx = Configuration.is(Configuration.CONFIG_PROPERTY_PREFIX + "counter.with-jmx", false);
 

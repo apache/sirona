@@ -20,11 +20,12 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-public class BatchFuture {
+public class BatchFuture
+{
     private final ScheduledExecutorService executor;
     private final ScheduledFuture<?> task;
 
-    public BatchFuture(final ScheduledExecutorService ses, final ScheduledFuture<?> future) {
+    public BatchFuture( final ScheduledExecutorService ses, final ScheduledFuture<?> future ) {
         this.executor = ses;
         this.task = future;
     }

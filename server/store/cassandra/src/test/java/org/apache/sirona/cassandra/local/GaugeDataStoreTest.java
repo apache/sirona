@@ -17,14 +17,11 @@
 package org.apache.sirona.cassandra.local;
 
 import org.apache.sirona.Role;
-import org.apache.sirona.cassandra.agent.counter.CassandraCounterDataStore;
 import org.apache.sirona.cassandra.agent.gauge.CassandraGaugeDataStore;
 import org.apache.sirona.cassandra.framework.CassandraRunner;
 import org.apache.sirona.configuration.ioc.Created;
 import org.apache.sirona.configuration.ioc.IoCs;
-import org.apache.sirona.counters.Counter;
 import org.apache.sirona.gauges.Gauge;
-import org.apache.sirona.repositories.Repository;
 import org.apache.sirona.store.gauge.GaugeValuesRequest;
 import org.junit.Test;
 import org.junit.runner.RunWith;

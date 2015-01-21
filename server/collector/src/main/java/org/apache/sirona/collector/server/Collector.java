@@ -27,7 +27,6 @@ import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.TimeoutException;
 import com.lmax.disruptor.dsl.Disruptor;
 import com.lmax.disruptor.dsl.ProducerType;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.apache.sirona.Role;
 import org.apache.sirona.SironaException;
 import org.apache.sirona.collector.server.api.SSLSocketFactoryProvider;

@@ -24,8 +24,6 @@ import org.apache.sirona.counters.Counter;
 import org.apache.sirona.repositories.Repository;
 import org.apache.sirona.stopwatches.StopWatch;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.Locale;

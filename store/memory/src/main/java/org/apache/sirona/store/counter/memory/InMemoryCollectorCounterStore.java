@@ -14,17 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.store.counter;
+package org.apache.sirona.store.counter.memory;
 
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.math.M2AwareStatisticalSummary;
+import org.apache.sirona.store.counter.AggregatedCollectorCounter;
+import org.apache.sirona.store.counter.CollectorCounterStore;
+import org.apache.sirona.store.counter.LeafCollectorCounter;
 
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-public class InMemoryCollectorCounterStore extends InMemoryCounterDataStore implements CollectorCounterStore {
+public class InMemoryCollectorCounterStore extends InMemoryCounterDataStore implements CollectorCounterStore
+{
     private final ConcurrentMap<String, ConcurrentMap<Counter.Key, LeafCollectorCounter>> countersByMarker = new ConcurrentHashMap<String, ConcurrentMap<Counter.Key, LeafCollectorCounter>>();
 
     @Override

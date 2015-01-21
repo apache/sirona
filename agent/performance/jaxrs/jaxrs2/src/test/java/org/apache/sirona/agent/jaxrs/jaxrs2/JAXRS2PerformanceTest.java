@@ -20,7 +20,6 @@ import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebClient;
 import org.apache.catalina.startup.Constants;
 import org.apache.cxf.jaxrs.servlet.CXFNonSpringJaxrsServlet;
-import org.apache.sirona.Role;
 import org.apache.sirona.agent.jaxrs.jaxrs2.service.SimpleService;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.repositories.Repository;

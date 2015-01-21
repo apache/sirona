@@ -30,6 +30,13 @@
 
   <description>Contains some interfaces and classes of the Sirona Api</description>
 
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+    </dependency>
+  </dependencies>
+
   <profiles>
     <profile>
       <id>jenkins-1.5</id>

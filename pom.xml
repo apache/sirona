@@ -64,6 +64,7 @@
 
   <modules>
     <module>api</module>
+    <module>store</module>
     <module>core</module>
     <module>agent</module>
     <module>plugins</module>
@@ -397,6 +398,11 @@
       <dependency>
         <groupId>org.apache.sirona</groupId>
         <artifactId>sirona-core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.sirona</groupId>
+        <artifactId>sirona-store-memory</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.store.counter;
+package org.apache.sirona.store.counter.memory;
 
 import org.apache.sirona.Role;
 import org.apache.sirona.configuration.Configuration;
@@ -22,6 +22,7 @@ import org.apache.sirona.counters.Counter;
 import org.apache.sirona.counters.DefaultCounter;
 import org.apache.sirona.gauges.Gauge;
 import org.apache.sirona.repositories.Repository;
+import org.apache.sirona.store.counter.CounterDataStore;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;

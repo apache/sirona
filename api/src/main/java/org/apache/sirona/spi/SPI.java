@@ -22,5 +22,5 @@ import org.apache.sirona.configuration.ioc.IoCs;
 public interface SPI {
     SPI INSTANCE = IoCs.findOrCreateInstance(SPI.class);
 
-    <T> Iterable<T> find(Class<T> api, ClassLoader loader);
+    <T> Iterable<T> find( Class<T> api, ClassLoader loader );
 }

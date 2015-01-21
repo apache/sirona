@@ -17,7 +17,6 @@
 package org.apache.sirona.test.web;
 
 import com.gargoylesoftware.htmlunit.TextPage;
-import com.gargoylesoftware.htmlunit.WebClient;
 import org.apache.catalina.startup.Constants;
 import org.apache.sirona.Role;
 import org.apache.sirona.counters.Counter;

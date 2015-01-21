@@ -18,7 +18,7 @@ package org.apache.sirona.counters;
 
 import org.apache.sirona.Role;
 import org.apache.sirona.repositories.Repository;
-import org.apache.sirona.store.counter.BatchCounterDataStore;
+import org.apache.sirona.store.counter.memory.BatchCounterDataStore;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,17 +40,14 @@ public class ClearAfterCollectTest {
     public void clear() throws InterruptedException {
         final LinkedList<Integer> size = new LinkedList<Integer>();
         final BatchCounterDataStore store = new BatchCounterDataStore() {
-            @Override
             protected void pushCountersByBatch(final Collection<Counter> instance) {
                 size.add(instance.size());
             }
 
-            @Override
             protected int getPeriod(final String prefix) {
                 return 100;
             }
 
-            @Override
             protected boolean isClearAfterCollect(final String prefix) {
                 return true;
             }

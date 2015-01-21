@@ -16,18 +16,18 @@
  */
 package org.apache.sirona.store;
 
-import org.apache.sirona.store.counter.InMemoryCollectorCounterStore;
+import org.apache.sirona.configuration.ioc.IoCs;
+import org.apache.sirona.store.counter.CounterDataStore;
 import org.apache.sirona.store.gauge.DelegatedCollectorGaugeDataStore;
 import org.apache.sirona.store.status.InMemoryCollectorNodeStatusDataStore;
 import org.apache.sirona.store.tracking.DelegatedCollectorPathTrackingDataStore;
-import org.apache.sirona.store.tracking.InMemoryPathTrackingDataStore;
 
 public class CollectorDataStoreFactory
     extends DelegateDataStoreFactory
 {
     public CollectorDataStoreFactory()
     {
-        super( new InMemoryCollectorCounterStore(), //
+        super( IoCs.findOrCreateInstance( CounterDataStore.class ), //
                new DelegatedCollectorGaugeDataStore(), //
                new InMemoryCollectorNodeStatusDataStore(), //
                new DelegatedCollectorPathTrackingDataStore() );

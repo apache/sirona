@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.store.counter;
+package org.apache.sirona.store.counter.memory;
 
 import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.configuration.ioc.Destroying;

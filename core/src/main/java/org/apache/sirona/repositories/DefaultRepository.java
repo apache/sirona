@@ -45,7 +45,8 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.SortedMap;
 
-public class DefaultRepository implements Repository {
+public class DefaultRepository implements Repository
+{
     protected final CounterDataStore counterDataStore;
     protected final NodeStatusDataStore nodeStatusDataStore;
     protected final CommonGaugeDataStore gaugeDataStore;

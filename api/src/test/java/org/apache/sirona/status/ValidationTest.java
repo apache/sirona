@@ -19,37 +19,45 @@ package org.apache.sirona.status;
 import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.spi.SpiTestImpl;
 import org.apache.sirona.store.status.PeriodicNodeStatusDataStore;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Date;
 
-import static org.junit.Assert.assertEquals;
 
 public class ValidationTest {
     @Test
     public void globalStatus() {
         final Date date = new Date();
-        assertEquals(Status.OK, new NodeStatus(new ValidationResult[]{new ValidationResult(null, Status.OK, null)}, date).getStatus());
-        assertEquals(Status.KO, new NodeStatus(new ValidationResult[]{new ValidationResult(null, Status.KO, null)}, date).getStatus());
-        assertEquals(Status.DEGRADED, new NodeStatus(new ValidationResult[]{new ValidationResult(null, Status.DEGRADED, null)}, date).getStatus());
-        assertEquals(Status.KO, new NodeStatus(new ValidationResult[]{new ValidationResult(null, Status.DEGRADED, null), new ValidationResult(null, Status.KO, null)}, date).getStatus());
-        assertEquals(Status.DEGRADED, new NodeStatus(new ValidationResult[]{new ValidationResult(null, Status.DEGRADED, null), new ValidationResult(null, Status.OK, null)}, date).getStatus());
+        Assert.assertEquals( Status.OK,
+                             new NodeStatus( new ValidationResult[]{ new ValidationResult( null, Status.OK, null ) },
+                                             date ).getStatus() );
+        Assert.assertEquals( Status.KO,
+                             new NodeStatus( new ValidationResult[]{ new ValidationResult( null, Status.KO, null ) },
+                                             date ).getStatus() );
+        Assert.assertEquals( Status.DEGRADED, new NodeStatus(
+            new ValidationResult[]{ new ValidationResult( null, Status.DEGRADED, null ) }, date ).getStatus() );
+        Assert.assertEquals( Status.KO, new NodeStatus(
+            new ValidationResult[]{ new ValidationResult( null, Status.DEGRADED, null ),
+                new ValidationResult( null, Status.KO, null ) }, date ).getStatus() );
+        Assert.assertEquals( Status.DEGRADED, new NodeStatus(
+            new ValidationResult[]{ new ValidationResult( null, Status.DEGRADED, null ),
+                new ValidationResult( null, Status.OK, null ) }, date ).getStatus() );
     }
 
     @Test
     public void periodicNodeReporter() throws InterruptedException {
         final PeriodicNodeStatusDataStore store = IoCs.processInstance(new PeriodicNodeStatusDataStore() {
-            @Override
             protected int getPeriod(final String name) {
                 return 100;
             }
         });
         Thread.sleep(200);
-        assertEquals(Status.OK, store.statuses().values().iterator().next().getStatus());
+        Assert.assertEquals( Status.OK, store.statuses().values().iterator().next().getStatus() );
 
         SpiTestImpl.status = new ValidationResult("", Status.KO, "");
         Thread.sleep(200);
-        assertEquals(Status.KO, store.statuses().values().iterator().next().getStatus());
+        Assert.assertEquals( Status.KO, store.statuses().values().iterator().next().getStatus() );
         store.shutdown();
     }
 }
