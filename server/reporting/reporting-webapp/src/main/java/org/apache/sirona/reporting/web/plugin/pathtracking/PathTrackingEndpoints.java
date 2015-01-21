@@ -17,13 +17,13 @@
 package org.apache.sirona.reporting.web.plugin.pathtracking;
 
 import org.apache.sirona.configuration.ioc.IoCs;
+import org.apache.sirona.pathtracking.PathCallInformation;
+import org.apache.sirona.pathtracking.PathTrackingEntry;
 import org.apache.sirona.reporting.web.plugin.api.MapBuilder;
 import org.apache.sirona.reporting.web.plugin.api.Regex;
 import org.apache.sirona.reporting.web.plugin.api.Template;
 import org.apache.sirona.reporting.web.plugin.report.format.HTMLFormat;
 import org.apache.sirona.store.tracking.PathTrackingDataStore;
-import org.apache.sirona.tracking.PathCallInformation;
-import org.apache.sirona.tracking.PathTrackingEntry;
 import org.apache.sirona.util.Environment;
 
 import java.util.Calendar;

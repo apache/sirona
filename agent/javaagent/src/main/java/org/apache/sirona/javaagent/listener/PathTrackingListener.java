@@ -56,7 +56,7 @@ public class PathTrackingListener
     /**
      * executed before method called to configure the start {@link org.apache.sirona.pathtracking.PathTrackingInformation}
      * and set various thread local variable as invocation level
-     * will call {@link org.apache.sirona.pathtracking.PathTracker#start(org.apache.sirona.pathtracking.PathTrackingInformation)}
+     * will call {@link org.apache.sirona.tracking.PathTracker#start(org.apache.sirona.pathtracking.PathTrackingInformation)}
      *
      * @param context
      */

@@ -16,9 +16,10 @@
  */
 package org.apache.test.sirona.javaagent;
 
-import org.apache.sirona.tracking.Context;
-import org.apache.sirona.tracking.PathTrackingInformation;
-import org.apache.sirona.tracking.PathTrackingInvocationListener;
+
+import org.apache.sirona.pathtracking.Context;
+import org.apache.sirona.pathtracking.PathTrackingInformation;
+import org.apache.sirona.pathtracking.PathTrackingInvocationListener;
 
 import java.util.ArrayList;
 import java.util.List;

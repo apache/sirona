@@ -18,7 +18,7 @@ package org.apache.sirona.pathtracking.test;
 
 import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.store.DelegateDataStoreFactory;
-import org.apache.sirona.store.counter.InMemoryCounterDataStore;
+import org.apache.sirona.store.counter.memory.InMemoryCounterDataStore;
 import org.apache.sirona.store.gauge.InMemoryGaugeDataStore;
 import org.apache.sirona.store.status.PeriodicNodeStatusDataStore;
 

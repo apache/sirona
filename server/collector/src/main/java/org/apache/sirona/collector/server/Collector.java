@@ -36,6 +36,7 @@ import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.counters.Unit;
 import org.apache.sirona.math.M2AwareStatisticalSummary;
+import org.apache.sirona.pathtracking.PathTrackingEntry;
 import org.apache.sirona.repositories.Repository;
 import org.apache.sirona.status.NodeStatus;
 import org.apache.sirona.status.Status;
@@ -46,7 +47,6 @@ import org.apache.sirona.store.gauge.CollectorGaugeDataStore;
 import org.apache.sirona.store.status.CollectorNodeStatusDataStore;
 import org.apache.sirona.store.status.NodeStatusDataStore;
 import org.apache.sirona.store.tracking.CollectorPathTrackingDataStore;
-import org.apache.sirona.tracking.PathTrackingEntry;
 import org.apache.sirona.util.DaemonThreadFactory;
 import org.apache.sirona.util.SerializeUtils;
 
