@@ -573,6 +573,10 @@
   <profiles>
     <profile>
       <id>jenkins</id>
+      <properties>
+        <maven.compiler.source>1.5</maven.compiler.source>
+        <maven.compiler.target>1.5</maven.compiler.target>
+      </properties>
       <build>
         <plugins>
           <plugin>
