@@ -24,27 +24,10 @@
     <version>0.3_1.5-incubating-SNAPSHOT</version>
   </parent>
 
-  <artifactId>sirona-core</artifactId>
+  <artifactId>sirona-api</artifactId>
   <packaging>jar</packaging>
-  <name>Apache Sirona Incubator :: Core</name>
+  <name>Apache Sirona Incubator :: Api</name>
 
-  <dependencies>
+  <description>Contains some interfaces and classes of the Sirona Api</description>
 
-    <dependency>
-      <groupId>org.apache.sirona</groupId>
-      <artifactId>sirona-api</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-math3</artifactId>
-      <version>3.2</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
 </project>

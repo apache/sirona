@@ -21,8 +21,6 @@ import org.apache.sirona.counters.Unit;
 
 import java.io.Serializable;
 
-import static org.apache.sirona.counters.Unit.Time.NANOSECOND;
-
 /**
  * As a monitored resource may have multipe Metrics, each one has a dedicated 'role' that
  * defines the type of data or the monitored aspect it handles.
@@ -30,10 +28,10 @@ import static org.apache.sirona.counters.Unit.Time.NANOSECOND;
  *
  */
 public class Role implements Comparable<Role>, Serializable {
-    public static final Role WEB = new Role("web", NANOSECOND);
-    public static final Role JSP = new Role("jsp", NANOSECOND);
-    public static final Role JDBC = new Role("jdbc", NANOSECOND);
-    public static final Role PERFORMANCES = new Role("performances", NANOSECOND);
+    public static final Role WEB = new Role("web", Unit.Time.NANOSECOND);
+    public static final Role JSP = new Role("jsp", Unit.Time.NANOSECOND);
+    public static final Role JDBC = new Role("jdbc", Unit.Time.NANOSECOND);
+    public static final Role PERFORMANCES = new Role("performances", Unit.Time.NANOSECOND);
     public static final Role FAILURES = new Role("failures", Unit.UNARY);
 
     private final String name;
