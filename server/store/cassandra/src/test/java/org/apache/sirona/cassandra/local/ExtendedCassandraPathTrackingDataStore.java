@@ -25,7 +25,7 @@ import me.prettyprint.hector.api.factory.HFactory;
 import me.prettyprint.hector.api.query.QueryResult;
 import org.apache.sirona.cassandra.DynamicDelegatedSerializer;
 import org.apache.sirona.cassandra.collector.pathtracking.CassandraPathTrackingDataStore;
-import org.apache.sirona.tracking.PathTrackingEntry;
+import org.apache.sirona.pathtracking.PathTrackingEntry;
 
 import java.util.Map;
 import java.util.Set;
@@ -43,7 +43,7 @@ public class ExtendedCassandraPathTrackingDataStore
      * <b>use with CAUTION as can return a lot of data</b>
      * <p>This method is use for testing purpose</p>
      *
-     * @return {@link java.util.List} containing all {@link org.apache.sirona.tracking.PathTrackingEntry}
+     * @return {@link java.util.List} containing all {@link org.apache.sirona.pathtracking.PathTrackingEntry}
      */
     public Map<String, Set<PathTrackingEntry>> retrieveAll()
     {

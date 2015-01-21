@@ -29,9 +29,9 @@ import org.apache.sirona.configuration.ioc.AutoSet;
 import org.apache.sirona.configuration.ioc.Created;
 import org.apache.sirona.configuration.ioc.Destroying;
 import org.apache.sirona.configuration.ioc.IoCs;
+import org.apache.sirona.pathtracking.PathTrackingEntry;
 import org.apache.sirona.store.tracking.BatchPathTrackingDataStore;
 import org.apache.sirona.store.tracking.CollectorPathTrackingDataStore;
-import org.apache.sirona.tracking.PathTrackingEntry;
 import org.apache.sirona.util.SerializeUtils;
 
 import java.util.List;

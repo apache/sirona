@@ -54,6 +54,7 @@ public abstract class CollectorCounter implements Counter, Serializable {
 
     public void add(final double delta) {
         // no-op: this counter is updated through update method
+        System.out.println( "add " + delta );
     }
 
     public void add(final double delta, Unit unit) {

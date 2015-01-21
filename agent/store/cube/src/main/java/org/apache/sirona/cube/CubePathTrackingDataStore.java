@@ -20,9 +20,9 @@ package org.apache.sirona.cube;
 import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.configuration.ioc.Destroying;
 import org.apache.sirona.configuration.ioc.IoCs;
+import org.apache.sirona.pathtracking.PathTrackingEntry;
 import org.apache.sirona.store.tracking.BatchPathTrackingDataStore;
 import org.apache.sirona.store.tracking.CollectorPathTrackingDataStore;
-import org.apache.sirona.tracking.PathTrackingEntry;
 import org.apache.sirona.util.SerializeUtils;
 
 import java.util.List;

@@ -33,12 +33,12 @@ import org.apache.sirona.cassandra.DynamicDelegatedSerializer;
 import org.apache.sirona.cassandra.collector.CassandraSirona;
 import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.configuration.ioc.IoCs;
+import org.apache.sirona.pathtracking.PathCallInformation;
+import org.apache.sirona.pathtracking.PathTrackingEntry;
+import org.apache.sirona.pathtracking.PathTrackingEntryComparator;
 import org.apache.sirona.store.tracking.BatchPathTrackingDataStore;
 import org.apache.sirona.store.tracking.CollectorPathTrackingDataStore;
 import org.apache.sirona.store.tracking.PathTrackingDataStore;
-import org.apache.sirona.tracking.PathCallInformation;
-import org.apache.sirona.tracking.PathTrackingEntry;
-import org.apache.sirona.tracking.PathTrackingEntryComparator;
 
 import java.util.Collection;
 import java.util.Collections;

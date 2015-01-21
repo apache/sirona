@@ -17,7 +17,7 @@
 package org.apache.sirona.agent.webapp.pull.store;
 
 import org.apache.sirona.store.DelegateDataStoreFactory;
-import org.apache.sirona.store.counter.InMemoryCounterDataStore;
+import org.apache.sirona.store.counter.memory.InMemoryCounterDataStore;
 import org.apache.sirona.store.gauge.InMemoryGaugeDataStore;
 import org.apache.sirona.store.status.EmptyStatuses;
 import org.apache.sirona.store.tracking.InMemoryPathTrackingDataStore;

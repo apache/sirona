@@ -33,17 +33,21 @@ import org.apache.sirona.counters.Counter;
 import org.apache.sirona.counters.Unit;
 import org.apache.sirona.math.M2AwareStatisticalSummary;
 import org.apache.sirona.store.counter.AggregatedCollectorCounter;
-import org.apache.sirona.store.counter.InMemoryCollectorCounterStore;
 import org.apache.sirona.store.counter.LeafCollectorCounter;
+import org.apache.sirona.store.counter.memory.InMemoryCollectorCounterStore;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import static org.apache.sirona.cassandra.collector.CassandraSirona.*;
+import static org.apache.sirona.cassandra.collector.CassandraSirona.keys;
+import static org.apache.sirona.cassandra.collector.CassandraSirona.column;
+import static org.apache.sirona.cassandra.collector.CassandraSirona.getOrDefault;
+import static org.apache.sirona.cassandra.collector.CassandraSirona.emptyColumn;
 
-public class CassandraCollectorCounterDataStore extends InMemoryCollectorCounterStore {
+public class CassandraCollectorCounterDataStore extends InMemoryCollectorCounterStore
+{
     private final Keyspace keyspace;
     private final String family;
     private final String markerFamily;

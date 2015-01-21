@@ -104,7 +104,10 @@ public class DynamicInterceptionTest {
 
         @Override
         protected ActivationContext doFindContext(final Long invocation) {
-            return putAndGetActivationContext(extractContextKey(null), new ActivationContext(true, TimeUnit.MILLISECONDS.toNanos(THRESHOLD), MAX_IT));
+            return putAndGetActivationContext(extractContextKey(null), //
+                                              new ActivationContext(true, //
+                                                                    TimeUnit.MILLISECONDS.toNanos(THRESHOLD), //
+                                                                    MAX_IT));
         }
     }
 }

@@ -18,9 +18,9 @@ package org.apache.sirona.cube;
 
 import org.apache.sirona.Role;
 import org.apache.sirona.counters.Counter;
+import org.apache.sirona.pathtracking.PathTrackingEntry;
 import org.apache.sirona.status.NodeStatus;
 import org.apache.sirona.status.ValidationResult;
-import org.apache.sirona.tracking.PathTrackingEntry;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSocketFactory;

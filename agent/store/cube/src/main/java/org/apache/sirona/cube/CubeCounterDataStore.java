@@ -18,11 +18,12 @@ package org.apache.sirona.cube;
 
 import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.counters.Counter;
-import org.apache.sirona.store.counter.BatchCounterDataStore;
+import org.apache.sirona.store.counter.memory.BatchCounterDataStore;
 
 import java.util.Collection;
 
-public class CubeCounterDataStore extends BatchCounterDataStore {
+public class CubeCounterDataStore extends BatchCounterDataStore
+{
     private final Cube cube = IoCs.findOrCreateInstance(CubeBuilder.class).build();
 
     @Override

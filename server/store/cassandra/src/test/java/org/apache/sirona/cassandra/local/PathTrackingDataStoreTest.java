@@ -23,8 +23,8 @@ import org.apache.sirona.cassandra.collector.pathtracking.CassandraPathTrackingD
 import org.apache.sirona.cassandra.framework.CassandraRunner;
 import org.apache.sirona.cassandra.framework.CassandraTestInject;
 import org.apache.sirona.configuration.ioc.IoCs;
-import org.apache.sirona.tracking.PathCallInformation;
-import org.apache.sirona.tracking.PathTrackingEntry;
+import org.apache.sirona.pathtracking.PathCallInformation;
+import org.apache.sirona.pathtracking.PathTrackingEntry;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;

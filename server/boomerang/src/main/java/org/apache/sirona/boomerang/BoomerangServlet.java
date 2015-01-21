@@ -29,7 +29,7 @@ import org.apache.sirona.repositories.Repository;
 import org.apache.sirona.store.BatchFuture;
 import org.apache.sirona.store.counter.CollectorCounterStore;
 import org.apache.sirona.store.counter.CounterDataStore;
-import org.apache.sirona.store.counter.InMemoryCounterDataStore;
+import org.apache.sirona.store.counter.memory.InMemoryCounterDataStore;
 import org.apache.sirona.util.DaemonThreadFactory;
 
 import javax.servlet.ServletConfig;
@@ -183,7 +183,8 @@ public class BoomerangServlet extends HttpServlet {
         }
     }
 
-    private static class InitializedCounterDataStore extends InMemoryCounterDataStore {
+    private static class InitializedCounterDataStore extends InMemoryCounterDataStore
+    {
         private final CollectorCounterStore delegate;
 
         public InitializedCounterDataStore(final CollectorCounterStore collectorCounterStore) {

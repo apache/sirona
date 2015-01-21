@@ -21,7 +21,7 @@ import org.apache.sirona.configuration.ioc.AutoSet;
 import org.apache.sirona.configuration.ioc.Created;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.math.M2AwareStatisticalSummary;
-import org.apache.sirona.store.counter.BatchCounterDataStore;
+import org.apache.sirona.store.counter.memory.BatchCounterDataStore;
 import org.apache.sirona.util.Localhosts;
 
 import java.util.Collection;
@@ -29,7 +29,8 @@ import java.util.HashSet;
 import java.util.logging.Logger;
 
 @AutoSet // for marker
-public class CassandraCounterDataStore extends BatchCounterDataStore {
+public class CassandraCounterDataStore extends BatchCounterDataStore
+{
     private static final Logger LOGGER = Logger.getLogger(CassandraCounterDataStore.class.getName());
 
     private final CassandraCollectorCounterDataStore delegate = new CassandraCollectorCounterDataStore();

@@ -56,8 +56,8 @@ public class DefaultRepository implements Repository
         this(findCounterDataStore(), findGaugeDataStore(), findStatusDataStore(), findPathTrackingDataStore());
     }
 
-    protected DefaultRepository(final CounterDataStore counter, final CommonGaugeDataStore gauge, final NodeStatusDataStore status,
-                                final PathTrackingDataStore pathTrackingDataStore) {
+    protected DefaultRepository(final CounterDataStore counter, final CommonGaugeDataStore gauge, //
+                                final NodeStatusDataStore status, final PathTrackingDataStore pathTrackingDataStore) {
         this.counterDataStore = counter;
         this.gaugeDataStore = gauge;
         this.nodeStatusDataStore = status;

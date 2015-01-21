@@ -19,14 +19,15 @@ package org.apache.sirona.graphite;
 import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.counters.MetricData;
-import org.apache.sirona.store.counter.BatchCounterDataStore;
+import org.apache.sirona.store.counter.memory.BatchCounterDataStore;
 
 import java.io.IOException;
 import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class GraphiteCounterDataStore extends BatchCounterDataStore {
+public class GraphiteCounterDataStore extends BatchCounterDataStore
+{
     private static final Logger LOGGER = Logger.getLogger(GraphiteCounterDataStore.class.getName());
 
     private static final String COUNTER_PREFIX = "counter-";
