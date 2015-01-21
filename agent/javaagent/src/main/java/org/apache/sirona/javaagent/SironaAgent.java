@@ -16,6 +16,8 @@
  */
 package org.apache.sirona.javaagent;
 
+import org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.lang.instrument.Instrumentation;
@@ -38,6 +40,7 @@ public class SironaAgent {
     }
 
     // all is done by reflection cause we change classloader to be able to enhance JVM too
+    @IgnoreJRERequirement
     public static void agentmain(final String agentArgs, final Instrumentation instrumentation) {
 
         // just to get information on weird issues :-)

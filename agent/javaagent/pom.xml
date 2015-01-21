@@ -32,6 +32,7 @@
     <sirona.agent.debug>false</sirona.agent.debug>
     <asm.version>5.0.3</asm.version>
     <agent.class>org.apache.sirona.javaagent.SironaAgent</agent.class>
+    <java.runtime>15</java.runtime>
   </properties>
 
   <dependencies>
@@ -50,6 +51,11 @@
       <groupId>org.ow2.asm</groupId>
       <artifactId>asm-all</artifactId>
       <version>${asm.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.codehaus.mojo</groupId>
+      <artifactId>animal-sniffer-annotations</artifactId>
     </dependency>
 
     <dependency>
