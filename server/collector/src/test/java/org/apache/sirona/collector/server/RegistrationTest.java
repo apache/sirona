@@ -102,7 +102,7 @@ public class RegistrationTest {
                 }
             });
 
-            Thread.sleep(600);
+            Thread.sleep( 600 );
 
             final Collection<Counter> counters = Repository.INSTANCE.counters();
             assertEquals(counters.toString(), 3, counters.size());
@@ -133,13 +133,13 @@ public class RegistrationTest {
             try {
                 final ServerBootstrap bootstrap = new ServerBootstrap();
                 bootstrap
-                    .option(ChannelOption.SO_REUSEADDR, true)
-                    .option(ChannelOption.SO_SNDBUF, 1024)
-                    .option(ChannelOption.TCP_NODELAY, true)
-                    .group(workerGroup)
-                    .channel(NioServerSocketChannel.class)
-                    .childHandler(new Initializer())
-                    .bind(host, port).addListener(new ChannelFutureListener() {
+                    .option(ChannelOption.SO_REUSEADDR, true) //
+                    .option(ChannelOption.SO_SNDBUF, 1024) //
+                    .option(ChannelOption.TCP_NODELAY, true) //
+                    .group(workerGroup) //
+                    .channel(NioServerSocketChannel.class) //
+                    .childHandler(new Initializer()) //
+                    .bind( host, port ).addListener(new ChannelFutureListener() {
                         @Override
                         public void operationComplete(final ChannelFuture future) throws Exception {
                             if (!future.isSuccess()) {
@@ -166,11 +166,11 @@ public class RegistrationTest {
                 final ChannelPipeline pipeline = ch.pipeline();
 
                 pipeline
-                    .addLast("decoder", new HttpRequestDecoder())
-                    .addLast("aggregator", new HttpObjectAggregator(Integer.MAX_VALUE))
-                    .addLast("encoder", new HttpResponseEncoder())
-                    .addLast("chunked-writer", new ChunkedWriteHandler())
-                    .addLast("server", new RequestHandler());
+                    .addLast("decoder", new HttpRequestDecoder()) //
+                    .addLast("aggregator", new HttpObjectAggregator(Integer.MAX_VALUE)) //
+                    .addLast("encoder", new HttpResponseEncoder()) //
+                    .addLast("chunked-writer", new ChunkedWriteHandler()) //
+                    .addLast( "server", new RequestHandler() );
             }
         }
 
@@ -186,10 +186,12 @@ public class RegistrationTest {
                 }
 
                 done.set(true);
-                ctx.writeAndFlush(new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, Unpooled.copiedBuffer(("" +
+                ctx.writeAndFlush(new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, //
+                                                              HttpResponseStatus.OK, //
+                                                              Unpooled.copiedBuffer(("" +
                     "[{\"type\": \"counter\",\"time\": \"2013-11-07T10:31:13Z\",\"data\": {\"min\":2.0,\"unit\":\"ns\",\"hits\":1,\"max\":2.0,\"marker\":\"ubuntu\",\"name\":\"counter#2\",\"concurrency\":0,\"m2\":0.0,\"sum\":2.0,\"mean\":2.0,\"role\":\"performances\",\"variance\":0.0}},{\"type\": \"counter\",\"time\": \"2013-11-07T10:31:13Z\",\"data\": {\"min\":0.0,\"unit\":\"ns\",\"hits\":1,\"max\":0.0,\"marker\":\"ubuntu\",\"name\":\"counter#0\",\"concurrency\":0,\"m2\":0.0,\"sum\":0.0,\"mean\":0.0,\"role\":\"performances\",\"variance\":0.0}},{\"type\": \"counter\",\"time\": \"2013-11-07T10:31:13Z\",\"data\": {\"min\":1.0,\"unit\":\"ns\",\"hits\":1,\"max\":1.0,\"marker\":\"ubuntu\",\"name\":\"counter#1\",\"concurrency\":0,\"m2\":0.0,\"sum\":1.0,\"mean\":1.0,\"role\":\"performances\",\"variance\":0.0}},{\"type\": \"gauge\",\"time\": \"2013-11-07T10:31:13Z\",\"data\": {\"unit\":\"u\",\"marker\":\"ubuntu\",\"value\":0.87,\"role\":\"CPU\"}},{\"type\": \"gauge\",\"time\": \"2013-11-07T10:31:13Z\",\"data\": {\"unit\":\"u\",\"marker\":\"ubuntu\",\"value\":1.0245232E7,\"role\":\"Used Memory\"}},{\"type\": \"gauge\",\"time\": \"2013-11-07T10:31:13Z\",\"data\": {\"unit\":\"u\",\"marker\":\"ubuntu\",\"value\":0.0,\"role\":\"gaugerole\"}},{\"type\": \"validation\",\"time\": \"2013-11-07T10:31:13Z\",\"data\": {\"message\":\"descr\",\"marker\":\"ubuntu\",\"status\":\"OK\",\"name\":\"fake\"}},{\"type\": \"validation\",\"time\": \"2013-11-07T10:31:13Z\",\"data\": {\"message\":\"descr\",\"marker\":\"ubuntu\",\"status\":\"OK\",\"name\":\"refake\"}}]" +
                     "").getBytes())))
-                    .addListener(ChannelFutureListener.CLOSE);
+                    .addListener( ChannelFutureListener.CLOSE );
             }
         }
     }
