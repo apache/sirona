@@ -14,13 +14,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.spi;
+package org.apache.sirona.util;
 
-import org.apache.sirona.util.SironaServiceLoader;
+import java.util.Iterator;
 
-public class DefaultSPI implements SPI {
+/**
+ * This class is a wrapper on the top of ServiceLoader (reverting on internal impl if 1.6 not available)
+ *
+ * @since 0.3
+ */
+public class SironaServiceLoader<S>
+    implements Iterable<S>
+{
+
+    private Class<S> service;
+
+    private ClassLoader loader;
+
+    private SironaServiceLoader( Class<S> service, ClassLoader loader )
+    {
+        this.service = service;
+        this.loader = loader;
+    }
+
+    public static <S> SironaServiceLoader<S> load( Class<S> service, ClassLoader loader )
+    {
+        return new SironaServiceLoader<S>( service, loader );
+    }
+
     @Override
-    public <T> Iterable<T> find(final Class<T> api, final ClassLoader loader) {
-        return SironaServiceLoader.load( api, loader );
+    public Iterator<S> iterator()
+    {
+        return java.util.ServiceLoader.load( this.service, this.loader ).iterator();
     }
 }

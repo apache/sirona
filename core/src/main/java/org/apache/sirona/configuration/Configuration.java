@@ -16,12 +16,13 @@
  */
 package org.apache.sirona.configuration;
 
+import org.apache.sirona.util.SironaServiceLoader;
+
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
-import java.util.ServiceLoader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -47,7 +48,8 @@ public final class Configuration {
             if (classLoader == null) { // ServiceLoader fallbacks to it normally but ensure it is portable
                 classLoader = ClassLoader.getSystemClassLoader();
             }
-            for (final ConfigurationProvider provider : ServiceLoader.load(ConfigurationProvider.class, classLoader)) {
+            for (final ConfigurationProvider provider : SironaServiceLoader.load( ConfigurationProvider.class, //
+                                                                                  Configuration.class.getClassLoader() )) {
                 providers.add(provider);
             }
             Collections.sort(providers, Sorter.INSTANCE);
