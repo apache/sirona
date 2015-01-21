@@ -17,7 +17,7 @@
 package org.apache.sirona.store;
 
 import org.apache.sirona.configuration.ioc.IoCs;
-import org.apache.sirona.store.counter.CounterDataStore;
+import org.apache.sirona.store.counter.memory.InMemoryCounterDataStore;
 import org.apache.sirona.store.gauge.InMemoryGaugeDataStore;
 import org.apache.sirona.store.status.PeriodicNodeStatusDataStore;
 import org.apache.sirona.store.tracking.InMemoryPathTrackingDataStore;
@@ -25,15 +25,9 @@ import org.apache.sirona.store.tracking.InMemoryPathTrackingDataStore;
 public class DefaultDataStoreFactory extends DelegateDataStoreFactory {
     public DefaultDataStoreFactory() {
         super(
-
-            IoCs.processInstance(
-                // olamy we should normally but due to some bad design it's a chicken and eggs issue
-                // FIXME
-                // IoCs.findOrCreateInstance( CounterDataStore.class )),
-                IoCs.getInstance( CounterDataStore.class, //
-                                  "org.apache.sirona.store.counter.memory.InMemoryCollectorCounterStore" )),
-            IoCs.processInstance(new InMemoryGaugeDataStore()),
-            IoCs.processInstance(new PeriodicNodeStatusDataStore()),
+            IoCs.processInstance( new InMemoryCounterDataStore() ), //
+            IoCs.processInstance(new InMemoryGaugeDataStore()), //
+            IoCs.processInstance(new PeriodicNodeStatusDataStore()), //
             IoCs.processInstance( new InMemoryPathTrackingDataStore() ));
     }
 }
