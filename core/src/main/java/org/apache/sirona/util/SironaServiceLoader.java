@@ -51,6 +51,7 @@ public class SironaServiceLoader<S>
         } catch ( Throwable t)
         {
             t.printStackTrace();
+            return null;
         }
     }
 }
