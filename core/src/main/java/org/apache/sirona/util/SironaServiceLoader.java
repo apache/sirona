@@ -45,6 +45,12 @@ public class SironaServiceLoader<S>
     @Override
     public Iterator<S> iterator()
     {
-        return java.util.ServiceLoader.load( this.service, this.loader ).iterator();
+        try
+        {
+            return java.util.ServiceLoader.load( this.service, this.loader ).iterator();
+        } catch ( Throwable t)
+        {
+            t.printStackTrace();
+        }
     }
 }
