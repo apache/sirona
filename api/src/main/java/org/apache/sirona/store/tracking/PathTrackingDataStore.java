@@ -16,8 +16,9 @@
  */
 package org.apache.sirona.store.tracking;
 
-import org.apache.sirona.tracking.PathCallInformation;
-import org.apache.sirona.tracking.PathTrackingEntry;
+
+import org.apache.sirona.pathtracking.PathCallInformation;
+import org.apache.sirona.pathtracking.PathTrackingEntry;
 
 import java.util.Collection;
 import java.util.Date;
@@ -38,7 +39,7 @@ public interface PathTrackingDataStore
      * <b>the result will be orderer by startTime</b>
      *
      * @param trackingId
-     * @return {@link List} of {@link org.apache.sirona.tracking.PathTrackingEntry} related to a tracking id
+     * @return {@link List} of {@link org.apache.sirona.pathtracking.PathTrackingEntry} related to a tracking id
      */
     Collection<PathTrackingEntry> retrieve( String trackingId );
 
@@ -49,7 +50,7 @@ public interface PathTrackingDataStore
     /**
      * @param startTime
      * @param endTime
-     * @return {@link org.apache.sirona.tracking.PathCallInformation} of all trackingIds available in the system between startTime and endTime
+     * @return {@link org.apache.sirona.pathtracking.PathCallInformation} of all trackingIds available in the system between startTime and endTime
      */
     Collection<PathCallInformation> retrieveTrackingIds( Date startTime, Date endTime );
 

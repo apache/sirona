@@ -23,4 +23,5 @@ package org.apache.sirona.store.tracking;
 public interface CollectorPathTrackingDataStore
     extends PathTrackingDataStore
 {
+    // no op
 }

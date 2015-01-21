@@ -20,13 +20,11 @@ package org.apache.sirona.store.tracking;
 import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.configuration.ioc.Created;
 import org.apache.sirona.store.BatchFuture;
-import org.apache.sirona.tracking.PathTrackingEntry;
 import org.apache.sirona.util.DaemonThreadFactory;
 
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;

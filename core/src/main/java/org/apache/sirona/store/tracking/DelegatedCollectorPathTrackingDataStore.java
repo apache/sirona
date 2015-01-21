@@ -17,8 +17,8 @@
 package org.apache.sirona.store.tracking;
 
 import org.apache.sirona.configuration.ioc.IoCs;
-import org.apache.sirona.tracking.PathCallInformation;
-import org.apache.sirona.tracking.PathTrackingEntry;
+import org.apache.sirona.pathtracking.PathCallInformation;
+import org.apache.sirona.pathtracking.PathTrackingEntry;
 
 import java.util.Collection;
 import java.util.Date;

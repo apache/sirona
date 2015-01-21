@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.tracking;
+package org.apache.sirona.pathtracking;
 
 import java.util.Comparator;
 

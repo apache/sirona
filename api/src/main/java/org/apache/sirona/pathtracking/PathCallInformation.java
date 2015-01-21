@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.sirona.tracking;
+package org.apache.sirona.pathtracking;
 
 import java.io.Serializable;
 import java.util.Comparator;
