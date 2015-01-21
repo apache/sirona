@@ -16,6 +16,7 @@
  */
 package org.apache.sirona.aop;
 
+import org.apache.sirona.counters.Counter;
 import org.apache.sirona.repositories.Repository;
 import org.junit.After;
 import org.junit.Before;
@@ -24,9 +25,7 @@ import org.junit.Test;
 import java.lang.reflect.Method;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class DynamicInterceptionTest {
 
@@ -47,8 +46,9 @@ public class DynamicInterceptionTest {
         assertFalse(repository.counters().iterator().hasNext());
 
         interceptor.invoke(THRESHOLD * 5);
-        assertTrue(repository.counters().iterator().hasNext());
-        assertEquals(1, repository.counters().iterator().next().getHits());
+        Counter counter = repository.counters().iterator().next();
+        assertNotNull( counter );
+        assertEquals(1, counter.getHits());
         assertEquals("dynamic", repository.counters().iterator().next().getKey().getName());
 
         interceptor.invoke(THRESHOLD / 20);
