@@ -109,8 +109,8 @@ public class SironaServiceLoader<S>
             while ( line != null )
             {
                 line = line.trim();
-                // we ignore line starting with comments
-                if ( !line.startsWith( "#" ) )
+                // we ignore line starting with comments or empty
+                if ( !line.startsWith( "#" ) && line.length() > 0 )
                 {
                     classNames.add( line );
                 }
