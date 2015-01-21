@@ -50,7 +50,25 @@ public class SironaServiceLoader<S>
         try
         {
             return java.util.ServiceLoader.load( this.service, this.loader ).iterator();
-        } catch ( Throwable t)
+        }
+        catch ( Throwable t )
+        {
+            t.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * this method mimic the 1.6 ServiceLoader if you don't need 1.5 do not use that :-)
+     * @return
+     */
+    public Iterator<S> iterator1_5()
+    {
+        try
+        {
+            return null;
+        }
+        catch ( Throwable t )
         {
             t.printStackTrace();
             return null;
