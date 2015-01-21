@@ -65,12 +65,12 @@ public class Role implements Comparable<Role>, Serializable {
     /**
      * @see java.lang.Object#hashCode()
      */
-    @Override
+    
     public int hashCode() {
         return name.hashCode();
     }
 
-    @Override
+    
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -87,12 +87,12 @@ public class Role implements Comparable<Role>, Serializable {
     /**
      * {@inheritDoc}
      */
-    @Override
+    
     public int compareTo(final Role o) {
         return name.compareTo(o.name);
     }
 
-    @Override
+    
     public String toString() {
         return "Role{" + "name='" + name + '\'' + ", unit=" + unit + '}';
     }
