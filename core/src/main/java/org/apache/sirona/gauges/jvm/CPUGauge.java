@@ -22,19 +22,53 @@ import org.apache.sirona.gauges.Gauge;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
+import java.lang.reflect.Method;
 
-public class CPUGauge implements Gauge {
-    public static final Role CPU = new Role("CPU", Unit.UNARY);
+public class CPUGauge
+    implements Gauge
+{
+    public static final Role CPU = new Role( "CPU", Unit.UNARY );
 
     private static final OperatingSystemMXBean SYSTEM_MX_BEAN = ManagementFactory.getOperatingSystemMXBean();
 
+    private Method method;
+
+    public CPUGauge()
+    {
+        // get method if 1.6
+        try
+        {
+            method = OperatingSystemMXBean.class.getMethod( "getSystemLoadAverage", null );
+        }
+        catch ( NoSuchMethodException e )
+        {
+            //
+        }
+
+    }
+
     @Override
-    public Role role() {
+    public Role role()
+    {
         return CPU;
     }
 
     @Override
-    public double value() {
-        return SYSTEM_MX_BEAN.getSystemLoadAverage();
+    public double value()
+    {
+        // 1.5 compat
+        //return SYSTEM_MX_BEAN.getSystemLoadAverage();
+        if ( this.method == null )
+        {
+            return -1;
+        }
+        try
+        {
+            return (Double) method.invoke( SYSTEM_MX_BEAN, null );
+        }
+        catch ( Exception e )
+        {
+            return -1;
+        }
     }
 }

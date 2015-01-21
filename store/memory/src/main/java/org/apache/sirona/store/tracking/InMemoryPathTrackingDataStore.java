@@ -21,6 +21,7 @@ import org.apache.sirona.pathtracking.PathTrackingEntry;
 import org.apache.sirona.pathtracking.PathTrackingEntryComparator;
 import org.apache.sirona.util.SerializeUtils;
 import org.apache.sirona.store.counter.memory.util.UnsafeUtils;
+import org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -145,6 +146,7 @@ public class InMemoryPathTrackingDataStore
         return entries;
     }
 
+    @IgnoreJRERequirement
     public byte[] readBytes( Pointer pointer )
     {
         byte[] bytes = new byte[pointer.size];
@@ -175,6 +177,7 @@ public class InMemoryPathTrackingDataStore
             return offheapPointer;
         }
 
+        @IgnoreJRERequirement
         public void freeMemory()
         {
             if ( !free )
@@ -190,6 +193,7 @@ public class InMemoryPathTrackingDataStore
         }
     }
 
+    @IgnoreJRERequirement
     private List<Pointer> serialize( Collection<PathTrackingEntry> entries )
     {
         List<Pointer> buffers = new ArrayList<Pointer>( entries.size() );

@@ -16,7 +16,7 @@
 */
 package org.apache.sirona.store.tracking;
 
-import org.apache.sirona.tracking.PathTrackingEntry;
+import org.apache.sirona.pathtracking.PathTrackingEntry;
 import org.junit.Assert;
 import org.junit.Test;
 
