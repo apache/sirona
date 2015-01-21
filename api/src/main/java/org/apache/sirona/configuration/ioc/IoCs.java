@@ -89,6 +89,7 @@ public final class IoCs {
         try {
             loadedClass = ClassLoaders.current().loadClass(config);
         } catch (final Throwable throwable) { // NoClassDefFoundError or Exception
+            throwable.printStackTrace();
             loadedClass = clazz;
         }
         return clazz.cast(internalProcessInstance(loadedClass.newInstance()));
