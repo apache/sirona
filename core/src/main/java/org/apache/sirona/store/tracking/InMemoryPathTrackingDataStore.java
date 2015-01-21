@@ -20,7 +20,7 @@ import org.apache.sirona.tracking.PathCallInformation;
 import org.apache.sirona.tracking.PathTrackingEntry;
 import org.apache.sirona.tracking.PathTrackingEntryComparator;
 import org.apache.sirona.util.SerializeUtils;
-import org.apache.sirona.util.UnsafeUtils;
+import org.apache.sirona.store.counter.memory.util.UnsafeUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
