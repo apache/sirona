@@ -16,25 +16,26 @@
  */
 package org.apache.sirona.util;
 
-import sun.misc.Unsafe;
+import org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement;
 
 import java.lang.reflect.Field;
 
 /**
- *
+ * FIXME move that to store memory as only used for path tracking in memory
  */
+@IgnoreJRERequirement
 public class UnsafeUtils
 {
-    private static Unsafe UNSAFE;
+    private static sun.misc.Unsafe UNSAFE;
 
 
     static
     {
         try
         {
-            Field f = Unsafe.class.getDeclaredField( "theUnsafe" );
+            Field f = sun.misc.Unsafe.class.getDeclaredField( "theUnsafe" );
             f.setAccessible( true );
-            UNSAFE = (Unsafe) f.get( null );
+            UNSAFE = (sun.misc.Unsafe) f.get( null );
         }
         catch ( Exception e )
         {
@@ -47,7 +48,7 @@ public class UnsafeUtils
         // no op
     }
 
-    public static Unsafe getUnsafe()
+    public static sun.misc.Unsafe getUnsafe()
     {
         return UNSAFE;
     }

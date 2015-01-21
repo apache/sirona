@@ -34,7 +34,7 @@ public class BatchFuture
         try {
             executor.shutdown(); // don't add anything more now
             task.cancel(false);
-            executor.awaitTermination(1, TimeUnit.MINUTES);
+            executor.awaitTermination(60, TimeUnit.SECONDS);
             if (!task.isDone()) {
                 task.cancel(true);
             }

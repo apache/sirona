@@ -32,7 +32,7 @@ public final class PredicateEvaluator {
     private final boolean truePredicate;
 
     public PredicateEvaluator(final String configuration, final String sep) {
-        if (configuration != null && !configuration.isEmpty()) {
+        if (configuration != null && configuration.length()>0) {
             final PrefixPredicate prefixPredicate = new PrefixPredicate();
             final SuffixPredicate suffixPredicate = new SuffixPredicate();
             final RegexPredicate regexPredicate = new RegexPredicate();

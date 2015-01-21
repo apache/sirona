@@ -28,6 +28,10 @@
   <packaging>jar</packaging>
   <name>Apache Sirona Incubator :: Core</name>
 
+  <properties>
+    <java.runtime>15</java.runtime>
+  </properties>
+
   <dependencies>
 
     <dependency>

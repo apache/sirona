@@ -28,9 +28,17 @@
   <packaging>jar</packaging>
   <name>Apache Sirona Incubator :: Api</name>
 
+  <properties>
+    <java.runtime>15</java.runtime>
+  </properties>
+
   <description>Contains some interfaces and classes of the Sirona Api</description>
 
   <dependencies>
+    <dependency>
+      <groupId>org.codehaus.mojo</groupId>
+      <artifactId>animal-sniffer-annotations</artifactId>
+    </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>

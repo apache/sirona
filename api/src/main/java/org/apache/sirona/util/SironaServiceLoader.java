@@ -16,6 +16,8 @@
  */
 package org.apache.sirona.util;
 
+import org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement;
+
 import java.util.Iterator;
 
 /**
@@ -42,7 +44,7 @@ public class SironaServiceLoader<S>
         return new SironaServiceLoader<S>( service, loader );
     }
 
-    @Override
+    @IgnoreJRERequirement
     public Iterator<S> iterator()
     {
         try
