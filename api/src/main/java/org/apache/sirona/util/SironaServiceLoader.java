@@ -18,7 +18,15 @@ package org.apache.sirona.util;
 
 import org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * This class is a wrapper on the top of ServiceLoader (reverting on internal impl if 1.6 not available)
@@ -53,25 +61,90 @@ public class SironaServiceLoader<S>
         }
         catch ( Throwable t )
         {
-            t.printStackTrace();
-            return null;
+            // olamy revert to 1.5 way...
+            return iterator1_5();
         }
     }
 
     /**
      * this method mimic the 1.6 ServiceLoader if you don't need 1.5 do not use that :-)
+     *
      * @return
      */
     public Iterator<S> iterator1_5()
     {
+
+        String resourceName = "META-INF/services/" + this.service.getName();
+
         try
         {
-            return null;
+            List<String> serviceNames = new ArrayList<String>();
+
+            Enumeration<URL> urls = this.loader.getResources( resourceName );
+            while ( urls.hasMoreElements() )
+            {
+                serviceNames.addAll( parseFile( urls.nextElement() ) );
+
+            }
+            return initInstances( serviceNames ).iterator();
         }
         catch ( Throwable t )
         {
-            t.printStackTrace();
-            return null;
+            throw new RuntimeException( t.getMessage(), t );
         }
     }
+
+    private List<String> parseFile( URL url )
+        throws IOException
+    {
+        InputStream inputStream = null;
+        BufferedReader bufferedReader = null;
+        List<String> classNames = new ArrayList<String>();
+        try
+        {
+            inputStream = url.openStream();
+            // we presume it's utf-8!!
+            bufferedReader = new BufferedReader( new InputStreamReader( inputStream, "utf-8" ) );
+            String line = bufferedReader.readLine();
+            while ( line != null )
+            {
+                line = line.trim();
+                // we ignore line starting with comments
+                if ( !line.startsWith( "#" ) )
+                {
+                    classNames.add( line );
+                }
+
+                line = bufferedReader.readLine();
+            }
+            return classNames;
+        }
+        finally
+        {
+            if ( inputStream != null )
+            {
+                inputStream.close();
+            }
+            if ( bufferedReader != null )
+            {
+                bufferedReader.close();
+            }
+        }
+    }
+
+    private List<S> initInstances( List<String> classNames )
+        throws ClassNotFoundException, InstantiationException, IllegalAccessException
+    {
+
+        List<S> instances = new ArrayList<S>( classNames.size() );
+
+        for ( String className : classNames )
+        {
+            Class<?> clazz = this.loader.loadClass( className );
+            instances.add( (S) clazz.newInstance() );
+        }
+
+        return instances;
+    }
+
 }
