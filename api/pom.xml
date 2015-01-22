@@ -30,6 +30,8 @@
 
   <properties>
     <java.runtime>15</java.runtime>
+    <maven.compiler.source>1.5</maven.compiler.source>
+    <maven.compiler.target>1.5</maven.compiler.target>
   </properties>
 
   <description>Contains some interfaces and classes of the Sirona Api</description>
@@ -48,10 +50,6 @@
   <profiles>
     <profile>
       <id>jenkins-1.5</id>
-      <properties>
-        <maven.compiler.source>1.5</maven.compiler.source>
-        <maven.compiler.target>1.5</maven.compiler.target>
-      </properties>
       <build>
         <plugins>
           <plugin>
