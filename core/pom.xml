@@ -30,6 +30,8 @@
 
   <properties>
     <java.runtime>15</java.runtime>
+    <maven.compiler.source>1.5</maven.compiler.source>
+    <maven.compiler.target>1.5</maven.compiler.target>
   </properties>
 
   <dependencies>
