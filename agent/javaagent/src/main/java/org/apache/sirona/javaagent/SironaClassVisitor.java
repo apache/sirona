@@ -51,6 +51,12 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
     private final byte[] classfileBuffer;
     private int count = 0;
 
+    /**
+     *
+     * @param writer
+     * @param javaName
+     * @param buffer original class byte
+     */
     public SironaClassVisitor(final ClassWriter writer, final String javaName, final byte[] buffer) {
         super(ASM5, writer);
         this.javaName = javaName;
