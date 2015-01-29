@@ -49,7 +49,7 @@ public final class Configuration {
                 classLoader = ClassLoader.getSystemClassLoader();
             }
             for (final ConfigurationProvider provider : SironaServiceLoader.load( ConfigurationProvider.class, //
-                                                                                  Configuration.class.getClassLoader() )) {
+                                                                                  classLoader )) {
                 providers.add(provider);
             }
             Collections.sort(providers, Sorter.INSTANCE);
