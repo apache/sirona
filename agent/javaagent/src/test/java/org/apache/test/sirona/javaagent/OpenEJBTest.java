@@ -55,7 +55,11 @@ public class OpenEJBTest {
 
     @Test
     public void scanning() throws MalformedURLException {
-        final AnnotationFinder finder = new AnnotationFinder(new FileArchive(Thread.currentThread().getContextClassLoader(), JarLocation.jarLocation(TicTacToeServiceEJB.class).toURI().toURL())).link();
+        final AnnotationFinder finder = new AnnotationFinder(new FileArchive(Thread.currentThread().getContextClassLoader(), //
+                                                                             JarLocation.jarLocation(TicTacToeServiceEJB.class) //
+                                                                                 .toURI() //
+                                                                                 .toURL())//
+                                                            ).link();
         assertEquals(1, finder.findMetaAnnotatedFields(PersistenceContext.class).size());
     }
 
