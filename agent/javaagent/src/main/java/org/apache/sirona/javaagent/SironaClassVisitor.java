@@ -36,7 +36,7 @@ public class SironaClassVisitor
 {
 
     public static final String TRACE_METHOD_PARAMETERS_KEY =
-        Configuration.CONFIG_PROPERTY_PREFIX + "javaagent.method.paramaters.trace";
+        Configuration.CONFIG_PROPERTY_PREFIX + "javaagent.method.parameters.trace";
 
     private static final Boolean TRACE_METHOD_PARAMETERS = Configuration.is( TRACE_METHOD_PARAMETERS_KEY, false );
 
