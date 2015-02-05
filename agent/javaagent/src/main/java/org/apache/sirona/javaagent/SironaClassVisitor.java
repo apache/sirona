@@ -111,14 +111,12 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
         private final boolean isStatic;
         private final String label;
         private final String desc;
-        private final int access;
 
         public SironaAdviceAdapter(final MethodVisitor visitor, final int access, final String name, final String desc, final String label) {
             super(ASM5, visitor, access, name, desc);
             this.isStatic = Modifier.isStatic(access);
             this.label = label;
             this.desc = desc;
-            this.access = access;
         }
 
         private int ctxLocal;
