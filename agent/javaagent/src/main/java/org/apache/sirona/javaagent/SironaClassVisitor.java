@@ -158,11 +158,8 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
 
                 // duplicates the reference to the array. AASTORE consumes the stack element with the reference to the array.
                 super.visitInsn( DUP );
-                // could be optimized
                 super.visitIntInsn( BIPUSH, i );
                 // puts the value of the current argument on the stack
-                //super.visitVarInsn( ALOAD, i + ( isStatic ? 0 : 1 ) );
-
                 // arguments can be primitive so we must box up to the corresponding Object
                 if ( tp.equals( Type.BOOLEAN_TYPE ) )
                 {
@@ -170,7 +167,8 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
                     super.visitMethodInsn( Opcodes.INVOKESTATIC, //
                                            "java/lang/Boolean", //
                                            "valueOf", //
-                                           "(Z)Ljava/lang/Boolean;" );
+                                           "(Z)Ljava/lang/Boolean;", //
+                                           false );
                 }
                 else if ( tp.equals( Type.BYTE_TYPE ) )
                 {
@@ -178,7 +176,8 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
                     super.visitMethodInsn( Opcodes.INVOKESTATIC, //
                                            "java/lang/Byte", //
                                            "valueOf", //
-                                           "(B)Ljava/lang/Byte;" );
+                                           "(B)Ljava/lang/Byte;", //
+                                           false );
                 }
                 else if ( tp.equals( Type.CHAR_TYPE ) )
                 {
@@ -186,7 +185,8 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
                     super.visitMethodInsn( Opcodes.INVOKESTATIC, //
                                            "java/lang/Character", //
                                            "valueOf", //
-                                           "(C)Ljava/lang/Character;" );
+                                           "(C)Ljava/lang/Character;", //
+                                           false );
                 }
                 else if ( tp.equals( Type.SHORT_TYPE ) )
                 {
@@ -194,7 +194,8 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
                     super.visitMethodInsn( Opcodes.INVOKESTATIC, //
                                            "java/lang/Short", //
                                            "valueOf", //
-                                           "(S)Ljava/lang/Short;" );
+                                           "(S)Ljava/lang/Short;", //
+                                           false );
                 }
                 else if ( tp.equals( Type.INT_TYPE ) )
                 {
@@ -202,7 +203,8 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
                     super.visitMethodInsn( Opcodes.INVOKESTATIC, //
                                            "java/lang/Integer", //
                                            "valueOf", //
-                                           "(I)Ljava/lang/Integer;" );
+                                           "(I)Ljava/lang/Integer;", //
+                                           false );
                 }
                 else if ( tp.equals( Type.LONG_TYPE ) )
                 {
@@ -210,7 +212,8 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
                     super.visitMethodInsn( Opcodes.INVOKESTATIC, //
                                            "java/lang/Long", //
                                            "valueOf", //
-                                           "(J)Ljava/lang/Long;" );
+                                           "(J)Ljava/lang/Long;", //
+                                           false );
                     i++;
                 }
                 else if ( tp.equals( Type.FLOAT_TYPE ) )
@@ -219,7 +222,8 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
                     super.visitMethodInsn( Opcodes.INVOKESTATIC, //
                                            "java/lang/Float", //
                                            "valueOf", //
-                                           "(F)Ljava/lang/Float;" );
+                                           "(F)Ljava/lang/Float;", //
+                                           false );
                 }
                 else if ( tp.equals( Type.DOUBLE_TYPE ) )
                 {
@@ -227,8 +231,8 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
                     super.visitMethodInsn( Opcodes.INVOKESTATIC, //
                                            "java/lang/Double", //
                                            "valueOf", //
-                                           "(D)Ljava/lang/Double;" );
-
+                                           "(D)Ljava/lang/Double;", //
+                                           false );
                 }
                 else
                 {
