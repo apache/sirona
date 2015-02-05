@@ -236,7 +236,7 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
                 }
                 else
                 {
-                    super.visitVarInsn( Opcodes.ALOAD, i );
+                    super.visitVarInsn( Opcodes.ALOAD, i + ( isStatic ? 0 : 1 ) );
                 }
 
                 // stores the value of the current argument in the array

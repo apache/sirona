@@ -17,30 +17,38 @@
 package org.apache.sirona.javaagent.listener;
 
 
+import org.apache.sirona.javaagent.AgentContext;
+import org.apache.sirona.javaagent.spi.InvocationListener;
 import org.apache.sirona.pathtracking.Context;
 import org.apache.sirona.pathtracking.PathTrackingInformation;
 import org.apache.sirona.pathtracking.PathTrackingInvocationListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
  */
-public class MockPathTrackingInvocationListener implements PathTrackingInvocationListener
+public class MockPathTrackingInvocationListener
+    implements PathTrackingInvocationListener, InvocationListener
 {
 
     int startPathCallCount = 0;
 
     int enterMethodCallCount = 0;
 
-    List<PathTrackingInformation> entered = new ArrayList<PathTrackingInformation>( );
+    List<PathTrackingInformation> entered = new ArrayList<PathTrackingInformation>();
 
     int exitMethodCallCount = 0;
 
-    List<PathTrackingInformation> exit = new ArrayList<PathTrackingInformation>( );
+    List<PathTrackingInformation> exit = new ArrayList<PathTrackingInformation>();
 
     int endPathCallCount = 0;
+
+    Map<String, AgentContext> contextPerKey = new HashMap<String, AgentContext>();
+
 
     @Override
     public void startPath( Context context )
@@ -65,6 +73,23 @@ public class MockPathTrackingInvocationListener implements PathTrackingInvocatio
     @Override
     public void endPath( Context context )
     {
-       endPathCallCount++;
+        endPathCallCount++;
+    }
+
+
+    public boolean accept( String key, byte[] rawClassBuffer )
+    {
+        boolean accept = key.startsWith( "org.apache.test.sirona.javaagent.App" );
+        return accept;
+    }
+
+    public void before( AgentContext context )
+    {
+        contextPerKey.put( context.getKey(), context );
+    }
+
+    public void after( AgentContext context, Object result, Throwable error )
+    {
+
     }
 }

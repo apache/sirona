@@ -18,7 +18,9 @@ package org.apache.sirona.javaagent.listener;
 
 import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.javaagent.AgentArgs;
+import org.apache.sirona.javaagent.AgentContext;
 import org.apache.sirona.javaagent.JavaAgentRunner;
+import org.apache.sirona.javaagent.spi.InvocationListener;
 import org.apache.sirona.pathtracking.PathTrackingEntry;
 import org.apache.sirona.pathtracking.PathTrackingInvocationListener;
 import org.apache.sirona.pathtracking.test.ExtendedInMemoryPathTrackingDataStore;
@@ -37,14 +39,13 @@ import java.util.Set;
 /**
  *
  */
-@RunWith(JavaAgentRunner.class)
+@RunWith( JavaAgentRunner.class )
 public class PathTrackingListenerTest
 {
 
     @Test
-    @AgentArgs(value = "debug=true|sirona.agent.debug=${sirona.agent.debug}",
-               sysProps = "project.build.directory=${project.build.directory}|sirona.agent.debug=${sirona.agent.debug}|org.apache.sirona.configuration.sirona.properties=${project.build.directory}/test-classes/pathtracking/sirona.properties|java.io.tmpdir=${project.build.directory}"
-                )
+    @AgentArgs( value = "debug=true|sirona.agent.debug=${sirona.agent.debug}",
+        sysProps = "project.build.directory=${project.build.directory}|sirona.agent.debug=${sirona.agent.debug}|org.apache.sirona.configuration.sirona.properties=${project.build.directory}/test-classes/pathtracking/sirona.properties|java.io.tmpdir=${project.build.directory}" )
     public void simpleTest()
         throws Exception
     {
@@ -118,7 +119,7 @@ public class PathTrackingListenerTest
         // we have only one here
         PathTrackingInvocationListener listener = PathTracker.getPathTrackingInvocationListeners()[0];
 
-        MockPathTrackingInvocationListener mock = MockPathTrackingInvocationListener.class.cast( listener );
+        MockPathTrackingInvocationListener mock = (MockPathTrackingInvocationListener) ( listener );
 
         System.out.println( "mock.startPathCallCount: " + mock.startPathCallCount );
 
@@ -130,7 +131,43 @@ public class PathTrackingListenerTest
 
         Assert.assertEquals( 3, mock.exitMethodCallCount );
 
+        InvocationListener[] listeners =
+            AgentContext.listeners( "org.apache.test.sirona.javaagent.App.pub(java.lang.String,java.util.List,int)", //
+                                    null );
 
+        mock = findInstance( listeners );
+
+        AgentContext agentContext =
+            mock.contextPerKey.get( "org.apache.test.sirona.javaagent.App.pub(java.lang.String,java.util.List,int)" );
+
+        Object[] parameters = agentContext.getMethodParameters();
+
+        // "blabla", Arrays.asList( "Mountain Goat", "Fatyak" ), 2
+
+        Assert.assertEquals( 3, parameters.length );
+
+        Assert.assertEquals( "blabla", parameters[0] );
+
+        Assert.assertTrue( List.class.isAssignableFrom( parameters[1].getClass() ) );
+
+        Assert.assertTrue( ((List)parameters[1]).get( 0 ).equals( "Mountain Goat" ) );
+
+        Assert.assertTrue( ((List)parameters[1]).get( 1 ).equals( "Fatyak" ) );
+
+        Assert.assertEquals( 2, parameters[2] );
+
+    }
+
+    private MockPathTrackingInvocationListener findInstance( InvocationListener[] listeners )
+    {
+        for ( InvocationListener invocationListener : listeners )
+        {
+            if ( invocationListener.getClass().isAssignableFrom( MockPathTrackingInvocationListener.class ) )
+            {
+                return (MockPathTrackingInvocationListener) invocationListener;
+            }
+        }
+        return null;
     }
 
 
