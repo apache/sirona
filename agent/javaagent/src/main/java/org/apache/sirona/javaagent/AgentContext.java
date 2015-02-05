@@ -73,6 +73,7 @@ public class AgentContext {
 
     // called by agent
     public static AgentContext startOn(final Object that, final String key, final Object[] methodParameters) {
+        System.out.println( "###########  startOn 3 parameters  ###########" );
 		if (key == null) { // possible in static inits, the best would be to ignore it in instrumentation
 			return FAKE_CONTEXT;
 		}
@@ -152,16 +153,23 @@ public class AgentContext {
     private final String key;
     private final Object reference;
     private final InvocationListener[] listeners;
+
+    /**
+     *
+     * @since 0.3
+     */
+    private final Object[] methodParameters;
     private final Map<Integer, Object> context = new HashMap<Integer, Object>();
     private Method method = null;
 
-    public AgentContext(final String key, final Object that, final InvocationListener[] listeners) {
+    public AgentContext(final String key, final Object that, final InvocationListener[] listeners,final Object[] methodParameters) {
         this.key = key;
         this.reference = that;
         this.listeners = listeners;
         for (final InvocationListener listener : this.listeners) {
             listener.before(this);
         }
+        this.methodParameters = methodParameters;
     }
 
     public Object getReference() {
@@ -170,6 +178,15 @@ public class AgentContext {
 
     public String getKey() {
         return key;
+    }
+
+    /**
+     * @since 0.3
+     * @return
+     */
+    public Object[] getMethodParameters()
+    {
+        return methodParameters;
     }
 
     public Class<?> keyAsClass() {

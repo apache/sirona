@@ -39,10 +39,11 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
 
     private static final Type STRING_TYPE = Type.getType(String.class);
     private static final Type OBJECT_TYPE = Type.getType(Object.class);
+    private static final Type ARRAY_TYPE = Type.getType( Object[].class );
     private static final Type THROWABLE_TYPE = Type.getType(Throwable.class);
     private static final Type[] STOP_WITH_OBJECT_ARGS_TYPES = new Type[]{OBJECT_TYPE};
     private static final Type[] STOP_WITH_THROWABLE_ARGS_TYPES = new Type[]{THROWABLE_TYPE};
-    private static final Type[] START_ARGS_TYPES = new Type[]{OBJECT_TYPE, STRING_TYPE};
+    private static final Type[] START_ARGS_TYPES = new Type[]{OBJECT_TYPE, STRING_TYPE,ARRAY_TYPE};
 
     // methods
     public static final Method START_METHOD = new Method("startOn", AGENT_CONTEXT, START_ARGS_TYPES);
@@ -130,7 +131,7 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
         public void onMethodEnter() {
 
             // we need to call static method onStart from AgentContext
-            // with parameters final Object that, final String key, final Object[] methodParameters
+            // with parameters final String key, final Object[] methodParameters,final Object that
 
             if ( isStatic )
             {
@@ -166,8 +167,6 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
             ctxLocal = newLocal( AGENT_CONTEXT );
 
             invokeStatic( AGENT_CONTEXT, START_METHOD );
-
-            //visitMethodInsn(INVOKESTATIC, "org/apache/sirona/javaagent/AgentContext", "startOn", "(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Object;)V", false);
 
             storeLocal( ctxLocal );
 
