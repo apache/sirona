@@ -32,6 +32,8 @@ import serp.bytecode.BCClass;
 import serp.bytecode.Project;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.reflect.Field;
@@ -42,6 +44,7 @@ public class InJvmTransformerRunner extends BlockJUnit4ClassRunner {
     private final Class<?>[] transformers;
     private ClassLoader testLoader = null;
     private ClassLoader originalLoader = null;
+    private static final Boolean DEBUG = Boolean.getBoolean( "sirona.agent.debug" );
 
     public InJvmTransformerRunner(final Class<?> klass) throws InitializationError {
         super(klass);
@@ -173,6 +176,22 @@ public class InJvmTransformerRunner extends BlockJUnit4ClassRunner {
                     } else {
                         buffer = ClassFileTransformer.class.cast(t.newInstance()).transform(this, className, null, null, buffer);
                     }
+
+                    if (DEBUG) {
+                        final File dump = new File(System.getProperty("java.io.tmpdir"), "sirona-dump/" + className + ".class");
+                        dump.getParentFile().mkdirs();
+
+                        FileOutputStream w = null;
+                        try {
+                            w = new FileOutputStream(dump);
+                            w.write(buffer);
+                        } finally {
+                            if (w != null) {
+                                w.close();
+                            }
+                        }
+                    }
+
                 }
                 return defineClass(name, buffer, 0, buffer.length);
             } catch (final Throwable t) {
