@@ -180,11 +180,11 @@ public class AgentContext {
 
     /**
      * @since 0.3
-     * @return
+     * @return array of the parameters passed to the method on empty array but never <code>null</code>
      */
     public Object[] getMethodParameters()
     {
-        return methodParameters;
+        return methodParameters == null ? new Object[0] : methodParameters;
     }
 
     public Class<?> keyAsClass() {
