@@ -214,7 +214,6 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
                                            "valueOf", //
                                            "(J)Ljava/lang/Long;", //
                                            false );
-                    i++;
                 }
                 else if ( tp.equals( Type.FLOAT_TYPE ) )
                 {
