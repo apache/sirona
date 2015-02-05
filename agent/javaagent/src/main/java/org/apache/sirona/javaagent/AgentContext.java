@@ -58,6 +58,8 @@ public class AgentContext {
         PRIMITIVES.put("boolean", boolean.class);
     }
 
+    private static final Object[] EMPTY_ARRAY = new Object[0];
+
     public static void addAgentParameter( String key, String value){
         AGENT_PARAMETERS.put(key, value);
     }
@@ -185,7 +187,7 @@ public class AgentContext {
      */
     public Object[] getMethodParameters()
     {
-        return methodParameters == null ? new Object[0] : methodParameters;
+        return methodParameters == null ? EMPTY_ARRAY : methodParameters;
     }
 
     public Class<?> keyAsClass() {
