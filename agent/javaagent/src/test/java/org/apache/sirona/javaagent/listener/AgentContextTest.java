@@ -68,17 +68,17 @@ public class AgentContextTest
                              PathTrackingListener.extractClassName( "org.App.foo()" ) );
 
         //org.apache.test.sirona.javaagent.App.pub(java.lang.String)
-        Assert.assertEquals( "pub", //
+        Assert.assertEquals( "pub(java.lang.String)", //
                              PathTrackingListener.extractMethodName(
                                  "org.apache.test.sirona.javaagent.App.pub(java.lang.String)" ) );
 
-        Assert.assertEquals( "foo", //
+        Assert.assertEquals( "foo()", //
                              PathTrackingListener.extractMethodName( "org.apache.test.sirona.javaagent.App.foo()" ) );
 
-        Assert.assertEquals( "foo", //
+        Assert.assertEquals( "foo()", //
                              PathTrackingListener.extractMethodName( "App.foo()" ) );
 
-        Assert.assertEquals( "foo", //
+        Assert.assertEquals( "foo()", //
                              PathTrackingListener.extractMethodName( "org.App.foo()" ) );
     }
 }

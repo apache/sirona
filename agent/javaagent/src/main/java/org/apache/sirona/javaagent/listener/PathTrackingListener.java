@@ -118,7 +118,7 @@ import org.apache.sirona.tracking.PathTracker;
         {
             if ( key.charAt( j ) == '.' )
             {
-                return key.substring( j + 1, firstParenthesis );
+                return key.substring( j + 1, key.length() );
             }
             j--;
         }

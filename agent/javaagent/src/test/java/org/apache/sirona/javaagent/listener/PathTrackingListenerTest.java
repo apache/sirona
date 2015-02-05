@@ -97,7 +97,7 @@ public class PathTrackingListenerTest
 
         entry = entries.get( 2 );
 
-        Assert.assertEquals( "pub()", entry.getMethodName() );
+        Assert.assertEquals( "pub(java.lang.String,java.util.List)", entry.getMethodName() );
 
         Assert.assertEquals( "org.apache.test.sirona.javaagent.App", entry.getClassName() );
 
