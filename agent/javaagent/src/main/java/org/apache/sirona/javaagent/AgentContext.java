@@ -164,10 +164,11 @@ public class AgentContext {
         this.key = key;
         this.reference = that;
         this.listeners = listeners;
+        this.methodParameters = methodParameters;
+
         for (final InvocationListener listener : this.listeners) {
             listener.before(this);
         }
-        this.methodParameters = methodParameters;
     }
 
     public Object getReference() {
