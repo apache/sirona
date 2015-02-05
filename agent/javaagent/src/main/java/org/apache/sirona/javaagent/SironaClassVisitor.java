@@ -16,6 +16,7 @@
  */
 package org.apache.sirona.javaagent;
 
+import org.apache.sirona.configuration.Configuration;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
@@ -33,6 +34,12 @@ public class SironaClassVisitor
     extends ClassVisitor
     implements Opcodes
 {
+
+    public static final String TRACE_METHOD_PARAMETERS_KEY =
+        Configuration.CONFIG_PROPERTY_PREFIX + "javaagent.method.paramaters.trace";
+
+    private static final Boolean TRACE_METHOD_PARAMETERS = Configuration.is( TRACE_METHOD_PARAMETERS_KEY, false );
+
     private static final String STATIC_INIT = "<clinit>";
 
     private static final String CONSTRUCTOR = "<init>";
@@ -177,8 +184,14 @@ public class SironaClassVisitor
 
             push( label );
 
-            loadArgArray();
-
+            if ( TRACE_METHOD_PARAMETERS )
+            {
+                loadArgArray();
+            }
+            else
+            {
+                visitInsn( ACONST_NULL );
+            }
             ctxLocal = newLocal( AGENT_CONTEXT );
 
             invokeStatic( AGENT_CONTEXT, START_METHOD );
