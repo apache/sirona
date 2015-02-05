@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.test.sirona.javaagent;
+package org.apache.sirona.javaagent.listener;
 
 import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.javaagent.listener.PathTrackingListener;

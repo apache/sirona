@@ -154,7 +154,6 @@ public class AgentContext {
     private final InvocationListener[] listeners;
 
     /**
-     *
      * @since 0.3
      */
     private final Object[] methodParameters;

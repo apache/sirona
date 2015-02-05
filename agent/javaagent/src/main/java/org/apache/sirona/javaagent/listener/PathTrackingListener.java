@@ -28,8 +28,7 @@ import org.apache.sirona.tracking.PathTracker;
 @AutoSet
 /**
  * This listener is responsible to track/record class#method path using {@link org.apache.sirona.tracking.PathTracker}
- */
-public class PathTrackingListener
+ */ public class PathTrackingListener
     extends ConfigurableListener
 {
 
@@ -47,8 +46,8 @@ public class PathTrackingListener
             return false;
         }
 
-        SironaAgentLogging.debug(
-            "PathTrackingListener#accept, TRACKING_ACTIVATED: {0}, key: {1}", TRACKING_ACTIVATED, key );
+        SironaAgentLogging.debug( "PathTrackingListener#accept, TRACKING_ACTIVATED: {0}, key: {1}", TRACKING_ACTIVATED,
+                                  key );
 
         return TRACKING_ACTIVATED;
     }
@@ -67,17 +66,64 @@ public class PathTrackingListener
         String key = context.getKey();
         SironaAgentLogging.debug( "PathTrackingListener#before: {0}", key );
 
-        int lastDot = key.lastIndexOf( "." );
+        String className = extractClassName( key );
+        String methodName = extractMethodName( key );
 
-        String className = key.substring( 0, lastDot );
-        String methodName = key.substring( lastDot + 1, key.length() );
-
-        final PathTrackingInformation pathTrackingInformation =
-            new PathTrackingInformation( className, methodName );
+        final PathTrackingInformation pathTrackingInformation = new PathTrackingInformation( className, methodName );
 
         SironaAgentLogging.debug( "call PathTracker#start with {0}", pathTrackingInformation );
 
         context.put( PATH_TRACKER_KEY, PathTracker.start( pathTrackingInformation ) );
+    }
+
+    //----------------------------------------------------------------
+    // key format: org.apache.test.sirona.javaagent.App.foo()
+    // or org.apache.test.sirona.javaagent.App.pub(java.lang.String)
+    //----------------------------------------------------------------
+
+    static String extractClassName( String key )
+    {
+        if ( key == null )
+        {
+            return null;
+        }
+
+        int firstParenthesis = key.indexOf( '(' );
+
+        while ( firstParenthesis > 0 )
+        {
+            if ( key.charAt( firstParenthesis ) == '.' )
+            {
+                return key.substring( 0, firstParenthesis );
+            }
+            firstParenthesis--;
+        }
+
+        return key;
+    }
+
+
+    static String extractMethodName( String key )
+    {
+        if ( key == null )
+        {
+            return null;
+        }
+
+        int firstParenthesis = key.indexOf( '(' );
+
+        int j = firstParenthesis;
+
+        while ( j > 0 )
+        {
+            if ( key.charAt( j ) == '.' )
+            {
+                return key.substring( j + 1, firstParenthesis );
+            }
+            j--;
+        }
+
+        return key;
     }
 
     /**

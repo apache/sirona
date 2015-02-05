@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.test.sirona.javaagent;
+package org.apache.sirona.javaagent.listener;
 
 import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.javaagent.AgentArgs;
@@ -22,6 +22,7 @@ import org.apache.sirona.javaagent.JavaAgentRunner;
 import org.apache.sirona.pathtracking.PathTrackingEntry;
 import org.apache.sirona.pathtracking.test.ExtendedInMemoryPathTrackingDataStore;
 import org.apache.sirona.store.DataStoreFactory;
+import org.apache.test.sirona.javaagent.App;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;

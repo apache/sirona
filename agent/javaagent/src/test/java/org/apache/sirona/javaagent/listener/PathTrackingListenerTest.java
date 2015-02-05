@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.test.sirona.javaagent;
+package org.apache.sirona.javaagent.listener;
 
 import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.javaagent.AgentArgs;
@@ -24,6 +24,7 @@ import org.apache.sirona.pathtracking.PathTrackingInvocationListener;
 import org.apache.sirona.pathtracking.test.ExtendedInMemoryPathTrackingDataStore;
 import org.apache.sirona.store.DataStoreFactory;
 import org.apache.sirona.tracking.PathTracker;
+import org.apache.test.sirona.javaagent.App;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,8 +42,9 @@ public class PathTrackingListenerTest
 {
 
     @Test
-    @AgentArgs(value = "",
-               sysProps = "project.build.directory=${project.build.directory}|sirona.agent.debug=${sirona.agent.debug}|org.apache.sirona.configuration.sirona.properties=${project.build.directory}/test-classes/pathtracking/sirona.properties|java.io.tmpdir=${java.io.tmpdir}")
+    @AgentArgs(value = "debug=true|sirona.agent.debug=${sirona.agent.debug}",
+               sysProps = "project.build.directory=${project.build.directory}|sirona.agent.debug=${sirona.agent.debug}|org.apache.sirona.configuration.sirona.properties=${project.build.directory}/test-classes/pathtracking/sirona.properties|java.io.tmpdir=${java.io.tmpdir}"
+                )
     public void simpleTest()
         throws Exception
     {
@@ -130,5 +132,6 @@ public class PathTrackingListenerTest
 
 
     }
+
 
 }

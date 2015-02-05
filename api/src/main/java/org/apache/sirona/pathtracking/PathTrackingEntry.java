@@ -68,8 +68,8 @@ public class PathTrackingEntry
         // no op
     }
 
-    public PathTrackingEntry( String trackingId, String nodeId, String className, String methodName, long startTime,
-                              long executionTime, int level )
+    public PathTrackingEntry( String trackingId, String nodeId, String className, String methodName, //
+                              long startTime, long executionTime, int level )
     {
         this.trackingId = trackingId;
         this.nodeId = nodeId;
@@ -153,12 +153,8 @@ public class PathTrackingEntry
     @Override
     public String toString()
     {
-        return "PathTrackingEntry{" + "trackingId='" + trackingId
-                + '\'' + ", nodeId='" + nodeId
-                + '\'' + ", className='" + className + '\''
-                + ", methodName='" + methodName
-                + '\'' + ", startTime=" + startTime
-                + ", executionTime=" + executionTime
-                + ", level=" + level + '}';
+        return "PathTrackingEntry{" + "trackingId='" + trackingId + '\'' + ", nodeId='" + nodeId + '\''
+            + ", className='" + className + '\'' + ", methodName='" + methodName + '\'' + ", startTime=" + startTime
+            + ", executionTime=" + executionTime + ", level=" + level + '}';
     }
 }

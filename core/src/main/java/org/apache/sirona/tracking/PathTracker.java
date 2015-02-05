@@ -91,7 +91,7 @@ public class PathTracker
             classLoader = Thread.currentThread().getContextClassLoader();
         }
 
-        List<PathTrackingInvocationListener> listeners = new ArrayList<PathTrackingInvocationListener>(  );
+        List<PathTrackingInvocationListener> listeners = new ArrayList<PathTrackingInvocationListener>();
 
         Iterator<PathTrackingInvocationListener> iterator =
             SPI.INSTANCE.find( PathTrackingInvocationListener.class, classLoader ).iterator();
@@ -191,7 +191,7 @@ public class PathTracker
             context.setPathTrackingInformation( pathTrackingInformation.getParent() );
         }
 
-        if (context.getPathTrackingInformation() != null)
+        if ( context.getPathTrackingInformation() != null )
         {
             for ( PathTrackingInvocationListener listener : LISTENERS )
             {
@@ -201,8 +201,10 @@ public class PathTracker
         }
 
         final PathTrackingEntry pathTrackingEntry =
-            new PathTrackingEntry( uuid, NODE, pathTrackingInformation.getClassName(),
-                                   pathTrackingInformation.getMethodName(), start, ( end - start ),
+            new PathTrackingEntry( uuid, NODE, pathTrackingInformation.getClassName(), //
+                                   pathTrackingInformation.getMethodName(), //
+                                   start, //
+                                   ( end - start ), //
                                    pathTrackingInformation.getLevel() );
         if ( USE_SINGLE_STORE )
         {

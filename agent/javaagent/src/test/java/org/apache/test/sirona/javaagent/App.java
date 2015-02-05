@@ -21,6 +21,8 @@ package org.apache.test.sirona.javaagent;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.Arrays;
+import java.util.List;
 
 public class App
 {
@@ -35,10 +37,10 @@ public class App
         throws Exception
     {
         this.foo();
-        this.pub( "blabla" );
+        this.pub( "blabla", Arrays.asList( "Mountain Goat", "Fatyak" ) );
     }
 
-    public void pub( String foo )
+    public void pub( String foo, List<String> beers )
         throws Exception
     {
         Thread.sleep( 100 );
