@@ -27,74 +27,94 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 // Configuration holder
-public final class Configuration {
-    private static final Logger LOGGER = Logger.getLogger(Configuration.class.getName());
+public final class Configuration
+{
+    private static final Logger LOGGER = Logger.getLogger( Configuration.class.getName() );
 
     public static final String CONFIG_PROPERTY_PREFIX = "org.apache.sirona.";
 
-    private static final String[] DEFAULT_CONFIGURATION_FILES = new String[]{ "sirona.properties", "collector-sirona.properties" };
+    private static final String[] DEFAULT_CONFIGURATION_FILES =
+        new String[]{ "sirona.properties", "collector-sirona.properties" };
 
     private static final Properties PROPERTIES = new Properties();
 
-    static {
-        try {
+    static
+    {
+        try
+        {
             final List<ConfigurationProvider> providers = new LinkedList<ConfigurationProvider>();
-            for (final String source : DEFAULT_CONFIGURATION_FILES) {
-                providers.add(new FileConfigurationProvider(source));
+            for ( final String source : DEFAULT_CONFIGURATION_FILES )
+            {
+                providers.add( new FileConfigurationProvider( source ) );
             }
-            providers.add(new PropertiesConfigurationProvider(System.getProperties()));
+            providers.add( new PropertiesConfigurationProvider( System.getProperties() ) );
 
             ClassLoader classLoader = Configuration.class.getClassLoader();
-            if (classLoader == null) { // ServiceLoader fallbacks to it normally but ensure it is portable
+            if ( classLoader == null )
+            { // ServiceLoader fallbacks to it normally but ensure it is portable
                 classLoader = ClassLoader.getSystemClassLoader();
             }
-            for (final ConfigurationProvider provider : SironaServiceLoader.load( ConfigurationProvider.class, //
-                                                                                  classLoader )) {
-                providers.add(provider);
+            for ( final ConfigurationProvider provider : SironaServiceLoader.load( ConfigurationProvider.class, //
+                                                                                   classLoader ) )
+            {
+                providers.add( provider );
             }
-            Collections.sort(providers, Sorter.INSTANCE);
+            Collections.sort( providers, Sorter.INSTANCE );
 
-            for (final ConfigurationProvider provider : providers) {
-                PROPERTIES.putAll(provider.configuration());
+            for ( final ConfigurationProvider provider : providers )
+            {
+                PROPERTIES.putAll( provider.configuration() );
             }
-        } catch (final Exception e) {
-            LOGGER.log(Level.SEVERE, e.getMessage(), e);
+        }
+        catch ( final Exception e )
+        {
+            LOGGER.log( Level.SEVERE, e.getMessage(), e );
         }
     }
 
-    public static boolean is(final String key, final boolean defaultValue) {
-        return Boolean.parseBoolean(getProperty(key, Boolean.toString(defaultValue)));
+    public static boolean is( final String key, final boolean defaultValue )
+    {
+        return Boolean.parseBoolean( getProperty( key, Boolean.toString( defaultValue ) ) );
     }
 
-    public static int getInteger(final String key, final int defaultValue) {
-        return Integer.parseInt(getProperty(key, Integer.toString(defaultValue)));
+    public static int getInteger( final String key, final int defaultValue )
+    {
+        return Integer.parseInt( getProperty( key, Integer.toString( defaultValue ) ) );
     }
 
-    public static String getProperty(final String key, final String defaultValue) {
-        final String property = PROPERTIES.getProperty(key, defaultValue);
-        if (property != null && property.startsWith("${") && property.endsWith("}")) {
-            return getProperty(property.substring("${".length(), property.length() - 1), defaultValue);
+    public static String getProperty( final String key, final String defaultValue )
+    {
+        final String property = PROPERTIES.getProperty( key, defaultValue );
+        if ( property != null && property.startsWith( "${" ) && property.endsWith( "}" ) )
+        {
+            return getProperty( property.substring( "${".length(), property.length() - 1 ), defaultValue );
         }
         return property;
     }
 
-    public static String[] getArray(final String key, final String[] defaultValue) {
+    public static String[] getArray( final String key, final String[] defaultValue )
+    {
         String property = PROPERTIES.getProperty( key );
-        if (property == null){
+        if ( property == null )
+        {
             return defaultValue;
         }
         return property.split( ";" );
     }
 
-    private Configuration() {
+    private Configuration()
+    {
         // no-op
     }
 
-    private static class Sorter implements Comparator<ConfigurationProvider> {
+    private static class Sorter
+        implements Comparator<ConfigurationProvider>
+    {
         public static final Comparator<? super ConfigurationProvider> INSTANCE = new Sorter();
 
         @Override
-        public int compare(final ConfigurationProvider o1, final ConfigurationProvider o2) {
+        public int compare( final ConfigurationProvider o1, final ConfigurationProvider o2 )
+        {
             return o1.ordinal() - o2.ordinal();
         }
     }
