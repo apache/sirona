@@ -188,6 +188,7 @@
             <test.debug.remote>${test.debug.remote}</test.debug.remote>
             <project.build.directory>${project.build.directory}</project.build.directory>
             <sirona.agent.debug>${sirona.agent.debug}</sirona.agent.debug>
+            <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
           </systemPropertyVariables>
         </configuration>
       </plugin>

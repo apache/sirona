@@ -42,7 +42,7 @@ public class PathTrackingListenerTest
 
     @Test
     @AgentArgs(value = "",
-               sysProps = "project.build.directory=${project.build.directory}|sirona.agent.debug=${sirona.agent.debug}|org.apache.sirona.configuration.sirona.properties=${project.build.directory}/test-classes/pathtracking/sirona.properties")
+               sysProps = "project.build.directory=${project.build.directory}|sirona.agent.debug=${sirona.agent.debug}|org.apache.sirona.configuration.sirona.properties=${project.build.directory}/test-classes/pathtracking/sirona.properties|java.io.tmpdir=${java.io.tmpdir}")
     public void simpleTest()
         throws Exception
     {

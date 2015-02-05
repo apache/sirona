@@ -18,6 +18,7 @@ package org.apache.sirona.javaagent;
 
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Handle;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
@@ -26,6 +27,7 @@ import org.objectweb.asm.commons.AdviceAdapter;
 import org.objectweb.asm.commons.Method;
 
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
 
 import static java.lang.Integer.MIN_VALUE;
 
@@ -108,33 +110,70 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
         private final boolean isStatic;
         private final String label;
         private final String desc;
+        private final int access;
 
         public SironaAdviceAdapter(final MethodVisitor visitor, final int access, final String name, final String desc, final String label) {
             super(ASM5, visitor, access, name, desc);
             this.isStatic = Modifier.isStatic(access);
             this.label = label;
             this.desc = desc;
+            this.access = access;
         }
 
         private int ctxLocal;
         private final Label tryStart = new Label();
         private final Label endLabel = new Label();
 
+
+
         @Override
         public void onMethodEnter() {
-            if (isStatic) {
-                visitInsn(ACONST_NULL);
-            } else {
+
+            // we need to call static method onStart from AgentContext
+            // with parameters final Object that, final String key, final Object[] methodParameters
+
+            if ( isStatic )
+            {
+                visitInsn( ACONST_NULL );
+            }
+            else
+            {
                 loadThis();
             }
-            push(label);
 
-            ctxLocal = newLocal(AGENT_CONTEXT);
-            invokeStatic(AGENT_CONTEXT, START_METHOD);
-            storeLocal(ctxLocal);
+            push( label );
 
-            visitLabel(tryStart);
+            int length = Type.getArgumentTypes( desc ).length;
+
+            // push count of arguments to the stack
+            super.visitIntInsn( BIPUSH, length );
+            // creates an object array
+            super.visitTypeInsn( ANEWARRAY, "java/lang/Object" );
+
+            // stores the arguments in the array
+            for ( int i = 0; i < length; i++ )
+            {
+                // duplicates the reference to the array. AASTORE consumes the stack element with the reference to the array.
+                super.visitInsn( DUP );
+                // could be optimized
+                super.visitIntInsn( BIPUSH, i );
+                // puts the value of the current argument on the stack
+                super.visitVarInsn( ALOAD, i + ( isStatic ? 0 : 1 ) );
+                // stores the value of the current argument in the array
+                super.visitInsn( AASTORE );
+            }
+
+            ctxLocal = newLocal( AGENT_CONTEXT );
+
+            invokeStatic( AGENT_CONTEXT, START_METHOD );
+
+            //visitMethodInsn(INVOKESTATIC, "org/apache/sirona/javaagent/AgentContext", "startOn", "(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Object;)V", false);
+
+            storeLocal( ctxLocal );
+
+            visitLabel( tryStart );
         }
+
 
         @Override
         public void onMethodExit(final int opCode) {

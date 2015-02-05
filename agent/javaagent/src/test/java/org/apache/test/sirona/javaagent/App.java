@@ -35,20 +35,21 @@ public class App
         throws Exception
     {
         this.foo();
-        this.pub();
+        this.pub( "blabla" );
     }
 
-    public void pub()
+    public void pub( String foo )
         throws Exception
     {
         Thread.sleep( 100 );
         this.bar();
     }
 
-    public void bar()
+    public App bar()
         throws Exception
     {
         Thread.sleep( 300 );
+        return this;
     }
 
 
