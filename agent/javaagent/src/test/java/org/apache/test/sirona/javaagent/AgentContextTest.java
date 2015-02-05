@@ -24,16 +24,28 @@ import java.lang.reflect.Method;
 
 import static org.junit.Assert.assertEquals;
 
-public class AgentContextTest {
+public class AgentContextTest
+{
     @Test
-    public void keyClass() {
-        final Class<?> clazz = new AgentContext("org.apache.test.sirona.javaagent.AgentContextTest.keyClass()", this, new InvocationListener[0]).keyAsClass();
-        assertEquals(AgentContextTest.class, clazz);
+    public void keyClass()
+    {
+        final Class<?> clazz = new AgentContext( "org.apache.test.sirona.javaagent.AgentContextTest.keyClass()", //
+                                                 this, //
+                                                 new InvocationListener[0], //
+                                                 null ) //
+            .keyAsClass();
+        assertEquals( AgentContextTest.class, clazz );
     }
 
     @Test
-    public void keyMethod() throws NoSuchMethodException {
-        final Method mtd = new AgentContext("org.apache.test.sirona.javaagent.AgentContextTest.keyMethod()", this, new InvocationListener[0]).keyAsMethod();
-        assertEquals(AgentContextTest.class.getMethod("keyMethod"), mtd);
+    public void keyMethod()
+        throws NoSuchMethodException
+    {
+        final Method mtd = new AgentContext( "org.apache.test.sirona.javaagent.AgentContextTest.keyMethod()", //
+                                             this, //
+                                             new InvocationListener[0], //
+                                             null ) //
+            .keyAsMethod();
+        assertEquals( AgentContextTest.class.getMethod( "keyMethod" ), mtd );
     }
 }

@@ -43,7 +43,7 @@ public class AgentContext {
 
     private static final ConcurrentMap<String, InvocationListener[]> LISTENERS_BY_KEY = new ConcurrentHashMap<String, InvocationListener[]>();
     private static final ConcurrentMap<String, Counter.Key> KEYS_CACHE = new ConcurrentHashMap<String, Counter.Key>();
-	private static final AgentContext FAKE_CONTEXT = new AgentContext("init", null, new InvocationListener[0]);
+	private static final AgentContext FAKE_CONTEXT = new AgentContext("init", null, new InvocationListener[0],new Object[0]);
 
 	private static final Map<String, String> AGENT_PARAMETERS = new ConcurrentHashMap<String, String>();
     private static final Map<String, Class<?>> PRIMITIVES = new HashMap<String, Class<?>>();
@@ -73,11 +73,10 @@ public class AgentContext {
 
     // called by agent
     public static AgentContext startOn(final Object that, final String key, final Object[] methodParameters) {
-        System.out.println( "###########  startOn 3 parameters  ###########" );
-		if (key == null) { // possible in static inits, the best would be to ignore it in instrumentation
+        if (key == null) { // possible in static inits, the best would be to ignore it in instrumentation
 			return FAKE_CONTEXT;
 		}
-        return new AgentContext(key, that, listeners(key, null));
+        return new AgentContext(key, that, listeners(key, null),methodParameters);
     }
 
     // helper to init keys in javaagent

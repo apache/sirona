@@ -53,7 +53,7 @@ public class SironaTransformer implements ClassFileTransformer {
 
             if (advisor.wasAdviced()) {
                 final byte[] bytes = writer.toByteArray();
-                //if (debug) {
+                if (debug) {
                     final File dump = new File(System.getProperty("java.io.tmpdir"), "sirona-dump/" + className + ".class");
                     dump.getParentFile().mkdirs();
 
@@ -66,7 +66,7 @@ public class SironaTransformer implements ClassFileTransformer {
                             w.close();
                         }
                     }
-                //}
+                }
                 return bytes;
             }
             return classfileBuffer;
