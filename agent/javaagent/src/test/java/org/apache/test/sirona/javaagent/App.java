@@ -37,10 +37,10 @@ public class App
         throws Exception
     {
         this.foo();
-        this.pub( "blabla", Arrays.asList( "Mountain Goat", "Fatyak" ) );
+        this.pub( "blabla", Arrays.asList( "Mountain Goat", "Fatyak" ), 2 );
     }
 
-    public void pub( String foo, List<String> beers )
+    public void pub( String foo, List<String> beers, int i )
         throws Exception
     {
         Thread.sleep( 100 );

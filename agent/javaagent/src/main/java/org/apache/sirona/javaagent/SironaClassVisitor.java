@@ -154,12 +154,87 @@ public class SironaClassVisitor extends ClassVisitor implements Opcodes {
             // stores the arguments in the array
             for ( int i = 0; i < length; i++ )
             {
+                Type tp = Type.getArgumentTypes( desc )[i];
+
                 // duplicates the reference to the array. AASTORE consumes the stack element with the reference to the array.
                 super.visitInsn( DUP );
                 // could be optimized
                 super.visitIntInsn( BIPUSH, i );
                 // puts the value of the current argument on the stack
-                super.visitVarInsn( ALOAD, i + ( isStatic ? 0 : 1 ) );
+                //super.visitVarInsn( ALOAD, i + ( isStatic ? 0 : 1 ) );
+
+                // arguments can be primitive so we must box up to the corresponding Object
+                if ( tp.equals( Type.BOOLEAN_TYPE ) )
+                {
+                    super.visitVarInsn( Opcodes.ILOAD, i + ( isStatic ? 0 : 1 ) );
+                    super.visitMethodInsn( Opcodes.INVOKESTATIC, //
+                                           "java/lang/Boolean", //
+                                           "valueOf", //
+                                           "(Z)Ljava/lang/Boolean;" );
+                }
+                else if ( tp.equals( Type.BYTE_TYPE ) )
+                {
+                    super.visitVarInsn( Opcodes.ILOAD, i + ( isStatic ? 0 : 1 ) );
+                    super.visitMethodInsn( Opcodes.INVOKESTATIC, //
+                                           "java/lang/Byte", //
+                                           "valueOf", //
+                                           "(B)Ljava/lang/Byte;" );
+                }
+                else if ( tp.equals( Type.CHAR_TYPE ) )
+                {
+                    super.visitVarInsn( Opcodes.ILOAD, i + ( isStatic ? 0 : 1 ) );
+                    super.visitMethodInsn( Opcodes.INVOKESTATIC, //
+                                           "java/lang/Character", //
+                                           "valueOf", //
+                                           "(C)Ljava/lang/Character;" );
+                }
+                else if ( tp.equals( Type.SHORT_TYPE ) )
+                {
+                    super.visitVarInsn( Opcodes.ILOAD, i + ( isStatic ? 0 : 1 ) );
+                    super.visitMethodInsn( Opcodes.INVOKESTATIC, //
+                                           "java/lang/Short", //
+                                           "valueOf", //
+                                           "(S)Ljava/lang/Short;" );
+                }
+                else if ( tp.equals( Type.INT_TYPE ) )
+                {
+                    super.visitVarInsn( Opcodes.ILOAD, i + ( isStatic ? 0 : 1 ) );
+                    super.visitMethodInsn( Opcodes.INVOKESTATIC, //
+                                           "java/lang/Integer", //
+                                           "valueOf", //
+                                           "(I)Ljava/lang/Integer;" );
+                }
+                else if ( tp.equals( Type.LONG_TYPE ) )
+                {
+                    super.visitVarInsn( Opcodes.LLOAD, i + ( isStatic ? 0 : 1 ) );
+                    super.visitMethodInsn( Opcodes.INVOKESTATIC, //
+                                           "java/lang/Long", //
+                                           "valueOf", //
+                                           "(J)Ljava/lang/Long;" );
+                    i++;
+                }
+                else if ( tp.equals( Type.FLOAT_TYPE ) )
+                {
+                    super.visitVarInsn( Opcodes.FLOAD, i + ( isStatic ? 0 : 1 ) );
+                    super.visitMethodInsn( Opcodes.INVOKESTATIC, //
+                                           "java/lang/Float", //
+                                           "valueOf", //
+                                           "(F)Ljava/lang/Float;" );
+                }
+                else if ( tp.equals( Type.DOUBLE_TYPE ) )
+                {
+                    super.visitVarInsn( Opcodes.DLOAD, i + ( isStatic ? 0 : 1 ) );
+                    super.visitMethodInsn( Opcodes.INVOKESTATIC, //
+                                           "java/lang/Double", //
+                                           "valueOf", //
+                                           "(D)Ljava/lang/Double;" );
+
+                }
+                else
+                {
+                    super.visitVarInsn( Opcodes.ALOAD, i );
+                }
+
                 // stores the value of the current argument in the array
                 super.visitInsn( AASTORE );
             }

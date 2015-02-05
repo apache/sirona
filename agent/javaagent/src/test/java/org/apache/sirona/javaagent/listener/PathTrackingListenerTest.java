@@ -43,7 +43,7 @@ public class PathTrackingListenerTest
 
     @Test
     @AgentArgs(value = "debug=true|sirona.agent.debug=${sirona.agent.debug}",
-               sysProps = "project.build.directory=${project.build.directory}|sirona.agent.debug=${sirona.agent.debug}|org.apache.sirona.configuration.sirona.properties=${project.build.directory}/test-classes/pathtracking/sirona.properties|java.io.tmpdir=${java.io.tmpdir}"
+               sysProps = "project.build.directory=${project.build.directory}|sirona.agent.debug=${sirona.agent.debug}|org.apache.sirona.configuration.sirona.properties=${project.build.directory}/test-classes/pathtracking/sirona.properties|java.io.tmpdir=${project.build.directory}"
                 )
     public void simpleTest()
         throws Exception
@@ -97,7 +97,7 @@ public class PathTrackingListenerTest
 
         entry = entries.get( 2 );
 
-        Assert.assertEquals( "pub(java.lang.String,java.util.List)", entry.getMethodName() );
+        Assert.assertEquals( "pub(java.lang.String,java.util.List,int)", entry.getMethodName() );
 
         Assert.assertEquals( "org.apache.test.sirona.javaagent.App", entry.getClassName() );
 
