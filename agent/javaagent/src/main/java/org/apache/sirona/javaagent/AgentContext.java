@@ -73,7 +73,13 @@ public class AgentContext {
     }
 
 
-    // called by agent
+    /**
+     * called by agent. <b>It's not part of the public api!!</b>
+     * @param that
+     * @param key
+     * @param methodParameters
+     * @return
+     */
     public static AgentContext startOn(final Object that, final String key, final Object[] methodParameters) {
         if (key == null) { // possible in static inits, the best would be to ignore it in instrumentation
 			return FAKE_CONTEXT;
