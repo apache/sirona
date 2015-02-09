@@ -188,6 +188,8 @@ public class AgentContext {
     }
 
     /**
+     * <b>Those values won't be available if you don't activate this feature</b>
+     * see {@link SironaClassVisitor#TRACE_METHOD_PARAMETERS_KEY}
      * @since 0.3
      * @return array of the parameters passed to the method on empty array but never <code>null</code>
      */
