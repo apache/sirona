@@ -28,7 +28,9 @@ import java.lang.annotation.Target;
 @Retention ( RetentionPolicy.RUNTIME )
 public @interface AgentArgs
 {
+
     boolean removeTargetClassesFromClasspath() default true;
+
     boolean removeSironaFromClasspath() default true;
 
     String value();
@@ -44,4 +46,11 @@ public @interface AgentArgs
      * @return system properties to use in the forked agent format: props1=value|props2=value
      */
     String sysProps() default "";
+
+    /**
+     * to setup extra vm args i.e -XX....
+     * @return
+     * @since 0.3
+     */
+    String[] vmArgs() default "";
 }

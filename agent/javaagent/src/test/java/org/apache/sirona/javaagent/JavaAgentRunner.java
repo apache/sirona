@@ -166,6 +166,15 @@ public class JavaAgentRunner extends BlockJUnit4ClassRunner {
             args.add("-noverify");
         }
 
+        String[] vmArgs = agentArgs == null ? new String[0] : agentArgs.vmArgs();
+
+        // java launcher not happy with empty arg....
+        if (vmArgs.length>0 && !( vmArgs.length==1 && vmArgs[0].length()<1))
+        {
+            args.addAll( Arrays.asList( vmArgs ) );
+        }
+
+
         String sysProps = agentArgs == null ? "" : agentArgs.sysProps();
 
         if (sysProps.length() > 0) {
