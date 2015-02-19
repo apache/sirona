@@ -166,12 +166,13 @@ public class SironaClassVisitor
         private final Label endLabel = new Label();
 
 
+
         @Override
         public void onMethodEnter()
         {
 
-            // we need to call static method onStart from AgentContext
-            // with parameters final String key, final Object[] methodParameters,final Object that
+            // we need to call static method startOn from AgentContext
+            // startOn(final Object that, final String key, final Object[] methodParameters)
 
             if ( isStatic )
             {
