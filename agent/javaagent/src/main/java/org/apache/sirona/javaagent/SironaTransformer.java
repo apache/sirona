@@ -30,18 +30,40 @@ public class SironaTransformer implements ClassFileTransformer {
     private static final String DELEGATING_CLASS_LOADER = "sun.reflect.DelegatingClassLoader";
 
     private final boolean debug;
+    private final String[] autoClassLoaderExcludes;
 
-    public SironaTransformer(final boolean debug) {
+    public SironaTransformer(final boolean debug, final String tempClassLoaders) {
         this.debug = debug || Boolean.getBoolean("sirona.javaagent.debug");
+
+        final String excludes = System.getProperty(
+                "sirona.javaagent.dontAutoClassLoaderExclude",
+                tempClassLoaders != null ?
+                        tempClassLoaders :
+                        "org.apache.openjpa.lib.util.TemporaryClassLoader,org.apache.openejb.core.TempClassLoader");
+        this.autoClassLoaderExcludes = excludes.split(" *, *");
     }
 
     @Override
     public byte[] transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined,
                             final ProtectionDomain protectionDomain, final byte[] classfileBuffer) throws IllegalClassFormatException {
-        if (shouldTransform(className, loader)) {
+        if (shouldTransform(className, loader) && !isExcludedLoader(loader)) {
             return doTransform(className, classfileBuffer);
         }
         return classfileBuffer;
+    }
+
+    private boolean isExcludedLoader(final ClassLoader loader) {
+        if (loader == null) {
+            return false;
+        }
+
+        final String name = loader.getClass().getName();
+        for (int i = 0; i < autoClassLoaderExcludes.length; i++) {
+            if (autoClassLoaderExcludes[i].equals(name)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     protected byte[] doTransform(final String className, final byte[] classfileBuffer) {

@@ -26,7 +26,7 @@ import java.net.URLClassLoader;
 public class EnsureInstrumationDoesntFailTest {
     @Test // just check it doesn't throw an exception, mainly a debug test
     public void run() throws IllegalClassFormatException {
-        new SironaTransformer(true)
+        new SironaTransformer(true, null)
                 .transform(
                         new URLClassLoader(new URL[0]), App.class.getName().replace('.', '/'),
                         App.class, App.class.getProtectionDomain(), new byte[]{

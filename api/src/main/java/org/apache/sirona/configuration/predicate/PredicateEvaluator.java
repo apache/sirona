@@ -45,6 +45,7 @@ public final class PredicateEvaluator {
             predicates.put(regexPredicate.prefix(), regexPredicate);
             predicates.put(containersPredicate.prefix(), containersPredicate);
             predicates.put(TruePredicate.INSTANCE.prefix(), TruePredicate.INSTANCE);
+            predicates.put("boolean", TruePredicate.INSTANCE); // just an alias for true since we can set false now
 
             // SPI
             for (final Predicate predicate : SPI.INSTANCE.find(Predicate.class, PredicateEvaluator.class.getClassLoader())) {
@@ -88,7 +89,10 @@ public final class PredicateEvaluator {
             trueValue = false;
             truePredicate = false;
         }
-        predicates.remove(TruePredicate.INSTANCE.prefix()); // no need to keep it in mem
+
+        // no need to keep it in mem
+        predicates.remove(TruePredicate.INSTANCE.prefix());
+        predicates.remove("boolean");
     }
 
     public boolean matches(final String value) {

@@ -71,6 +71,7 @@ public class SironaAgent {
         }
 
         final boolean debug = "true".equalsIgnoreCase(extractConfig(agentArgs, "debug="));
+        final String tempClassLoaders = extractConfig(agentArgs, "tempClassLoaders=");
         final boolean envrtDebug = debug || "true".equalsIgnoreCase(extractConfig(agentArgs, "environment-debug="));
 
         final StringBuilder out = new StringBuilder();
@@ -122,7 +123,7 @@ public class SironaAgent {
                 System.out.println("Sirona debugging activated, find instrumented classes in /tmp/sirona-dump/");
             }
 
-            final SironaTransformer transformer = new SironaTransformer(debug);
+            final SironaTransformer transformer = new SironaTransformer(debug, tempClassLoaders);
             final boolean reloadable = instrumentation.isRetransformClassesSupported() && FORCE_RELOAD;
             instrumentation.addTransformer(transformer, reloadable);
 
