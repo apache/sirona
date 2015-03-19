@@ -52,4 +52,9 @@ public class PredicateTest
         assertTrue(evaluator.matches("1283"));
         assertTrue(evaluator.matches("Ends with Cat"));
     }
+
+    @Test
+    public void allFalse() {
+        assertFalse(new PredicateEvaluator("true:!true",",").matches("or"));
+    }
 }

@@ -30,6 +30,7 @@ public final class PredicateEvaluator {
 
     private final Map<String, Predicate> predicates = new HashMap<String, Predicate>();
     private final boolean truePredicate;
+    private final boolean falsePredicate;
 
     public PredicateEvaluator(final String configuration, final String sep) {
         if (configuration != null && configuration.length()>0) {
@@ -68,8 +69,9 @@ public final class PredicateEvaluator {
                 }
 
                 if (predicate == TruePredicate.INSTANCE) {
-                    truePredicate = true;
                     predicates.clear(); // no need to keep it in mem since we'll always return true
+                    falsePredicate = trim.substring(separator + 1).startsWith(NOT);
+                    truePredicate = !falsePredicate;
                     return;
                 }
 
@@ -81,8 +83,10 @@ public final class PredicateEvaluator {
                 }
             }
             truePredicate = false;
+            falsePredicate = false;
         } else {
             truePredicate = false;
+            falsePredicate = false;
         }
         predicates.remove(TruePredicate.INSTANCE.prefix()); // no need to keep it in mem
     }
@@ -90,6 +94,9 @@ public final class PredicateEvaluator {
     public boolean matches(final String value) {
         if (truePredicate) {
             return true;
+        }
+        if (falsePredicate) {
+            return false;
         }
 
         for (final Predicate predicate : predicates.values()) {
