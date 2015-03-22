@@ -22,12 +22,15 @@ import org.apache.sirona.counters.Unit;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.spi.PersistenceProvider;
+import javax.persistence.spi.PersistenceProviderResolver;
+import javax.persistence.spi.PersistenceProviderResolverHolder;
 import javax.persistence.spi.PersistenceUnitInfo;
 import javax.persistence.spi.ProviderUtil;
 import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.List;
 import java.util.Map;
 
 import static org.apache.sirona.jpa.JPAProxyFactory.monitor;
@@ -84,7 +87,7 @@ public class SironaPersistence implements PersistenceProvider {
             return null;
         }
         return EntityManagerFactory.class.cast(
-            monitor(PROXY_API, containerEntityManagerFactory, ROLE, true));
+                monitor(PROXY_API, containerEntityManagerFactory, ROLE, true));
     }
 
     @Override
@@ -111,14 +114,28 @@ public class SironaPersistence implements PersistenceProvider {
                                 throw new IllegalStateException(new ClassNotFoundException("Can't instantiate '" + DEFAULT_PROVIDER + "'"));
                             }
                         } else {
-                            for (final String provider : PROVIDERS) {
-                                try {
-                                    delegate = newPersistence(provider);
-                                    if (delegate != null) {
-                                        break;
+                            final PersistenceProviderResolver resolver = PersistenceProviderResolverHolder.getPersistenceProviderResolver();
+                            if (resolver != null) {
+                                final List<PersistenceProvider> instances = resolver.getPersistenceProviders();
+                                if (instances != null) {
+                                    for (final PersistenceProvider p : instances) {
+                                        if (!SironaPersistence.class.isInstance(p)) {
+                                            delegate = p;
+                                            break;
+                                        }
                                     }
-                                } catch (final Throwable th2) {
-                                    // no-op
+                                }
+                            }
+                            if (delegate == null) {
+                                for (final String provider : PROVIDERS) {
+                                    try {
+                                        delegate = newPersistence(provider);
+                                        if (delegate != null) {
+                                            break;
+                                        }
+                                    } catch (final Throwable th2) {
+                                        // no-op
+                                    }
                                 }
                             }
                         }
