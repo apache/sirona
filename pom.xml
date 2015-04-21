@@ -475,7 +475,7 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>animal-sniffer-annotations</artifactId>
         <version>1.13</version>
-        <scope>compile</scope>
+        <optional>true</optional>
       </dependency>
 
       <dependency>
