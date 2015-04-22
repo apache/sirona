@@ -128,7 +128,7 @@ public class SironaClassVisitor
         return b.toString();
     }
 
-    private static boolean isSironable( final int access, final String name )
+    protected boolean isSironable( final int access, final String name )
     {
         return !name.equals( STATIC_INIT ) //
             && !name.equals( CONSTRUCTOR ) //
