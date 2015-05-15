@@ -43,6 +43,16 @@
     </dependency>
     <dependency>
       <groupId>org.apache.sirona</groupId>
+      <artifactId>sirona-core</artifactId>
+      <scope>provided</scope> <!-- using to put it in the container to get JDBC monitoring and deploy the webapp -->
+    </dependency>
+    <dependency>
+      <groupId>org.apache.sirona</groupId>
+      <artifactId>sirona-aop</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.sirona</groupId>
       <artifactId>sirona-plugins-api</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -63,150 +73,31 @@
       <artifactId>velocity</artifactId>
       <version>1.7</version>
     </dependency>
-    <dependency>
-      <groupId>org.apache.cxf</groupId>
-      <artifactId>cxf-rt-frontend-jaxrs</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-web</artifactId>
-      <version>${spring.version}</version>
-    </dependency>
-    <dependency>
+    <dependency> <!-- I'd love to use johnzon but would make hard the support of TomEE 1 and 7 -->
       <groupId>com.fasterxml.jackson.jaxrs</groupId>
       <artifactId>jackson-jaxrs-json-provider</artifactId>
       <version>${jacksonVersion}</version>
     </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.jaxrs</groupId>
-      <artifactId>jackson-jaxrs-xml-provider</artifactId>
-      <version>${jacksonVersion}</version>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.shrinkwrap.descriptors</groupId>
-      <artifactId>shrinkwrap-descriptors-impl-javaee</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.shrinkwrap.resolver</groupId>
-      <artifactId>shrinkwrap-resolver-impl-maven</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.arquillian.junit</groupId>
-      <artifactId>arquillian-junit-container</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.arquillian.protocol</groupId>
-      <artifactId>arquillian-protocol-servlet</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.arquillian.container</groupId>
-      <artifactId>arquillian-tomcat-embedded-7</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.tomcat.embed</groupId>
-      <artifactId>tomcat-embed-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.tomcat.embed</groupId>
-      <artifactId>tomcat-embed-jasper</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.tomcat.embed</groupId>
-      <artifactId>tomcat-embed-logging-juli</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.jdt.core.compiler</groupId>
-      <artifactId>ecj</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>net.sourceforge.htmlunit</groupId>
-      <artifactId>htmlunit</artifactId>
-    </dependency>
   </dependencies>
 
   <build>
-    <testResources>
-      <testResource>
-        <directory>src/test/resources</directory>
-        <filtering>true</filtering>
-      </testResource>
-    </testResources>
     <plugins>
       <plugin>
-        <groupId>org.apache.tomcat.maven</groupId>
-        <artifactId>tomcat7-maven-plugin</artifactId>
+        <groupId>org.apache.openejb.maven</groupId>
+        <artifactId>tomee-maven-plugin</artifactId>
+        <version>${tomee.version}</version>
         <configuration>
-          <port>${tomcatRunPort}</port>
-          <path>${tomcatRunPath}</path>
-          <skip>${sirona.reporting.tomcat.skip}</skip>
-          <systemProperties>
-            <org.apache.sirona.configuration.sirona.properties>${sirona.properties.path}</org.apache.sirona.configuration.sirona.properties>
-          </systemProperties>
+          <tomeeClassifier>jaxrs</tomeeClassifier>
+          <simpleLog>true</simpleLog>
+          <libs>
+            <lib>${project.groupId}:sirona-api:${project.version}</lib>
+            <lib>${project.groupId}:sirona-core:${project.version}</lib>
+            <lib>${project.groupId}:sirona-aop:${project.version}</lib>
+            <lib>${project.groupId}:sirona-store-memory:${project.version}</lib>
+            <lib>org.apache.commons:commons-proxy:1.0</lib>
+          </libs>
         </configuration>
       </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>reserve-http-port</id>
-            <phase>generate-test-resources</phase>
-            <goals>
-              <goal>reserve-network-port</goal>
-            </goals>
-            <configuration>
-              <portNames>
-                <portName>tomcat.http</portName>
-              </portNames>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-surefire-plugin</artifactId>
-          <configuration>
-            <systemPropertyVariables>
-              <arquillian.launch>tomcat7</arquillian.launch>
-              <tomcat.http>${tomcat.http}</tomcat.http>
-            </systemPropertyVariables>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
   </build>
-
-  <profiles>
-    <profile>
-      <id>cassandra</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.tomcat.maven</groupId>
-            <artifactId>tomcat7-maven-plugin</artifactId>
-            <dependencies>
-              <dependency>
-                <groupId>org.apache.sirona</groupId>
-                <artifactId>sirona-core</artifactId>
-                <version>${project.version}</version>
-              </dependency>
-              <dependency>
-                <groupId>org.apache.sirona</groupId>
-                <artifactId>sirona-cassandra</artifactId>
-                <version>${project.version}</version>
-              </dependency>
-            </dependencies>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
-
 </project>

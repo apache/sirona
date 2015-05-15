@@ -28,6 +28,10 @@
   <name>Apache Sirona Incubator :: Server</name>
   <packaging>pom</packaging>
 
+  <properties>
+    <tomee.version>1.7.1</tomee.version>
+  </properties>
+
   <modules>
     <module>collector</module>
     <module>reporting</module>

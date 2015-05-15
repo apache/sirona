@@ -16,7 +16,6 @@
  */
 package org.apache.sirona.reporting.web;
 
-import org.apache.cxf.transport.servlet.CXFServlet;
 import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.reporting.web.handler.FilteringEndpoints;
 import org.apache.sirona.reporting.web.handler.HomeEndpoint;
@@ -27,14 +26,6 @@ import org.apache.sirona.reporting.web.plugin.api.MapBuilder;
 import org.apache.sirona.reporting.web.template.Templates;
 import org.apache.sirona.repositories.Repository;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -51,6 +42,14 @@ import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 public class SironaController implements Filter {
     public static final String CONTENT_TYPE = "Content-Type";
@@ -59,7 +58,6 @@ public class SironaController implements Filter {
     private String mapping = null;
     private ClassLoader classloader;
     private Invoker defaultInvoker;
-    private CXFServlet cxfServlet;
 
     @Override
     public void init(final FilterConfig config) throws ServletException {
@@ -100,7 +98,7 @@ public class SironaController implements Filter {
         if (value == null) {
             mapping = "";
         } else if (!value.startsWith("/")) {
-            mapping = "/" + mapping;
+            mapping = "/" + value;
         } else {
             mapping = value;
         }
@@ -172,6 +170,9 @@ public class SironaController implements Filter {
         } else if (requestURI.endsWith(".ttf") || requestURI.endsWith(".itf")) {
             httpResponse.setHeader(CONTENT_TYPE, "application/octet-stream");
             skipFiltering = true;
+        } else if (mapping.isEmpty() && path.startsWith("/restServices/")) {
+            chain.doFilter(request, response);
+            return;
         }
 
         // resource, they are in the classloader and not in the webapp to ease the embedded case

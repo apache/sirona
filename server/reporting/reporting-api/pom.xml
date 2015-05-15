@@ -32,10 +32,16 @@
     <dependency>
       <groupId>org.apache.sirona</groupId>
       <artifactId>sirona-core</artifactId>
+      <scope>provided</scope> <!-- using to put it in the container to get JDBC monitoring and deploy the webapp -->
     </dependency>
     <dependency>
-      <groupId>javax.ws.rs</groupId>
-      <artifactId>javax.ws.rs-api</artifactId>
+      <groupId>org.apache.sirona</groupId>
+      <artifactId>sirona-aop</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-jaxrs_1.1_spec</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.sirona</groupId>
@@ -51,4 +57,24 @@
     </dependency>
   </dependencies>
 
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.openejb.maven</groupId>
+        <artifactId>tomee-maven-plugin</artifactId>
+        <version>${tomee.version}</version>
+        <configuration>
+          <tomeeClassifier>jaxrs</tomeeClassifier>
+          <simpleLog>true</simpleLog>
+          <libs>
+            <lib>${project.groupId}:sirona-api:${project.version}</lib>
+            <lib>${project.groupId}:sirona-core:${project.version}</lib>
+            <lib>${project.groupId}:sirona-aop:${project.version}</lib>
+            <lib>${project.groupId}:sirona-store-memory:${project.version}</lib>
+            <lib>org.apache.commons:commons-proxy:1.0</lib>
+          </libs>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

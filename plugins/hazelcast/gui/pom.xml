@@ -92,7 +92,7 @@
     </dependency>
     <dependency>
       <groupId>org.apache.sirona</groupId>
-      <artifactId>sirona-reporting-webapp</artifactId>
+      <artifactId>sirona-reporting-webapp-full</artifactId>
       <version>${project.version}</version>
       <classifier>classes</classifier>
       <scope>test</scope>

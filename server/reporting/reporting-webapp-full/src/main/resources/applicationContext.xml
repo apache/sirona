@@ -20,26 +20,20 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:jaxrs="http://cxf.apache.org/jaxrs"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans
            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-           http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd
-           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+           http://cxf.apache.org/jaxrs
+           http://cxf.apache.org/schemas/jaxrs.xsd">
 
+  <bean id="cxf" class="org.apache.cxf.bus.spring.SpringBus" destroy-method="shutdown"/>
+  <bean id="org.apache.cxf.bus.spring.BusWiringBeanFactoryPostProcessor" class="org.apache.cxf.bus.spring.BusWiringBeanFactoryPostProcessor"/>
+  <bean id="org.apache.cxf.bus.spring.Jsr250BeanPostProcessor" class="org.apache.cxf.bus.spring.Jsr250BeanPostProcessor"/>
+  <bean id="org.apache.cxf.bus.spring.BusExtensionPostProcessor" class="org.apache.cxf.bus.spring.BusExtensionPostProcessor"/>
 
-  <import resource="classpath:META-INF/cxf/cxf.xml"/>
-  <import resource="classpath:META-INF/cxf/cxf-servlet.xml"/>
-
-  <bean id="jsonProvider" class="com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider">
-    <property name="mapper">
-      <bean class="com.fasterxml.jackson.databind.ObjectMapper"/>
-    </property>
-  </bean>
-
-  <jaxrs:server id="sironaServices" address="/sironaServices" basePackages="org.apache.sirona.reporting.web.**">
+  <jaxrs:server id="sironaServices" basePackages="org.apache.sirona.reporting.web.**" serviceClass="org.apache.sirona.reporting.web.Environment">
     <jaxrs:providers>
-      <ref bean="jsonProvider"/>
+      <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider" />
     </jaxrs:providers>
   </jaxrs:server>
-
 </beans>
