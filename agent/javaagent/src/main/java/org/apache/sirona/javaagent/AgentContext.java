@@ -60,6 +60,8 @@ public class AgentContext {
 
     private static final Object[] EMPTY_ARRAY = new Object[0];
 
+    private static final InvocationListener[] EMPTY_LISTENERS_ARRAY = new InvocationListener[0];
+
     public static void addAgentParameter( String key, String value){
         AGENT_PARAMETERS.put(key, value);
     }
@@ -131,6 +133,9 @@ public class AgentContext {
     }
 
     public static InvocationListener[] listeners(final String key, final byte[] buffer) {
+        if (key == null){
+            return EMPTY_LISTENERS_ARRAY;
+        }
         InvocationListener[] listeners = LISTENERS_BY_KEY.get(key);
         if (listeners == null && buffer != null) {
             listeners = findListeners(key, buffer);
