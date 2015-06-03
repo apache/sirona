@@ -203,6 +203,8 @@ public class SironaClassVisitor
         }
 
 
+
+
         @Override
         public void onMethodExit( final int opCode )
         {
@@ -265,5 +267,7 @@ public class SironaClassVisitor
             throwException();
             super.visitMaxs( 0, 0 );
         }
+
+
     }
 }
