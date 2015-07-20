@@ -73,14 +73,13 @@ import org.apache.sirona.tracking.PathTracker;
 
         SironaAgentLogging.debug( "call PathTracker#start with {0}", pathTrackingInformation );
 
-        context.put( PATH_TRACKER_KEY, PathTracker.start( pathTrackingInformation ) );
+        context.put( PATH_TRACKER_KEY, PathTracker.start( pathTrackingInformation, context.getReference() ) );
     }
 
-    //----------------------------------------------------------------
-    // key format: org.apache.test.sirona.javaagent.App.foo()
-    // or org.apache.test.sirona.javaagent.App.pub(java.lang.String)
-    //----------------------------------------------------------------
-
+    /**
+     * @param key format: org.apache.test.sirona.javaagent.App.foo() or org.apache.test.sirona.javaagent.App.pub(java.lang.String)
+     * @return
+     */
     static String extractClassName( String key )
     {
         if ( key == null )
@@ -127,7 +126,7 @@ import org.apache.sirona.tracking.PathTracker;
     }
 
     /**
-     * will call {@link org.apache.sirona.tracking.PathTracker#stop()}
+     * will call {@link org.apache.sirona.tracking.PathTracker#stop(Object reference)}
      *
      * @param context
      * @param result
@@ -139,6 +138,6 @@ import org.apache.sirona.tracking.PathTracker;
 
         SironaAgentLogging.debug( "PathTrackingListener#after: {0}", context.getKey() );
 
-        context.get( PATH_TRACKER_KEY, PathTracker.class ).stop();
+        context.get( PATH_TRACKER_KEY, PathTracker.class ).stop( context.getReference() );
     }
 }

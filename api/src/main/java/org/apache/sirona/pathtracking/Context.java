@@ -22,7 +22,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- *  @since 0.2
+ * @since 0.2
  */
 public class Context
 {
@@ -32,7 +32,9 @@ public class Context
 
     private List<PathTrackingEntry> entries;
 
-    private PathTrackingInformation pathTrackingInformation;
+    private PathTrackingInformation startPathTrackingInformation;
+
+    private Object startPathObject;
 
     public Context()
     {
@@ -56,10 +58,7 @@ public class Context
         return entries;
     }
 
-    public PathTrackingInformation getPathTrackingInformation()
-    {
-        return pathTrackingInformation;
-    }
+
 
     public void setUuid( String uuid )
     {
@@ -76,8 +75,24 @@ public class Context
         this.entries = entries;
     }
 
-    public void setPathTrackingInformation( PathTrackingInformation pathTrackingInformation )
+    public Object getStartPathObject()
     {
-        this.pathTrackingInformation = pathTrackingInformation;
+        return startPathObject;
     }
+
+    public void setStartPathObject( Object startPathObject )
+    {
+        this.startPathObject = startPathObject;
+    }
+
+    public PathTrackingInformation getStartPathTrackingInformation()
+    {
+        return startPathTrackingInformation;
+    }
+
+    public void setStartPathTrackingInformation( PathTrackingInformation startPathTrackingInformation )
+    {
+        this.startPathTrackingInformation = startPathTrackingInformation;
+    }
+
 }

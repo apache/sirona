@@ -26,11 +26,7 @@ public class PathTrackingInformation
 
     private String methodName;
 
-    private PathTrackingInformation parent;
-
-    private long start;
-
-    private long end;
+    private final long start;
 
     private int level;
 
@@ -38,6 +34,7 @@ public class PathTrackingInformation
     {
         this.className = className;
         this.methodName = methodName;
+        this.start = System.nanoTime();
     }
 
     public String getClassName()
@@ -50,34 +47,9 @@ public class PathTrackingInformation
         return methodName;
     }
 
-    public PathTrackingInformation getParent()
-    {
-        return parent;
-    }
-
-    public void setParent( PathTrackingInformation parent )
-    {
-        this.parent = parent;
-    }
-
-    public void setStart( final long start )
-    {
-        this.start = start;
-    }
-
     public long getStart()
     {
         return start;
-    }
-
-    public long getEnd()
-    {
-        return end;
-    }
-
-    public void setEnd( final long end )
-    {
-        this.end = end;
     }
 
     public int getLevel()
@@ -93,7 +65,11 @@ public class PathTrackingInformation
     @Override
     public String toString()
     {
-        return "PathTrackingInformation{className='" + className + "', methodName='" + methodName + "\', parent="
-            + parent + '}';
+        return "PathTrackingInformation{" +
+            "className='" + className + '\'' +
+            ", methodName='" + methodName + '\'' +
+            ", start=" + start +
+            ", level=" + level +
+            '}';
     }
 }

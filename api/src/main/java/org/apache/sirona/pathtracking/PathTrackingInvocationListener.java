@@ -24,9 +24,9 @@ public interface PathTrackingInvocationListener
 
     void startPath( Context context );
 
-    void enterMethod( Context context );
+    void enterMethod( PathTrackingInformation pathTrackingInformation );// Context context );
 
-    void exitMethod( Context context );
+    void exitMethod( PathTrackingInformation pathTrackingInformation );// Context context );
 
     void endPath( Context context );
 

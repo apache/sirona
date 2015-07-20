@@ -58,8 +58,15 @@ public class PathTrackingInvocationRecursiveTest
 
         System.out.println( all );
 
-        Assert.assertTrue( !all.isEmpty() );
+        boolean called = MockPathTrackingInvocationListener.START_PATH_CALLED;
 
+        Assert.assertTrue( called );
+
+        called = MockPathTrackingInvocationListener.END_PATH_CALLED;
+
+        Assert.assertTrue( called );
+
+        Assert.assertTrue( !all.isEmpty() );
 
         Assert.assertEquals( 4, all.size() );
 

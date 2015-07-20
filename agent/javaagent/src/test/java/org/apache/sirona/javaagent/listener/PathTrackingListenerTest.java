@@ -69,7 +69,7 @@ public class PathTrackingListenerTest
 
         // so we have 4 entries constructor is ignored!
 
-        Assert.assertEquals( 4, entries.size() );
+        Assert.assertEquals( entries.toString(), 4, entries.size() );
 
         for ( PathTrackingEntry entry : entries )
         {
@@ -82,7 +82,7 @@ public class PathTrackingListenerTest
 
         Assert.assertEquals( "org.apache.test.sirona.javaagent.App", entry.getClassName() );
 
-        Assert.assertEquals( 1, entry.getLevel() );
+        Assert.assertEquals( "level should be 1", 1, entry.getLevel() );
 
         entry = entries.get( 1 );
 
@@ -90,7 +90,7 @@ public class PathTrackingListenerTest
 
         Assert.assertEquals( "org.apache.test.sirona.javaagent.App", entry.getClassName() );
 
-        Assert.assertEquals( 2, entry.getLevel() );
+        Assert.assertEquals( "level should be 2", 2, entry.getLevel() );
 
         // there is Thread.sleep( 500 ) so we can be sure a minimum for that
 
@@ -102,7 +102,7 @@ public class PathTrackingListenerTest
 
         Assert.assertEquals( "org.apache.test.sirona.javaagent.App", entry.getClassName() );
 
-        Assert.assertEquals( 3, entry.getLevel() );
+        Assert.assertEquals( "level should be 2", 2, entry.getLevel() );
 
         Assert.assertTrue( entry.getExecutionTime() >= 100 * 1000000 );
 
@@ -112,7 +112,7 @@ public class PathTrackingListenerTest
 
         Assert.assertEquals( "org.apache.test.sirona.javaagent.App", entry.getClassName() );
 
-        Assert.assertEquals( 4, entry.getLevel() );
+        Assert.assertEquals( "level should be 2", 3, entry.getLevel() );
 
         Assert.assertTrue( entry.getExecutionTime() >= 300 * 1000000 );
 
@@ -127,9 +127,9 @@ public class PathTrackingListenerTest
 
         Assert.assertEquals( 1, mock.endPathCallCount );
 
-        Assert.assertEquals( 3, mock.enterMethodCallCount );
+        Assert.assertEquals( mock.entered.toString(), 4, mock.enterMethodCallCount );
 
-        Assert.assertEquals( 3, mock.exitMethodCallCount );
+        Assert.assertEquals( mock.exit.toString(), 4, mock.exitMethodCallCount );
 
         InvocationListener[] listeners =
             AgentContext.listeners( "org.apache.test.sirona.javaagent.App.pub(java.lang.String,java.util.List,int)", //
@@ -150,9 +150,9 @@ public class PathTrackingListenerTest
 
         Assert.assertTrue( List.class.isAssignableFrom( parameters[1].getClass() ) );
 
-        Assert.assertTrue( ((List)parameters[1]).get( 0 ).equals( "Mountain Goat" ) );
+        Assert.assertTrue( ( (List) parameters[1] ).get( 0 ).equals( "Mountain Goat" ) );
 
-        Assert.assertTrue( ((List)parameters[1]).get( 1 ).equals( "Fatyak" ) );
+        Assert.assertTrue( ( (List) parameters[1] ).get( 1 ).equals( "Fatyak" ) );
 
         Assert.assertEquals( 2, parameters[2] );
 

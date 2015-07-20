@@ -59,7 +59,7 @@ public class PathTracker
         }
     };
 
-    private final PathTrackingInformation pathTrackingInformation;
+    private final PathTrackingInformation currentPathTrackingInformation;
 
     private static final boolean USE_EXECUTORS = Boolean.parseBoolean(
         Configuration.getProperty( Configuration.CONFIG_PROPERTY_PREFIX + "pathtracking.useexecutors", "false" ) );
@@ -120,7 +120,7 @@ public class PathTracker
 
     private PathTracker( final PathTrackingInformation pathTrackingInformation )
     {
-        this.pathTrackingInformation = pathTrackingInformation;
+        this.currentPathTrackingInformation = pathTrackingInformation;
     }
 
 
@@ -131,81 +131,76 @@ public class PathTracker
 
     // An other solution could be using Thread.currentThread().getStackTrace() <- very slow
 
-    public static PathTracker start( PathTrackingInformation pathTrackingInformation )
+    public static PathTracker start( PathTrackingInformation currentPathTrackingInformation, final Object reference )
     {
 
         final Context context = THREAD_LOCAL.get();
 
         int level = 0;
-        final PathTrackingInformation current = context.getPathTrackingInformation();
-        if ( current == null )
+        final PathTrackingInformation startPathTrackingInformation = context.getStartPathTrackingInformation();
+
+        if ( startPathTrackingInformation == null )
         {
             level = context.getLevel().incrementAndGet();
-            pathTrackingInformation.setLevel( level );
+            currentPathTrackingInformation.setLevel( level );
+            context.setStartPathTrackingInformation( currentPathTrackingInformation );
         }
         else
         {
             // same class so no inc
-            if ( current != pathTrackingInformation )
+            if ( currentPathTrackingInformation != startPathTrackingInformation )
             {
                 level = context.getLevel().incrementAndGet();
-                pathTrackingInformation.setLevel( level );
-                pathTrackingInformation.setParent( current );
+                currentPathTrackingInformation.setLevel( level );
             }
-
-
         }
-        pathTrackingInformation.setStart( System.nanoTime() );
-
-        context.setPathTrackingInformation( pathTrackingInformation );
 
         for ( PathTrackingInvocationListener listener : LISTENERS )
         {
             if ( level == 1 )
             {
                 listener.startPath( context );
+                context.setStartPathObject( reference );
             }
-            else
-            {
-                listener.enterMethod( context );
-            }
+
+            listener.enterMethod( currentPathTrackingInformation );
         }
 
-        return new PathTracker( pathTrackingInformation );
+        return new PathTracker( currentPathTrackingInformation );
     }
 
 
-    public void stop()
+    public void stop( final Object reference )
     {
         final long end = System.nanoTime();
-        final long start = pathTrackingInformation.getStart();
+        final long start = currentPathTrackingInformation.getStart();
         final Context context = THREAD_LOCAL.get();
 
         final String uuid = context.getUuid();
 
-        final PathTrackingInformation current = context.getPathTrackingInformation();
+        final PathTrackingInformation startPathTrackingInformation = context.getStartPathTrackingInformation();
+
         // same invocation so no inc, class can do recursion so don't use classname/methodname
-        if ( pathTrackingInformation != current )
+        if ( startPathTrackingInformation != this.currentPathTrackingInformation )
         {
             context.getLevel().decrementAndGet();
-            context.setPathTrackingInformation( pathTrackingInformation.getParent() );
         }
 
-        if ( context.getPathTrackingInformation() != null )
+        if ( this.currentPathTrackingInformation != null )
         {
             for ( PathTrackingInvocationListener listener : LISTENERS )
             {
-                listener.exitMethod( context );
+                listener.exitMethod( this.currentPathTrackingInformation );
 
             }
         }
 
         final PathTrackingEntry pathTrackingEntry =
-            new PathTrackingEntry( uuid, NODE, pathTrackingInformation.getClassName(), //
-                                   pathTrackingInformation.getMethodName(), //
+            new PathTrackingEntry( uuid, NODE, this.currentPathTrackingInformation.getClassName(), //
+                                   this.currentPathTrackingInformation.getMethodName(), //
                                    start, //
                                    ( end - start ), //
-                                   pathTrackingInformation.getLevel() );
+                                   this.currentPathTrackingInformation.getLevel() );
         if ( USE_SINGLE_STORE )
         {
             PATH_TRACKING_DATA_STORE.store( pathTrackingEntry );
@@ -215,7 +210,8 @@ public class PathTracker
             context.getEntries().add( pathTrackingEntry );
         }
 
-        if ( pathTrackingInformation.getLevel() == 1 && pathTrackingInformation.getParent() == null )
+        if ( this.currentPathTrackingInformation.getLevel() == 1 && //
+            ( context.getStartPathObject() != null && context.getStartPathObject() == reference ) )
         { // 0 is never reached so 1 is first
             if ( !USE_SINGLE_STORE )
             {

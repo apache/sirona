@@ -35,6 +35,10 @@ public class MockPathTrackingInvocationListener
     implements PathTrackingInvocationListener, InvocationListener
 {
 
+    public static boolean START_PATH_CALLED = false;
+
+    public static boolean END_PATH_CALLED = false;
+
     int startPathCallCount = 0;
 
     int enterMethodCallCount = 0;
@@ -53,26 +57,28 @@ public class MockPathTrackingInvocationListener
     @Override
     public void startPath( Context context )
     {
+        START_PATH_CALLED = true;
         startPathCallCount++;
     }
 
     @Override
-    public void enterMethod( Context context )
+    public void enterMethod( PathTrackingInformation pathTrackingInformation  )
     {
-        entered.add( context.getPathTrackingInformation() );
+        entered.add( pathTrackingInformation );
         enterMethodCallCount++;
     }
 
     @Override
-    public void exitMethod( Context context )
+    public void exitMethod(  PathTrackingInformation pathTrackingInformation  )
     {
-        exit.add( context.getPathTrackingInformation() );
+        exit.add( pathTrackingInformation );
         exitMethodCallCount++;
     }
 
     @Override
     public void endPath( Context context )
     {
+        END_PATH_CALLED = true;
         endPathCallCount++;
     }
 
