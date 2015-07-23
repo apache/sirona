@@ -20,7 +20,6 @@ package org.apache.sirona.javaagent.tracking;
 import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.configuration.ioc.Destroying;
 import org.apache.sirona.configuration.ioc.IoCs;
-import org.apache.sirona.javaagent.logging.SironaAgentLogging;
 import org.apache.sirona.pathtracking.Context;
 import org.apache.sirona.pathtracking.PathTrackingEntry;
 import org.apache.sirona.pathtracking.PathTrackingInformation;
@@ -67,6 +66,9 @@ public class PathTracker
 
     private static boolean USE_SINGLE_STORE = Boolean.parseBoolean(
         Configuration.getProperty( Configuration.CONFIG_PROPERTY_PREFIX + "pathtracking.singlestore", "false" ) );
+
+    private static boolean USE_STORE = Boolean.parseBoolean(
+        Configuration.getProperty( Configuration.CONFIG_PROPERTY_PREFIX + "pathtracking.store", "true" ) );
 
     protected static ExecutorService EXECUTORSERVICE;
 
@@ -203,15 +205,17 @@ public class PathTracker
                                    ( end - start ), //
                                    this.currentPathTrackingInformation.getLevel() );
 
-        if ( USE_SINGLE_STORE )
+        if ( USE_STORE )
         {
-            PATH_TRACKING_DATA_STORE.store( pathTrackingEntry );
+            if ( USE_SINGLE_STORE )
+            {
+                PATH_TRACKING_DATA_STORE.store( pathTrackingEntry );
+            }
+            else
+            {
+                context.getEntries().add( pathTrackingEntry );
+            }
         }
-        else
-        {
-            context.getEntries().add( pathTrackingEntry );
-        }
-
         if ( this.currentPathTrackingInformation.getLevel() == 1 && //
             ( context.getStartPathObject() != null && context.getStartPathObject() == reference ) )
         { // 0 is never reached so 1 is first
