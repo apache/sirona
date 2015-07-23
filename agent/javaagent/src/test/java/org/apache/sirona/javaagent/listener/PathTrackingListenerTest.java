@@ -25,7 +25,7 @@ import org.apache.sirona.pathtracking.PathTrackingEntry;
 import org.apache.sirona.pathtracking.PathTrackingInvocationListener;
 import org.apache.sirona.pathtracking.test.ExtendedInMemoryPathTrackingDataStore;
 import org.apache.sirona.store.DataStoreFactory;
-import org.apache.sirona.tracking.PathTracker;
+import org.apache.sirona.javaagent.tracking.PathTracker;
 import org.apache.test.sirona.javaagent.App;
 import org.junit.Assert;
 import org.junit.Test;

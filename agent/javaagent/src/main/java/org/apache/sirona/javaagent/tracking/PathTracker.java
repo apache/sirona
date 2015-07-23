@@ -14,12 +14,13 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package org.apache.sirona.tracking;
+package org.apache.sirona.javaagent.tracking;
 
 
 import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.configuration.ioc.Destroying;
 import org.apache.sirona.configuration.ioc.IoCs;
+import org.apache.sirona.javaagent.logging.SironaAgentLogging;
 import org.apache.sirona.pathtracking.Context;
 import org.apache.sirona.pathtracking.PathTrackingEntry;
 import org.apache.sirona.pathtracking.PathTrackingInformation;
@@ -201,6 +202,7 @@ public class PathTracker
                                    start, //
                                    ( end - start ), //
                                    this.currentPathTrackingInformation.getLevel() );
+
         if ( USE_SINGLE_STORE )
         {
             PATH_TRACKING_DATA_STORE.store( pathTrackingEntry );

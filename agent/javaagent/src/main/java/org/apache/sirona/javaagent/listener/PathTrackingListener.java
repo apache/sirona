@@ -22,12 +22,12 @@ import org.apache.sirona.javaagent.AgentContext;
 import org.apache.sirona.javaagent.logging.SironaAgentLogging;
 import org.apache.sirona.pathtracking.PathTrackingInformation;
 import org.apache.sirona.spi.Order;
-import org.apache.sirona.tracking.PathTracker;
+import org.apache.sirona.javaagent.tracking.PathTracker;
 
 @Order( 1 )
 @AutoSet
 /**
- * This listener is responsible to track/record class#method path using {@link org.apache.sirona.tracking.PathTracker}
+ * This listener is responsible to track/record class#method path using {@link org.apache.sirona.javaagent.tracking.PathTracker}
  */ public class PathTrackingListener
     extends ConfigurableListener
 {
@@ -55,7 +55,7 @@ import org.apache.sirona.tracking.PathTracker;
     /**
      * executed before method called to configure the start {@link org.apache.sirona.pathtracking.PathTrackingInformation}
      * and set various thread local variable as invocation level
-     * will call {@link org.apache.sirona.tracking.PathTracker#start(org.apache.sirona.pathtracking.PathTrackingInformation)}
+     * will call {@link org.apache.sirona.javaagent.tracking.PathTracker#start(org.apache.sirona.pathtracking.PathTrackingInformation)}
      *
      * @param context
      */
@@ -126,7 +126,7 @@ import org.apache.sirona.tracking.PathTracker;
     }
 
     /**
-     * will call {@link org.apache.sirona.tracking.PathTracker#stop(Object reference)}
+     * will call {@link org.apache.sirona.javaagent.tracking.PathTracker#stop(Object reference)}
      *
      * @param context
      * @param result
