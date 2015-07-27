@@ -245,6 +245,8 @@ public class PathTracker
                 listener.endPath( context );
             }
 
+            THREAD_LOCAL.remove();
+
         }
     }
 
