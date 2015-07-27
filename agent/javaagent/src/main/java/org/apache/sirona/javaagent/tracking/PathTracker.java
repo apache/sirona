@@ -219,7 +219,7 @@ public class PathTracker
         if ( this.currentPathTrackingInformation.getLevel() == 1 && //
             ( context.getStartPathObject() != null && context.getStartPathObject() == reference ) )
         { // 0 is never reached so 1 is first
-            if ( !USE_SINGLE_STORE )
+            if ( USE_STORE && !USE_SINGLE_STORE )
             {
                 Runnable runnable = new Runnable()
                 {
