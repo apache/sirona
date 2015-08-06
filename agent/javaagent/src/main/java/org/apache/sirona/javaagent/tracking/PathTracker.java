@@ -221,28 +221,42 @@ public class PathTracker
         { // 0 is never reached so 1 is first
             if ( USE_STORE && !USE_SINGLE_STORE )
             {
-                Runnable runnable = new Runnable()
+                try
                 {
-                    @Override
-                    public void run()
+                    Runnable runnable = new Runnable()
                     {
-                        PATH_TRACKING_DATA_STORE.store( context.getEntries() );
-                        PathTracker.cleanUp();
+                        @Override
+                        public void run()
+                        {
+                            PATH_TRACKING_DATA_STORE.store( context.getEntries() );
+                            PathTracker.cleanUp();
+                        }
+                    };
+                    if ( USE_EXECUTORS )
+                    {
+                        EXECUTORSERVICE.submit( runnable );
                     }
-                };
-                if ( USE_EXECUTORS )
-                {
-                    EXECUTORSERVICE.submit( runnable );
+                    else
+                    {
+                        runnable.run();
+                    }
                 }
-                else
+                catch ( Throwable e )
                 {
-                    runnable.run();
+                    // as implementations can generate exception we simply ignore all exception happening here!!
                 }
             }
 
             for ( PathTrackingInvocationListener listener : LISTENERS )
             {
-                listener.endPath( context );
+                try
+                {
+                    listener.endPath( context );
+                }
+                catch ( Throwable e )
+                {
+                    // as listener implementations can generate exception we simply ignore all exception happening here!!
+                }
             }
 
             THREAD_LOCAL.remove();
