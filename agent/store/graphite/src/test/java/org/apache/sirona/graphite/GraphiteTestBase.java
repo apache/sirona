@@ -32,8 +32,11 @@ public abstract class GraphiteTestBase {
 
     @Before
     public void startGraphite() throws IOException {
-        Repository.INSTANCE.clearCounters();
         server = new GraphiteMockServer(Integer.getInteger("collector.server.port", 1234)).start();
+        if (System.getProperty("org.apache.sirona.graphite.GraphiteBuilder.port", "").isEmpty()) {
+            System.setProperty("org.apache.sirona.graphite.GraphiteBuilder.port", Integer.toString(server.getPort()));
+        }
+        Repository.INSTANCE.clearCounters();
         gauges = new Gauge.LoaderHelper(false);
     }
 

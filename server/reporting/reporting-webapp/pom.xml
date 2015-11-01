@@ -37,6 +37,13 @@
       <groupId>org.apache.geronimo.specs</groupId>
       <artifactId>geronimo-servlet_3.0_spec</artifactId>
     </dependency>
+
+    <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-json_1.0_spec</artifactId>
+      <scope>compile</scope>
+    </dependency>
+
     <dependency>
       <groupId>org.apache.sirona</groupId>
       <artifactId>sirona-reporting-api</artifactId>
@@ -73,10 +80,10 @@
       <artifactId>velocity</artifactId>
       <version>1.7</version>
     </dependency>
-    <dependency> <!-- I'd love to use johnzon but would make hard the support of TomEE 1 and 7 -->
-      <groupId>com.fasterxml.jackson.jaxrs</groupId>
-      <artifactId>jackson-jaxrs-json-provider</artifactId>
-      <version>${jacksonVersion}</version>
+    <dependency>
+      <groupId>org.apache.johnzon</groupId>
+      <artifactId>johnzon-jaxrs</artifactId>
+      <version>0.9.2-incubating</version>
     </dependency>
   </dependencies>
 

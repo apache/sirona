@@ -23,7 +23,13 @@ public class MapBuilder {
     private final Map<String, Object> map = new HashMap<String, Object>();
 
     public MapBuilder add(final String key, final Object value) {
-        map.put(key, value);
+        if (Double.class.isInstance(value)) {
+            if (!Double.isNaN(Double.class.cast(value))) { // not a number so skipping
+                map.put(key, value);
+            }
+        } else {
+            map.put(key, value);
+        }
         return this;
     }
 

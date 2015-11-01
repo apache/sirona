@@ -34,11 +34,7 @@
   <bean id="org.apache.cxf.bus.spring.Jsr250BeanPostProcessor" class="org.apache.cxf.bus.spring.Jsr250BeanPostProcessor"/>
   <bean id="org.apache.cxf.bus.spring.BusExtensionPostProcessor" class="org.apache.cxf.bus.spring.BusExtensionPostProcessor"/>
 
-  <bean id="jsonProvider" class="com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider">
-    <property name="mapper">
-      <bean class="com.fasterxml.jackson.databind.ObjectMapper"/>
-    </property>
-  </bean>
+  <bean id="jsonProvider" class="org.apache.johnzon.jaxrs.JohnzonProvider" />
 
   <jaxrs:server id="sironaServices" address="/sironaServices" basePackages="org.apache.sirona.reporting.web.**,org.apache.sirona.reporting.web**">
     <jaxrs:providers>

@@ -37,5 +37,6 @@
     <module>reporting</module>
     <module>store</module>
     <module>boomerang</module>
+    <module>websocket-server</module>
   </modules>
 </project>

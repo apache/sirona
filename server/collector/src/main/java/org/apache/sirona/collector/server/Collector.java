@@ -16,9 +16,6 @@
  */
 package org.apache.sirona.collector.server;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lmax.disruptor.BusySpinWaitStrategy;
 import com.lmax.disruptor.EventFactory;
 import com.lmax.disruptor.EventHandler;
@@ -27,6 +24,9 @@ import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.TimeoutException;
 import com.lmax.disruptor.dsl.Disruptor;
 import com.lmax.disruptor.dsl.ProducerType;
+import org.apache.johnzon.mapper.Converter;
+import org.apache.johnzon.mapper.Mapper;
+import org.apache.johnzon.mapper.MapperBuilder;
 import org.apache.sirona.Role;
 import org.apache.sirona.SironaException;
 import org.apache.sirona.collector.server.api.SSLSocketFactoryProvider;
@@ -64,13 +64,20 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Queue;
+import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -108,7 +115,7 @@ public class Collector extends HttpServlet {
     private CollectorGaugeDataStore gaugeDataStore = null;
     private CollectorNodeStatusDataStore statusDataStore;
     private CollectorPathTrackingDataStore pathTrackingDataStore;
-    private ObjectMapper mapper;
+    private Mapper mapper;
 
     private final Collection<AgentNode> agents = new CopyOnWriteArraySet<AgentNode>();
     private volatile BatchFuture collectionFuture = null;
@@ -160,8 +167,35 @@ public class Collector extends HttpServlet {
             // TODO validation
         }
 
-        this.mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false) //
-                                        .configure(JsonParser.Feature.ALLOW_NON_NUMERIC_NUMBERS, true);
+        final MapperBuilder mapperBuilder = new MapperBuilder();
+        final Queue<DateFormat> dateFormatCache = new ConcurrentLinkedQueue<DateFormat>();
+        for (int i = 0; i < 16; i++) {
+            dateFormatCache.add(newSimpleDateFormat(null));
+        }
+        mapperBuilder.addConverter(Date.class, new Converter<Date>() {
+            @Override
+            public String toString(final Date instance) {
+                final DateFormat dateFormat = newSimpleDateFormat(dateFormatCache);
+                try {
+                    return dateFormat.format(instance);
+                } finally {
+                    dateFormatCache.add(dateFormat);
+                }
+            }
+
+            @Override
+            public Date fromString(final String text) {
+                final DateFormat dateFormat = newSimpleDateFormat(dateFormatCache);
+                try {
+                    return dateFormat.parse(text);
+                } catch (final ParseException e) {
+                    throw new IllegalArgumentException(e);
+                } finally {
+                    dateFormatCache.add(dateFormat);
+                }
+            }
+        });
+        mapper = mapperBuilder.build();
 
         { // pulling
             {
@@ -209,7 +243,7 @@ public class Collector extends HttpServlet {
             this.disableDisruptor = Boolean.parseBoolean( Configuration.getProperty( key, "false" ) );
             if ( !this.disableDisruptor )
             {
-                ExecutorService exec = Executors.newCachedThreadPool();
+                ExecutorService exec = Executors.newCachedThreadPool(); // FIXME: proper config
 
                 key = Configuration.CONFIG_PROPERTY_PREFIX + "collector.pathtracking.disruptor.ringBufferSize";
 
@@ -240,6 +274,18 @@ public class Collector extends HttpServlet {
         }
     }
 
+    private DateFormat newSimpleDateFormat(final Queue<DateFormat> dateFormatCache) {
+        if (dateFormatCache == null) {
+            final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.ENGLISH);
+            simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+            return simpleDateFormat;
+        }
+        final DateFormat df = dateFormatCache.poll();
+        if (df == null) {
+            return newSimpleDateFormat(null);
+        }
+        return df;
+    }
 
     private static class PathTrackingEntryEventHandler
         implements EventHandler<PathTrackingEntry>
@@ -338,7 +384,7 @@ public class Collector extends HttpServlet {
     }
 
     private void slurpEvents(final InputStream inputStream) throws IOException {
-        final Event[] events = mapper.readValue(inputStream, Event[].class);
+        final Event[] events = mapper.readArray(inputStream, Event.class);
         if (events != null && events.length > 0) {
             try {
                 final Collection<Event> validations = new LinkedList<Event>();

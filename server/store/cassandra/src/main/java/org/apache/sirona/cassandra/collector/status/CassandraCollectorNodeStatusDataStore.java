@@ -35,12 +35,11 @@ import org.apache.sirona.store.status.CollectorNodeStatusDataStore;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.TreeMap;
 
 import static org.apache.sirona.cassandra.collector.CassandraSirona.column;
-import static org.apache.sirona.cassandra.collector.CassandraSirona.emptyColumn;
 
 public class CassandraCollectorNodeStatusDataStore implements CollectorNodeStatusDataStore {
     private final Keyspace keyspace;
@@ -67,7 +66,7 @@ public class CassandraCollectorNodeStatusDataStore implements CollectorNodeStatu
             return null;
         }
 
-        final Map<String, NodeStatus> statuses = new HashMap<String, NodeStatus>();
+        final Map<String, NodeStatus> statuses = new TreeMap<String, NodeStatus>();
         for (final Row<String, String, Date> status : result.get()) {
             final Collection<ValidationResult> validations = new LinkedList<ValidationResult>();
 

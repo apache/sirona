@@ -43,6 +43,12 @@
       <artifactId>geronimo-servlet_3.0_spec</artifactId>
       <scope>provided</scope>
     </dependency>
+
+    <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-json_1.0_spec</artifactId>
+      <scope>compile</scope>
+    </dependency>
     <dependency>
       <groupId>org.apache.geronimo.specs</groupId>
       <artifactId>geronimo-jaxrs_2.0_spec</artifactId>
@@ -70,10 +76,10 @@
       <version>${cxf.version}</version>
       <scope>compile</scope>
     </dependency>
-    <dependency> <!-- if someday webapp (ee artifact) moves to johnzon ensures to align it here as well -->
-      <groupId>com.fasterxml.jackson.jaxrs</groupId>
-      <artifactId>jackson-jaxrs-json-provider</artifactId>
-      <version>${jacksonVersion}</version>
+    <dependency>
+      <groupId>org.apache.johnzon</groupId>
+      <artifactId>johnzon-jaxrs</artifactId>
+      <version>${johnzon.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.sirona</groupId>

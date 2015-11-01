@@ -33,7 +33,6 @@
     <tomcatRunPath>/sirona</tomcatRunPath>
     <sirona.properties.path>${basedir}/src/test/sirona.properties</sirona.properties.path>
     <cxf.version>3.0.1</cxf.version>
-    <jacksonVersion>2.4.1</jacksonVersion>
     <spring.version>4.0.6.RELEASE</spring.version>
   </properties>
 

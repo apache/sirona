@@ -23,7 +23,6 @@ import java.io.IOException;
 
 import static com.gargoylesoftware.htmlunit.WebAssert.assertElementPresent;
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -40,6 +39,8 @@ public class WebTest extends SironaReportingTestBase {
     @Test
     public void checkJsonEndpoint() throws IOException {
         final String page = page("web/sessions/0/" + System.currentTimeMillis()).getWebResponse().getContentAsString().replace(" ", "");
-        assertEquals("[]", page); // we don't deploy in this tests sessions gauges so we have nothing
+        // we don't deploy in this tests sessions gauges so we have nothing
+        assertTrue(page.contains("\"data\":[]"));
+        assertTrue(page.contains("\"label\":\"sessions-/sirona-test\""));
     }
 }

@@ -53,6 +53,9 @@ public class M2AwareStatisticalSummary implements Serializable {
         if (String.class.isInstance(mean)) {
             return Double.parseDouble(String.class.cast(mean));
         }
+        if (mean == null) {
+            return Double.NaN;
+        }
         throw new IllegalArgumentException(mean + " not supported");
     }
 

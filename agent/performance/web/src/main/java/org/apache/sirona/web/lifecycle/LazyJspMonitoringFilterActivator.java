@@ -35,7 +35,7 @@ public class LazyJspMonitoringFilterActivator implements Filter {
     public void doFilter(final ServletRequest servletRequest, final ServletResponse servletResponse, final FilterChain filterChain) throws IOException, ServletException {
         if (defaultFactory == null) {
             synchronized (this) {
-                if (defaultFactory == defaultFactory) {
+                if (defaultFactory == null) {
                     defaultFactory = JspFactory.getDefaultFactory();
                     if (!JspPerformanceFactory.class.isInstance(defaultFactory)) {
                         wrapper = new JspPerformanceFactory(defaultFactory);

@@ -24,7 +24,7 @@ import java.util.Collection;
 
 public class CubeCounterDataStore extends BatchCounterDataStore
 {
-    private final Cube cube = IoCs.findOrCreateInstance(CubeBuilder.class).build();
+    protected final Cube cube = IoCs.findOrCreateInstance(CubeBuilder.class).build();
 
     @Override
     protected synchronized void pushCountersByBatch(final Collection<Counter> instances) {

@@ -101,7 +101,7 @@ public class JspMonitoringTest {
         assertEquals("Hello", newClient().getPage(testUrl + "?ignoredQuery=yes&ofcourse=itis").getWebResponse().getContentAsString());
 
         assertFalse(Repository.INSTANCE.counters().isEmpty());
-        final Counter counter = Repository.INSTANCE.counters().iterator().next();
+        final Counter counter = Repository.INSTANCE.getCounter(new Counter.Key(Role.JSP, "/ajsp/test.jsp"));
         assertEquals(Role.JSP, counter.getKey().getRole());
         assertEquals(url.getPath() + "test.jsp", counter.getKey().getName());
         assertEquals(3, counter.getHits());

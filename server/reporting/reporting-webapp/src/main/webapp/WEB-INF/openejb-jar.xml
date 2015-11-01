@@ -20,7 +20,7 @@
   <pojo-deployment class-name="org.apache.sirona.reporting.web.configuration.SironaApplication">
     <properties>
       cxf.jaxrs.skip-provider-scanning = true
-      cxf.jaxrs.providers = com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider,org.apache.openejb.server.cxf.rs.EJBAccessExceptionMapper
+      cxf.jaxrs.providers = org.apache.johnzon.jaxrs.JohnzonProvider,org.apache.openejb.server.cxf.rs.EJBAccessExceptionMapper
     </properties>
   </pojo-deployment>
 </openejb-jar>

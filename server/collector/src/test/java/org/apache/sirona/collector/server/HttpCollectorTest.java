@@ -16,7 +16,9 @@
  */
 package org.apache.sirona.collector.server;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.johnzon.mapper.Converter;
+import org.apache.johnzon.mapper.Mapper;
+import org.apache.johnzon.mapper.MapperBuilder;
 import org.apache.sirona.Role;
 import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.counters.Counter;
@@ -39,21 +41,36 @@ import java.io.OutputStream;
 import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class HttpCollectorTest {
     private CollectorServer server;
-    private ObjectMapper mapper;
+    private Mapper mapper;
 
     @Before
     public void start() {
         server = new CollectorServer("localhost", Integer.getInteger("collector.server.port", 1234)).start();
-        mapper = new ObjectMapper();
+        mapper = new MapperBuilder().addConverter(Date.class, new Converter<Date>() {
+            @Override
+            public String toString(Date instance) {
+                final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.ENGLISH);
+                simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+                return simpleDateFormat.format(instance);
+            }
+
+            @Override
+            public Date fromString(final String text) {
+                throw new UnsupportedOperationException(text);
+            }
+        }).build();
         Repository.INSTANCE.clearCounters();
     }
 
@@ -215,7 +232,7 @@ public class HttpCollectorTest {
         connection.setDoOutput(true);
 
         final StringWriter writer = new StringWriter();
-        mapper.writeValue(writer, events);
+        mapper.writeArray(events, writer);
 
         try {
             final OutputStream output = connection.getOutputStream();

@@ -21,6 +21,8 @@ import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.counters.DefaultCounter;
 import org.apache.sirona.counters.Unit;
+import org.apache.sirona.cube.Cube;
+import org.apache.sirona.cube.CubeBuilder;
 import org.apache.sirona.cube.CubeCounterDataStore;
 import org.apache.sirona.repositories.Repository;
 import org.apache.sirona.store.counter.CollectorCounterStore;
@@ -37,7 +39,10 @@ public class CubeDataStoreCompatibilityTest {
 
     @Before
     public void start() {
-        server = new CollectorServer("localhost",Integer.getInteger("collector.server.port", 1234)).start();
+        server = new CollectorServer("localhost", Integer.getInteger("collector.server.port", 1234)).start();
+        if ("http://localhost:".equals(System.getProperty("org.apache.sirona.cube.CubeBuilder.collector", "http://localhost:"))) {
+            System.setProperty("org.apache.sirona.cube.CubeBuilder.collector", "http://localhost:" + server.getPort());
+        }
         Repository.INSTANCE.clearCounters();
     }
 

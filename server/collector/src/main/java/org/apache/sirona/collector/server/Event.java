@@ -16,18 +16,12 @@
  */
 package org.apache.sirona.collector.server;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import java.util.Date;
 import java.util.Map;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class Event {
     private String type;
     private Map<String, Object> data;
-
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
     private Date time;
 
     public String getType() {

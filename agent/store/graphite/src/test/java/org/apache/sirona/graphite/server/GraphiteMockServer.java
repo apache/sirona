@@ -40,6 +40,10 @@ public class GraphiteMockServer {
         this.port = port;
     }
 
+    public int getPort() {
+        return port;
+    }
+
     public GraphiteMockServer start() throws IOException {
         server = new ServerSocket(port);
         thread = new GraphiteThread(server, messages);

@@ -33,7 +33,7 @@
 
   <jaxrs:server id="sironaServices" basePackages="org.apache.sirona.reporting.web.**" serviceClass="org.apache.sirona.reporting.web.Environment">
     <jaxrs:providers>
-      <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider" />
+      <bean class="org.apache.johnzon.jaxrs.JohnzonProvider" />
     </jaxrs:providers>
   </jaxrs:server>
 </beans>

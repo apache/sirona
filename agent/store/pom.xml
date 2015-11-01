@@ -31,5 +31,6 @@
   <modules>
     <module>graphite</module>
     <module>cube</module>
+    <module>websocket-client</module>
   </modules>
 </project>

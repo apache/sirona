@@ -19,7 +19,6 @@ package org.apache.sirona.store.memory.counter;
 import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.configuration.ioc.Destroying;
 import org.apache.sirona.counters.Counter;
-import org.apache.sirona.repositories.Repository;
 import org.apache.sirona.store.BatchFuture;
 import org.apache.sirona.util.DaemonThreadFactory;
 
@@ -62,9 +61,9 @@ public abstract class BatchCounterDataStore extends InMemoryCounterDataStore {
         scheduledTask.done();
     }
 
-    protected void clearCountersIfNeeded(final Repository instance) {
+    protected void clearCountersIfNeeded() {
         if (clearAfterCollect) {
-            instance.clearCounters();
+            clearCounters();
         }
     }
 
@@ -74,9 +73,8 @@ public abstract class BatchCounterDataStore extends InMemoryCounterDataStore {
         @Override
         public void run() {
             try {
-                final Repository instance = Repository.INSTANCE;
-                pushCountersByBatch(instance.counters());
-                clearCountersIfNeeded(instance);
+                pushCountersByBatch(counters.values());
+                clearCountersIfNeeded();
             } catch (final Exception e) {
                 LOGGER.log(Level.SEVERE, e.getMessage(), e);
             }
