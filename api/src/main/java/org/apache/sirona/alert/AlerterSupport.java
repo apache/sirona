@@ -22,6 +22,8 @@ import org.apache.sirona.status.Status;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class AlerterSupport {
     protected final Collection<AlertListener> listeners = new CopyOnWriteArraySet<AlertListener>();
@@ -35,7 +37,11 @@ public class AlerterSupport {
             if (status.getStatus() != Status.OK) {
                 final AlertListener.Alert alert = new AlertListener.Alert(entry.getKey(), status);
                 for (final AlertListener listener : listeners) {
-                    listener.onAlert(alert);
+                    try {
+                        listener.onAlert(alert);
+                    } catch (final RuntimeException ex) {
+                        Logger.getLogger(AlerterSupport.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
+                    }
                 }
             }
         }

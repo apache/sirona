@@ -102,6 +102,10 @@ public final class Configuration
         return property.split( ";" );
     }
 
+    public static Properties properties() {
+        return PROPERTIES;
+    }
+
     private Configuration()
     {
         // no-op

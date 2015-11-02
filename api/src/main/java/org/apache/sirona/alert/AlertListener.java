@@ -17,6 +17,10 @@
 package org.apache.sirona.alert;
 
 import org.apache.sirona.status.NodeStatus;
+import org.apache.sirona.status.ValidationResult;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public interface AlertListener {
     void onAlert(Alert alert);
@@ -36,6 +40,25 @@ public interface AlertListener {
 
         public NodeStatus getStatus() {
             return status;
+        }
+
+        public Map<String, Object> asMap() {
+            final String ln = System.getProperty("line.separator");
+
+            final StringBuilder csv = new StringBuilder();
+            for (final ValidationResult result : status.getResults()) {
+                csv.append(result.getName()).append(";")
+                    .append(result.getMessage()).append(";")
+                    .append(result.getStatus().name()).append(ln);
+            }
+
+            final Map<String, Object> map = new HashMap<String, Object>();
+            map.put("marker", marker == null ? "-" : marker);
+            map.put("status", status.getStatus().name());
+            map.put("date", status.getDate());
+            map.put("resultsLength", status.getResults().length);
+            map.put("resultsCsv", csv.toString());
+            return map;
         }
     }
 }
