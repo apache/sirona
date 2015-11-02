@@ -18,6 +18,7 @@ package org.apache.sirona.repositories;
 
 import org.apache.sirona.Role;
 import org.apache.sirona.SironaException;
+import org.apache.sirona.alert.AlertListener;
 import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.counters.Counter;
@@ -40,7 +41,9 @@ import org.apache.sirona.store.gauge.GaugeValuesRequest;
 import org.apache.sirona.store.status.CollectorNodeStatusDataStore;
 import org.apache.sirona.store.status.NodeStatusDataStore;
 import org.apache.sirona.store.tracking.PathTrackingDataStore;
+import org.apache.sirona.util.ClassLoaders;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.SortedMap;
@@ -53,11 +56,12 @@ public class DefaultRepository implements Repository
     protected final PathTrackingDataStore pathTrackingDataStore;
 
     public DefaultRepository() {
-        this(findCounterDataStore(), findGaugeDataStore(), findStatusDataStore(), findPathTrackingDataStore());
+        this(findCounterDataStore(), findGaugeDataStore(), findStatusDataStore(), findPathTrackingDataStore(), findAlerters());
     }
 
     protected DefaultRepository(final CounterDataStore counter, final CommonGaugeDataStore gauge, //
-                                final NodeStatusDataStore status, final PathTrackingDataStore pathTrackingDataStore) {
+                                final NodeStatusDataStore status, final PathTrackingDataStore pathTrackingDataStore,
+                                final Collection<AlertListener> alertListeners) {
         this.counterDataStore = counter;
         this.gaugeDataStore = gauge;
         this.nodeStatusDataStore = status;
@@ -85,9 +89,36 @@ public class DefaultRepository implements Repository
             addGauge(new UsedNonHeapMemoryGauge());
             addGauge(new ActiveThreadGauge());
         }
+
+        for (final AlertListener listener : alertListeners) {
+            nodeStatusDataStore.addAlerter(listener);
+        }
     }
 
-    private static NodeStatusDataStore findStatusDataStore() {
+    protected static Collection<AlertListener> findAlerters() {
+        final Collection<AlertListener> listeners = new ArrayList<AlertListener>();
+        final String alerters = Configuration.getProperty(Configuration.CONFIG_PROPERTY_PREFIX + "alerters", null);
+        if (alerters != null && alerters.trim().length() > 0) {
+            for (final String alert : alerters.split(" *, *")) {
+                final String classKey = alert + ".class";
+                final String type = Configuration.getProperty(classKey, null);
+                if (type == null) {
+                    throw new IllegalArgumentException("Missing configuration " + classKey);
+                }
+
+                try {
+                    final Class<?> clazz = ClassLoaders.current().loadClass(type);
+                    final AlertListener listener = IoCs.autoSet(alert, AlertListener.class.cast(clazz.newInstance()));
+                    listeners.add(listener);
+                } catch (final Exception e) {
+                    throw new IllegalArgumentException(e);
+                }
+            }
+        }
+        return listeners;
+    }
+
+    protected static NodeStatusDataStore findStatusDataStore() {
         NodeStatusDataStore status = null;
         try {
             status = IoCs.findOrCreateInstance(NodeStatusDataStore.class);
@@ -100,7 +131,7 @@ public class DefaultRepository implements Repository
         return status;
     }
 
-    private static CommonGaugeDataStore findGaugeDataStore() {
+    protected static CommonGaugeDataStore findGaugeDataStore() {
         CommonGaugeDataStore gauge = null;
         try {
             gauge = IoCs.findOrCreateInstance(GaugeDataStore.class);
@@ -120,7 +151,7 @@ public class DefaultRepository implements Repository
         return gauge;
     }
 
-    private static PathTrackingDataStore findPathTrackingDataStore() {
+    protected static PathTrackingDataStore findPathTrackingDataStore() {
         PathTrackingDataStore pathTrackingDataStore = null;
         try {
             pathTrackingDataStore = IoCs.findOrCreateInstance(PathTrackingDataStore.class);
@@ -143,7 +174,7 @@ public class DefaultRepository implements Repository
         return pathTrackingDataStore;
     }
 
-    private static CounterDataStore findCounterDataStore() {
+    protected static CounterDataStore findCounterDataStore() {
         CounterDataStore counter = null;
         try {
             counter = IoCs.findOrCreateInstance(CounterDataStore.class);

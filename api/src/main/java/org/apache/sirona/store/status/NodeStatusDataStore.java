@@ -16,6 +16,7 @@
  */
 package org.apache.sirona.store.status;
 
+import org.apache.sirona.alert.AlertListener;
 import org.apache.sirona.status.NodeStatus;
 
 import java.util.Map;
@@ -23,4 +24,7 @@ import java.util.Map;
 public interface NodeStatusDataStore {
     Map<String, NodeStatus> statuses();
     void reset();
+
+    void addAlerter(AlertListener listener);
+    void removeAlerter(AlertListener listener);
 }

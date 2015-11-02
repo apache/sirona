@@ -14,30 +14,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sirona.store.status;
+package org.apache.sirona.alert;
 
 import org.apache.sirona.status.NodeStatus;
 
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.concurrent.ConcurrentHashMap;
+public interface AlertListener {
+    void onAlert(Alert alert);
 
-public class InMemoryCollectorNodeStatusDataStore extends CollectorBaseNodeStatusDataStore {
-    private final Map<String, NodeStatus> statuses = new ConcurrentHashMap<String, NodeStatus>();
+    class Alert {
+        private final String marker;
+        private final NodeStatus status;
 
-    @Override
-    public Map<String, NodeStatus> statuses() {
-        return new TreeMap<String, NodeStatus>(statuses);
-    }
+        protected Alert(final String node, final NodeStatus status) {
+            this.marker = node;
+            this.status = status;
+        }
 
-    @Override
-    public void reset() {
-        super.reset();
-        statuses.clear();
-    }
+        public String getMarker() {
+            return marker;
+        }
 
-    @Override
-    public void store(final String node, final NodeStatus status) {
-        statuses.put(node, status);
+        public NodeStatus getStatus() {
+            return status;
+        }
     }
 }

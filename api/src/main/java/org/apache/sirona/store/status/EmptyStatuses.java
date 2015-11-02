@@ -16,6 +16,7 @@
  */
 package org.apache.sirona.store.status;
 
+import org.apache.sirona.alert.AlertListener;
 import org.apache.sirona.status.NodeStatus;
 
 import java.util.Map;
@@ -33,5 +34,17 @@ public class EmptyStatuses implements NodeStatusDataStore {
     @Override
     public void reset() {
         // no-op
+    }
+
+    public void addAlerter(AlertListener listener) {
+        noAlert();
+    }
+
+    public void removeAlerter(final AlertListener listener) {
+        noAlert();
+    }
+
+    private void noAlert() {
+        throw new UnsupportedOperationException(getClass().getSimpleName() + " doesn't support alerts");
     }
 }

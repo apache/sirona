@@ -19,6 +19,7 @@ package org.apache.sirona.websocket;
 import org.apache.catalina.startup.Constants;
 import org.apache.johnzon.websocket.mapper.JohnzonTextDecoder;
 import org.apache.sirona.Role;
+import org.apache.sirona.alert.AlertListener;
 import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.counters.Unit;
@@ -50,6 +51,7 @@ import org.junit.runner.RunWith;
 
 import java.net.URL;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
@@ -122,7 +124,8 @@ public class WebSocketTest {
                     };
                 }
             }),
-            new InMemoryPathTrackingDataStore()
+            new InMemoryPathTrackingDataStore(),
+            Collections.<AlertListener>emptyList()
         ) {};
         clientRepo.addGauge(new Gauge() {
             @Override

@@ -16,6 +16,10 @@
  */
 package org.apache.sirona.plugin.hazelcast;
 
+import com.hazelcast.config.Config;
+import com.hazelcast.config.JoinConfig;
+import com.hazelcast.config.NetworkConfig;
+import com.hazelcast.config.TcpIpConfig;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.LifecycleEvent;
@@ -33,6 +37,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.CountDownLatch;
 
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -45,8 +50,18 @@ public class BasicHazelcastTest {
 
     @Test
     public void gauges() throws Throwable {
-        final HazelcastInstance instance1 = Hazelcast.newHazelcastInstance();
-        final HazelcastInstance instance2 = Hazelcast.newHazelcastInstance();
+        final Config config = new Config();
+        final NetworkConfig networkConfig = new NetworkConfig();
+        final JoinConfig join = new JoinConfig();
+        final TcpIpConfig tcpIpConfig = new TcpIpConfig();
+        tcpIpConfig.setEnabled(true);
+        tcpIpConfig.setMembers(singletonList("localhost"));
+        join.setTcpIpConfig(tcpIpConfig);
+        networkConfig.setJoin(join);
+        config.setNetworkConfig(networkConfig);
+
+        final HazelcastInstance instance1 = Hazelcast.newHazelcastInstance(config);
+        final HazelcastInstance instance2 = Hazelcast.newHazelcastInstance(config);
         HazelcastInstance instance3 = null;
 
         Map<Long, Double> members1 = null, partitions;
@@ -54,7 +69,7 @@ public class BasicHazelcastTest {
         final Gauge.LoaderHelper loader = new Gauge.LoaderHelper(false);
         try {
             Thread.sleep(250);
-            instance3 = Hazelcast.newHazelcastInstance();
+            instance3 = Hazelcast.newHazelcastInstance(config);
             Thread.sleep(250);
 
             members1 = gaugeValues("hazelcast-members-cluster");

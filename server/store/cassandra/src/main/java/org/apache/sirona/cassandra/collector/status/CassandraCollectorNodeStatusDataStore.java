@@ -31,7 +31,7 @@ import org.apache.sirona.configuration.ioc.IoCs;
 import org.apache.sirona.status.NodeStatus;
 import org.apache.sirona.status.Status;
 import org.apache.sirona.status.ValidationResult;
-import org.apache.sirona.store.status.CollectorNodeStatusDataStore;
+import org.apache.sirona.store.status.CollectorBaseNodeStatusDataStore;
 
 import java.util.Collection;
 import java.util.Date;
@@ -41,7 +41,7 @@ import java.util.TreeMap;
 
 import static org.apache.sirona.cassandra.collector.CassandraSirona.column;
 
-public class CassandraCollectorNodeStatusDataStore implements CollectorNodeStatusDataStore {
+public class CassandraCollectorNodeStatusDataStore extends CollectorBaseNodeStatusDataStore {
     private final Keyspace keyspace;
     private final String family;
     private final String markerFamily;
@@ -101,9 +101,9 @@ public class CassandraCollectorNodeStatusDataStore implements CollectorNodeStatu
         return statuses;
     }
 
-    @Override // TODO: like clearCounters() see if it should do something or not
-    public void reset() {
-        // no-op
+    @Override
+    public void reset() { // TODO: like clearCounters() see if it should do something or not
+        super.reset();
     }
 
     @Override

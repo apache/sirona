@@ -187,7 +187,14 @@ public final class IoCs {
                     continue;
                 }
 
-                final String value = Configuration.getProperty(loadedClass.getName() + "." + field.getName(), null);
+                final String configKey;
+                if (key == null) {
+                    configKey = loadedClass.getName() + "." + field.getName();
+                } else {
+                    configKey = key + "." + field.getName();
+                }
+
+                final String value = Configuration.getProperty(configKey, null);
                 if (value != null) {
                     done.add(field.getName());
 
@@ -210,6 +217,10 @@ public final class IoCs {
     }
 
     public static void setSingletonInstance(final Class<?> clazz, final Object instance) {
+        if (instance == null) {
+            SINGLETONS.remove(clazz);
+            return;
+        }
         SINGLETONS.put(clazz, instance);
     }
 

@@ -56,6 +56,7 @@ public class CassandraStatusDataStore extends PeriodicNodeStatusDataStore {
                 return statuses;
             }
             statuses.put(marker, localStatus);
+            listeners.notify(statuses);
             return statuses;
         }
         return super.statuses();
