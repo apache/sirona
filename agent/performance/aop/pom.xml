@@ -21,7 +21,7 @@
   <parent>
     <artifactId>sirona-performance</artifactId>
     <groupId>org.apache.sirona</groupId>
-    <version>0.3-incubating-SNAPSHOT</version>
+    <version>0.3-incubating</version>
   </parent>
 
   <artifactId>sirona-aop</artifactId>
