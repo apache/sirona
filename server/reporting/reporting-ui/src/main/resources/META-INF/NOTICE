@@ -1,0 +1,106 @@
+SB Admin Theme
+
+website: http://startbootstrap.com/sb-admin
+license: Apache v2
+
+Based on Bootstrap. Icons by Font Awesome.
+Placeholder images by placehold.it, lorempixel, and placecreature.
+
+-------------------
+
+Twitter bootstrap
+
+website: http://getbootstrap.com/
+license: MIT
+
+-------------------
+
+Bootstrap datetimepicker
+
+website: https://github.com/eternicode/bootstrap-datepicker
+license: Apache v2
+
+-------------------
+
+Table sorter
+
+website: http://mottie.github.io/tablesorter/docs/index.html
+license: MIT
+
+-------------------
+
+JQuery
+
+website: https://jquery.org/license/
+license: MIT
+
+-------------------
+
+JQuery Flot
+
+website: http://www.flotcharts.org/
+license: MIT
+
+-------------------
+
+Normalise.css
+
+website: https://necolas.github.io/normalize.css/
+license: MIT
+
+-------------------
+
+Angular
+
+website: https://angularjs.org/
+license: MIT
+
+-------------------
+
+moment.js
+
+website: http://momentjs.com/
+license: MIT
+
+-------------------
+
+ng-grid.js
+
+website: http://angular-ui.github.io/ui-grid/
+license: MIT
+
+-------------------
+
+requirejs.js
+
+website: http://requirejs.org/
+license: MIT
+
+
+-------------------
+
+angular-ui-bootstrap.js
+
+website: https://angular-ui.github.io/bootstrap/
+license: MIT
+
+-------------------
+
+angular-bootstrap-nav-tree.js
+
+website: https://github.com/nickperkinslondon/angular-bootstrap-nav-tree
+license: MIT
+
+-------------------
+
+raphael.js
+
+website: http://raphaeljs.com/
+license: MIT
+
+-------------------
+
+morris.js
+
+website: http://morrisjs.github.io/morris.js/
+license: BSD
