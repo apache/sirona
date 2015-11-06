@@ -48,3 +48,67 @@ JQuery Flot
 website: http://www.flotcharts.org/
 license: MIT
 
+-------------------
+
+Normalise.css
+
+website: https://necolas.github.io/normalize.css/
+license: MIT
+
+-------------------
+
+Angular
+
+website: https://angularjs.org/
+license: MIT
+
+-------------------
+
+moment.js
+
+website: http://momentjs.com/
+license: MIT
+
+-------------------
+
+ng-grid.js
+
+website: http://angular-ui.github.io/ui-grid/
+license: MIT
+
+-------------------
+
+requirejs.js
+
+website: http://requirejs.org/
+license: MIT
+
+
+-------------------
+
+angular-ui-bootstrap.js
+
+website: https://angular-ui.github.io/bootstrap/
+license: MIT
+
+-------------------
+
+angular-bootstrap-nav-tree.js
+
+website: https://github.com/nickperkinslondon/angular-bootstrap-nav-tree
+license: MIT
+
+-------------------
+
+raphael.js
+
+website: http://raphaeljs.com/
+license: MIT
+
+-------------------
+
+morris.js
+
+website: http://morrisjs.github.io/morris.js/
+license: BSD
+
