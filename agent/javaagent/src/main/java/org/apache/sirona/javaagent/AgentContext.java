@@ -100,7 +100,7 @@ public class AgentContext {
     }
 
     private static InvocationListener[] loadAllListeners() {
-        final Collection<InvocationListener> listeners = new LinkedList<InvocationListener>();
+        final List<InvocationListener> listeners = new LinkedList<InvocationListener>();
 
         ClassLoader agentLoader = AgentContext.class.getClassLoader();
         if (agentLoader == null) {
@@ -118,7 +118,7 @@ public class AgentContext {
                 }
             }
         }
-        //System.out.println("listeners:" + listeners.toString());
+        Collections.sort(listeners, ListenerComparator.INSTANCE); // sort them here to avoid to resort the list each time then
         return listeners.toArray(new InvocationListener[listeners.size()]);
     }
 
@@ -158,7 +158,6 @@ public class AgentContext {
                 listeners.add(listener);
             }
         }
-        Collections.sort( listeners, ListenerComparator.INSTANCE );
         return listeners.toArray(new InvocationListener[listeners.size()]);
     }
 
