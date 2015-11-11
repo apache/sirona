@@ -126,8 +126,10 @@ public class SironaTransformer implements ClassFileTransformer {
             try {
                 c = findClass(type1.replace('/', '.'));
                 d = findClass(type2.replace('/', '.'));
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 throw new RuntimeException(e.toString());
+            } catch (final ClassCircularityError e) {
+                return "java/lang/Object";
             }
             if (c.isAssignableFrom(d)) {
                 return type1;
