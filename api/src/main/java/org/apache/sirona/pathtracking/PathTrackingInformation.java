@@ -17,11 +17,21 @@
 
 package org.apache.sirona.pathtracking;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * @since 0.2
  */
 public class PathTrackingInformation
 {
+    private static final long OFFSET;
+    static
+    {
+        // nanoTime is a clock solution, we need start date for final query so computing the local offset
+        // to get back a ~ date
+        OFFSET = TimeUnit.MILLISECONDS.toNanos(System.currentTimeMillis()) - System.nanoTime();
+    }
+
     private String className;
 
     private String methodName;
@@ -35,6 +45,11 @@ public class PathTrackingInformation
         this.className = className;
         this.methodName = methodName;
         this.start = System.nanoTime();
+    }
+
+    public long getStartDateNs()
+    {
+        return OFFSET + start;
     }
 
     public String getClassName()

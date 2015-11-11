@@ -178,7 +178,6 @@ public class PathTracker
     public void stop( final Object reference )
     {
         final long end = System.nanoTime();
-        final long start = currentPathTrackingInformation.getStart();
         final Context context = THREAD_LOCAL.get();
 
         final String uuid = context.getUuid();
@@ -203,8 +202,8 @@ public class PathTracker
         final PathTrackingEntry pathTrackingEntry =
             new PathTrackingEntry( uuid, NODE, this.currentPathTrackingInformation.getClassName(), //
                                    this.currentPathTrackingInformation.getMethodName(), //
-                                   start, //
-                                   ( end - start ), //
+                                   currentPathTrackingInformation.getStartDateNs(), //
+                                   ( end - currentPathTrackingInformation.getStart() ), //
                                    this.currentPathTrackingInformation.getLevel() );
 
         if ( USE_STORE )
