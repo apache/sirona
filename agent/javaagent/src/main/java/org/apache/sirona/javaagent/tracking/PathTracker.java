@@ -158,14 +158,16 @@ public class PathTracker
             }
         }
 
+        if ( level == 1 )
+        {
+            context.setStartPathObject( reference );
+        }
         for ( PathTrackingInvocationListener listener : LISTENERS )
         {
             if ( level == 1 )
             {
                 listener.startPath( context );
-                context.setStartPathObject( reference );
             }
-
             listener.enterMethod( currentPathTrackingInformation );
         }
 
