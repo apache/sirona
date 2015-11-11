@@ -81,7 +81,12 @@ public class PathCallInformation
         @Override
         public int compare( PathCallInformation o1, PathCallInformation o2 )
         {
-            return o1.getStartTime().compareTo( o2.getStartTime() );
+            final int i = o1.getStartTime().compareTo(o2.getStartTime());
+            if (i == 0)
+            {
+                return o1.getTrackingId().compareTo(o2.getTrackingId());
+            }
+            return i;
         }
     };
 }
