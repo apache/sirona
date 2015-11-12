@@ -32,7 +32,7 @@ import org.apache.sirona.javaagent.tracking.PathTracker;
     extends ConfigurableListener
 {
 
-    private static final Integer PATH_TRACKER_KEY = "Sirona-path-tracker-key".hashCode();
+    private static final Integer PATH_TRACKER_KEY = -2;// "Sirona-path-tracker-key".hashCode();
 
     private static final boolean TRACKING_ACTIVATED =
         Configuration.is( Configuration.CONFIG_PROPERTY_PREFIX + "javaagent.path.tracking.activate", false );

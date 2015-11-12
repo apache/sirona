@@ -30,7 +30,7 @@ public class CounterListener extends AbstractPerformanceInterceptor<String> impl
 
     public static final String DISABLE_PARAMETER_KEY = "disable-counter-listener";
 
-    private static final int KEY = 0;
+    private static final int KEY = -1;
 
     private PredicateEvaluator includes = ConfigurableListener.DEFAULT_INCLUDES;
     private PredicateEvaluator excludes = ConfigurableListener.DEFAULT_EXCLUDES;
