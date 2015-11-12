@@ -34,6 +34,7 @@ import serp.bytecode.Project;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.reflect.Field;
@@ -59,9 +60,14 @@ public class InJvmTransformerRunner extends BlockJUnit4ClassRunner {
         Thread.currentThread().setContextClassLoader(getTestLoader());
         try {
             final Class<?> testTransformedClass = testLoader.loadClass(getTestClass().getName());
-            final Field f = ParentRunner.class.getDeclaredField("fTestClass");
-            f.setAccessible(true);
-            f.set(this, new TestClass(testTransformedClass));
+            Field field;
+            try { // junit 4.11
+                field = ParentRunner.class.getDeclaredField("fTestClass");
+            } catch (final NoSuchFieldException nsfe) { // junit 4.12
+                field = ParentRunner.class.getDeclaredField("testClass");
+            }
+            field.setAccessible(true);
+            field.set(this, new TestClass(testTransformedClass));
         } catch (final Exception e) {
             throw new RuntimeException(e);
         } finally {
@@ -151,28 +157,7 @@ public class InJvmTransformerRunner extends BlockJUnit4ClassRunner {
                         final SironaTransformer transformer = new SironaTransformer(false, null);
                         buffer = transformer.transform(this, className, null, null, buffer);
                     } else if (PCClassFileTransformer.class.equals(t)) {
-                        if (name.endsWith("Entity")) {
-                            // hacky but avoid to build a full openjpa project/context
-                            final PersistenceMetaDataFactory factory = new PersistenceMetaDataFactory();
-                            factory.setTypes("org.apache.test.sirona.javaagent.OpenJPATest$ServiceSquareEntity");
-
-                            final MetaDataRepository repos = new MetaDataRepository();
-                            repos.setConfiguration(new OpenJPAConfigurationImpl());
-                            repos.setMetaDataFactory(factory);
-
-                            final BCClass type = new Project().loadClass(new ByteArrayInputStream(buffer), new URLClassLoader(new URL[0], getParent()));
-                            final PCEnhancer enhancer = new PCEnhancer(repos.getConfiguration(), type, repos, this);
-                            enhancer.setAddDefaultConstructor(true);
-                            enhancer.setEnforcePropertyRestrictions(true);
-
-                            if (enhancer.run() != PCEnhancer.ENHANCE_NONE) {
-                                final BCClass pcb = enhancer.getPCBytecode();
-                                final byte[] transformed = AsmAdaptor.toByteArray(pcb, pcb.toByteArray());
-                                if (transformed != null) {
-                                    buffer = transformed;
-                                }
-                            }
-                        }
+                        buffer = handleJpa(name, buffer);
                     } else {
                         buffer = ClassFileTransformer.class.cast(t.newInstance()).transform(this, className, null, null, buffer);
                     }
@@ -197,6 +182,42 @@ public class InJvmTransformerRunner extends BlockJUnit4ClassRunner {
             } catch (final Throwable t) {
                 throw new ClassNotFoundException(t.getMessage(), t);
             }
+        }
+
+        private byte[] handleJpa(final String name, final byte[] buffer) throws IOException {
+            return Jpa.handleJpa(name, buffer, this);
+        }
+    }
+
+    private static class Jpa {
+        private Jpa() {
+            // no-op
+        }
+
+        public static byte[] handleJpa(final String name, final byte[] buffer, final ClassLoader loader) throws IOException {
+            if (name.endsWith("Entity")) {
+                // hacky but avoid to build a full openjpa project/context
+                final PersistenceMetaDataFactory factory = new PersistenceMetaDataFactory();
+                factory.setTypes("org.apache.test.sirona.javaagent.OpenJPATest$ServiceSquareEntity");
+
+                final MetaDataRepository repos = new MetaDataRepository();
+                repos.setConfiguration(new OpenJPAConfigurationImpl());
+                repos.setMetaDataFactory(factory);
+
+                final BCClass type = new Project().loadClass(new ByteArrayInputStream(buffer), new URLClassLoader(new URL[0], loader.getParent()));
+                final PCEnhancer enhancer = new PCEnhancer(repos.getConfiguration(), type, repos, loader);
+                enhancer.setAddDefaultConstructor(true);
+                enhancer.setEnforcePropertyRestrictions(true);
+
+                if (enhancer.run() != PCEnhancer.ENHANCE_NONE) {
+                    final BCClass pcb = enhancer.getPCBytecode();
+                    final byte[] transformed = AsmAdaptor.toByteArray(pcb, pcb.toByteArray());
+                    if (transformed != null) {
+                        return transformed;
+                    }
+                }
+            }
+            return buffer;
         }
     }
 }

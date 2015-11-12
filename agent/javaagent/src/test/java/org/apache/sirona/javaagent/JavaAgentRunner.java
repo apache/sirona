@@ -311,6 +311,9 @@ public class JavaAgentRunner extends BlockJUnit4ClassRunner {
                     url = loader.getResource(classFileName);
                 } else {
                     url = clazz.getResource(classFileName);
+                    if (url == null) {
+                        url = clazz.getResource('/' + classFileName);
+                    }
                 }
 
                 if (url == null) {
@@ -325,7 +328,7 @@ public class JavaAgentRunner extends BlockJUnit4ClassRunner {
                         throw new MalformedURLException("no ! found in jar url spec:" + spec);
                     }
 
-                    url = new URL(spec.substring(0, separator++));
+                    url = new URL(spec.substring(0, separator));
 
                     return new File(decode(url.getFile()));
 
