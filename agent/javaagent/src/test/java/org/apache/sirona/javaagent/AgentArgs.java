@@ -33,7 +33,7 @@ public @interface AgentArgs
 
     boolean removeSironaFromClasspath() default true;
 
-    String value();
+    String value() default "";
 
     String maxMem() default "";
 

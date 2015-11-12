@@ -155,7 +155,7 @@ public class JavaAgentRunner extends BlockJUnit4ClassRunner {
         }
 
         String javaAgentArgs =
-                agentArgs == null ? null : StrSubstitutor.replace(agentArgs.value(), System.getProperties());
+                agentArgs == null || agentArgs.value().isEmpty() ? null : StrSubstitutor.replace(agentArgs.value(), System.getProperties());
         args.add("-javaagent:" + buildJavaagent() + "=" + (javaAgentArgs == null ? "" : javaAgentArgs));
 
         if (Boolean.getBoolean("test.debug.remote")) {
