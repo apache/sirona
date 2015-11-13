@@ -154,7 +154,7 @@ public class InJvmTransformerRunner extends BlockJUnit4ClassRunner {
                 byte[] buffer = IOUtils.toByteArray(is);
                 for (final Class<?> t : transformers) {
                     if (SironaTransformer.class.equals(t)) {
-                        final SironaTransformer transformer = new SironaTransformer(false, null);
+                        final SironaTransformer transformer = new SironaTransformer(false, false, null);
                         buffer = transformer.transform(this, className, null, null, buffer);
                     } else if (PCClassFileTransformer.class.equals(t)) {
                         buffer = handleJpa(name, buffer);

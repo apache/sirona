@@ -16,7 +16,9 @@
  */
 package org.apache.sirona.javaagent;
 
+import org.apache.sirona.javaagent.classloader.LoadFirstClassLoader;
 import org.apache.sirona.javaagent.logging.SironaAgentLogging;
+import org.apache.sirona.util.ClassLoaders;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 
@@ -25,15 +27,22 @@ import java.io.FileOutputStream;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public class SironaTransformer implements ClassFileTransformer {
     private static final String DELEGATING_CLASS_LOADER = "sun.reflect.DelegatingClassLoader";
 
+    // used to not load classes while loading and create linkage errors
+    private final ConcurrentMap<ClassLoader, ClassLoader> tempClassLoaders = new ConcurrentHashMap<ClassLoader, ClassLoader>();
+
     private final boolean debug;
     private final String[] autoClassLoaderExcludes;
+    private final boolean skipTempLoader;
 
-    public SironaTransformer(final boolean debug, final String tempClassLoaders) {
+    public SironaTransformer(final boolean debug, final boolean skipTempLoader, final String tempClassLoaders) {
         this.debug = debug || Boolean.getBoolean("sirona.javaagent.debug");
+        this.skipTempLoader = skipTempLoader || Boolean.getBoolean("sirona.javaagent.skipTempLoader");
 
         final String excludes = System.getProperty(
                 "sirona.javaagent.dontAutoClassLoaderExclude",
@@ -41,6 +50,10 @@ public class SironaTransformer implements ClassFileTransformer {
                         tempClassLoaders :
                         "org.apache.openjpa.lib.util.TemporaryClassLoader,org.apache.openejb.core.TempClassLoader");
         this.autoClassLoaderExcludes = excludes.split(" *, *");
+    }
+
+    public void evictClassLoaders() { // we will recreate them if needed
+        tempClassLoaders.clear();
     }
 
     @Override
@@ -63,13 +76,13 @@ public class SironaTransformer implements ClassFileTransformer {
                 return true;
             }
         }
-        return false;
+        return LoadFirstClassLoader.class.getName().equals(name); // of course we exclude our internal loader
     }
 
     protected byte[] doTransform(final String className, final byte[] classfileBuffer) {
         try {
             final ClassReader reader = new ClassReader(classfileBuffer);
-            final ClassWriter writer = new SironaClassWriter(reader, ClassWriter.COMPUTE_FRAMES);
+            final ClassWriter writer = new SironaClassWriter(skipTempLoader ? null : tempClassLoaders, reader, ClassWriter.COMPUTE_FRAMES);
             final SironaClassVisitor advisor = new SironaClassVisitor(writer, className, classfileBuffer);
             reader.accept(advisor, ClassReader.SKIP_FRAMES);
 
@@ -105,12 +118,12 @@ public class SironaTransformer implements ClassFileTransformer {
     }
 
     public static class SironaClassWriter extends ClassWriter {
-        private SironaClassWriter(int flags) {
-            super(flags);
-        }
+        private final ConcurrentMap<ClassLoader, ClassLoader> tempClassLoaders;
 
-        public SironaClassWriter(ClassReader classReader, int flags) {
+        public SironaClassWriter(final ConcurrentMap<ClassLoader, ClassLoader> tempClassLoaders,
+                                 final ClassReader classReader, final int flags) {
             super(classReader, flags);
+            this.tempClassLoaders = tempClassLoaders;
         }
 
         /**
@@ -122,10 +135,11 @@ public class SironaTransformer implements ClassFileTransformer {
          */
         @Override
         protected String getCommonSuperClass(final String type1, final String type2) {
+            final ClassLoader loader = createTempLoader();
             Class<?> c, d;
             try {
-                c = findClass(type1.replace('/', '.'));
-                d = findClass(type2.replace('/', '.'));
+                c = findClass(loader, type1.replace('/', '.'));
+                d = findClass(loader, type2.replace('/', '.'));
             } catch (final Exception e) {
                 throw new RuntimeException(e.toString());
             } catch (final ClassCircularityError e) {
@@ -147,13 +161,25 @@ public class SironaTransformer implements ClassFileTransformer {
             }
         }
 
-        protected Class<?> findClass(final String className)
-                throws ClassNotFoundException {
-            try { // first TCCL
-                ClassLoader tccl = Thread.currentThread().getContextClassLoader();
-                if (tccl == null) {
-                    tccl = getClass().getClassLoader();
+        private ClassLoader createTempLoader() {
+            final ClassLoader tccl = ClassLoaders.current();
+            if (tempClassLoaders != null) {
+                ClassLoader temp = tempClassLoaders.get(tccl);
+                if (temp == null) {
+                    temp = new LoadFirstClassLoader(tccl);
+                    final ClassLoader existing = tempClassLoaders.putIfAbsent(tccl, temp);
+                    if (existing != null) {
+                        temp = existing;
+                    }
                 }
+                return temp;
+            }
+            return tccl;
+        }
+
+        protected Class<?> findClass(final ClassLoader tccl, final String className)
+                throws ClassNotFoundException {
+            try {
                 return Class.forName(className, false, tccl);
             } catch (ClassNotFoundException e) {
                 return Class.forName(className, false, getClass().getClassLoader());

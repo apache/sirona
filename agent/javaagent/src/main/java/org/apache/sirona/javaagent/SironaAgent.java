@@ -27,6 +27,7 @@ import java.net.URLClassLoader;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
 import java.util.jar.JarFile;
 
 import static java.util.Arrays.asList;
@@ -71,6 +72,8 @@ public class SironaAgent {
         }
 
         final boolean debug = "true".equalsIgnoreCase(extractConfig(agentArgs, "debug="));
+        final boolean skipTempLoader = "true".equalsIgnoreCase(extractConfig(agentArgs, "skipTempLoader="));
+        final boolean autoEvictClassLoaders = "true".equalsIgnoreCase(extractConfig(agentArgs, "autoEvictClassLoaders="));
         final String tempClassLoaders = extractConfig(agentArgs, "tempClassLoaders=");
         final boolean envrtDebug = debug || "true".equalsIgnoreCase(extractConfig(agentArgs, "environment-debug="));
 
@@ -123,7 +126,24 @@ public class SironaAgent {
                 System.out.println("Sirona debugging activated, find instrumented classes in /tmp/sirona-dump/");
             }
 
-            final SironaTransformer transformer = new SironaTransformer(debug, tempClassLoaders);
+            final SironaTransformer transformer = new SironaTransformer(debug, skipTempLoader, tempClassLoaders);
+            if (autoEvictClassLoaders) {
+                final String evictTimeoutStr = extractConfig(agentArgs, "classLoaderEvictionTimeout=");
+                final long timeout = evictTimeoutStr != null && !evictTimeoutStr.isEmpty() ? Long.parseLong(evictTimeoutStr) : 60000;
+                final Thread evictThread = new Thread(new Runnable() {
+                    public void run() {
+                        try {
+                            Thread.sleep(timeout);
+                        } catch (final InterruptedException e) {
+                            Thread.interrupted();
+                            return;
+                        }
+                        transformer.evictClassLoaders();
+                    }
+                });
+                evictThread.setName("sirona-classloader-cleanup");
+                evictThread.setDaemon(true);
+            }
             final boolean reloadable = instrumentation.isRetransformClassesSupported() && FORCE_RELOAD;
             instrumentation.addTransformer(transformer, reloadable);
 
