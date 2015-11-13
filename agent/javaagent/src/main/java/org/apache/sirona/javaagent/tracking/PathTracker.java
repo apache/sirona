@@ -24,6 +24,7 @@ import org.apache.sirona.pathtracking.Context;
 import org.apache.sirona.pathtracking.PathTrackingEntry;
 import org.apache.sirona.pathtracking.PathTrackingInformation;
 import org.apache.sirona.pathtracking.PathTrackingInvocationListener;
+import org.apache.sirona.pathtracking.UniqueIdGenerator;
 import org.apache.sirona.spi.Order;
 import org.apache.sirona.spi.SPI;
 import org.apache.sirona.store.DataStoreFactory;
@@ -50,12 +51,16 @@ public class PathTracker
         IoCs.findOrCreateInstance( DataStoreFactory.class ).getPathTrackingDataStore();
 
 
+    private static final UniqueIdGenerator ID_GENERATOR =
+        IoCs.findOrCreateInstance( UniqueIdGenerator.class );
+
+
     private static final ThreadLocal<Context> THREAD_LOCAL = new ThreadLocal<Context>()
     {
         @Override
         protected Context initialValue()
         {
-            return new Context();
+            return new Context(ID_GENERATOR.next());
         }
     };
 

@@ -36,9 +36,9 @@ public class Context
 
     private Object startPathObject;
 
-    public Context()
+    public Context(final String uuid)
     {
-        this.uuid = "Sirona-" + UUID.randomUUID().toString();
+        this.uuid = uuid;
         this.level = new AtomicInteger( 0 );
         this.entries = new ArrayList<PathTrackingEntry>();
     }
