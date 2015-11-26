@@ -68,7 +68,7 @@ public class PathTrackingInvocationRecursiveTest
 
         Assert.assertTrue( !all.isEmpty() );
 
-        Assert.assertEquals( 4, all.size() );
+        Assert.assertEquals( 2, all.size() );
 
     }
 

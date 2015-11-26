@@ -19,10 +19,9 @@ package org.apache.sirona.javaagent.listener;
 import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.configuration.ioc.AutoSet;
 import org.apache.sirona.javaagent.AgentContext;
-import org.apache.sirona.javaagent.logging.SironaAgentLogging;
+import org.apache.sirona.javaagent.tracking.PathTracker;
 import org.apache.sirona.pathtracking.PathTrackingInformation;
 import org.apache.sirona.spi.Order;
-import org.apache.sirona.javaagent.tracking.PathTracker;
 
 @Order( 1 )
 @AutoSet
@@ -37,6 +36,7 @@ import org.apache.sirona.javaagent.tracking.PathTracker;
     private static final boolean TRACKING_ACTIVATED =
         Configuration.is( Configuration.CONFIG_PROPERTY_PREFIX + "javaagent.path.tracking.activate", false );
 
+
     @Override
     public boolean accept( String key, byte[] rawClassBuffer )
     {
@@ -46,16 +46,13 @@ import org.apache.sirona.javaagent.tracking.PathTracker;
             return false;
         }
 
-        SironaAgentLogging.debug( "PathTrackingListener#accept, TRACKING_ACTIVATED: {0}, key: {1}", TRACKING_ACTIVATED,
-                                  key );
-
         return TRACKING_ACTIVATED;
     }
 
     /**
      * executed before method called to configure the start {@link org.apache.sirona.pathtracking.PathTrackingInformation}
      * and set various thread local variable as invocation level
-     * will call {@link org.apache.sirona.javaagent.tracking.PathTracker#start(org.apache.sirona.pathtracking.PathTrackingInformation)}
+     * will call {@link org.apache.sirona.javaagent.tracking.PathTracker#start(PathTrackingInformation, Object)}
      *
      * @param context
      */
@@ -64,14 +61,11 @@ import org.apache.sirona.javaagent.tracking.PathTracker;
     {
 
         String key = context.getKey();
-        SironaAgentLogging.debug( "PathTrackingListener#before: {0}", key );
 
         String className = extractClassName( key );
         String methodName = extractMethodName( key );
 
         final PathTrackingInformation pathTrackingInformation = new PathTrackingInformation( className, methodName );
-
-        SironaAgentLogging.debug( "call PathTracker#start with {0}", pathTrackingInformation );
 
         context.put( PATH_TRACKER_KEY, PathTracker.start( pathTrackingInformation, context.getReference() ) );
     }
@@ -135,9 +129,6 @@ import org.apache.sirona.javaagent.tracking.PathTracker;
     @Override
     public void after( AgentContext context, Object result, Throwable error )
     {
-
-        SironaAgentLogging.debug( "PathTrackingListener#after: {0}", context.getKey() );
-
         context.get( PATH_TRACKER_KEY, PathTracker.class ).stop( context.getReference() );
     }
 }
