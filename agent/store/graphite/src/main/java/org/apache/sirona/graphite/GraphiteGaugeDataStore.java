@@ -38,7 +38,8 @@ public class GraphiteGaugeDataStore extends AggregatedGaugeDataStoreAdapter {
         try {
             graphite.open();
 
-            final long ts = System.currentTimeMillis();
+            // timestamp is the unix epoch time in seconds NOT ms.
+            final long ts = System.currentTimeMillis() / 1000l;
 
             for (final Map.Entry<Role, Value> gauge : gauges.entrySet()) {
                 graphite.push(GAUGE_PREFIX + gauge.getKey().getName(), gauge.getValue().getMean(), ts);

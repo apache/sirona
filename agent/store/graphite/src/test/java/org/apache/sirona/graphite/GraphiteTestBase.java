@@ -21,7 +21,9 @@ import org.apache.sirona.gauges.Gauge;
 import org.apache.sirona.graphite.server.GraphiteMockServer;
 import org.apache.sirona.repositories.Repository;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -31,21 +33,27 @@ public abstract class GraphiteTestBase {
     private Gauge.LoaderHelper gauges;
 
     @Before
-    public void startGraphite() throws IOException {
+    public void startGraphite() throws IOException, InterruptedException {
         server = new GraphiteMockServer(Integer.getInteger("collector.server.port", 1234)).start();
         if (System.getProperty("org.apache.sirona.graphite.GraphiteBuilder.port", "").isEmpty()) {
             System.setProperty("org.apache.sirona.graphite.GraphiteBuilder.port", Integer.toString(server.getPort()));
         }
+        Thread.sleep(200); // make sure it gets time to restart between tests
+        server.clear();
         Repository.INSTANCE.clearCounters();
         gauges = new Gauge.LoaderHelper(false);
     }
 
     @After
     public void shutdownGraphite() throws IOException {
-        IoCs.shutdown();
         gauges.destroy();
         server.stop();
         Repository.INSTANCE.clearCounters();
+    }
+
+    @AfterClass
+    public static void shutdownSirona() throws IOException {
+        IoCs.shutdown();
     }
 
     protected Collection<String> messages() {

@@ -40,7 +40,8 @@ public class GraphiteCounterDataStore extends BatchCounterDataStore
         try {
             graphite.open();
 
-            final long ts = System.currentTimeMillis();
+            // timestamp is the unix epoch time in seconds NOT ms.
+            final long ts = System.currentTimeMillis() / 1000l;
 
             for (final Counter counter : instances) {
                 final Counter.Key key = counter.getKey();

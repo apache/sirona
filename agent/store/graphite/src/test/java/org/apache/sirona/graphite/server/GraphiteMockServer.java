@@ -22,7 +22,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -58,6 +57,10 @@ public class GraphiteMockServer {
 
     public Collection<String> getMessages() {
         return messages;
+    }
+
+    public void clear() {
+        messages.clear();
     }
 
     private static class GraphiteThread extends Thread {
