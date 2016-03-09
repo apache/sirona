@@ -28,6 +28,7 @@ import javax.persistence.spi.PersistenceUnitInfo;
 import javax.persistence.spi.ProviderUtil;
 import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.List;
@@ -40,7 +41,7 @@ public class SironaPersistence implements PersistenceProvider {
 
     private static final String DELEGATE_PROVIDER_KEY = Configuration.CONFIG_PROPERTY_PREFIX + "jpa.provider";
     private static final String DEFAULT_PROVIDER = System.getProperty(DELEGATE_PROVIDER_KEY);
-    private static final Class<?>[] PROXY_API = new Class<?>[] { EntityManagerFactory.class, Serializable.class};
+    private static final Class<?>[] PROXY_API = new Class<?>[]{EntityManagerFactory.class, Serializable.class};
 
     private static final String[] PROVIDERS = {
         "org.apache.openjpa.persistence.PersistenceProviderImpl",
@@ -87,7 +88,7 @@ public class SironaPersistence implements PersistenceProvider {
             return null;
         }
         return EntityManagerFactory.class.cast(
-                monitor(PROXY_API, containerEntityManagerFactory, ROLE, true));
+            monitor(PROXY_API, containerEntityManagerFactory, ROLE, true));
     }
 
     @Override
@@ -185,7 +186,11 @@ public class SironaPersistence implements PersistenceProvider {
             if ("getPersistenceProviderClassName".equals(method.getName())) {
                 return provider;
             }
-            return method.invoke(info, args);
+            try {
+                return method.invoke(info, args);
+            } catch (final InvocationTargetException ite) {
+                throw ite.getTargetException();
+            }
         }
     }
 }

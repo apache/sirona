@@ -60,7 +60,11 @@ public class MonitoredStatement implements InvocationHandler {
                 stopWatch.stop();
             }
         }
-        return doInvoke(method, args);
+        try {
+            return doInvoke(method, args);
+        } catch (final InvocationTargetException ite) {
+            throw ite.getTargetException();
+        }
     }
 
     private Object doInvoke(final Method method, final Object[] args) throws IllegalAccessException, InvocationTargetException {

@@ -69,8 +69,12 @@ public class MonitoredConnection implements InvocationHandler {
         return doInvoke(method, args);
     }
 
-    private Object doInvoke(final Method method, final Object[] args) throws IllegalAccessException, InvocationTargetException {
-        return method.invoke(connection, args);
+    private Object doInvoke(final Method method, final Object[] args) throws Throwable {
+        try {
+            return method.invoke(connection, args);
+        } catch (final InvocationTargetException ite) {
+            throw ite.getTargetException();
+        }
     }
 
     private Statement monitor(final Statement statement) {
