@@ -82,7 +82,8 @@ public class SironaTransformer implements ClassFileTransformer {
     protected byte[] doTransform(final String className, final byte[] classfileBuffer) {
         try {
             final ClassReader reader = new ClassReader(classfileBuffer);
-            final ClassWriter writer = new SironaClassWriter(skipTempLoader ? null : tempClassLoaders, reader, ClassWriter.COMPUTE_FRAMES);
+            final ClassWriter writer = new SironaClassWriter(className == null ? null : className.replace('/', '.'),
+                    skipTempLoader ? null : tempClassLoaders, reader, ClassWriter.COMPUTE_FRAMES);
             final SironaClassVisitor advisor = new SironaClassVisitor(writer, className, classfileBuffer);
             reader.accept(advisor, ClassReader.SKIP_FRAMES);
 
@@ -119,10 +120,13 @@ public class SironaTransformer implements ClassFileTransformer {
 
     public static class SironaClassWriter extends ClassWriter {
         private final ConcurrentMap<ClassLoader, ClassLoader> tempClassLoaders;
+        private final String currentClass;
 
-        public SironaClassWriter(final ConcurrentMap<ClassLoader, ClassLoader> tempClassLoaders,
+        public SironaClassWriter(final String currentClass,
+                                 final ConcurrentMap<ClassLoader, ClassLoader> tempClassLoaders,
                                  final ClassReader classReader, final int flags) {
             super(classReader, flags);
+            this.currentClass = currentClass;
             this.tempClassLoaders = tempClassLoaders;
         }
 
@@ -180,7 +184,7 @@ public class SironaTransformer implements ClassFileTransformer {
         protected Class<?> findClass(final ClassLoader tccl, final String className)
                 throws ClassNotFoundException {
             try {
-                return Class.forName(className, false, tccl);
+                return currentClass.equals(className) ? Object.class : Class.forName(className, false, tccl);
             } catch (ClassNotFoundException e) {
                 return Class.forName(className, false, getClass().getClassLoader());
             }
