@@ -20,6 +20,7 @@ import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.configuration.ioc.Destroying;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.counters.DefaultCounter;
+import org.apache.sirona.counters.LockableCounter;
 import org.apache.sirona.counters.MetricData;
 import org.apache.sirona.counters.OptimizedStatistics;
 import org.apache.sirona.counters.jmx.CounterJMX;
@@ -39,10 +40,19 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class InMemoryCounterDataStore implements CounterDataStore
-{
+public class InMemoryCounterDataStore implements CounterDataStore {
     protected final boolean gauged = Configuration.is(Configuration.CONFIG_PROPERTY_PREFIX + "counter.with-gauge", false);
     protected final boolean jmx = Configuration.is(Configuration.CONFIG_PROPERTY_PREFIX + "counter.with-jmx", false);
+
+    protected final boolean useExponentialDecay = Configuration.is(Configuration.CONFIG_PROPERTY_PREFIX + "counter.exponential-decay", false);
+    protected final double exponentialDecayAlpha = Double.parseDouble(
+            Configuration.getProperty(Configuration.CONFIG_PROPERTY_PREFIX + "counter.exponential-decay.alpha",
+                    Double.toString(ExponentialDecayCounter.ACCEPTABLE_DEFAULT_ALPHA)));
+    protected final int exponentialDecaySamplingSize =
+            Configuration.getInteger(Configuration.CONFIG_PROPERTY_PREFIX + "counter.exponential-decay.sampling-size", ExponentialDecayCounter.ACCEPTABLE_DEFAULT_SIZE);
+    protected final long exponentialDecayRefresh =
+            (long) Configuration.getInteger(Configuration.CONFIG_PROPERTY_PREFIX + "counter.exponential-decay.refresh-seconds",
+                    (int) ExponentialDecayCounter.ACCEPTABLE_STATISTICS_REFRESH_SECONDS);
 
     protected final ConcurrentMap<Counter.Key, Counter> counters = newCounterMap();
     protected final ConcurrentMap<Counter.Key, Collection<Gauge>> gauges = new ConcurrentHashMap<Counter.Key, Collection<Gauge>>();
@@ -53,7 +63,9 @@ public class InMemoryCounterDataStore implements CounterDataStore
     }
 
     protected Counter newCounter(final Counter.Key key) {
-        return new DefaultCounter(key, this);
+        return useExponentialDecay ?
+                new ExponentialDecayCounter(key, this, exponentialDecayAlpha, exponentialDecaySamplingSize, exponentialDecayRefresh) :
+                new DefaultCounter(key, this);
     }
 
     @Override
@@ -86,10 +98,10 @@ public class InMemoryCounterDataStore implements CounterDataStore
                         final MBeanServer server = ManagementFactory.getPlatformMBeanServer();
                         try {
                             final ObjectName objectName = new ObjectName(
-                                Configuration.CONFIG_PROPERTY_PREFIX
-                                    + "counter:role=" + escapeJmx(key.getRole().getName())
-                                    + ",name=" + escapeJmx(key.getName()));
-                            DefaultCounter.class.cast(counter).setJmx(objectName);
+                                    Configuration.CONFIG_PROPERTY_PREFIX
+                                            + "counter:role=" + escapeJmx(key.getRole().getName())
+                                            + ",name=" + escapeJmx(key.getName()));
+                            LockableCounter.class.cast(counter).setJmx(objectName);
 
                             if (!server.isRegistered(objectName)) {
                                 server.registerMBean(new CounterJMX(counter), objectName);
@@ -124,7 +136,7 @@ public class InMemoryCounterDataStore implements CounterDataStore
                 final MBeanServer server = ManagementFactory.getPlatformMBeanServer();
                 for (final Counter counter : counters.values()) {
                     try {
-                        server.unregisterMBean(DefaultCounter.class.cast(counter).getJmx());
+                        server.unregisterMBean(LockableCounter.class.cast(counter).getJmx());
                     } catch (final Exception e) {
                         // no-op
                     }
@@ -153,18 +165,10 @@ public class InMemoryCounterDataStore implements CounterDataStore
 
     @Override
     public void addToCounter(final Counter counter, final double delta) {
-        if (!DefaultCounter.class.isInstance(counter)) {
-            throw new IllegalArgumentException(getClass().getName() + " only supports " + DefaultCounter.class.getName());
+        if (!LockableCounter.class.isInstance(counter)) {
+            throw new IllegalArgumentException(getClass().getName() + " only supports " + LockableCounter.class.getName());
         }
-
-        final DefaultCounter defaultCounter = DefaultCounter.class.cast(counter);
-        final Lock lock = defaultCounter.getLock().writeLock();
-        lock.lock();
-        try {
-            defaultCounter.addInternal(delta);
-        } finally {
-            lock.unlock();
-        }
+        LockableCounter.class.cast(counter).addInternal(delta);
     }
 
     private static class SyncCounterGauge extends CounterGauge {
@@ -204,7 +208,7 @@ public class InMemoryCounterDataStore implements CounterDataStore
 
         public synchronized void take() {
             if (called == 3 || called == -1) {
-                final DefaultCounter defaultCounter = DefaultCounter.class.cast(counter);
+                final LockableCounter defaultCounter = LockableCounter.class.cast(counter);
                 final Lock lock = defaultCounter.getLock().writeLock();
                 lock.lock();
                 try {

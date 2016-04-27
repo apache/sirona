@@ -18,76 +18,38 @@ package org.apache.sirona.counters;
 
 import org.apache.sirona.store.counter.CounterDataStore;
 
-import javax.management.ObjectName;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class DefaultCounter implements Counter {
-    private final AtomicInteger concurrency = new AtomicInteger(0);
-    private final Key key;
-    private final CounterDataStore dataStore;
-    private volatile int maxConcurrency = 0;
+public class DefaultCounter extends LockableCounter {
     protected final OptimizedStatistics statistics;
-    protected final ReadWriteLock lock = new ReentrantReadWriteLock();
-    private ObjectName jmx = null;
 
     public DefaultCounter(final Key key, final CounterDataStore store) {
         this(key, store, new OptimizedStatistics());
     }
     public DefaultCounter(final Key key, final CounterDataStore store, final OptimizedStatistics statistics) {
-        this.key = key;
-        this.dataStore = store;
-
+        super(key, store);
         this.statistics = statistics;
     }
 
-    public void addInternal(final double delta) { // should be called from a thread safe environment
-        statistics.addValue(delta);
-    }
-
-    @Override
-    public void updateConcurrency(final int concurrency) {
-        if (concurrency > maxConcurrency) {
-            maxConcurrency = concurrency;
+    public void addInternal(final double delta) {
+        final Lock lock = getLock().writeLock();
+        lock.lock();
+        try {
+            statistics.addValue(delta);
+        } finally {
+            lock.unlock();
         }
-    }
-
-    @Override
-    public int getMaxConcurrency() {
-        return maxConcurrency;
-    }
-
-    @Override
-    public AtomicInteger currentConcurrency() {
-        return concurrency;
-    }
-
-    @Override
-    public Key getKey() {
-        return key;
     }
 
     @Override
     public void reset() {
         statistics.clear();
-        maxConcurrency = 0;
-    }
-
-    @Override
-    public void add(final double delta) {
-        dataStore.addToCounter(this, delta);
-    }
-
-    @Override
-    public void add(final double delta, final Unit deltaUnit) {
-        add(key.getRole().getUnit().convert(delta, deltaUnit));
+        super.reset();
     }
 
     @Override
     public double getMax() {
-        final Lock rl = lock.readLock();
+        final Lock rl = getLock().readLock();
         rl.lock();
         try {
             return statistics.getMax();
@@ -98,7 +60,7 @@ public class DefaultCounter implements Counter {
 
     @Override
     public double getMin() {
-        final Lock rl = lock.readLock();
+        final Lock rl = getLock().readLock();
         rl.lock();
         try {
             return statistics.getMin();
@@ -109,7 +71,7 @@ public class DefaultCounter implements Counter {
 
     @Override
     public double getSum() {
-        final Lock rl = lock.readLock();
+        final Lock rl = getLock().readLock();
         rl.lock();
         try {
             return statistics.getSum();
@@ -120,7 +82,7 @@ public class DefaultCounter implements Counter {
 
     @Override
     public double getStandardDeviation() {
-        final Lock rl = lock.readLock();
+        final Lock rl = getLock().readLock();
         rl.lock();
         try {
             return statistics.getStandardDeviation();
@@ -131,7 +93,7 @@ public class DefaultCounter implements Counter {
 
     @Override
     public double getVariance() {
-        final Lock rl = lock.readLock();
+        final Lock rl = getLock().readLock();
         rl.lock();
         try {
             return statistics.getVariance();
@@ -142,7 +104,7 @@ public class DefaultCounter implements Counter {
 
     @Override
     public double getMean() {
-        final Lock rl = lock.readLock();
+        final Lock rl = getLock().readLock();
         rl.lock();
         try {
             return statistics.getMean();
@@ -153,7 +115,7 @@ public class DefaultCounter implements Counter {
 
     @Override
     public double getSecondMoment() {
-        final Lock rl = lock.readLock();
+        final Lock rl = getLock().readLock();
         rl.lock();
         try {
             return statistics.getSecondMoment();
@@ -164,7 +126,7 @@ public class DefaultCounter implements Counter {
 
     @Override
     public long getHits() {
-        final Lock rl = lock.readLock();
+        final Lock rl = getLock().readLock();
         rl.lock();
         try {
             return statistics.getN();
@@ -173,8 +135,9 @@ public class DefaultCounter implements Counter {
         }
     }
 
+    @Override
     public OptimizedStatistics getStatistics() {
-        final Lock rl = lock.readLock();
+        final Lock rl = getLock().readLock();
         rl.lock();
         try {
             return statistics.copy();
@@ -183,44 +146,13 @@ public class DefaultCounter implements Counter {
         }
     }
 
-    public ReadWriteLock getLock() {
-        return lock;
-    }
-
-    public void setJmx(final ObjectName jmx) {
-        this.jmx = jmx;
-    }
-
-    public ObjectName getJmx() {
-        return jmx;
-    }
-
     @Override
     public String toString() {
         return "DefaultCounter{" +
-            "concurrency=" + concurrency +
-            ", key=" + key +
-            ", dataStore=" + dataStore +
-            ", maxConcurrency=" + maxConcurrency +
+            "concurrency=" + currentConcurrency().get() +
+            ", key=" + getKey() +
+            ", maxConcurrency=" + getMaxConcurrency() +
             ", statistics=" + statistics +
             '}';
-    }
-
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!Counter.class.isInstance(o)) {
-            return false;
-        }
-
-        final Counter that = Counter.class.cast(o);
-        return key.equals(that.getKey());
-    }
-
-    @Override
-    public int hashCode() {
-        return key.hashCode();
     }
 }

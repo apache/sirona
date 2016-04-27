@@ -17,10 +17,10 @@
 package org.apache.sirona.counters;
 
 public class OptimizedStatistics {
-    private long n = 0;
-    private double sum = 0;
-    private double min = Double.NaN;
-    private double max = Double.NaN;
+    protected long n = 0;
+    protected double sum = 0;
+    protected double min = Double.NaN;
+    protected double max = Double.NaN;
 
     // first moment (mean)
     protected double m1 = Double.NaN;

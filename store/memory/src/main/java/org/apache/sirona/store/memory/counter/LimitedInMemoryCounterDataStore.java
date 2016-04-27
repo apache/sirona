@@ -19,10 +19,11 @@ package org.apache.sirona.store.memory.counter;
 import org.apache.sirona.Role;
 import org.apache.sirona.configuration.Configuration;
 import org.apache.sirona.counters.Counter;
-import org.apache.sirona.counters.DefaultCounter;
+import org.apache.sirona.counters.LockableCounter;
+import org.apache.sirona.counters.OptimizedStatistics;
+import org.apache.sirona.counters.Unit;
 import org.apache.sirona.gauges.Gauge;
 import org.apache.sirona.repositories.Repository;
-import org.apache.sirona.store.counter.CounterDataStore;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -34,6 +35,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReadWriteLock;
 
 // ensure we don't explode memory cause of web counters, this class will be integrated in sirona > 0.2
 public class LimitedInMemoryCounterDataStore extends InMemoryCounterDataStore
@@ -52,11 +55,11 @@ public class LimitedInMemoryCounterDataStore extends InMemoryCounterDataStore
     protected Counter newCounter(final Counter.Key key) {
         if (ONLY_EVICT_WEB_COUNTERS) {
             if (Role.WEB.equals(key.getRole())) {
-                return new DefaultCounterTimestamped(key, this);
+                return new DefaultCounterTimestamped(LockableCounter.class.cast(super.newCounter(key)));
             }
             return super.newCounter(key);
         }
-        return new DefaultCounterTimestamped(key, this);
+        return new DefaultCounterTimestamped(LockableCounter.class.cast(super.newCounter(key)));
     }
 
     protected class FixedSizedMap extends ConcurrentSkipListMap<Counter.Key, Counter> {
@@ -142,7 +145,7 @@ public class LimitedInMemoryCounterDataStore extends InMemoryCounterDataStore
 					}
                     if (jmx) {
                         try {
-                            final ObjectName objectName = DefaultCounter.class.cast(entry.getValue()).getJmx();
+                            final ObjectName objectName = LockableCounter.class.cast(entry.getValue()).getJmx();
                             if (server.isRegistered(objectName)) {
                                 server.unregisterMBean(objectName);
                             }
@@ -159,17 +162,114 @@ public class LimitedInMemoryCounterDataStore extends InMemoryCounterDataStore
         }
     }
 
-    private static class DefaultCounterTimestamped extends DefaultCounter {
+    private static class DefaultCounterTimestamped extends LockableCounter {
+        private final LockableCounter delegate;
         private volatile long timestamp = System.currentTimeMillis();
 
-        public DefaultCounterTimestamped(final Key key, final CounterDataStore store) {
-            super(key, store);
+        public DefaultCounterTimestamped(final LockableCounter delegate) {
+            super(null, null);
+            this.delegate = delegate;
+        }
+
+        @Override
+        public void addInternal(final double delta) {
+            this.delegate.add(delta);
+        }
+
+        @Override
+        public OptimizedStatistics getStatistics() {
+            return this.delegate.getStatistics();
+        }
+
+        @Override
+        public void setJmx(ObjectName jmx) {
+            this.delegate.setJmx(jmx);
+        }
+
+        @Override
+        public ObjectName getJmx() {
+            return this.delegate.getJmx();
+        }
+
+        @Override
+        public ReadWriteLock getLock() {
+            return this.delegate.getLock();
+        }
+
+        @Override
+        public void reset() {
+            this.delegate.reset();
         }
 
         @Override
         public void add(final double delta) {
-            super.add(delta);
+            delegate.add(delta);
             timestamp = System.currentTimeMillis();
+        }
+
+        @Override
+        public void add(final double delta, final Unit unit) {
+            this.delegate.add(delta, unit);
+        }
+
+        @Override
+        public AtomicInteger currentConcurrency() {
+            return delegate.currentConcurrency();
+        }
+
+        @Override
+        public void updateConcurrency(final int concurrency) {
+            delegate.updateConcurrency(concurrency);
+        }
+
+        @Override
+        public int getMaxConcurrency() {
+            return delegate.getMaxConcurrency();
+        }
+
+        @Override
+        public double getMax() {
+            return delegate.getMax();
+        }
+
+        @Override
+        public double getMin() {
+            return delegate.getMin();
+        }
+
+        @Override
+        public long getHits() {
+            return delegate.getHits();
+        }
+
+        @Override
+        public double getSum() {
+            return delegate.getSum();
+        }
+
+        @Override
+        public double getStandardDeviation() {
+            return delegate.getStandardDeviation();
+        }
+
+        @Override
+        public double getVariance() {
+            return delegate.getVariance();
+        }
+
+        @Override
+        public double getMean() {
+            return delegate.getMean();
+        }
+
+        @Override
+        public double getSecondMoment() {
+            return delegate.getSecondMoment();
+        }
+
+        @Override
+        public Key getKey() {
+            return delegate.getKey();
         }
     }
 }
