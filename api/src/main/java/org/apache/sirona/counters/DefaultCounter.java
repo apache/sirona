@@ -72,7 +72,7 @@ public class DefaultCounter implements Counter {
     @Override
     public void reset() {
         statistics.clear();
-        concurrency.set(0);
+        maxConcurrency = 0;
     }
 
     @Override
