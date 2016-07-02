@@ -73,11 +73,15 @@
       <item name="Thanks" href="http://www.apache.org/foundation/thanks.html"/>
     </menu>
 
-    <footer>
-      <div class="row span16"><div>Apache Sirona, Apache, the Apache feather logo, and the Apache Sirona project logos are trademarks of The Apache Software Foundation.
-        All other marks mentioned may be trademarks or registered trademarks of their respective owners.</div>
-        <a href="${project.url}/privacy-policy.html">Privacy Policy</a>
-      </div>
+    <footer id="main-footer">
+      <p class="text-muted">
+        Apache Sirona, Apache, the Apache feather logo, and the Apache Sirona project logos are trademarks of The Apache Software Foundation.
+        All other marks mentioned may be trademarks or registered trademarks of their respective owners.
+      </p>
+      <p class="text-muted">
+        <small>Apache Sirona is an effort undergoing incubation at The Apache Software Foundation (ASF), sponsored by the Apache Incubator. Incubation is required of all newly accepted projects until a further review indicates that the infrastructure, communications, and decision making process have stabilized in a manner consistent with other successful ASF projects. While incubation status is not necessarily a reflection of the completeness or stability of the code, it does indicate that the project has yet to be fully endorsed by the ASF.</small>
+      </p>
+      <a href="${project.url}/privacy-policy.html">Privacy Policy</a>
     </footer>
 
   </body>
