@@ -16,7 +16,6 @@
  */
 package org.apache.sirona.reporting;
 
-import org.apache.commons.lang3.SystemUtils;
 import org.apache.sirona.Role;
 import org.apache.sirona.counters.Counter;
 import org.apache.sirona.reporting.web.handler.TemplateHelper;
@@ -85,7 +84,7 @@ public class FormatsTest {
         helper.renderPlain(template.getTemplate(), template.getUserParams());
 
         assertEquals(CSVFormat.HEADER +
-            "RendererTest;failures (u);1.0;1.0;1.0;1.0;0.0;1.0;0.0;1.0;0.0;1.0" + SystemUtils.LINE_SEPARATOR,
+            "RendererTest;failures (u);1.0;1.0;1.0;1.0;0.0;1.0;0.0;1.0;0.0;1.0\n",
             out.toString());
     }
 
