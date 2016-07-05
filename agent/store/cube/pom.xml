@@ -19,7 +19,7 @@
   <parent>
     <artifactId>sirona-agent-store</artifactId>
     <groupId>org.apache.sirona</groupId>
-    <version>0.4-incubating</version>
+    <version>0.5-incubating-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
