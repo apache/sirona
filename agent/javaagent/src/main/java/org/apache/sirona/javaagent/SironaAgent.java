@@ -90,10 +90,11 @@ public class SironaAgent {
                     FileWriter writer = null;
                     try {
                         writer = new FileWriter(dumpOnExit);
-                        writer.write("name;role;unit;average;min;max;hits;max concurrency\n");
+                        writer.write("name;role;unit;average;min;max;sum;hits;max concurrency\n");
                         for (final Counter c : Repository.INSTANCE.counters()) {
                             writer.write(c.getKey().getName() + ";" + c.getKey().getRole().getName() + ";" + c.getKey().getRole().getUnit().getName()
-                                    + ";" + c.getMean() + ";" + c.getMin() + ";" + c.getMax() + ";" + c.getHits() + ";" + c.getMaxConcurrency() + "\n");
+                                    + ";" + c.getMean() + ";" + c.getMin() + ";" + c.getMax() + ";" + c.getSum()
+                                    + ";" + c.getHits() + ";" + c.getMaxConcurrency() + "\n");
                         }
                     } catch (final IOException e) {
                         throw new IllegalStateException(e);
