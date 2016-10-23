@@ -16,10 +16,14 @@
  */
 package org.apache.sirona.javaagent;
 
+import org.apache.sirona.counters.Counter;
+import org.apache.sirona.repositories.Repository;
 import org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.instrument.Instrumentation;
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -27,7 +31,6 @@ import java.net.URLClassLoader;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Timer;
 import java.util.jar.JarFile;
 
 import static java.util.Arrays.asList;
@@ -45,10 +48,9 @@ public class SironaAgent {
     public static void agentmain(final String agentArgs, final Instrumentation instrumentation) {
 
         // just to get information on weird issues :-)
-        Thread.currentThread().setUncaughtExceptionHandler( new Thread.UncaughtExceptionHandler(){
+        Thread.currentThread().setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
             @Override
-            public void uncaughtException( Thread thread, Throwable throwable )
-            {
+            public void uncaughtException(Thread thread, Throwable throwable) {
                 System.out.println("uncaughtException for thread: " + thread.getName() + ", message:" + throwable.getMessage());
                 throwable.printStackTrace();
 
@@ -76,6 +78,37 @@ public class SironaAgent {
         final boolean autoEvictClassLoaders = "true".equalsIgnoreCase(extractConfig(agentArgs, "autoEvictClassLoaders="));
         final String tempClassLoaders = extractConfig(agentArgs, "tempClassLoaders=");
         final boolean envrtDebug = debug || "true".equalsIgnoreCase(extractConfig(agentArgs, "environment-debug="));
+        final String dumpOnExit = extractConfig(agentArgs, "dumpOnExit=");
+        if (dumpOnExit != null) {
+            Runtime.getRuntime().addShutdownHook(new Thread() {
+                {
+                    setName("sirona-dump-on-exit");
+                }
+
+                @Override
+                public void run() {
+                    FileWriter writer = null;
+                    try {
+                        writer = new FileWriter(dumpOnExit);
+                        writer.write("name;role;unit;average;min;max;hits;max concurrency");
+                        for (final Counter c : Repository.INSTANCE.counters()) {
+                            writer.write(c.getKey().getName() + ";" + c.getKey().getRole().getName() + ";" + c.getKey().getRole().getUnit().getName()
+                                    + ";" + c.getMean() + ";" + c.getMin() + ";" + c.getMax() + ";" + c.getHits() + ";" + c.getMaxConcurrency());
+                        }
+                    } catch (final IOException e) {
+                        throw new IllegalStateException(e);
+                    } finally {
+                        if (writer != null) {
+                            try {
+                                writer.close();
+                            } catch (final IOException e) {
+                                // no-op
+                            }
+                        }
+                    }
+                }
+            });
+        }
 
         final StringBuilder out = new StringBuilder();
         final String libs = extractConfig(agentArgs, "libs=");
@@ -110,13 +143,13 @@ public class SironaAgent {
         try {
             // setup agent parameters
             Class<?> clazz = Class.forName("org.apache.sirona.javaagent.AgentContext", true, loader);
-            Method addAgentParameterMethod = clazz.getMethod( "addAgentParameter", new Class[]{ String.class, String.class } );
-            Map<String,String> agentParameters=extractParameters( agentArgs );
-            for (Map.Entry<String,String> entry : agentParameters.entrySet() ){
-                addAgentParameterMethod.invoke( null, new String[]{entry.getKey(), entry.getValue() == null ? "" : entry.getValue()} );
+            Method addAgentParameterMethod = clazz.getMethod("addAgentParameter", new Class[]{String.class, String.class});
+            Map<String, String> agentParameters = extractParameters(agentArgs);
+            for (Map.Entry<String, String> entry : agentParameters.entrySet()) {
+                addAgentParameterMethod.invoke(null, new String[]{entry.getKey(), entry.getValue() == null ? "" : entry.getValue()});
 
             }
-        } catch ( final Exception e ) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
 
@@ -164,7 +197,7 @@ public class SironaAgent {
                             && instrumentation.isModifiableClass(clazz)) {
                         try {
 
-                            debug( loader, "reload clazz: {0}", clazz.getName() );
+                            debug(loader, "reload clazz: {0}", clazz.getName());
 
                             instrumentation.retransformClasses(clazz);
                         } catch (final Exception e) {
@@ -176,13 +209,13 @@ public class SironaAgent {
                     }
                 }
             } else {
-                if (isDebug(loader)){
+                if (isDebug(loader)) {
                     System.out.println("do not reload classes");
                 }
             }
         } catch (final Exception e) {
             if (isDebug(loader)) {
-                System.out.println( "finished instrumentation setup with exception:" + e.getMessage() );
+                System.out.println("finished instrumentation setup with exception:" + e.getMessage());
             }
             e.printStackTrace();
         }
@@ -203,30 +236,24 @@ public class SironaAgent {
     }
 
     private static void debug(ClassLoader loader, String msg, Object... objects) {
-        try
-        {
-            Method method =loader //
-                .loadClass( "org.apache.sirona.javaagent.logging.SironaAgentLogging") //
-                    .getMethod( "debug", String.class, Object.class );
+        try {
+            Method method = loader //
+                    .loadClass("org.apache.sirona.javaagent.logging.SironaAgentLogging") //
+                    .getMethod("debug", String.class, Object.class);
 
-            method.invoke( null, msg, objects );
-        }
-        catch ( Exception e )
-        {
+            method.invoke(null, msg, objects);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private static boolean isDebug( ClassLoader loader ) {
-        try
-        {
+    private static boolean isDebug(ClassLoader loader) {
+        try {
             return Boolean.class.cast(
-                loader.loadClass( "org.apache.sirona.javaagent.logging.SironaAgentLogging") //
-                    .getField( "AGENT_DEBUG" ) //
-                    .get( null ) );
-        }
-        catch ( Exception e )
-        {
+                    loader.loadClass("org.apache.sirona.javaagent.logging.SironaAgentLogging") //
+                            .getField("AGENT_DEBUG") //
+                            .get(null));
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return false;
@@ -244,7 +271,7 @@ public class SironaAgent {
 
         final StringBuilder result = new StringBuilder(fileName.length());
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
-        for (int i = 0; i < fileName.length();) {
+        for (int i = 0; i < fileName.length(); ) {
             final char c = fileName.charAt(i);
             if (c == '%') {
                 out.reset();
@@ -287,27 +314,26 @@ public class SironaAgent {
     }
 
     /**
-     *
      * @param agentArgs foo=bar|beer=palepale|etc...
      * @return parameters
      */
-    protected static Map<String, String> extractParameters(String agentArgs){
-        if(agentArgs==null||agentArgs.length()<1){
+    protected static Map<String, String> extractParameters(String agentArgs) {
+        if (agentArgs == null || agentArgs.length() < 1) {
             return Collections.emptyMap();
         }
 
-        String[] separatorSplitted = agentArgs.split( "\\|" );
+        String[] separatorSplitted = agentArgs.split("\\|");
 
-        Map<String,String> params = new HashMap<String, String>( separatorSplitted.length / 2 );
+        Map<String, String> params = new HashMap<String, String>(separatorSplitted.length / 2);
 
-        for (final String agentArg:separatorSplitted){
-            int idx = agentArg.indexOf( '=' );
-            if (idx>=0){
-                String key = agentArg.substring( 0, idx);
-                String value = agentArg.substring(idx+1, agentArg.length());
-                params.put( key, value);
+        for (final String agentArg : separatorSplitted) {
+            int idx = agentArg.indexOf('=');
+            if (idx >= 0) {
+                String key = agentArg.substring(0, idx);
+                String value = agentArg.substring(idx + 1, agentArg.length());
+                params.put(key, value);
             } else {
-                params.put( agentArg, "" );
+                params.put(agentArg, "");
             }
         }
 

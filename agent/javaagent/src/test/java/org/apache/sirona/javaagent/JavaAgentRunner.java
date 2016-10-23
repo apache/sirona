@@ -184,7 +184,7 @@ public class JavaAgentRunner extends BlockJUnit4ClassRunner {
                 String key = prop[0];
                 String value = "";
                 if (prop.length > 1) {
-                    value = prop[1];
+                    value = prop[1].replace("${project.build.directory}", new File("target").getAbsolutePath());
                 }
                 args.add("-D" + key + "=" + StrSubstitutor.replace(value, System.getProperties()));
             }
