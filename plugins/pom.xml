@@ -19,7 +19,7 @@
   <parent>
     <groupId>org.apache.sirona</groupId>
     <artifactId>sirona</artifactId>
-    <version>0.5-incubating</version>
+    <version>0.6-incubating-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>

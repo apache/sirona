@@ -21,7 +21,7 @@
   <parent>
     <groupId>org.apache.sirona</groupId>
     <artifactId>sirona-reporting</artifactId>
-    <version>0.5-incubating</version>
+    <version>0.6-incubating-SNAPSHOT</version>
   </parent>
 
   <artifactId>sirona-reporting-api</artifactId>

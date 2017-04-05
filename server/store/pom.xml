@@ -21,7 +21,7 @@
   <parent>
     <artifactId>sirona-server</artifactId>
     <groupId>org.apache.sirona</groupId>
-    <version>0.5-incubating</version>
+    <version>0.6-incubating-SNAPSHOT</version>
   </parent>
 
   <artifactId>sirona-collector-store</artifactId>
