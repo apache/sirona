@@ -19,7 +19,8 @@
 -->
 <beans xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
-                            http://java.sun.com/xml/ns/javaee/beans_1_0.xsd">
+                            http://java.sun.com/xml/ns/javaee/beans_1_1.xsd"
+       bean-discovery-mode="annotated">
   <interceptors>
     <class>org.apache.sirona.cdi.SironaInterceptor</class>
   </interceptors>
