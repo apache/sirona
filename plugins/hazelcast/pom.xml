@@ -29,7 +29,7 @@
   <packaging>pom</packaging>
 
   <properties>
-    <hazelcast.version>3.1.5</hazelcast.version>
+    <hazelcast.version>3.12.13</hazelcast.version>
   </properties>
 
   <modules>
